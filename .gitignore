@@ -1,0 +1,6 @@
+node_modules
+dist.pem
+firebase-credentials.json
+db
+images
+dist
