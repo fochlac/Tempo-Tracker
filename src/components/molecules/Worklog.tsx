@@ -7,6 +7,7 @@ import { Tooltip } from "../atoms/Tooltip";
 import { QueueIcon } from "../atoms/QueueIcon";
 import { useState } from "preact/hooks";
 import { DeleteWorklogDialog } from "./DeleteWorklogDialog";
+import { UploadIcon } from "../atoms/UploadIcon";
 
 const ListRow = styled.li<{delete: Boolean}>`
     display: flex;
@@ -56,15 +57,16 @@ export const WorklogAtoms = {
     Duration
 }
 
-export function Worklog({ log, disableButtons, onDelete }) {
+export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
     const dispatch = useDispatch()
     const [startDelete, setStartDelete] = useState(false)
+    const Icon = isSyncing ? UploadIcon : QueueIcon
 
     return (
         <ListRow delete={log.delete && !log.synced}>
             <Datum>
                 {dateHumanized(log.start)}
-                {!log.synced && <Tooltip content="Queued for synchronization."><QueueIcon style={{ marginLeft: 8 }} /></Tooltip>}
+                {!log.synced && <Tooltip content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></Tooltip>}
             </Datum>
             <IssueKey>{log.issue.key}</IssueKey>
             <TimeRange>

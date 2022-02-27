@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@types/chrome': ^0.0.179
   '@types/styled-components': ^5.1.23
   chokidar: ^3.5.3
   esbuild: ^0.14.23
@@ -26,6 +27,7 @@ dependencies:
   uuid: 8.3.2
 
 devDependencies:
+  '@types/chrome': 0.0.179
   '@types/styled-components': 5.1.23
   esbuild: 0.14.23
   esbuild-node-externals: 1.4.1_esbuild@0.14.23
@@ -212,6 +214,27 @@ packages:
 
   /@humanwhocodes/object-schema/1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
+    dev: true
+
+  /@types/chrome/0.0.179:
+    resolution: {integrity: sha512-60zloNApIf88RwiG3Q7E+4NBG+znchhWmcaEVAAhUZahQbft5LWBzij4sinsfpAwbTtuWdFfUSpZsFhXTEFPVw==}
+    dependencies:
+      '@types/filesystem': 0.0.32
+      '@types/har-format': 1.2.8
+    dev: true
+
+  /@types/filesystem/0.0.32:
+    resolution: {integrity: sha512-Yuf4jR5YYMR2DVgwuCiP11s0xuVRyPKmz8vo6HBY3CGdeMj8af93CFZX+T82+VD1+UqHOxTq31lO7MI7lepBtQ==}
+    dependencies:
+      '@types/filewriter': 0.0.29
+    dev: true
+
+  /@types/filewriter/0.0.29:
+    resolution: {integrity: sha512-BsPXH/irW0ht0Ji6iw/jJaK8Lj3FJemon2gvEqHKpCdDCeemHa+rI3WBGq5z7cDMZgoLjY40oninGxqk+8NzNQ==}
+    dev: true
+
+  /@types/har-format/1.2.8:
+    resolution: {integrity: sha512-OP6L9VuZNdskgNN3zFQQ54ceYD8OLq5IbqO4VK91ORLfOm7WdT/CiT/pHEBSQEqCInJ2y3O6iCm/zGtPElpgJQ==}
     dev: true
 
   /@types/hoist-non-react-statics/3.3.1:

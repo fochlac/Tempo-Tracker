@@ -68,6 +68,12 @@ export function DBProvider({ children }) {
         updateData: async (key, value) => {
             await DB.set(key, value)
             Object.values(callbacks.current[key as keyof CallbackRef]).forEach(cb => cb(value))
+        },
+        checkUpdate: async (key: DB_KEYS) => {
+            const value = await DB.get(key)
+            if (value !== currentDb.current[key]) {
+                Object.values(callbacks.current[key as keyof CallbackRef]).forEach(cb => cb(value))
+            }
         }
     }
 
@@ -94,4 +100,9 @@ export function useDatabase<K extends DB_KEYS>(uuid: K) {
 export function useDatabaseUpdate<K extends DB_KEYS>(key: K) {
     const db = useContext(DBContext)
     return (value: DataBase[K]) => db.updateData(key, value)
+}
+
+export function useDatabasRefresh<K extends DB_KEYS>(key: K) {
+    const db = useContext(DBContext)
+    return () => db.checkUpdate(key)
 }

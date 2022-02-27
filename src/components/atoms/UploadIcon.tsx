@@ -39,8 +39,8 @@ const Wrapper = styled.div`
     margin-bottom: -3px;
 `
 
-export function UploadIcon() {
-    return <Wrapper>
+export function UploadIcon({style}) {
+    return <Wrapper style={style}>
         <AnimatedChevronUp size={18} style={{ top: -6, animationDelay: '0.4s' }} />
         <AnimatedChevronUp size={18}  style={{ animationDelay: '0.2s' }} />
         <AnimatedChevronUp size={18} style={{ top: 6 }}  />

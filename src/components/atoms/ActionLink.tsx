@@ -59,7 +59,7 @@ ActionLinkRaw.defaultProps = {
     }
 }
 
-export const ActionLink:React.FC<{onClick: (e: Event) => void; disabled?: boolean; small?: boolean}> = ({ onClick, disabled, ...props }) => {
+export const ActionLink:React.FC<{onClick: (e: Event) => void; disabled?: boolean; small?: boolean; style?: React.CSSProperties}> = ({ onClick, disabled, ...props }) => {
     return (
         <ActionLinkRaw
             onClick={preventDefault((e) => !disabled && typeof onClick === 'function' && onClick(e))}

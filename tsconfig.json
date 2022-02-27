@@ -7,5 +7,5 @@
         "jsx": "preserve",
         "typeRoots": ["node_modules/@types", "node_modules/web-ext-types", "./types"]
     },
-    "include": ["./src/**/*.jsx", "./src/**/*.js", "./src/**/*.tsx", "./src/**/*.ts", "./types"]
+    "include": ["./src/**/*.jsx", "./src/**/*.js", "./src/**/*.tsx", "./src/**/*.ts", "./types", "node_modules/web-ext-types"]
 }

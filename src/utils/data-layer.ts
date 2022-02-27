@@ -1,11 +1,12 @@
 const VERSION = 1;
 const CACHE_STORE = "CACHE_STORE";
-const DATABASE_NAME = window.location.origin;
+const DATABASE_NAME = 'tempo-tracker';
 
 const stores = [CACHE_STORE];
 
-const request = (window.indexedDB || (window as any).mozIndexedDB || (window as any).webkitIndexedDB)
-.open(DATABASE_NAME, VERSION);
+const indexedDb = (self.indexedDB || (self as any).mozIndexedDB || (self as any).webkitIndexedDB)
+
+const request = indexedDb.open(DATABASE_NAME, VERSION);
 
 const db = new Promise((resolve, reject) => {
   request.onsuccess = (e) => {
@@ -92,9 +93,7 @@ const indexedDBStorage = (name: string) => {
     request.onerror = reject;
   }));
 
-  const deleteDatabase = () => {
-    window.indexedDB.deleteDatabase(window.location.origin);
-  };
+  const deleteDatabase = () => indexedDB.deleteDatabase(DATABASE_NAME)
 
   return {
     get,

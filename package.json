@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/fochlac/jira-log-time#readme",
   "devDependencies": {
+    "@types/chrome": "^0.0.179",
     "@types/styled-components": "^5.1.23",
     "esbuild": "^0.14.23",
     "esbuild-node-externals": "^1.4.1",
