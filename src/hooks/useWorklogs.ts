@@ -1,6 +1,6 @@
 import { usePersitentFetch } from "./usePersitedFetch"
 
-import { deleteWorklog, fetchWorklog } from "../utils/jira"
+import { fetchWorklog } from "../utils/jira"
 import { useMemo } from "preact/hooks"
 import { CACHE } from "../constants/constants"
 import { useCache } from "./useCache"
@@ -10,7 +10,7 @@ export function useJiraWorklog() {
     const cache = useCache<'WORKLOG_CACHE'>('WORKLOG_CACHE', [])
     const queue = useDatabase<'updates'>('updates') || []
     const updateQueue = useDatabaseUpdate('updates')
-    const logs = cache.cache.data
+    const logs = cache?.cache?.data || []
     
     const data = useMemo(() => {
         const updateMap = {}
@@ -33,7 +33,7 @@ export function useJiraWorklog() {
                 }
             },
             async queue(worklog) {
-                await updateQueue([...queue, worklog])
+                await updateQueue([...queue.filter((log) => worklog.id ? log.id !== worklog.id : log.tempId !== worklog.tempId), worklog])
             }
         }
     }

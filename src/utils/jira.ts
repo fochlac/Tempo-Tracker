@@ -75,14 +75,31 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>)
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}`, {
         "headers": headers(options.token),
         "body": JSON.stringify({
+            "worker": options.user,
             "originId": id,
             "started": `${dateString(start)} ${timeStringFull(start)}`,
             "timeSpentSeconds": seconds,
-            "originTaskId": issue.id
+            "originTaskId": Number(issue.id)
         }),
         "method": "PUT"
     })
         .then(r => r.json())
+        .then((log) => {
+            if (Number(log.originTaskId) === Number(issue.id)) {
+                return log
+            }
+            return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}/issue/${issue.id}`, {
+                "headers": headers(options.token),
+                "body": JSON.stringify({
+                    "worker": options.user,
+                    "originId": id,
+                    "started": `${dateString(start)} ${timeStringFull(start)}`,
+                    "timeSpentSeconds": seconds,
+                    "originTaskId": Number(log.originTaskId)
+                }),
+                "method": "PUT"
+            }).then(r => r.json())
+        })
         .then(toLocalWorklog)
 }
 
@@ -96,7 +113,14 @@ export async function deleteWorklog({ id }: Partial<Worklog>): Promise<Worklog> 
         .then(r => r.json())
 }
 
-function toLocalWorklog(worklog: WorklogRemote): Worklog {
+function toLocalWorklog(remoteWorklog: WorklogRemote|WorklogRemote[]): Worklog {
+    let worklog: WorklogRemote
+    if (Array.isArray(remoteWorklog)) {
+        worklog = remoteWorklog[0]
+    }
+    else {
+        worklog = remoteWorklog
+    }
     return {
         issue: {
             id: worklog.issue.id,

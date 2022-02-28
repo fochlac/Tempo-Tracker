@@ -14,7 +14,3 @@ export const atom = createAtom(
         ...viewDuck.actions,
     }
 )
-
-atom.observe((atom) => {
-    console.log('changed', atom.get())
-})

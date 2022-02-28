@@ -3,20 +3,6 @@ import styled from "styled-components"
 const Wrapper = styled.div`
     position: relative;
     
-    &:after {
-        content: '';
-        display: none;
-        position: absolute;
-        top: calc(100%);
-        max-width: min(150%, 100vw);
-        min-width: max(50%, 100px);
-        height: 5px;
-    }
-
-    &:hover:after {
-        display: flex;
-    }
-
     &:before {
         content: attr(data-content);
         position: absolute;
@@ -39,6 +25,24 @@ const Wrapper = styled.div`
     &:hover:before {
         display: flex;
     }
+
+    &:after {
+        display: none;
+        content: '';
+        position: absolute;
+        top: calc(100% - 1px);
+        left: calc(50% - 4px);
+        width: 0; 
+        height: 0; 
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 6px solid grey;
+    }
+
+    &:hover:after {
+        display: block;
+    }
+
 `
 
 interface TooltipProps {

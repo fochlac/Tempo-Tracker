@@ -40,12 +40,13 @@ export function DBProvider({ children }) {
     useEffect(() => {
         function checkForUpdates () {
             return getDb().then(db => {
-                Object.keys(callbacks).forEach((key) => {
-                    if (db[key] !== currentDb.current[key]) {
-                        callbacks[key].forEach((cb) => cb(db[key]))
+                const oldDb = currentDb.current
+                currentDb.current = db
+                Object.keys(callbacks.current).forEach((key: keyof CallbackRef) => {
+                    if (JSON.stringify(db[key]) !== JSON.stringify(oldDb[key])) {
+                        Object.values(callbacks.current[key]).forEach((cb) => typeof cb === 'function' && cb(db[key]))
                     }
                 })
-                currentDb.current = db
             })
         }
 

@@ -36,7 +36,7 @@ export function TrackingSection() {
     const { data: tracker, actions } = useTracking()
     const issues = useFetchJiraIssues()
     const options = useMemo(
-        () => issues.data?.map((issue) => ({ value: issue.id, name: issue.name })),
+        () => issues.data?.map((issue) => ({ value: issue.id, name: `${issue.key}: ${issue.name}` })),
         [issues.data]
     )
     const issueMap = useMemo(() => issues.data?.reduce((issueMap, issue) => {

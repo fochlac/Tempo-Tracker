@@ -1,7 +1,6 @@
 import { Check, X } from "preact-feather"
 import { useState } from "preact/hooks"
 import styled from "styled-components"
-import { CACHE } from "../../constants/constants"
 import { useCache } from "../../hooks/useCache"
 import { useJiraWorklog } from "../../hooks/useWorklogs"
 import { useDispatch } from "../../utils/atom"
@@ -24,6 +23,7 @@ const {
 
 export function WorklogEditor({ log: pureLog }) {
     const [log, setEdit] = useState({...pureLog, synced: false})
+    const issueCache = useCache<'ISSUE_CACHE'>('ISSUE_CACHE', [])
     const [isDirty, setDirty] = useState(false)
     const dispatch = useDispatch()
     const {actions} = useJiraWorklog()
@@ -79,10 +79,22 @@ export function WorklogEditor({ log: pureLog }) {
         dispatch('resetEditIssue')
     }
 
+    const issues = issueCache?.cache?.data
+
     return (
         <ListRow>
             <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
-            <IssueKey>{log.issue.key}</IssueKey>
+            <select style={{ margin: '2px 8px 0' }} onChange={(e) => {
+                setDirty(true)
+                const issue = issues.find((i) => i.key === e.target.value)
+                setEdit({ ...log, issue })
+            }}>
+                {issues?.map((issue) => (
+                    <option value={issue.key} key={issue.key} selected={log.issue.key === issue.key}>
+                        {issue.key}
+                    </option>
+                ))}
+            </select>
             <TimeRange>
                 <Input onChange={onChange('start')} type="time" value={timeString(log.start)} />
                 {' - '}

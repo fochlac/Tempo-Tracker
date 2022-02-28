@@ -9,7 +9,7 @@ import { useState } from "preact/hooks";
 import { DeleteWorklogDialog } from "./DeleteWorklogDialog";
 import { UploadIcon } from "../atoms/UploadIcon";
 
-const ListRow = styled.li<{delete: Boolean}>`
+const ListRow = styled.li<{delete?: Boolean}>`
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,9 +37,8 @@ const Datum = styled.span`
     display: inline-flex;
     align-items: center;
 `
-const Time = styled.span`
-    cursor: pointer;
-`
+const Time = styled.span``
+
 const TimeRange = styled.span`
     flex-basis: 150px;
     text-align: end;
@@ -57,6 +56,23 @@ export const WorklogAtoms = {
     Duration
 }
 
+const RightTooltip = styled(Tooltip)`
+    cursor: default;
+
+    &:before {
+        top: -4px;
+        left: calc(100% + 5px);
+    }
+
+    &:after {
+        top: calc(50% - 4px);
+        left: calc(100% - 4px);
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        border-right: 6px solid grey;
+    }
+`
+
 export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
     const dispatch = useDispatch()
     const [startDelete, setStartDelete] = useState(false)
@@ -66,9 +82,9 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
         <ListRow delete={log.delete && !log.synced}>
             <Datum>
                 {dateHumanized(log.start)}
-                {!log.synced && <Tooltip content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></Tooltip>}
+                {!log.synced && <RightTooltip content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></RightTooltip>}
             </Datum>
-            <IssueKey>{log.issue.key}</IssueKey>
+            <IssueKey><RightTooltip content={log.issue.name}>{log.issue.key}</RightTooltip></IssueKey>
             <TimeRange>
                 <Time>{timeString(log.start)}</Time>
                 {' - '}

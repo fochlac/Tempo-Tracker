@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { DB } from "../utils/data-layer";
 import { useDatabase } from "../utils/database";
 
@@ -12,6 +12,9 @@ export function useCache<K extends CACHE>(uuid: K, initialData): CacheHookResult
         const newData = fn(dbData as DataBase[K])
         DB.set(uuid, { validUntil: cache.validUntil, data: newData })        
     }
+    useEffect(() => {
+        setMemoryCache(dbData)
+    }, [dbData])
 
     return {
         setCache: async(cache) => {
