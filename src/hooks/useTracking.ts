@@ -1,6 +1,8 @@
 import { useDatabase, useDatabaseUpdate } from "../utils/database"
 import { useJiraWorklog } from "./useWorklogs"
 import { v4 } from 'uuid'
+import { triggerBackgroundAction } from "../utils/background"
+import { ACTIONS } from "../constants/actions"
 
 export function useTracking() {
     const tracking = useDatabase<'tracking'>('tracking') || {}
@@ -16,6 +18,7 @@ export function useTracking() {
                     start: Date.now()
                 }
                 await updateTracking(update)
+                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE.create())
             },
             async updateStart(start) {
                 const update = {
@@ -23,13 +26,17 @@ export function useTracking() {
                     start
                 }
                 await updateTracking(update)
+                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE.create())
             },
             async stop() {
                 const {issue, start} = tracking
                 const end = Date.now()
                 const newLog: TemporaryWorklog = { issue, start, end, synced: false, tempId: v4() }
-                await worklog.actions.queue(newLog)
+                if (end - start > 30000) {
+                    await worklog.actions.queue(newLog)
+                }
                 await updateTracking({ issue: null, start: null })
+                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE.create())
             },
             async swap(issue) {
                 if (tracking.issue) {

@@ -1,18 +1,12 @@
 import { useDatabase, useDatabaseUpdate } from "../utils/database"
-const defaultOptions = {
-    user: '',
-    token: '',
-    issues: [],
-    autosync: false,
-    domain: ''
-}
+import { getOptions } from "../utils/options"
 
 export function useOptions() {
-    const options: Options = useDatabase<'options'>('options') || { ...defaultOptions }
+    const options: Options = useDatabase<'options'>('options') || getOptions({})
     const updateOptions = useDatabaseUpdate('options')
     
     return {
-        data: options,
+        data: getOptions(options),
         actions: {
             async set(newOptions) {
                 await updateOptions(newOptions)
@@ -25,7 +19,7 @@ export function useOptions() {
                 await updateOptions(update)
             },
             async reset() {
-                const update = { ...defaultOptions }
+                const update = getOptions({})
                 await updateOptions(update)
             }
         }

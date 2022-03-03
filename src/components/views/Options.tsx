@@ -3,8 +3,9 @@ import styled from "styled-components"
 import { CACHE } from "../../constants/constants"
 import { useCache } from "../../hooks/useCache"
 import { useOptions } from "../../hooks/useOptions"
+import { DualRangeSlider } from "../atoms/DualRangeSlider"
 import { Input } from "../atoms/Input"
-import { FlexRow } from "../atoms/Layout"
+import { FlexColumn, FlexRow } from "../atoms/Layout"
 import { Tooltip } from "../atoms/Tooltip"
 import { H6, Label } from "../atoms/Typography"
 
@@ -28,10 +29,26 @@ const HelpTooltip = styled(Tooltip)`
         min-width: 150px;
     }
 `
+const TimeRange = styled.time`
+    width: 210px;
+    text-align: center;
+`
 
 export const OptionsView: React.FC = () => {
     const {data: options, actions} = useOptions()
     const cache = useCache(CACHE.ISSUE_CACHE, [])
+
+    const updateOverlayDay = (day) => (e) => {
+        if (e.target.checked) {
+            actions.merge({overlayDays: [day].concat(options.overlayDays)})
+        }
+        else {
+            actions.merge({overlayDays: options.overlayDays.filter(v => v !== day)})
+        }
+    }
+
+    const overlayHoursStart = `${Math.floor(options.overlayHours[0] / 60)}:${`00${options.overlayHours[0] % 60}`.slice(-2)}`
+    const overlayHoursEnd = `${Math.floor(options.overlayHours[1] / 60)}:${`00${options.overlayHours[1] % 60}`.slice(-2)}`
 
     return (
         <Body>
@@ -68,11 +85,41 @@ export const OptionsView: React.FC = () => {
             <Option>
                 <Label>Automatic Synchronization</Label>
                 <FlexRow justify="flex-start">
-                    <Input type="checkbox" checked={options.autosync} onChange={(e) => actions.merge({autosync: e.target.checked})} />
-                    &nbsp;
-                    &nbsp;
-                    <p>enabled</p>
+                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.autosync} onChange={(e) => actions.merge({autosync: e.target.checked})} />
+                    <Label>enabled</Label>
                 </FlexRow>
+            </Option>
+            <H6 style={{ margin: '16px 0 4px 8px', fontSize: '1rem' }}>Browser Overlay</H6>
+            <Option>
+                <Label>Activate Browser Overlay</Label>
+                <FlexRow justify="flex-start">
+                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.overlay} onChange={(e) => actions.merge({overlay: e.target.checked})} />
+                    <Label>enabled</Label>
+                </FlexRow>
+            </Option>
+            <Option>
+                <Label>Active Days</Label>
+                <FlexRow justify="flex-start">
+                {['Sun', 'Mo', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx: (0|1|2|3|4|5|6)) => (
+                    <FlexColumn key={day} style={{ width: 25 }}>
+                        <Input type="checkbox" checked={options.overlayDays.includes(idx)} onChange={updateOverlayDay(idx)} />
+                        <Label>{day}</Label>
+                    </FlexColumn>
+                ))}
+                </FlexRow>
+            </Option>
+            <Option>
+                <Label>Active Hours</Label>
+                <FlexColumn style={{ margin: '0 6px' }} align="flex-start">
+                    <DualRangeSlider max={24 * 60} value={options.overlayHours} onChange={(overlayHours) => actions.merge({ overlayHours })} />
+                    <TimeRange>
+                        {overlayHoursStart}
+                        &nbsp;&nbsp;
+                        {' - '}
+                        &nbsp;&nbsp;
+                        {overlayHoursEnd}
+                    </TimeRange>
+                </FlexColumn>
             </Option>
         </Body>
     )

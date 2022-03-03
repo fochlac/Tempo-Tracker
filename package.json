@@ -5,6 +5,7 @@
   "main": "jira-api.js",
   "scripts": {
     "start": "node build/esbuild.js",
+    "build": "node build/esbuild.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

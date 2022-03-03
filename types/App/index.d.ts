@@ -38,13 +38,6 @@ interface Worklog {
     id: string;
 }
 
-interface Options {
-    issues: string[];
-    domain: string;
-    user: string;
-    token: string;
-}
-
 interface CacheObject<V> {
     validUntil: number;
     data: V;
@@ -56,12 +49,18 @@ type DB_KEYS = keyof DataBase;
 
 type CACHE = 'WORKLOG_CACHE' | 'ISSUE_CACHE'
 
-interface Options {
+interface Options extends OverlayOptions {
     issues: string[];
     domain: string;
     user: string;
     autosync: boolean;
     token: string;
+}
+
+interface OverlayOptions {
+    overlay: boolean;
+    overlayDays: (1|2|3|4|5|6|0)[];
+    overlayHours: [number, number];
 }
 
 interface DataBase {
@@ -96,4 +95,11 @@ interface Window {
     webkitRequestAnimationFrame: Function;
     mozRequestAnimationFrame: Function;
     mozCancelAnimationFrame: Function;
+    __tempoTracker: {
+        tracking: Tracking;
+        issues: Issue[];
+        options: OverlayOptions;
+        updateTimer?: number;
+        wrapper?: HTMLDivElement;
+    }
 }

@@ -14,5 +14,32 @@ export const ACTIONS = {
                 }
             }
         }
+    },
+    UPDATE_BADGE: {
+        type: 'UPDATE_BADGE',
+        create() {
+            return {type: 'UPDATE_BADGE'}
+        },
+        response(success, message = '') {
+            return {
+                type: 'UPDATE_BADGE',
+                payload: {
+                    success,
+                    message
+                }
+            }
+        }
+    },
+    PAGE_SETUP: {
+        type: 'PAGE_SETUP',
+        create() {
+            return {type: 'PAGE_SETUP'}
+        },
+        response(success: boolean, tracking?: Tracking, issues?: Issue[], options?: OverlayOptions) {
+            return {
+                type: 'PAGE_SETUP',
+                payload: { success, tracking, issues, options }
+            }
+        }
     }
 }

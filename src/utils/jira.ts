@@ -103,14 +103,14 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>)
         .then(toLocalWorklog)
 }
 
-export async function deleteWorklog({ id }: Partial<Worklog>): Promise<Worklog> {
+export async function deleteWorklog({ id }: Partial<Worklog>): Promise<void> {
     const options = await DB.get('options') as Options
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}`, {
         "headers": headers(options.token),
         "method": "DELETE"
     })
-        .then(r => r.json())
+        .then(r => r.status < 300 ? Promise.resolve() : Promise.reject())
 }
 
 function toLocalWorklog(remoteWorklog: WorklogRemote|WorklogRemote[]): Worklog {

@@ -78,6 +78,10 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
     const [startDelete, setStartDelete] = useState(false)
     const Icon = isSyncing ? UploadIcon : QueueIcon
 
+    if (!log?.issue) {
+        return null
+    }
+
     return (
         <ListRow delete={log.delete && !log.synced}>
             <Datum>
