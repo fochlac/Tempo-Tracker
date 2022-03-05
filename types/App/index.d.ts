@@ -99,7 +99,10 @@ interface Window {
         tracking: Tracking;
         issues: Issue[];
         options: OverlayOptions;
-        updateTimer?: number;
+        cleanup?: {
+            timer?: () => void;
+            movement?: () => void;
+        };
         wrapper?: HTMLDivElement;
     }
 }

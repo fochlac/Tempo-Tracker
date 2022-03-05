@@ -1,6 +1,7 @@
 import { ACTIONS } from "./constants/actions"
 import { DB_KEYS } from "./constants/constants"
 import { DB } from "./utils/data-layer"
+import { v4 } from 'uuid'
 import { deleteWorklog, updateWorklog, writeWorklog } from "./utils/jira"
 import { getOptions } from "./utils/options"
 
@@ -98,6 +99,25 @@ async function getSetupInfo() {
     }
 }
 
+async function stopTracking(oldIssue: Issue) {
+    const [
+        { issue, start }, 
+        queue
+    ] = await Promise.all([
+        DB.get(DB_KEYS.TRACKING),
+        DB.get(DB_KEYS.UPDATE_QUEUE)
+    ]) as [Tracking, TemporaryWorklog[]]
+    if (oldIssue.id !== issue?.id) {
+        return Promise.reject()
+    }
+    const newLog: TemporaryWorklog = { issue, start, end: Date.now(), synced: false, tempId: v4() }
+
+    if (newLog.end - start > 30000) {
+        await DB.set(DB_KEYS.UPDATE_QUEUE, [...queue, newLog])
+    }
+    await DB.set(DB_KEYS.TRACKING, { issue: null, start: null })
+}
+
 controller.runtime.onMessage.addListener((request, _sender, sendResponseRaw) => {
     const sendResponse = (response) => {
         sendResponseRaw(response)
@@ -124,6 +144,30 @@ controller.runtime.onMessage.addListener((request, _sender, sendResponseRaw) => 
 
         return true
     }
+    if (ACTIONS.START_TRACKING.type === request.type) {
+        const tracking: Tracking = {
+            issue: request.payload.issue,
+            start: Date.now()
+        }
+        
+        DB.get(DB_KEYS.TRACKING)
+            .then((currentTracking: Tracking) => !currentTracking?.issue ? DB.set(DB_KEYS.TRACKING, tracking) : Promise.reject())
+            .then(updateBadgeTitle)
+            .then(() => sendResponse(ACTIONS.START_TRACKING.response(true, tracking)))
+            .catch((e) => sendResponse(ACTIONS.START_TRACKING.response(false)))
+
+        return true
+    }
+    if (ACTIONS.STOP_TRACKING.type === request.type) {
+        stopTracking(request.payload.issue as Issue)
+            .then(updateBadgeTitle)
+            .then(() => sendResponse(ACTIONS.STOP_TRACKING.response(true)))
+            .catch((e) => sendResponse(ACTIONS.STOP_TRACKING.response(false)))
+
+        return true
+    }
 })
+
+
 
 updateBadgeTitle()

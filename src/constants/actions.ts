@@ -41,5 +41,29 @@ export const ACTIONS = {
                 payload: { success, tracking, issues, options }
             }
         }
+    },
+    START_TRACKING: {
+        type: 'START_TRACKING',
+        create(issue: Issue) {
+            return { type: 'START_TRACKING', payload: { issue } }
+        },
+        response(success: boolean, tracking?: Tracking) {
+            return {
+                type: 'START_TRACKING',
+                payload: { success, tracking }
+            }
+        }
+    },
+    STOP_TRACKING: {
+        type: 'STOP_TRACKING',
+        create(issue: Issue) {
+            return {type: 'STOP_TRACKING', payload: { issue } }
+        },
+        response(success: boolean) {
+            return {
+                type: 'STOP_TRACKING',
+                payload: { success }
+            }
+        }
     }
 }
