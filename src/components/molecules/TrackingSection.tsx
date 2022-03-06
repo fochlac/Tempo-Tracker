@@ -87,7 +87,7 @@ export function TrackingSection() {
                         <Duration start={tracker.start} />
                         <DestructiveButton onClick={() => actions.stop()}>Stop Tracking</DestructiveButton>
                     </>
-                ) : <DefaultText style={{margin: '0 auto'}}>Please select an Issue to start tracking.</DefaultText>}
+                ) : <DefaultText style={{margin: '0 auto'}}>Please select an issue to start tracking.</DefaultText>}
             </Tracker>
         </Header>
     )

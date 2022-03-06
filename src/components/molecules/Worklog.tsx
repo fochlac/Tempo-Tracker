@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { useDispatch, } from "../../utils/atom"
 import { dateHumanized, formatDuration, timeString } from "../../utils/datetime"
 import { IconButton } from "../atoms/IconButton"
-import { Edit3, Trash2 } from 'preact-feather';
+import { Edit3, Trash2, X } from 'preact-feather';
 import { Tooltip } from "../atoms/Tooltip";
 import { QueueIcon } from "../atoms/QueueIcon";
 import { useState } from "preact/hooks";
@@ -101,7 +101,7 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
                 <Edit3 />
             </IconButton>
             <IconButton disabled={disableButtons} onClick={() => setStartDelete(true)} style={{ marginLeft: 4 }}>
-                <Trash2 />
+                {log.id && log.synced ? <Trash2 /> : <X />}
             </IconButton>
             <DeleteWorklogDialog open={startDelete} log={log} onClose={() => setStartDelete(false)} onDelete={(updateOnly) => onDelete(log, updateOnly)} />
         </ListRow>

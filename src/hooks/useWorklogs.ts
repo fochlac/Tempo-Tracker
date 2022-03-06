@@ -19,7 +19,7 @@ export function useJiraWorklog() {
     }, [queue, logs])
 
     return {
-        data: data as (TemporaryWorklog[]|Worklog[]),
+        data: data as TemporaryWorklog[],
         actions: {
             async delete(worklog, updateOnly = false) {
                 if (worklog.tempId) {

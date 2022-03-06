@@ -13,7 +13,7 @@ controller.alarms.create('flushQueue', { periodInMinutes: 1 })
 
 controller.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === 'flushQueue') {
-        const options = await DB.get(DB_KEYS.OPTIONS) as Options
+        const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
         if (options.autosync) {
             await flushQueue()
         }
@@ -24,7 +24,7 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
 async function updateBadgeTitle() {
     const tracking = await DB.get(DB_KEYS.TRACKING) as Tracking
     action.setBadgeBackgroundColor({ color: '#028A0F' })
-    if (tracking.issue && tracking.start) {
+    if (tracking?.issue && tracking.start) {
         const h = Math.floor((Date.now() - tracking.start) / 60 / 60 / 1000)
         const m = `00${Math.floor((Date.now() - tracking.start) / 60 / 1000) % 60}`.slice(-2)
         action.setBadgeText({ text: `${h}:${m}` })

@@ -28,7 +28,7 @@ export const template = `
         align-items: center;
         height: 100%;
     }
-    .tempo_tracker-issue {   
+    select[class].tempo_tracker-issue {   
         color: black;
         font-size: 15px;
         font-family: sans-serif;
@@ -39,6 +39,8 @@ export const template = `
         padding: 0;
         -webkit-appearance: auto;
         width: auto;
+        height: auto;
+        margin: 0;
     }
     .tempo_tracker-time {
         color: black;

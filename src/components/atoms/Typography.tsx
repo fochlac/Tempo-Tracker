@@ -24,7 +24,7 @@ export const SmallerText = styled.p`
 `
 
 export const Label = styled.legend`
-    display: block;
+    display: flex;
     width: auto;
     padding: 0px;
     height: 11px;

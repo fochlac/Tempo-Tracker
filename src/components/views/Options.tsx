@@ -33,6 +33,13 @@ const TimeRange = styled.time`
     width: 210px;
     text-align: center;
 `
+const Mandatory = styled.span`
+    color: red;
+    font-size: 14px;
+    display: inline-block;
+    margin-top: -3px;
+    margin-left: 1px;
+`
 
 export const OptionsView: React.FC = () => {
     const {data: options, actions} = useOptions()
@@ -54,25 +61,25 @@ export const OptionsView: React.FC = () => {
         <Body>
             <H6 style={{ margin: '16px 0 4px 8px', fontSize: '1rem' }}>Jira Options</H6>
             <Option>
-                <Label>Username</Label>
+                <Label>Username<Mandatory>*</Mandatory></Label>
                 <Input value={options.user} onChange={(e) => actions.merge({user: e.target.value})} />
             </Option>
             <Option>
-                <Label>Personal Access Token</Label>
+                <Label>Personal Access Token<Mandatory>*</Mandatory></Label>
                 <HelpTooltip content="A Personal Access Token can be created via your JIRA Profile.">
                     <HelpCircle size={14} />
                 </HelpTooltip>
                 <Input value={options.token} onChange={(e) => actions.merge({token: e.target.value})} />
             </Option>
             <Option>
-                <Label>Server URL</Label>
+                <Label>Server URL<Mandatory>*</Mandatory></Label>
                 <HelpTooltip content="URL of your JIRA server's REST API: https://jira.domain.com/rest.">
                     <HelpCircle size={14} />
                 </HelpTooltip>
                 <Input value={options.domain} onChange={(e) => actions.merge({domain: e.target.value})} />
             </Option>
             <Option>
-                <Label>Tracked Issues</Label>
+                <Label>Tracked Issues<Mandatory>*</Mandatory></Label>
                 <HelpTooltip content="Comma separated list of issues you want to track time for.">
                     <HelpCircle size={14} />
                 </HelpTooltip>

@@ -9,6 +9,7 @@ const headers = (token) => ({
 
 export async function fetchIssues(): Promise<Issue[]> {
     const options = await DB.get('options') as Options
+    if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const query = new URLSearchParams()
     query.append('jql', `issuekey in ("${options?.issues.join('","')}")`)
     const url = `${options.domain}/api/2/search?${query.toString()}`
@@ -51,6 +52,7 @@ export async function fetchWorklog(end?: number, start?: number): Promise<Worklo
 export async function writeWorklog({ issue, end, start }: Partial<Worklog>): Promise<Worklog> {
     const options = await DB.get('options') as Options
     const seconds = Math.round((end - start) / 1000)
+    if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/`, {
         "headers": headers(options.token),
@@ -71,6 +73,7 @@ export async function writeWorklog({ issue, end, start }: Partial<Worklog>): Pro
 export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>): Promise<Worklog> {
     const options = await DB.get('options') as Options
     const seconds = Math.round((end - start) / 1000)
+    if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}`, {
         "headers": headers(options.token),
@@ -105,6 +108,7 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>)
 
 export async function deleteWorklog({ id }: Partial<Worklog>): Promise<void> {
     const options = await DB.get('options') as Options
+    if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}`, {
         "headers": headers(options.token),

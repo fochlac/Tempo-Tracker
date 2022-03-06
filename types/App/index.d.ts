@@ -8,7 +8,6 @@ interface FetchResult<D=any> {
 interface TemporaryWorklog extends Omit<Worklog, 'id'> {
     tempId: string;
     id?: string;
-    delete?: boolean;
 }
 
 interface PersistentFetchResult<K extends CACHE> extends FetchResult<DataBase[K]['data']> {
@@ -35,6 +34,7 @@ interface Worklog {
     end: number;
     start: number;
     synced: boolean;
+    delete?: boolean;
     id: string;
 }
 

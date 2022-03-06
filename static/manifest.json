@@ -12,10 +12,7 @@
     "service_worker": "./sw.js"
   },
   "permissions": [
-    "alarms",
-    "storage",
-    "activeTab",
-    "scripting"
+    "alarms"
   ],
   "host_permissions": ["*://*/*"],
   "content_scripts": [
