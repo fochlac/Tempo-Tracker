@@ -20,7 +20,7 @@ import { WorklogHeader } from "../molecules/WorklogHeader"
 
 const Body = styled.div`
     display: flex;
-    min-height: min(600px, 90vh);
+    overflow: hidden;
     flex-direction: column;
 `
 const List = styled.ul`

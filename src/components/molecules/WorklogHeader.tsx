@@ -15,7 +15,7 @@ const ListRow = styled(WorklogAtoms.ListRow)`
     position: sticky;
     top: 0;
     background: white;
-    z-index: 100;
+    z-index: 9;
 `
 const Duration = styled(WorklogAtoms.Duration)`
     margin-right: 8px;

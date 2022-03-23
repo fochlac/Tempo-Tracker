@@ -47,6 +47,8 @@ export const template = `
         font-size: 16px;
         font-family: sans-serif;
         font-weight: 500;
+        cursor: default;
+        pointer-events: none;
     }
     .tempo_tracker-handle:active {
         cursor: grabbing;
@@ -91,8 +93,9 @@ export const template = `
         background: #ff4b2e;
         border-color: #aa1717;
     }
-    .tempo_tracker-btn {
+    button[class].tempo_tracker-btn {
         font-size: 14px;
+        line-height: 14px;
         font-family: sans-serif;
         padding: 3px 8px;
         color: #fff;
@@ -100,6 +103,10 @@ export const template = `
         border-radius: 2px;
         cursor: pointer;
         border: solid 1px;
+        -webkit-appearance: auto;
+        width: auto;
+        height: 100%;
+        margin: 0;
     }
 </style>
 <div class="tempo_tracker-box">

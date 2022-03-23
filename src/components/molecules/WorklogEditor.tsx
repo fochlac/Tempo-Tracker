@@ -16,7 +16,6 @@ const DateInput = styled(Input)`
 
 const { 
     ListRow,
-    IssueKey,
     TimeRange,
     Duration
 } = WorklogAtoms

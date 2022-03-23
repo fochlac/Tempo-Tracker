@@ -6,13 +6,19 @@ function mouseListeners(wrapper) {
     let posX
     let posY
     let dragging = false
-    wrapper.querySelector('.tempo_tracker-handle').addEventListener('mousedown', (e: MouseEvent) => {
+    const button = wrapper.querySelector('.tempo_tracker-btn')
+    const select = wrapper.querySelector('.tempo_tracker-issue')
+
+    function handeMouseDown(e: MouseEvent) {
+        if (e.target === button || e.target === select) {
+            return
+        }
         pos = wrapper.getBoundingClientRect()
         dragging = true
         posX = e.clientX
         posY = e.clientY
         
-    })
+    }
     const handleMouseUp = (e: MouseEvent) => {
         if (dragging) {
             const left = pos.left - (posX - e.clientX)
@@ -36,7 +42,9 @@ function mouseListeners(wrapper) {
 
     document.documentElement.addEventListener('mouseup', handleMouseUp)
     document.documentElement.addEventListener('mousemove', handleMouseMove)
+    wrapper.addEventListener('mousedown', handeMouseDown)
     return () => {
+        wrapper.removeEventListener('mousedown', handeMouseDown)
         document.documentElement.removeEventListener('mouseup', handleMouseUp)
         document.documentElement.removeEventListener('mousemove', handleMouseMove)
     }
