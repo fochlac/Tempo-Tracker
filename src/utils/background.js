@@ -18,3 +18,13 @@ export const triggerBackgroundAction = (action) => {
         });
     })
 }
+export function checkTabExistence(tabId) {
+    return new Promise((resolve) => {
+        controller.tabs.get(tabId, () => {
+            if (controller.runtime.lastError) {
+                return resolve(false)
+            }
+            resolve(true)
+        })
+    })
+}

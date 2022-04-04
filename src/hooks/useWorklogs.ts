@@ -1,10 +1,11 @@
 import { usePersitentFetch } from "./usePersitedFetch"
 
-import { fetchWorklog } from "../utils/jira"
-import { useMemo } from "preact/hooks"
+import { fetchAllWorklogs } from "../utils/jira"
+import { useEffect, useMemo, useState } from "preact/hooks"
 import { CACHE } from "../constants/constants"
 import { useCache } from "./useCache"
 import { useDatabase, useDatabaseUpdate } from "../utils/database"
+import { useOptions } from "./useOptions"
 
 export function useJiraWorklog() {
     const cache = useCache<'WORKLOG_CACHE'>('WORKLOG_CACHE', [])
@@ -40,12 +41,26 @@ export function useJiraWorklog() {
 }
 
 export function useFetchJiraWorklog() {
-    const worklogResult = usePersitentFetch<'WORKLOG_CACHE'>(fetchWorklog, CACHE.WORKLOG_CACHE, [])
+    let worklogResult = { loading: false }
     const {data, actions} = useJiraWorklog()
+    if (isFirefox) {
+        const options = useOptions()
+        useEffect(() => {
+            options.actions.merge({ forceFetch: true })
+                .then(() => {
+                    const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
+                    browser?.tabs?.create({ url , active: false })
+                })
+        }, [])
+    }
+    else {
+        worklogResult = usePersitentFetch<'WORKLOG_CACHE'>(fetchAllWorklogs, CACHE.WORKLOG_CACHE, [])
+    }
 
     return {
         ...worklogResult,
-        data, actions
+        data, 
+        actions
     }
 }
 

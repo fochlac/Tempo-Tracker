@@ -8,6 +8,7 @@ interface FetchResult<D=any> {
 interface TemporaryWorklog extends Omit<Worklog, 'id'> {
     tempId: string;
     id?: string;
+    syncTabId?: number;
 }
 
 interface PersistentFetchResult<K extends CACHE> extends FetchResult<DataBase[K]['data']> {
@@ -54,6 +55,8 @@ interface Options extends OverlayOptions {
     domain: string;
     user: string;
     autosync: boolean;
+    forceSync: boolean;
+    forceFetch: boolean;
     token: string;
 }
 
@@ -105,3 +108,6 @@ interface Window {
         wrapper?: HTMLDivElement;
     }
 }
+
+declare var isFirefox: boolean;
+declare var content: any;

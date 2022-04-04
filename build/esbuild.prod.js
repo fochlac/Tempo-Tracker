@@ -11,7 +11,6 @@ const defaultOptions =  {
 const jsxOptions = {
   jsxFactory: 'h',
   jsxFragment: 'Fragment',
-  inject: ['./build/helmet.js'],
   plugins: [
       alias({
           react: require.resolve('../node_modules/preact/compat'),
@@ -29,22 +28,26 @@ async function build() {
         ...defaultOptions,
         ...jsxOptions,
         entryPoints: ['./src/popup.tsx'],
+        inject: ['./build/helmet.js', './build/helmet_chrome.js'],
     })
     const build = esbuild.build({
       ...defaultOptions,
-        entryPoints: ['./src/content-script.ts', './src/sw.ts']
+        entryPoints: ['./src/content-script.ts', './src/sw.ts'],
+        inject: ['./build/helmet_chrome.js']
     })
     const build_jsx_ff = esbuild.build({
       ...defaultOptions,
       ...jsxOptions,
         entryPoints: ['./src/popup.tsx', './src/content-script.ts', './src/sw.ts'],
         outdir: 'dist_ff/',
+        inject: ['./build/helmet.js', './build/helmet_ff.js'],
         target: 'firefox90'
     })
     const build_ff = esbuild.build({
       ...defaultOptions,
         entryPoints: ['./src/content-script.ts', './src/sw.ts'],
         outdir: 'dist_ff/',
+        inject: ['./build/helmet_ff.js'],
         target: 'firefox90'
     })
 

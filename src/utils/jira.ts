@@ -1,6 +1,8 @@
 import { DB } from "./data-layer";
 import { dateString, timeStringFull } from "./datetime";
 
+const fetch = isFirefox && content?.fetch || self.fetch
+
 const headers = (token) => ({
     "accept": "application/json",
     "content-type": "application/json",
@@ -29,10 +31,10 @@ interface WorklogRemote {
     started: string;
     timeSpent: string;
 }
-export async function fetchWorklog(end?: number, start?: number): Promise<Worklog[]> {
-    const options = await DB.get('options') as Options
-    const endDate = end || Date.now()
-    const startDate = start ? start : (endDate - 1000 * 60 * 60 * 24 * 6)
+export async function fetchAllWorklogs(opts?:Options): Promise<Worklog[]> {
+    const options = opts || await DB.get('options') as Options
+    const endDate = Date.now()
+    const startDate = endDate - 1000 * 60 * 60 * 24 * 6
     const payload = {
         'from': dateString(startDate),
         'to': dateString(endDate),
@@ -49,8 +51,8 @@ export async function fetchWorklog(end?: number, start?: number): Promise<Worklo
         .then(data => data.map(toLocalWorklog))
 }
 
-export async function writeWorklog({ issue, end, start }: Partial<Worklog>): Promise<Worklog> {
-    const options = await DB.get('options') as Options
+export async function writeWorklog({ issue, end, start }: Partial<Worklog>, opts?:Options): Promise<Worklog> {
+    const options = opts || await DB.get('options') as Options
     const seconds = Math.round((end - start) / 1000)
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
@@ -70,8 +72,8 @@ export async function writeWorklog({ issue, end, start }: Partial<Worklog>): Pro
         .then(toLocalWorklog)
 }
 
-export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>): Promise<Worklog> {
-    const options = await DB.get('options') as Options
+export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>, opts?:Options): Promise<Worklog> {
+    const options = opts || await DB.get('options') as Options
     const seconds = Math.round((end - start) / 1000)
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
@@ -106,15 +108,23 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>)
         .then(toLocalWorklog)
 }
 
-export async function deleteWorklog({ id }: Partial<Worklog>): Promise<void> {
-    const options = await DB.get('options') as Options
+export async function deleteWorklog({ id }: Partial<Worklog>, opts?:Options): Promise<void> {
+    const options = opts || await DB.get('options') as Options
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}`, {
         "headers": headers(options.token),
         "method": "DELETE"
     })
-        .then(r => r.status < 300 ? Promise.resolve() : Promise.reject())
+        .then(async r => {
+            if (r.status === 404) {
+                const body = await r.json()
+                if (Array.isArray(body?.errorMessages) && body.errorMessages.includes('No worklog with this ID exists')) {
+                    return Promise.resolve()
+                }
+            }
+            return r.status < 300 ? Promise.resolve() : Promise.reject()
+        })
 }
 
 function toLocalWorklog(remoteWorklog: WorklogRemote|WorklogRemote[]): Worklog {

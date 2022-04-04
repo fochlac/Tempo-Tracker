@@ -8,12 +8,11 @@ const defaultOptions = {
     bundle: true,
     watch: true,
     sourcemap: true,
-    target: 'chrome90'
+    target: 'chrome90'    
 }
 const jsxOptions = {
     jsxFactory: 'h',
     jsxFragment: 'Fragment',
-    inject: ['./build/helmet.js'],
     plugins: [
         alias({
             react: require.resolve('../node_modules/preact/compat'),
@@ -31,10 +30,12 @@ async function build() {
     const build_jsx = esbuild.build({
         ...defaultOptions,
         ...jsxOptions,
-        entryPoints: ['./src/popup.tsx']
+        entryPoints: ['./src/popup.tsx'],
+        inject: ['./build/helmet.js', './build/helmet_chrome.js']
     })
     const build = esbuild.build({
         ...defaultOptions,
+        inject: ['./build/helmet_chrome.js'],
         entryPoints: ['./src/content-script.ts', './src/sw.ts'],
     })
     const build_jsx_ff = esbuild.build({
@@ -42,12 +43,14 @@ async function build() {
         ...jsxOptions,
         entryPoints: ['./src/popup.tsx'],
         outdir: 'dist_ff/',
+        inject: ['./build/helmet.js', './build/helmet_ff.js'],
         target: 'firefox90'
     })
     const build_ff = esbuild.build({
         ...defaultOptions,
         entryPoints: ['./src/content-script.ts', './src/sw.ts'],
         outdir: 'dist_ff/',
+        inject: ['./build/helmet_ff.js'],
         target: 'firefox90'
     })
 

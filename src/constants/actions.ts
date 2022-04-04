@@ -42,6 +42,78 @@ export const ACTIONS = {
             }
         }
     },
+    SETUP_PAGE_QUEUE: {
+        type: 'SETUP_PAGE_QUEUE',
+        create() {
+            return {type: 'SETUP_PAGE_QUEUE'}
+        },
+        response(success: boolean, queue?: TemporaryWorklog[], forceSync?: boolean, forceFetch?: boolean) {
+            return {
+                type: 'SETUP_PAGE_QUEUE',
+                payload: { success, queue, forceSync, forceFetch }
+            }
+        }
+    },
+    STORE_RECENT_WORKLOGS: {
+        type: 'STORE_RECENT_WORKLOGS',
+        create(worklogs: Worklog[]) {
+            return {
+                type: 'STORE_RECENT_WORKLOGS',
+                payload: { worklogs }
+            }
+        },
+        response(success: boolean) {
+            return {
+                type: 'STORE_RECENT_WORKLOGS',
+                payload: { success }
+            }
+        }
+    },
+    RESERVE_QUEUE_ITEM: {
+        type: 'RESERVE_QUEUE_ITEM',
+        create(log) {
+            return {
+                type: 'RESERVE_QUEUE_ITEM',
+                payload: { log }
+            }
+        },
+        response(success: boolean) {
+            return {
+                type: 'RESERVE_QUEUE_ITEM',
+                payload: { success }
+            }
+        }
+    },
+    UNRESERVE_QUEUE_ITEM: {
+        type: 'UNRESERVE_QUEUE_ITEM',
+        create(log) {
+            return {
+                type: 'UNRESERVE_QUEUE_ITEM',
+                payload: { log }
+            }
+        },
+        response(success: boolean) {
+            return {
+                type: 'UNRESERVE_QUEUE_ITEM',
+                payload: { success }
+            }
+        }
+    },
+    QUEUE_ITEM_SYNCHRONIZED: {
+        type: 'QUEUE_ITEM_SYNCHRONIZED',
+        create(log, deleted) {
+            return {
+                type: 'QUEUE_ITEM_SYNCHRONIZED',
+                payload: { log, deleted }
+            }
+        },
+        response(success: boolean) {
+            return {
+                type: 'QUEUE_ITEM_SYNCHRONIZED',
+                payload: { success }
+            }
+        }
+    },
     START_TRACKING: {
         type: 'START_TRACKING',
         create(issue: Issue) {

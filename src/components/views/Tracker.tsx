@@ -53,6 +53,7 @@ const ErrorTooltip = styled(Tooltip)`
 
 export const TrackerView: React.FC = () => {
     const worklog = useFetchJiraWorklog()
+    const options = useOptions()
     const [isSyncing, setSyncing] = useState(false)
     const [hasError, setError] = useState(false)
     const refreshQueueCache = useDatabasRefresh(DB_KEYS.UPDATE_QUEUE)
@@ -61,15 +62,22 @@ export const TrackerView: React.FC = () => {
     const hasUnsyncedLog = useMemo(() => worklog.data.some((log) => !log.synced), [worklog.data])
     const startSync = async () => {
         setSyncing(true)
-        try {
-            await triggerBackgroundAction(ACTIONS.FLUSH_UPDATES.create())
-            setError(false)
-            await refreshQueueCache()
+        if (isFirefox) {
+            await options.actions.merge({ forceSync: true })
+            const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
+            browser?.tabs?.create({ url , active: false })
         }
-        catch (err) {
-            setError(true)
+        else {
+            try {
+                await triggerBackgroundAction(ACTIONS.FLUSH_UPDATES.create())
+                setError(false)
+                await refreshQueueCache()
+            }
+            catch (err) {
+                setError(true)
+            }
+            setSyncing(false)
         }
-        setSyncing(false)
     }
 
     return (

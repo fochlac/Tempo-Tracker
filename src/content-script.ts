@@ -101,14 +101,18 @@ const startup = runOnce(async () => {
     const { tracking, options, issues }: ReturnType<typeof ACTIONS.PAGE_SETUP.response>['payload'] =
         await triggerBackgroundAction(ACTIONS.PAGE_SETUP.create())
 
-    const domain = options.domain.replace(/https?:\/\//, '').split('/')[0]
-
     window.__tempoTracker = {
         wrapper: document.createElement("div"),
         tracking, 
         options, 
         issues, 
         cleanup: {timer: null, movement: null}
+    }
+
+    const domain = options.domain.replace(/https?:\/\//, '').split('/')[0]
+    if (window.location.href.includes(domain)) {
+        checkWorklogQueue()
+        window.addEventListener('focus', () => checkWorklogQueue())
     }
 
     checkOverlayVisibility()
