@@ -90,7 +90,6 @@ interface DbHelper {
 
 type DbListener<K extends DB_KEYS> = (dataSlice: DataBase[K]) => void
 
-
 interface Window {
     webkitRequestAnimationFrame: Function;
     mozRequestAnimationFrame: Function;
@@ -98,7 +97,7 @@ interface Window {
     __tempoTracker: {
         tracking: Tracking;
         issues: Issue[];
-        options: OverlayOptions;
+        options: Options;
         cleanup?: {
             timer?: () => void;
             movement?: () => void;

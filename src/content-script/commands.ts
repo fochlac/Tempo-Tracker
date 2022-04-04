@@ -1,6 +1,5 @@
 import { ACTIONS } from "../constants/actions"
 import { triggerBackgroundAction } from "../utils/background"
-import { startTimer } from "./timer"
 import { setButtonToStart, setButtonToStop } from "./tracking"
 
 export async function stopTracking(wrapper) {

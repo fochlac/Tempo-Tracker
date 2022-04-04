@@ -23,10 +23,10 @@ function mouseListeners(wrapper) {
         if (dragging) {
             const left = pos.left - (posX - e.clientX)
             const top = pos.top - (posY - e.clientY)
-            wrapper.style.left = `max(min(calc(100% - 225px), ${left}px), 5px)`
-            wrapper.style.top = `max(min(calc(100% - 38px), ${top}px), 5px)`
-            localStorage.setItem('tempo_tracker_left', `max(min(calc(100% - 225px), ${left}px), 5px)`)
-            localStorage.setItem('tempo_tracker_top', `max(min(calc(100% - 38px), ${top}px), 5px)`)
+            wrapper.style.left = `max(min(calc(100% - 5px), ${left}px), 0px)`
+            wrapper.style.top = `max(min(calc(100% - 33px), ${top}px), 0px)`
+            localStorage.setItem('tempo_tracker_left', `max(min(calc(100% - 5px), ${left}px), 0px)`)
+            localStorage.setItem('tempo_tracker_top', `max(min(calc(100% - 33px), ${top}px), 0px)`)
             dragging = false
         }
     }
@@ -34,8 +34,8 @@ function mouseListeners(wrapper) {
         if (dragging) {
             const left = pos.left - (posX - e.clientX)
             const top = pos.top - (posY - e.clientY)
-            wrapper.style.left = `max(min(calc(100% - 225px), ${left}px), 5px)`
-            wrapper.style.top = `max(min(calc(100% - 38px), ${top}px), 5px)`
+            wrapper.style.left = `max(min(calc(100% - 5px), ${left}px), 0px)`
+            wrapper.style.top = `max(min(calc(100% - 33px), ${top}px), 0px)`
         }
     }
 

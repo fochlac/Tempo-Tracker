@@ -12,7 +12,7 @@ export function useOptions() {
             async set(newOptions) {
                 await updateOptions(newOptions)
             },
-            async merge(newOptions) {
+            async merge(newOptions: Partial<Options>) {
                 const update = {
                     ...options,
                     ...newOptions

@@ -3,6 +3,7 @@ import { useMemo, useState } from "preact/hooks"
 import styled from "styled-components"
 import { ACTIONS } from "../../constants/actions"
 import { DB_KEYS } from "../../constants/constants"
+import { useOptions } from "../../hooks/useOptions"
 import { useFetchJiraWorklog } from "../../hooks/useWorklogs"
 import { editIssueDuck } from "../../store/ducks/edit-issue"
 import { useSelector } from "../../utils/atom"
@@ -22,6 +23,7 @@ const Body = styled.div`
     display: flex;
     overflow: hidden;
     flex-direction: column;
+    height: 100%;
 `
 const List = styled.ul`
     padding: 0 8px;
@@ -73,7 +75,7 @@ export const TrackerView: React.FC = () => {
     return (
         <Body>
             <TrackingSection />
-            <H6 style={{ margin: '0 0 4px 8px', display: 'flex' }}>
+            <H6 style={{ margin: '0 0 4px 8px', display: 'flex', width: 'calc(100% - 16px)' }}>
                 <span>Tracking History</span>
                 {hasUnsyncedLog && <ActionLink style={{ marginLeft: 'auto', marginRight: 4 }} onClick={startSync}>Synchronize Now</ActionLink>}
                 {hasUnsyncedLog && hasError && (

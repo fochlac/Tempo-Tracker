@@ -1,0 +1,35 @@
+{
+    "name": "Tempo-Tracker",
+    "version": "0.1.0",
+    "manifest_version": 2,
+    "description": "Timetracker with synchronization to the Jira Tempo-Plugin.",
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "tempo-tracker@fochlac.com"
+        }
+    },
+    "background": {
+        "scripts": ["./sw.js"],
+        "persistent": true
+    },
+    "permissions": ["alarms", "<all_urls>"],
+    "content_scripts": [
+        {
+            "matches": ["*://*/*"],
+            "js": ["content-script.js"]
+        }
+    ],
+    "browser_action": {
+        "default_icon": {
+            "16": "icon16.png",
+            "48": "icon48.png",
+            "128": "icon128.png"
+        },
+        "default_popup": "popup.html"
+    }
+}

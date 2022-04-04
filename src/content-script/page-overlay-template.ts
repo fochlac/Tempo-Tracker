@@ -3,9 +3,7 @@ export const template = `
     .tempo_tracker-overlay {
         color: black;
         position: fixed;
-        top: 20px;
-        right: 20px;
-        width: 220px;
+        min-width: 220px;
         height: 33px;
         box-sizing: border-box;
         padding: 4px 4px 4px 16px;
@@ -44,11 +42,13 @@ export const template = `
     }
     .tempo_tracker-time {
         color: black;
+        cursor: default;
         font-size: 16px;
         font-family: sans-serif;
         font-weight: 500;
-        cursor: default;
+        line-height: 16px;
         pointer-events: none;
+        height: 16px;
     }
     .tempo_tracker-handle:active {
         cursor: grabbing;
@@ -88,7 +88,6 @@ export const template = `
         background: #de0c0c;
         border-color: #820707;
     }
-    
     .tempo_tracker-btn.stop:active {
         background: #ff4b2e;
         border-color: #aa1717;
@@ -100,13 +99,14 @@ export const template = `
         padding: 3px 8px;
         color: #fff;
         font-weight: 700;
-        border-radius: 2px;
+        border-radius: 3px;
         cursor: pointer;
         border: solid 1px;
         -webkit-appearance: auto;
         width: auto;
         height: 100%;
         margin: 0;
+        margin-left: 4px;
     }
 </style>
 <div class="tempo_tracker-box">

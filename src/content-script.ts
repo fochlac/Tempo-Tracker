@@ -2,11 +2,10 @@ import { ACTIONS } from "./constants/actions"
 import { setActiveIssue } from "./content-script/commands"
 import { attachPermanentListeners } from "./content-script/listeners"
 import { template } from "./content-script/page-overlay-template"
-import { startTimer } from "./content-script/timer"
+import { checkWorklogQueue } from "./content-script/synchronize"
 import { setButtonToStart, setButtonToStop } from "./content-script/tracking"
 import { triggerBackgroundAction } from "./utils/background"
-
-const controller = chrome || browser
+import { runOnce } from "./utils/function"
 
 function renderIssues(wrapper: HTMLElement, issues: Issue[], tracking: Tracking) {
     const select = wrapper.querySelector('.tempo_tracker-issue')
@@ -98,9 +97,12 @@ async function update() {
     visibilityInterval = setInterval(() => checkOverlayVisibility(), 10000)
 }
 
-async function setup() {
-    const result = await triggerBackgroundAction(ACTIONS.PAGE_SETUP.create()) as ReturnType<typeof ACTIONS.PAGE_SETUP.response>['payload']
-    const { tracking, options, issues } = result
+const startup = runOnce(async () => {
+    const { tracking, options, issues }: ReturnType<typeof ACTIONS.PAGE_SETUP.response>['payload'] =
+        await triggerBackgroundAction(ACTIONS.PAGE_SETUP.create())
+
+    const domain = options.domain.replace(/https?:\/\//, '').split('/')[0]
+
     window.__tempoTracker = {
         wrapper: document.createElement("div"),
         tracking, 
@@ -112,19 +114,7 @@ async function setup() {
     checkOverlayVisibility()
 
     window.addEventListener('focus', () => update())
-}
-
-function runOnce (fn) {
-    let hasRun = false
-    return (...args) => {
-        if (!hasRun) {
-            hasRun = true
-            fn(...args)
-        }
-    }
-}
-
-const startup = runOnce(setup)
+})
 
 document.addEventListener('DOMContentLoaded', () => startup())
 setTimeout(() => startup(), 1500)
