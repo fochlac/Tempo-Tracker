@@ -7,7 +7,7 @@ import { useOptions } from "../../hooks/useOptions"
 import { useFetchJiraWorklog } from "../../hooks/useWorklogs"
 import { editIssueDuck } from "../../store/ducks/edit-issue"
 import { useSelector } from "../../utils/atom"
-import { triggerBackgroundAction } from "../../utils/background"
+import { checkTabExistence, triggerBackgroundAction } from "../../utils/background"
 import { useDatabasRefresh } from "../../utils/database"
 import { dateHumanized } from "../../utils/datetime"
 import { ActionLink } from "../atoms/ActionLink"
@@ -65,7 +65,15 @@ export const TrackerView: React.FC = () => {
         if (isFirefox) {
             await options.actions.merge({ forceSync: true })
             const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
-            browser?.tabs?.create({ url , active: false })
+            const tab = await browser?.tabs?.create({ url , active: true })
+            const timer = setInterval(() => {
+                checkTabExistence(tab.id)
+                    .then(() => {
+                        setSyncing(false)
+                        clearInterval(timer)
+                    })
+                    .catch(() => null)
+            }, 1000)
         }
         else {
             try {
