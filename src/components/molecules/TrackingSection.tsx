@@ -9,6 +9,7 @@ import { Timer } from "../atoms/Timer"
 import { ToggleBar } from "../molecules/ToggleBar"
 import { DefaultText } from "../atoms/Typography"
 import { useTracking } from "../../hooks/useTracking"
+import { TimeInput } from "../atoms/TimeInput"
 
 const Header = styled.div`
     padding: 0 8px;
@@ -30,6 +31,8 @@ const Duration = styled(Timer)`
     margin-left: 16px;
     border-bottom: solid 1px;
     padding: 0 6px 2px 4px;
+    height: 20px;
+    margin-top: 2px;
 `
 
 export function TrackingSection() {
@@ -82,7 +85,7 @@ export function TrackingSection() {
                 {tracker.issue ? (
                     <>
                         <Input style={{marginRight: 16, marginLeft: 3}} type="date" onChange={onChangeDate} value={dateString(tracker.start)} />
-                        <Input style={{marginRight: 16}} onChange={onChangeTime} type="time" value={timeString(tracker.start)} />
+                        <TimeInput style={{marginRight: 16}} onChange={onChangeTime} value={timeString(tracker.start)} />
                         &mdash;
                         <Duration start={tracker.start} />
                         <DestructiveButton onClick={() => actions.stop()}>Stop Tracking</DestructiveButton>

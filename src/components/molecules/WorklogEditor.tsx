@@ -7,6 +7,7 @@ import { useDispatch } from "../../utils/atom"
 import { dateString, durationString, formatDuration, timeString } from "../../utils/datetime"
 import { IconButton } from "../atoms/IconButton"
 import { Input } from "../atoms/Input"
+import { TimeInput } from "../atoms/TimeInput"
 import { WorklogAtoms } from "./Worklog"
 
 const DateInput = styled(Input)`
@@ -46,7 +47,7 @@ export function WorklogEditor({ log: pureLog }) {
         if (value !== formatDuration(duration, true)) {
             setDirty(true)
             const [h, m] = value.split(':')
-            const durationMs = (h * 60 + m) * 60 * 1000
+            const durationMs = (Number(h) * 60 + Number(m)) * 60 * 1000
             setEdit({
                 ...log,
                 end: log.start + durationMs
@@ -95,12 +96,12 @@ export function WorklogEditor({ log: pureLog }) {
                 ))}
             </select>
             <TimeRange>
-                <Input onChange={onChange('start')} type="time" value={timeString(log.start)} />
+                <TimeInput onChange={onChange('start')} value={timeString(log.start)} />
                 {' - '}
-                <Input onChange={onChange('end')} type="time" value={timeString(log.end)} />
+                <TimeInput onChange={onChange('end')} value={timeString(log.end)} />
             </TimeRange>
             <Duration>
-                <Input onChange={onChangeDuration} type="time" value={durationString(log.end - log.start)} />
+                <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
             </Duration>
             <IconButton onClick={onSubmit} style={{ marginLeft: 16 }}>
                 <Check />
