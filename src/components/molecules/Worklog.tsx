@@ -8,6 +8,7 @@ import { QueueIcon } from "../atoms/QueueIcon";
 import { useState } from "preact/hooks";
 import { DeleteWorklogDialog } from "./DeleteWorklogDialog";
 import { UploadIcon } from "../atoms/UploadIcon";
+import { useOptions } from "../../hooks/useOptions";
 
 const ListRow = styled.li<{delete?: Boolean}>`
     display: flex;
@@ -74,6 +75,7 @@ const RightTooltip = styled(Tooltip)`
 `
 
 export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
+    const { data: options } = useOptions()
     const dispatch = useDispatch()
     const [startDelete, setStartDelete] = useState(false)
     const Icon = isSyncing ? UploadIcon : QueueIcon
@@ -97,7 +99,7 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
             <Duration>
                 <Time>{formatDuration(log.end - log.start, true)}</Time>
             </Duration>
-            <IconButton disabled={!log.id || disableButtons} onClick={() => dispatch('setEditIssue', { issue: log.id })} style={{ marginLeft: 16 }}>
+            <IconButton disabled={(options.autosync && !log.id) || disableButtons} onClick={() => dispatch('setEditIssue', { issue: log.id || log.tempId })} style={{ marginLeft: 16 }}>
                 <Edit3 />
             </IconButton>
             <IconButton disabled={disableButtons} onClick={() => setStartDelete(true)} style={{ marginLeft: 4 }}>

@@ -50,6 +50,14 @@ const ErrorTooltip = styled(Tooltip)`
         border-bottom: transparent solid;
     }
 `
+const ProgressWrapper = styled.div<{visible: boolean}>`
+    margin-top: -3px;
+    margin-bottom: 5px;
+    padding: 0 10px;
+    width: 100%;
+    height: 4px;
+    visibility: ${({visible}) => visible ? 'visible' : 'hidden'}
+`
 
 export const TrackerView: React.FC = () => {
     const worklog = useFetchJiraWorklog()
@@ -93,23 +101,25 @@ export const TrackerView: React.FC = () => {
             <TrackingSection />
             <H6 style={{ margin: '0 0 4px 8px', display: 'flex', width: 'calc(100% - 16px)' }}>
                 <span>Tracking History</span>
-                {hasUnsyncedLog && <ActionLink style={{ marginLeft: 'auto', marginRight: 4 }} onClick={startSync}>Synchronize Now</ActionLink>}
+                <ActionLink style={{ marginLeft: 'auto', marginRight: 4 }} onClick={() => worklog.forceFetch()}>Refresh</ActionLink>
+                {hasUnsyncedLog && <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4 }} onClick={startSync}>Synchronize Now</ActionLink>}
                 {hasUnsyncedLog && hasError && (
                     <ErrorTooltip content="Last synchronisation failed.">
                         <AlertCircle size={16} style={{ color: 'darkred', marginTop: -2 }} />
                     </ErrorTooltip>
                 )}
             </H6>
+            <ProgressWrapper visible={worklog.loading}><ProgressIndeterminate /></ProgressWrapper>
             <List>
-                {worklog.loading && <li style={{ height: 0 }}><ProgressIndeterminate /></li>}
-                {!worklog.loading && worklogs.reduce((acc, log) => {
+                {worklogs?.reduce((acc, log) => {
                     const date = dateHumanized(log.start)
                     if (acc.day.date !== date) {
                         acc.list.push(<WorklogHeader date={date} key={date} />)
                         acc.day.date = date
                     }
-                    if (editIssue?.issue === log?.id) {
-                        acc.list.push(<WorklogEditor log={log} key={log?.id} />)
+                    const id = log?.id || log?.tempId
+                    if (editIssue?.issue === id) {
+                        acc.list.push(<WorklogEditor log={log} key={id} />)
                     }
                     else {
                         acc.list.push(

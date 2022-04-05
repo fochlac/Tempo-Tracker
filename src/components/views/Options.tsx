@@ -113,14 +113,18 @@ export const OptionsView: React.FC = () => {
                     cache.resetCache();
                 }} />
             </Option>
-            <SectionHead>App Options</SectionHead>
-            <Option>
-                <Label>Automatic Synchronization</Label>
-                <FlexRow justify="flex-start">
-                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.autosync} onChange={(e) => actions.merge({ autosync: e.target.checked })} />
-                    <Label>enabled</Label>
-                </FlexRow>
-            </Option>
+            {!isFirefox && (
+                <>
+                    <SectionHead>App Options</SectionHead>
+                    <Option>
+                        <Label>Automatic Synchronization</Label>
+                        <FlexRow justify="flex-start">
+                            <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.autosync} onChange={(e) => actions.merge({ autosync: e.target.checked })} />
+                            <Label>enabled</Label>
+                        </FlexRow>
+                    </Option>
+                </>
+            )}
             <SectionHead>Browser Overlay</SectionHead>
             <Option>
                 <Label>Activate Browser Overlay</Label>

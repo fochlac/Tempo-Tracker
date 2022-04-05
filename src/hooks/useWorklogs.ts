@@ -41,17 +41,26 @@ export function useJiraWorklog() {
 }
 
 export function useFetchJiraWorklog() {
-    let worklogResult = { loading: false }
+    let worklogResult
     const {data, actions} = useJiraWorklog()
     if (isFirefox) {
         const options = useOptions()
-        useEffect(() => {
+        const fetchLogsFF = () => {
             options.actions.merge({ forceFetch: true })
                 .then(() => {
                     const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
                     browser?.tabs?.create({ url , active: false })
                 })
+        }
+
+        useEffect(() => {
+            fetchLogsFF()
         }, [])
+
+        worklogResult = { 
+            loading: false,
+            forceFetch: () => fetchLogsFF()
+        }
     }
     else {
         worklogResult = usePersitentFetch<'WORKLOG_CACHE'>(fetchAllWorklogs, CACHE.WORKLOG_CACHE, [])

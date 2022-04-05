@@ -1,9 +1,10 @@
-import { useEffect, useState } from "preact/hooks"
+import { useEffect } from "preact/hooks"
+import { useSafeState } from "./useSafeState"
 
 export function useFetchData<D> (fetchFunction: () => Promise<D>, initialData?: D):FetchResult<D> {
-    const [data, setData] = useState(initialData)
-    const [error, setError] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const [data, setData] = useSafeState(initialData)
+    const [error, setError] = useSafeState(null)
+    const [loading, setLoading] = useSafeState(true)
     
     useEffect(() => {
         let isMounted = true
