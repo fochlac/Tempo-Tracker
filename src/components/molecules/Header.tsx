@@ -20,7 +20,7 @@ const Title = styled.h1`
 export const Header:React.FC = () => {
     const view = useSelector(viewDuck.selector)
     const {data: options} = useOptions()
-    const mandatoryOptions = options.user?.length && options.token?.length && options.domain?.length && options.issues?.length
+    const mandatoryOptions = options.user?.length && options.token?.length && options.domain?.length && Object.keys(options.issues).length
     const trackerLink = <InternalLink disabled={!mandatoryOptions} to={VIEWS.TRACKER}>Back to Tracker</InternalLink>
 
     return (

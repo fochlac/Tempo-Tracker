@@ -24,7 +24,7 @@ export const App: React.FC = () => {
     const { data: options } = useOptions()
 
     useEffect(() => {
-        if (!options.user?.length || !options.token?.length || !options.domain?.length || !options.issues?.length) {
+        if (!options.user?.length || !options.token?.length || !options.domain?.length || !Object.keys(options.issues).length) {
             dispatch('setView', VIEWS.OPTIONS)
         }
     }, [])

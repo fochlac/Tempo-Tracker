@@ -1,6 +1,8 @@
 export function getOptions(options: Partial<Options>): Options {
     return {
-        issues: options.issues ?? [],
+        issues: Array.isArray(options.issues) 
+            ? options.issues.reduce((obj, i) => ({...obj, [i]: ''}), {}) 
+            : options.issues ?? {},
         domain: options.domain ?? '',
         user: options.user ?? '',
         autosync: options.autosync ?? false,

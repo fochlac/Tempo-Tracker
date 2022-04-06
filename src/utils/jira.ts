@@ -3,7 +3,7 @@ import { dateString, timeStringFull } from "./datetime";
 
 const fetch = isFirefox && content?.fetch || self.fetch
 
-const headers = (token) => ({
+export const headers = (token) => ({
     "accept": "application/json",
     "content-type": "application/json",
     'Authorization': `Bearer ${token}`
@@ -13,7 +13,7 @@ export async function fetchIssues(): Promise<Issue[]> {
     const options = await DB.get('options') as Options
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const query = new URLSearchParams()
-    query.append('jql', `issuekey in ("${options?.issues.join('","')}")`)
+    query.append('jql', `issuekey in ("${Object.keys(options.issues).join('","')}")`)
     const url = `${options.domain}/api/2/search?${query.toString()}`
     const response = await fetch(url, { headers: headers(options.token) })
     const body = await response.json()

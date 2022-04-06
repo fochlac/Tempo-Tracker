@@ -1,9 +1,11 @@
 import { HelpCircle } from "preact-feather"
-import { useState } from "preact/hooks"
+import { useEffect, useRef, useState } from "preact/hooks"
 import styled from "styled-components"
 import { CACHE } from "../../constants/constants"
 import { useCache } from "../../hooks/useCache"
 import { useOptions } from "../../hooks/useOptions"
+import { useSafeState } from "../../hooks/useSafeState"
+import { headers } from "../../utils/jira"
 import { DualRangeSlider } from "../atoms/DualRangeSlider"
 import { Input } from "../atoms/Input"
 import { FlexColumn, FlexRow } from "../atoms/Layout"
@@ -55,6 +57,41 @@ export const OptionsView: React.FC = () => {
     const { data: options, actions } = useOptions()
     const [isTokenFocused, setTokenFocused] = useState(false)
     const [token, setToken] = useState('')
+    const [valid, setValid] = useSafeState(true)
+    const { user, domain, token: storedToken } = options
+    const current = useRef(`${user}${domain}${storedToken}`)
+    
+    const checkDomainToken = (token?: string) => {
+        const testToken = token || storedToken
+        if (user.length && domain.length && testToken.length) {
+            const id = `${user}${domain}${testToken}`
+            current.current = id
+            fetch(`${domain}/api/2/user?username=${user}`, { headers: headers(testToken), credentials: 'omit' })
+                .then(async (r) => {
+                    if (current.current !== id) return 
+                    if (r.status === 200) {
+                        const res = await r.json()
+                        if (res?.name === user) {
+                            setValid(true)
+                            return 
+                        }
+                    }
+                    setValid(false)
+                })
+                .catch(() => {
+                    if (current.current !== id) return
+                    setValid(false)
+                })
+        }
+        else {
+            setValid(false)
+        }
+    }
+
+    useEffect(() => {
+        checkDomainToken()
+    }, [])
+
     const cache = useCache(CACHE.ISSUE_CACHE, [])
 
     const updateOverlayDay = (day) => (e) => {
@@ -76,14 +113,16 @@ export const OptionsView: React.FC = () => {
             await actions.merge({ token })            
         }
         setTokenFocused(false)
+        checkDomainToken(token)
     }
+    const showError = Boolean(!valid && user.length && domain.length && storedToken.length)
 
     return (
         <Body>
             <SectionHead>Jira Options</SectionHead>
             <Option>
                 <Label>Username<Mandatory>*</Mandatory></Label>
-                <Input value={options.user} onChange={(e) => actions.merge({ user: e.target.value })} />
+                <Input error={showError} onBlur={() => checkDomainToken()} value={options.user} onChange={(e) => actions.merge({ user: e.target.value })} />
             </Option>
             <Option>
                 <Label>Personal Access Token<Mandatory>*</Mandatory></Label>
@@ -91,6 +130,7 @@ export const OptionsView: React.FC = () => {
                     <HelpCircle size={14} />
                 </HelpTooltip>
                 <Input
+                    error={showError}
                     value={isTokenFocused ? token : tokenObfuscated}
                     onFocus={() => setTokenFocused(true)}
                     onBlur={tokenBlur}
@@ -101,16 +141,18 @@ export const OptionsView: React.FC = () => {
                 <HelpTooltip content="URL of your JIRA server's REST API: https://jira.domain.com/rest.">
                     <HelpCircle size={14} />
                 </HelpTooltip>
-                <Input value={options.domain} onChange={(e) => actions.merge({ domain: e.target.value })} />
+                <Input error={showError} onBlur={() => checkDomainToken()} value={options.domain} onChange={(e) => actions.merge({ domain: e.target.value })} />
             </Option>
             <Option>
                 <Label>Tracked Issues<Mandatory>*</Mandatory></Label>
                 <HelpTooltip content="Comma separated list of issues you want to track time for.">
                     <HelpCircle size={14} />
                 </HelpTooltip>
-                <Input value={options.issues.join(', ')} onBlur={(e) => {
-                    actions.merge({ issues: e.target.value.split(',').map((v) => v.trim()) })
-                    cache.resetCache();
+                <Input disabled={!valid} value={valid ? Object.keys(options.issues).join(', ') : ''} onBlur={(e) => {
+                    if (valid) {
+                        actions.merge({ issues: e.target.value.split(',').reduce((obj, v) => ({ ...obj, [v.trim()]: '' }), {}) })
+                        cache.resetCache();
+                    }
                 }} />
             </Option>
             {!isFirefox && (

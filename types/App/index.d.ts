@@ -51,7 +51,7 @@ type DB_KEYS = keyof DataBase;
 type CACHE = 'WORKLOG_CACHE' | 'ISSUE_CACHE'
 
 interface Options extends OverlayOptions {
-    issues: string[];
+    issues: Record<string, string>;
     domain: string;
     user: string;
     autosync: boolean;
