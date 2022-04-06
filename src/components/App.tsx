@@ -12,16 +12,10 @@ import { TrackerView } from "./views/Tracker"
 const Main = styled.main`
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 8px;
     padding: 8px;
     padding-bottom: 0;
     overflow: hidden;
+    ${() => `height: ${Math.floor(600 / window.devicePixelRatio)}px`};
 `
 
 export const App: React.FC = () => {

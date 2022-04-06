@@ -6,8 +6,6 @@ import { atom } from './store/atom'
 import { App } from './components/App'
 import { DBProvider } from './utils/database'
 
-
-
 render(
     <DBProvider>
         <Provider atom={atom}>
