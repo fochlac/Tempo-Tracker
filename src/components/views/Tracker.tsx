@@ -56,7 +56,7 @@ const ProgressWrapper = styled.div<{visible: boolean}>`
     padding: 0 10px;
     width: 100%;
     height: 4px;
-    visibility: ${({visible}) => visible ? 'visible' : 'hidden'}
+    visibility: ${({visible}) => visible ? 'visible' : 'hidden'};
 `
 
 export const TrackerView: React.FC = () => {

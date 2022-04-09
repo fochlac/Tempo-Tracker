@@ -22,14 +22,15 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
 })
 
 async function getSetupInfo() {
-    const [options, issueCache, tracking] = await Promise.all([
-        DB.get(DB_KEYS.OPTIONS), DB.get(DB_KEYS.ISSUE_CACHE), DB.get(DB_KEYS.TRACKING)
-    ]) as [Options, CacheObject<Issue[]>, Tracking]
+    const [rawOptions, tracking] = await Promise.all([
+        DB.get(DB_KEYS.OPTIONS), DB.get(DB_KEYS.TRACKING)
+    ]) as [Options, Tracking]
     
+    const options = getOptions(rawOptions)
     return {
         tracking,
-        options: getOptions(options),
-        issues: issueCache.data
+        options,
+        issues: Object.values(options.issues)
     }
 }
 

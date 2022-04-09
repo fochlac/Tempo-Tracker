@@ -1,20 +1,20 @@
 import styled from 'styled-components'
 
-export const IconButton = styled.button`
-    padding: 2px;
+export const IconButton = styled.button<{small?: boolean}>`
+    padding: 1px;
     border: 1px solid rgb(191, 199, 207);
     background-color: rgb(239, 239, 239);
     color: rgb(32, 38, 45);
     border-radius: 3px;
     cursor: pointer;
-    width: 24px;
-    height: 24px;
+    width: ${(props) => props.small ? '20px' : '22px'};
+    height: ${(props) => props.small ? '20px' : '22px'};
     opacity: ${(props) => props.disabled ? 0.5 : 1};
     pointer-events: ${(props) => props.disabled ? 'none' : 'all'};
 
     & > svg {
-        width: 18px;
-        height: 18px;
+        width: ${(props) => props.small ? '16px' : '18px'};
+        height: ${(props) => props.small ? '16px' : '18px'};
     }
 
     &:hover {

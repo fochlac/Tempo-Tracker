@@ -7,11 +7,9 @@ export const DB_KEYS: Record<string, DB_KEYS> = {
     OPTIONS: 'options',
     TRACKING: 'tracking',
     UPDATE_QUEUE: 'updates',
-    WORKLOG_CACHE: 'WORKLOG_CACHE',
-    ISSUE_CACHE: 'ISSUE_CACHE'
+    WORKLOG_CACHE: 'WORKLOG_CACHE'
 }
 
 export const CACHE: Record<string, CACHE> =  {
-    WORKLOG_CACHE: 'WORKLOG_CACHE',
-    ISSUE_CACHE: 'ISSUE_CACHE'
+    WORKLOG_CACHE: 'WORKLOG_CACHE'
 }

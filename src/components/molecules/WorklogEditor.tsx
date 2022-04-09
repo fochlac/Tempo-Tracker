@@ -2,6 +2,7 @@ import { Check, X } from "preact-feather"
 import { useState } from "preact/hooks"
 import styled from "styled-components"
 import { useCache } from "../../hooks/useCache"
+import { useOptions } from "../../hooks/useOptions"
 import { useJiraWorklog } from "../../hooks/useWorklogs"
 import { useDispatch } from "../../utils/atom"
 import { dateString, durationString, formatDuration, timeString } from "../../utils/datetime"
@@ -12,7 +13,7 @@ import { WorklogAtoms } from "./Worklog"
 
 const DateInput = styled(Input)`
     flex-shrink: 0;
-    width: 125px;
+    width: 100px;
 `
 
 const { 
@@ -22,8 +23,8 @@ const {
 } = WorklogAtoms
 
 export function WorklogEditor({ log: pureLog }) {
+    const { data: options } = useOptions()
     const [log, setEdit] = useState({...pureLog, synced: false})
-    const issueCache = useCache<'ISSUE_CACHE'>('ISSUE_CACHE', [])
     const [isDirty, setDirty] = useState(false)
     const dispatch = useDispatch()
     const {actions} = useJiraWorklog()
@@ -79,7 +80,7 @@ export function WorklogEditor({ log: pureLog }) {
         dispatch('resetEditIssue')
     }
 
-    const issues = issueCache?.cache?.data
+    const issues = Object.values(options.issues)
 
     return (
         <ListRow>

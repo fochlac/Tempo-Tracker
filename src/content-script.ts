@@ -7,12 +7,12 @@ import { setButtonToStart, setButtonToStop } from "./content-script/tracking"
 import { triggerBackgroundAction } from "./utils/background"
 import { runOnce } from "./utils/function"
 
-function renderIssues(wrapper: HTMLElement, issues: Issue[], tracking: Tracking) {
+function renderIssues(wrapper: HTMLElement, issues: LocalIssue[], tracking: Tracking) {
     const select = wrapper.querySelector('.tempo_tracker-issue')
     select.innerHTML = issues
         ?.sort((a, b) => (a?.key || '').localeCompare(b?.key || ''))    
         .map((issue) => 
-            `<option ${tracking?.issue?.id === issue.id ? 'selected' : ''} value=${issue.id}>${issue.key}</option>`
+            `<option ${tracking?.issue?.id === issue.id ? 'selected' : ''} value=${issue.id}>${issue.alias || issue.key}</option>`
         )
         .join('\n')
 }

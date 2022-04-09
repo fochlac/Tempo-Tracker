@@ -11,6 +11,7 @@ import { Input } from "../atoms/Input"
 import { FlexColumn, FlexRow } from "../atoms/Layout"
 import { Tooltip } from "../atoms/Tooltip"
 import { H6, Label } from "../atoms/Typography"
+import { IssueInput } from "../molecules/IssueInput"
 
 const Body = styled.div`
     display: flex;
@@ -145,15 +146,10 @@ export const OptionsView: React.FC = () => {
             </Option>
             <Option>
                 <Label>Tracked Issues<Mandatory>*</Mandatory></Label>
-                <HelpTooltip content="Comma separated list of issues you want to track time for.">
+                <HelpTooltip content="Please select all issues you want to track time for.">
                     <HelpCircle size={14} />
                 </HelpTooltip>
-                <Input disabled={!valid} value={valid ? Object.keys(options.issues).join(', ') : ''} onBlur={(e) => {
-                    if (valid) {
-                        actions.merge({ issues: e.target.value.split(',').reduce((obj, v) => ({ ...obj, [v.trim()]: '' }), {}) })
-                        cache.resetCache();
-                    }
-                }} />
+                <IssueInput />
             </Option>
             {!isFirefox && (
                 <>

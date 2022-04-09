@@ -48,10 +48,14 @@ type VIEWS = 'tracker' | 'options'
 
 type DB_KEYS = keyof DataBase;
 
-type CACHE = 'WORKLOG_CACHE' | 'ISSUE_CACHE'
+type CACHE = 'WORKLOG_CACHE'
+
+interface LocalIssue extends Issue {
+    alias: string;
+}
 
 interface Options extends OverlayOptions {
-    issues: Record<string, string>;
+    issues: Record<string, LocalIssue>;
     domain: string;
     user: string;
     autosync: boolean;
@@ -67,7 +71,6 @@ interface OverlayOptions {
 }
 
 interface DataBase {
-    ISSUE_CACHE: CacheObject<Issue[]>;
     WORKLOG_CACHE: CacheObject<Worklog[]>;
     tracking: Tracking;
     updates: TemporaryWorklog[];
@@ -99,7 +102,7 @@ interface Window {
     mozCancelAnimationFrame: Function;
     __tempoTracker: {
         tracking: Tracking;
-        issues: Issue[];
+        issues: LocalIssue[];
         options: Options;
         cleanup?: {
             timer?: () => void;

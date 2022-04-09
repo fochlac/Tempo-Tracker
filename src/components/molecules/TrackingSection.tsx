@@ -1,15 +1,14 @@
 import { useMemo } from "preact/hooks"
-import { useFetchJiraIssues } from "../../hooks/useIssues"
 import { dateString, timeString } from "../../utils/datetime"
 import { DestructiveButton } from "../atoms/Button"
 import styled from "styled-components"
 import { Input } from "../atoms/Input"
-import { ProgressIndeterminate } from "../atoms/Progress"
 import { Timer } from "../atoms/Timer"
 import { ToggleBar } from "../molecules/ToggleBar"
 import { DefaultText } from "../atoms/Typography"
 import { useTracking } from "../../hooks/useTracking"
 import { TimeInput } from "../atoms/TimeInput"
+import { useOptions } from "../../hooks/useOptions"
 
 const Header = styled.div`
     padding: 0 8px;
@@ -37,15 +36,16 @@ const Duration = styled(Timer)`
 
 export function TrackingSection() {
     const { data: tracker, actions } = useTracking()
-    const issues = useFetchJiraIssues()
-    const options = useMemo(
-        () => issues.data?.map((issue) => ({ value: issue.id, name: `${issue.key}: ${issue.name}` })),
-        [issues.data]
+    const { data: options } = useOptions()
+    
+    const optionList = useMemo(
+        () => Object.values(options.issues).map((issue) => ({ value: issue.id, name: issue.alias })),
+        [options.issues]
     )
-    const issueMap = useMemo(() => issues.data?.reduce((issueMap, issue) => {
+    const issueMap = useMemo(() => Object.values(options.issues).reduce((issueMap, issue) => {
         issueMap[issue.id] = issue
         return issueMap
-    }, {}), [issues.data])
+    }, {}), [options.issues])
     const onChangeDate = (e) => {
         const { value } = e.target
         if (value !== dateString(tracker.start)) {
@@ -79,8 +79,7 @@ export function TrackingSection() {
 
     return (
         <Header>
-            {issues.loading && <ProgressIndeterminate />}
-            <ToggleBar options={options.concat()} onChange={(issueId) => actions.swap(issueMap[issueId])} value={tracker.issue?.id || null} />
+            <ToggleBar options={optionList.concat()} onChange={(issueId) => actions.swap(issueMap[issueId])} value={tracker.issue?.id || null} />
             <Tracker>
                 {tracker.issue ? (
                     <>

@@ -11,13 +11,34 @@ export const headers = (token) => ({
 
 export async function fetchIssues(): Promise<Issue[]> {
     const options = await DB.get('options') as Options
+    return fetchIssueList(Object.keys(options.issues))
+}
+
+export async function fetchIssueList(issues): Promise<Issue[]> {
+    const options = await DB.get('options') as Options
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const query = new URLSearchParams()
-    query.append('jql', `issuekey in ("${Object.keys(options.issues).join('","')}")`)
+    query.append('jql', `issuekey in ("${issues.join('","')}")`)
     const url = `${options.domain}/api/2/search?${query.toString()}`
     const response = await fetch(url, { headers: headers(options.token) })
     const body = await response.json()
     return body.issues.map(({ id, fields, key }) => ({ id, name: fields.summary, key }))
+}
+
+export async function searchIssues(searchString) : Promise<Issue[]> {
+    const options = await DB.get('options') as Options
+    if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
+    const query = new URLSearchParams()
+    query.append('q', searchString)
+    const url = `${options.domain}/quicksearch/1.0/productsearch/search?${query.toString()}`
+    const response = await fetch(url, { headers: headers(options.token) })
+    const body = await response.json()
+    const issues = body.find((result) => result.id === "quick-search-issues")
+    if (!issues || !issues.items.length) {
+        return []
+    }
+    const issueKeys = issues.items.map((item) => item.subtitle)
+    return fetchIssueList(issueKeys.reverse())
 }
 
 interface WorklogRemote {

@@ -25,12 +25,15 @@ const ListRow = styled.li<{delete?: Boolean}>`
         }
     ` : ''}
 `
-const IssueKey = styled.span`
-    width: 60px;
+const IssueKey = styled.div`
+    width: 100px;
     margin: 2px 8px 0;
+    cursor: default;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `
 const Datum = styled.span`
-    width: 125px;
+    width: 100px;
     color: darkgrey;
     flex-shrink: 0;
     margin-top: 2px;
@@ -83,6 +86,7 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
     if (!log?.issue) {
         return null
     }
+    const alias = options.issues[log.issue.key]?.alias || log.issue.key
 
     return (
         <ListRow delete={log.delete && !log.synced}>
@@ -90,7 +94,9 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
                 {dateHumanized(log.start)}
                 {!log.synced && <RightTooltip content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></RightTooltip>}
             </Datum>
-            <IssueKey><RightTooltip content={log.issue.name}>{log.issue.key}</RightTooltip></IssueKey>
+            <Tooltip content={`${log.issue.key}: ${log.issue.name}`}>
+                <IssueKey>{alias}</IssueKey>
+            </Tooltip>
             <TimeRange>
                 <Time>{timeString(log.start)}</Time>
                 {' - '}
