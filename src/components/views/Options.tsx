@@ -10,7 +10,7 @@ import { DualRangeSlider } from "../atoms/DualRangeSlider"
 import { Input } from "../atoms/Input"
 import { FlexColumn, FlexRow } from "../atoms/Layout"
 import { Tooltip } from "../atoms/Tooltip"
-import { H6, Label } from "../atoms/Typography"
+import { DefaultText, H6, Label } from "../atoms/Typography"
 import { IssueInput } from "../molecules/IssueInput"
 
 const Body = styled.div`
@@ -52,6 +52,11 @@ const SectionHead = styled(H6)`
     top: 0;
     position: sticky;
     z-index: 1;
+`
+const ErrorText = styled(DefaultText)`
+    color: rgb(224, 4, 4);
+    padding: 2px 16px;
+    text-align: justify;
 `
 
 export const OptionsView: React.FC = () => {
@@ -121,6 +126,9 @@ export const OptionsView: React.FC = () => {
     return (
         <Body>
             <SectionHead>Jira Options</SectionHead>
+            {showError && <ErrorText>
+                Error connecting to the JIRA API: please check your Username, Personal Access Token and the Server URL.
+            </ErrorText>}
             <Option>
                 <Label>Username<Mandatory>*</Mandatory></Label>
                 <Input error={showError} onBlur={() => checkDomainToken()} value={options.user} onChange={(e) => actions.merge({ user: e.target.value })} />
@@ -146,10 +154,10 @@ export const OptionsView: React.FC = () => {
             </Option>
             <Option>
                 <Label>Tracked Issues<Mandatory>*</Mandatory></Label>
-                <HelpTooltip content="Please select all issues you want to track time for.">
+                <HelpTooltip content="Please add all issues you want to use for time tracking.">
                     <HelpCircle size={14} />
                 </HelpTooltip>
-                <IssueInput />
+                <IssueInput disabled={!valid} />
             </Option>
             {!isFirefox && (
                 <>

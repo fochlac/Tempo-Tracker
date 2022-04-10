@@ -6,7 +6,7 @@ export const Input = styled.input<{error?: boolean}>`
     padding: 0 2px;
     border: none;
     border-bottom: solid 1px;
-    ${({error}) => error ? 'border-color: darkred;' : ''}
-    ${({error}) => error ? 'color: darkred;' : ''}
+    ${({error}) => error ? 'border-color: #e00404;' : ''}
+    ${({error}) => error ? 'color: #e00404;' : ''}
     outline: none;
 `

@@ -39,7 +39,7 @@ export function TrackingSection() {
     const { data: options } = useOptions()
     
     const optionList = useMemo(
-        () => Object.values(options.issues).map((issue) => ({ value: issue.id, name: issue.alias })),
+        () => Object.values(options.issues).map((issue) => ({ value: issue.id, name: issue.alias || `${issue.key}: ${issue.name}` })),
         [options.issues]
     )
     const issueMap = useMemo(() => Object.values(options.issues).reduce((issueMap, issue) => {

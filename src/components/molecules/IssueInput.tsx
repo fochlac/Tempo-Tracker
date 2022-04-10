@@ -11,6 +11,7 @@ import { searchIssues } from "../../utils/jira";
 import { FlexRow } from "../atoms/Layout";
 import { Button, DestructiveButton } from "../atoms/Button";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { Tooltip } from "../atoms/Tooltip";
 
 const InputList = styled.ul`
     width: 100%;
@@ -26,6 +27,9 @@ const Wrapper = styled.div`
 `
 const IssueKey = styled.span`
     margin-right: 8px;
+    min-width: 50px;
+    display: block;
+    margin-top: 2px;
 `
 const IssueRow = styled.li`
     width: 100%;
@@ -82,7 +86,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
 
     useEffect(() => {
         currentSearch.current = search
-        if (search.length && search.includes('-')) {
+        if (search.length && search.includes('-') || search.length > 5) {
             setResult({isLoading: true})
             searchIssues(search)
                 .then((issues) => {
@@ -132,7 +136,9 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                 const issue = options.issues[issueKey]
                 return (
                     <IssueRow>
-                        <IssueKey>{issueKey}:</IssueKey>
+                        <Tooltip content={`${issue.key}: ${issue.name}`}>
+                            <IssueKey>{issueKey}:</IssueKey>
+                        </Tooltip>
                         <Input 
                             style={{ flexGrow: 1, marginRight: 8 }} 
                             value={issue?.id ? issue.alias: 'Issue broken, please re-add via "Add Issue" button.'} 
@@ -166,7 +172,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                     </div>
                 </FlexRow>
                 <SearchFieldWrapper>
-                    <Label>Issue Key</Label>
+                    <Label>Issue Key / Search Term</Label>
                     <Input ref={searchInput} style={{ width: '100%' }} value={search} onChange={(e) => setSearch(e.target.value || '')} />
                     {result?.isLoading && <ProgressIndeterminate />}
                 </SearchFieldWrapper>
