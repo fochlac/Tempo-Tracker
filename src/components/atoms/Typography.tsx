@@ -31,7 +31,7 @@ export const Label = styled.legend`
     height: 11px;
     font-size: 0.75em;
     max-width: 100%;
-    color: #555;
+    color: rgba(0, 0, 0, 0.87);
     margin-bottom: 2px;
 `
 

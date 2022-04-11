@@ -21,7 +21,7 @@ const Bar = styled.div`
     align-items: center
     flex-direction: row;
     width: 100%;
-    min-height: 37px;
+    min-height: 32px;
 `
 
 const ToggleButton = styled(Button) <{ first?: boolean; last?: boolean; selected?: boolean; firstRow: boolean; lastRow: boolean }>`

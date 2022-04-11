@@ -58,29 +58,38 @@ const ErrorText = styled(DefaultText)`
     padding: 2px 16px;
     text-align: justify;
 `
+const InfoText = styled(DefaultText)`
+    padding: 2px 0px;
+    text-align: justify;
+    letter-spacing: -0.1px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-family: sans-serif;
+`
 
 export const OptionsView: React.FC = () => {
     const { data: options, actions } = useOptions()
     const [isTokenFocused, setTokenFocused] = useState(false)
     const [token, setToken] = useState('')
     const [valid, setValid] = useSafeState(true)
+    const [name, setName] = useSafeState(null)
     const { user, domain, token: storedToken } = options
-    const current = useRef(`${user}${domain}${storedToken}`)
-    
+    const current = useRef(`${domain}${storedToken}`)
     const checkDomainToken = (token?: string) => {
         const testToken = token || storedToken
-        if (user.length && domain.length && testToken.length) {
-            const id = `${user}${domain}${testToken}`
+        if (domain.length && testToken.length) {
+            const id = `${domain}${testToken}`
             current.current = id
-            fetch(`${domain}/api/2/user?username=${user}`, { headers: headers(testToken), credentials: 'omit' })
+            fetch(`${domain}/api/2/myself`, { headers: headers(testToken), credentials: 'omit' })
                 .then(async (r) => {
-                    if (current.current !== id) return 
-                    if (r.status === 200) {
-                        const res = await r.json()
-                        if (res?.name === user) {
-                            setValid(true)
-                            return 
+                    const res = await r.json()
+                    if (current.current === id && r.status === 200 && res?.key) {
+                        setValid(true)
+                        setName(res.displayName)
+                        if (options.user !== res.key) {
+                            actions.merge({ user: res.key })
                         }
+                        return 
                     }
                     setValid(false)
                 })
@@ -97,8 +106,6 @@ export const OptionsView: React.FC = () => {
     useEffect(() => {
         checkDomainToken()
     }, [])
-
-    const cache = useCache(CACHE.ISSUE_CACHE, [])
 
     const updateOverlayDay = (day) => (e) => {
         if (e.target.checked) {
@@ -121,42 +128,42 @@ export const OptionsView: React.FC = () => {
         setTokenFocused(false)
         checkDomainToken(token)
     }
-    const showError = Boolean(!valid && user.length && domain.length && storedToken.length)
+    const validDomain = /^https?:\/\/[^/]+(\/[^/]+)*\/rest/.test(domain)
+    const showError = Boolean(!valid && user.length && validDomain && storedToken.length)
 
     return (
         <Body>
             <SectionHead>Jira Options</SectionHead>
             {showError && <ErrorText>
-                Error connecting to the JIRA API: please check your Username, Personal Access Token and the Server URL.
+                Error connecting to the JIRA API: please check your Personal Access Token and the Server URL.
             </ErrorText>}
             <Option>
-                <Label>Username<Mandatory>*</Mandatory></Label>
-                <Input error={showError} onBlur={() => checkDomainToken()} value={options.user} onChange={(e) => actions.merge({ user: e.target.value })} />
+                <Label>Server URL<Mandatory>*</Mandatory></Label>
+                <InfoText>URL of your JIRA server's REST API: https://jira.domain.com/rest.</InfoText>
+                <Input error={showError || !validDomain} onBlur={() => checkDomainToken()} value={options.domain} onChange={(e) => actions.merge({ domain: e.target.value })} />
             </Option>
             <Option>
                 <Label>Personal Access Token<Mandatory>*</Mandatory></Label>
-                <HelpTooltip content="A Personal Access Token can be created via your JIRA Profile.">
-                    <HelpCircle size={14} />
-                </HelpTooltip>
+                <InfoText>A Personal Access Token can be generated via your JIRA Profile.</InfoText>
                 <Input
                     error={showError}
                     value={isTokenFocused ? token : tokenObfuscated}
                     onFocus={() => setTokenFocused(true)}
                     onBlur={tokenBlur}
                     onChange={(e) => setToken(e.target.value)} />
+                {Boolean(validDomain && !options.token?.length) && (
+                    <a href={`${options.domain.match(/^https?\:\/\/[^/]+/)?.[0]}/secure/ViewProfile.jspa?selectedTab=com.atlassian.pats.pats-plugin:jira-user-personal-access-tokens`}>
+                        Generate a token
+                    </a>
+                )}
             </Option>
             <Option>
-                <Label>Server URL<Mandatory>*</Mandatory></Label>
-                <HelpTooltip content="URL of your JIRA server's REST API: https://jira.domain.com/rest.">
-                    <HelpCircle size={14} />
-                </HelpTooltip>
-                <Input error={showError} onBlur={() => checkDomainToken()} value={options.domain} onChange={(e) => actions.merge({ domain: e.target.value })} />
+                <Label>User</Label>
+                <Input readOnly value={name ? `${name} (${options.user})` : options.user} />
             </Option>
             <Option>
                 <Label>Tracked Issues<Mandatory>*</Mandatory></Label>
-                <HelpTooltip content="Please add all issues you want to use for time tracking.">
-                    <HelpCircle size={14} />
-                </HelpTooltip>
+                <InfoText>Please add all issues you want to use for time tracking. You can set an alias for each issue.</InfoText>
                 <IssueInput disabled={!valid} />
             </Option>
             {!isFirefox && (

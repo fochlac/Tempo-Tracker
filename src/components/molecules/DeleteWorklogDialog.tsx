@@ -1,3 +1,4 @@
+import { useOptions } from "../../hooks/useOptions";
 import { timeString } from "../../utils/datetime"
 import { DestructiveButton } from "../atoms/Button";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -9,8 +10,9 @@ interface DeleteWorklogProps {
     log: Worklog
 }
 export const DeleteWorklogDialog: React.FC<DeleteWorklogProps> = ({ open, onDelete, onClose, log }) => {
+    const { data: options } = useOptions()
     const text = `Do you really want to ${!!log.id && !log.synced ? 'cancel the update for' : 'delete'} the worklog` +
-        ` from ${timeString(log.start)} till ${timeString(log.end)} for Ticket "${log.issue.name}".`
+        ` from ${timeString(log.start)} till ${timeString(log.end)} for Ticket "${options.issues[log.issue.key]?.alias || log.issue.name}".`
     const buttons = !!log.id && !log.synced ? (
         <DestructiveButton onClick={() => { onClose(); onDelete(true) }}>
             {!log.delete ? 'Undo Edit' : 'Undo Delete'}

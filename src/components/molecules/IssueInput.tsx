@@ -16,7 +16,6 @@ import { Tooltip } from "../atoms/Tooltip";
 const InputList = styled.ul`
     width: 100%;
     padding: 0 0 0 4px;
-    overflow: auto;
     margin: 0;
     list-style: none;
 `
@@ -34,7 +33,7 @@ const IssueKey = styled.span`
 const IssueRow = styled.li`
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 8px;
 `
@@ -45,6 +44,7 @@ const SearchFieldWrapper = styled.div`
 const SearchResultList = styled.ul`
     width: 100%;
     padding: 0 16px;
+    overflow: auto;
     margin: 0;
     list-style: none;
 `
@@ -134,7 +134,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
             {Object.keys(options.issues).map((issueKey) => {
                 const issue = options.issues[issueKey]
                 return (
-                    <IssueRow>
+                    <IssueRow key={issue.key}>
                         <Tooltip content={`${issue.key}: ${issue.name}`}>
                             <IssueKey>{issueKey}:</IssueKey>
                         </Tooltip>
@@ -147,7 +147,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                 )
             })}
             {!Object.keys(options.issues).length && (
-                <IssueRow>No issue tracked.</IssueRow>
+                <IssueRow style={{ justifyContent: 'center' }}>No tracked issues.</IssueRow>
             )}
         </InputList>
         <Button style={{ marginTop: 8 }} onClick={() => setOpen(true)} disabled={disabled}>
@@ -156,7 +156,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
         <ConfirmDialog
             open={!!delIssue}
             onClose={() => setDelIssue(null)}
-            text={`Are you sure you want to remove the issue "${delIssue?.key} - ${delIssue?.alias}" from your tracking list?`}
+            text={`Are you sure you want to remove the issue "${delIssue?.alias}" (${delIssue?.key}) from your tracking list?`}
             title="Confirm Removal"
             buttons={
                 <DestructiveButton onClick={deleteIssue}>Delete</DestructiveButton>

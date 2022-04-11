@@ -21,7 +21,6 @@ async function getDb () {
 }
 
 interface CallbackRef{
-    ISSUE_CACHE: Record<string, DbListener<'ISSUE_CACHE'>>;
     WORKLOG_CACHE: Record<string, DbListener<'WORKLOG_CACHE'>>;
     tracking: Record<string, DbListener<'tracking'>>;
     updates: Record<string, DbListener<'updates'>>;
@@ -60,6 +59,7 @@ export function DBProvider({ children }) {
         getDb: () => currentDb.current,
         registerCallback: (key: DB_KEYS, cb:DbListener<DB_KEYS>): string =>  {
             const id = v4()
+            callbacks.current[key] = callbacks.current[key] || {} as any
             callbacks.current[key][id] = cb
             return id           
         },

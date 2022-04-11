@@ -92,7 +92,7 @@ export function WorklogEditor({ log: pureLog }) {
             }}>
                 {issues?.map((issue) => (
                     <option value={issue.key} key={issue.key} selected={log.issue.key === issue.key}>
-                        {issue.key}
+                        {issue.alias || `${issue.key}: ${issue.name}`}
                     </option>
                 ))}
             </select>
