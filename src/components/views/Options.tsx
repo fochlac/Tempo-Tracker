@@ -1,15 +1,12 @@
-import { HelpCircle } from "preact-feather"
 import { useEffect, useRef, useState } from "preact/hooks"
 import styled from "styled-components"
-import { CACHE } from "../../constants/constants"
-import { useCache } from "../../hooks/useCache"
 import { useOptions } from "../../hooks/useOptions"
 import { useSafeState } from "../../hooks/useSafeState"
-import { headers } from "../../utils/jira"
+import { fetchSelf, headers } from "../../utils/jira"
 import { DualRangeSlider } from "../atoms/DualRangeSlider"
 import { Input } from "../atoms/Input"
 import { FlexColumn, FlexRow } from "../atoms/Layout"
-import { Tooltip } from "../atoms/Tooltip"
+import { Tooltip, ErrorTooltip } from "../atoms/Tooltip"
 import { DefaultText, H6, Label } from "../atoms/Typography"
 import { IssueInput } from "../molecules/IssueInput"
 
@@ -55,8 +52,9 @@ const SectionHead = styled(H6)`
 `
 const ErrorText = styled(DefaultText)`
     color: rgb(224, 4, 4);
-    padding: 2px 16px;
+    padding: 0 16px;
     text-align: justify;
+    letter-spacing: -0.1px;
 `
 const InfoText = styled(DefaultText)`
     padding: 2px 0px;
@@ -65,6 +63,11 @@ const InfoText = styled(DefaultText)`
     margin-bottom: 4px;
     font-size: 12px;
     font-family: sans-serif;
+`
+const JiraHead = styled(SectionHead)`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
 `
 
 export const OptionsView: React.FC = () => {
@@ -75,28 +78,27 @@ export const OptionsView: React.FC = () => {
     const [name, setName] = useSafeState(null)
     const { user, domain, token: storedToken } = options
     const current = useRef(`${domain}${storedToken}`)
-    const checkDomainToken = (token?: string) => {
+    const checkDomainToken = async (token?: string) => {
         const testToken = token || storedToken
         if (domain.length && testToken.length) {
             const id = `${domain}${testToken}`
             current.current = id
-            fetch(`${domain}/api/2/myself`, { headers: headers(testToken), credentials: 'omit' })
-                .then(async (r) => {
-                    const res = await r.json()
-                    if (current.current === id && r.status === 200 && res?.key) {
-                        setValid(true)
-                        setName(res.displayName)
-                        if (options.user !== res.key) {
-                            actions.merge({ user: res.key })
-                        }
-                        return 
+            try {
+                const res = await fetchSelf({ token: testToken, domain })
+                if (current.current === id && res?.key) {
+                    setValid(true)
+                    setName(res.displayName)
+                    if (options.user !== res.key) {
+                        actions.merge({ user: res.key })
                     }
-                    setValid(false)
-                })
-                .catch(() => {
-                    if (current.current !== id) return
-                    setValid(false)
-                })
+                    return
+                }
+                setValid(false)
+            }
+            catch (e) {
+                if (current.current !== id) return
+                setValid(false)
+            }
         }
         else {
             setValid(false)
@@ -123,34 +125,50 @@ export const OptionsView: React.FC = () => {
 
     const tokenBlur = async () => {
         if (token?.length && token !== options.token) {
-            await actions.merge({ token })            
+            await actions.merge({ token })
         }
         setTokenFocused(false)
         checkDomainToken(token)
     }
     const validDomain = /^https?:\/\/[^/]+(\/[^/]+)*\/rest/.test(domain)
-    const showError = Boolean(!valid && user.length && validDomain && storedToken.length)
+    const showError = Boolean(valid === false && user.length && domain.length && storedToken.length)
 
     return (
         <Body>
-            <SectionHead>Jira Options</SectionHead>
-            {showError && <ErrorText>
-                Error connecting to the JIRA API: please check your Personal Access Token and the Server URL.
-            </ErrorText>}
+            <JiraHead>
+                <span>Jira Options</span>
+                {showError && (
+                    <ErrorTooltip content="Please check your server url and the personal access token.">
+                        <ErrorText>Error connecting to the Jira-API!</ErrorText>
+                    </ErrorTooltip>
+                )}
+            </JiraHead>
             <Option>
-                <Label>Server URL<Mandatory>*</Mandatory></Label>
-                <InfoText>URL of your JIRA server's REST API: https://jira.domain.com/rest.</InfoText>
-                <Input error={showError || !validDomain} onBlur={() => checkDomainToken()} value={options.domain} onChange={(e) => actions.merge({ domain: e.target.value })} />
+                <Label>Server Url<Mandatory>*</Mandatory></Label>
+                <InfoText>Url of your Jira server's REST-API: https://jira.domain.com/rest.</InfoText>
+                <Input
+                    error={showError || !validDomain}
+                    onBlur={() => checkDomainToken()} value={options.domain}
+                    onChange={(e) => {
+                        actions.merge({ domain: e.target.value })
+                        setValid(null)
+                    }} />
+                {!validDomain && <InfoText style={{ height: 0, margin: 0, padding: 0, color: 'rgb(224, 4, 4)', textAlign: 'right' }}>
+                    The url is not matching the expected pattern.
+                </InfoText>}
             </Option>
             <Option>
                 <Label>Personal Access Token<Mandatory>*</Mandatory></Label>
-                <InfoText>A Personal Access Token can be generated via your JIRA Profile.</InfoText>
+                <InfoText>A personal access token can be generated via your Jira profile.</InfoText>
                 <Input
                     error={showError}
                     value={isTokenFocused ? token : tokenObfuscated}
                     onFocus={() => setTokenFocused(true)}
                     onBlur={tokenBlur}
-                    onChange={(e) => setToken(e.target.value)} />
+                    onChange={(e) => {
+                        setValid(null)
+                        setToken(e.target.value)
+                    }} />
                 {Boolean(validDomain && !options.token?.length) && (
                     <a href={`${options.domain.match(/^https?\:\/\/[^/]+/)?.[0]}/secure/ViewProfile.jspa?selectedTab=com.atlassian.pats.pats-plugin:jira-user-personal-access-tokens`}>
                         Generate a token

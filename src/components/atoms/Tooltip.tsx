@@ -6,7 +6,7 @@ const Wrapper = styled.div`
     &:before {
         content: attr(data-content);
         position: absolute;
-        top: calc(100% + 5px);
+        top: calc(100% + 6px);
         max-width: min(150%, 100vw);
         min-width: max(50%, 100px);
         white-space: normal;
@@ -30,7 +30,7 @@ const Wrapper = styled.div`
         display: none;
         content: '';
         position: absolute;
-        top: calc(100% - 1px);
+        top: calc(100% + 1px);
         left: calc(50% - 4px);
         width: 0; 
         height: 0; 
@@ -57,3 +57,35 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, clas
         {children}
     </Wrapper>
 }
+
+
+export const ErrorTooltip = styled(Tooltip)`
+    &:before {
+        color: darkred;
+        background: lightpink;
+        border-color: darkred;
+    }
+    &:after {
+        border-bottom: 6px solid darkred;
+        z-index: 1000
+    }
+`
+export const ErrorTooltipTop = styled(Tooltip)`
+    &:before {
+        left: -93px;
+        bottom: calc(100% + 7px);
+        top: unset;
+        color: darkred;
+        background: lightpink;
+        border-color: darkred;
+    }
+
+    &:after {
+        top: unset;
+        bottom: calc(100%);
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 6px solid darkred;
+        border-bottom: transparent solid;
+    }
+`

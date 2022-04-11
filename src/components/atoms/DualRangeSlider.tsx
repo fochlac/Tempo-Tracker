@@ -11,7 +11,12 @@ const RangeInput = styled.input`
     background: none;
     pointer-events: none;
 
-    &::-moz-range-track,
+    &::-moz-range-track {
+        width: 200px;
+        height: 1px;
+        background: #003D7C;
+        pointer-events: none;
+    }
     &::-webkit-slider-runnable-track {
         width: 200px;
         height: 1px;
@@ -19,12 +24,24 @@ const RangeInput = styled.input`
         pointer-events: none;
     }
 
-    &:nth-child(2)::-webkit-slider-runnable-track,
+    &:nth-child(2)::-webkit-slider-runnable-track {
+        background: none;
+    }
     &:nth-child(2)::-moz-range-track {
         background: none;
     }
     
-    &::-moz-range-thumb,
+    &::-moz-range-thumb {
+        position: relative;
+        height: 15px;
+        width: 15px;
+        margin-top: -7px;
+        background: #fff;
+        border: 1px solid #003D7C;
+        border-radius: 25px;
+        z-index: 1;
+        pointer-events: all;
+    }
     &::-webkit-slider-thumb {
         position: relative;
         height: 15px;
@@ -37,7 +54,9 @@ const RangeInput = styled.input`
         pointer-events: all;
     }
 
-    &:nth-child(1)::-moz-range-thumb,
+    &:nth-child(1)::-moz-range-thumb {
+        z-index: 2;
+    }
     &:nth-child(1)::-webkit-slider-thumb {
         z-index: 2;
     }

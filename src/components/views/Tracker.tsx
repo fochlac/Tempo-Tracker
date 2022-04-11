@@ -10,9 +10,10 @@ import { useSelector } from "../../utils/atom"
 import { checkTabExistence, triggerBackgroundAction } from "../../utils/background"
 import { useDatabasRefresh } from "../../utils/database"
 import { dateHumanized } from "../../utils/datetime"
+import { fetchSelf } from "../../utils/jira"
 import { ActionLink } from "../atoms/ActionLink"
 import { ProgressIndeterminate } from "../atoms/Progress"
-import { Tooltip } from "../atoms/Tooltip"
+import { ErrorTooltipTop } from "../atoms/Tooltip"
 import { H6 } from "../atoms/Typography"
 import { TrackingSection } from "../molecules/TrackingSection"
 import { Worklog } from "../molecules/Worklog"
@@ -31,32 +32,13 @@ const List = styled.ul`
     overflow-y: auto;
     height: 100%;
 `
-const ErrorTooltip = styled(Tooltip)`
-    &:before {
-        left: -93px;
-        bottom: calc(100% + 7px);
-        top: unset;
-        color: darkred;
-        background: lightpink;
-        border-color: darkred;
-    }
-
-    &:after {
-        top: unset;
-        bottom: calc(100%);
-        border-left: 4px solid transparent;
-        border-right: 4px solid transparent;
-        border-top: 6px solid darkred;
-        border-bottom: transparent solid;
-    }
-`
-const ProgressWrapper = styled.div<{visible: boolean}>`
+const ProgressWrapper = styled.div<{ visible: boolean }>`
     margin-top: -3px;
     margin-bottom: 5px;
     padding: 0 10px;
     width: 100%;
     height: 4px;
-    visibility: ${({visible}) => visible ? 'visible' : 'hidden'};
+    visibility: ${({ visible }) => visible ? 'visible' : 'hidden'};
 `
 
 export const TrackerView: React.FC = () => {
@@ -71,9 +53,15 @@ export const TrackerView: React.FC = () => {
     const startSync = async () => {
         setSyncing(true)
         if (isFirefox) {
+            try {
+                await fetchSelf()
+            }
+            catch (e) {
+                return
+            }
             await options.actions.merge({ forceSync: true })
             const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
-            const tab = await browser?.tabs?.create({ url , active: true })
+            const tab = await browser?.tabs?.create({ url, active: true })
             const timer = setInterval(() => {
                 checkTabExistence(tab.id)
                     .then(() => {
@@ -104,9 +92,9 @@ export const TrackerView: React.FC = () => {
                 <ActionLink style={{ marginLeft: 'auto', marginRight: 4 }} onClick={() => worklog.forceFetch()}>Refresh</ActionLink>
                 {hasUnsyncedLog && <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4 }} onClick={startSync}>Synchronize Now</ActionLink>}
                 {hasUnsyncedLog && hasError && (
-                    <ErrorTooltip content="Last synchronisation failed.">
+                    <ErrorTooltipTop content="Last synchronisation failed.">
                         <AlertCircle size={16} style={{ color: 'darkred', marginTop: -2 }} />
-                    </ErrorTooltip>
+                    </ErrorTooltipTop>
                 )}
             </H6>
             <ProgressWrapper visible={worklog.loading}><ProgressIndeterminate /></ProgressWrapper>
@@ -123,16 +111,16 @@ export const TrackerView: React.FC = () => {
                     }
                     else {
                         acc.list.push(
-                            <Worklog 
-                                isSyncing={isSyncing} 
-                                onDelete={worklog.actions.delete} 
-                                disableButtons={editIssue?.issue} 
-                                log={log} 
+                            <Worklog
+                                isSyncing={isSyncing}
+                                onDelete={worklog.actions.delete}
+                                disableButtons={editIssue?.issue}
+                                log={log}
                                 key={log?.id || log?.tempId} />
                         )
                     }
                     return acc
-                }, {list: [], day: { date: null, sum: 0 }}).list}
+                }, { list: [], day: { date: null, sum: 0 } }).list}
             </List>
         </Body>
     )

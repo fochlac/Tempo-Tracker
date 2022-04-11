@@ -1,11 +1,12 @@
 import { usePersitentFetch } from "./usePersitedFetch"
 
-import { fetchAllWorklogs } from "../utils/jira"
+import { fetchAllWorklogs, fetchSelf } from "../utils/jira"
 import { useEffect, useMemo, useState } from "preact/hooks"
 import { CACHE } from "../constants/constants"
 import { useCache } from "./useCache"
 import { useDatabase, useDatabaseUpdate } from "../utils/database"
 import { useOptions } from "./useOptions"
+import { checkTabExistence } from "../utils/background"
 
 export function useJiraWorklog() {
     const cache = useCache<'WORKLOG_CACHE'>('WORKLOG_CACHE', [])
@@ -21,6 +22,7 @@ export function useJiraWorklog() {
 
     return {
         data: data as TemporaryWorklog[],
+        validUntil: cache?.cache?.validUntil || 0,
         actions: {
             async delete(worklog, updateOnly = false) {
                 if (worklog.tempId) {
@@ -40,16 +42,38 @@ export function useJiraWorklog() {
     }
 }
 
+let tab
 export function useFetchJiraWorklog() {
     let worklogResult
-    const {data, actions} = useJiraWorklog()
+    const { data, actions, validUntil } = useJiraWorklog()
+    const options = useOptions()
     if (isFirefox) {
         const options = useOptions()
-        const fetchLogsFF = () => {
+        const fetchLogsFF = async (force?: boolean) => {
+            try {
+                await fetchSelf()
+            }
+            catch (e) {
+                return
+            }
+            if (!force && validUntil > Date.now()) {
+                return
+            }
+            if (tab) {
+                const exists = await checkTabExistence(tab.id)
+                if (exists) {
+                    return
+                }
+            }
             options.actions.merge({ forceFetch: true })
-                .then(() => {
+                .then(async () => {
                     const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
-                    browser?.tabs?.create({ url , active: false })
+                    tab = await browser?.tabs?.create({ url , active: false })
+                    while (await checkTabExistence(tab.id)) {
+                        await new Promise(resolve => setTimeout(() => resolve(null), 1000))
+                    }
+                    tab = null
+                    console.log('closed')
                 })
         }
 
@@ -59,7 +83,7 @@ export function useFetchJiraWorklog() {
 
         worklogResult = { 
             loading: false,
-            forceFetch: () => fetchLogsFF()
+            forceFetch: () => fetchLogsFF(true)
         }
     }
     else {

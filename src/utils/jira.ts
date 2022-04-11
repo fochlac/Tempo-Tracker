@@ -25,6 +25,15 @@ export async function fetchIssueList(issues): Promise<Issue[]> {
     return body.issues.map(({ id, fields, key }) => ({ id, name: fields.summary, key }))
 }
 
+export async function fetchSelf(customOptions?: Partial<Options>) {
+    const options = customOptions || await DB.get('options') as Options
+    const result = await fetch(`${options.domain}/api/2/myself`, { headers: headers(options.token), credentials: 'omit' })
+    if (result.status >= 400) {
+        return Promise.reject(result)
+    }
+    return result.json()
+}
+
 export async function searchIssues(searchString) : Promise<Issue[]> {
     const options = await DB.get('options') as Options
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
