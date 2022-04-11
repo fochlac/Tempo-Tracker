@@ -33,6 +33,7 @@ export const Label = styled.legend`
     max-width: 100%;
     color: rgba(0, 0, 0, 0.87);
     margin-bottom: 2px;
+    font-weight: 600;
 `
 
 export const H6 = styled.h6`

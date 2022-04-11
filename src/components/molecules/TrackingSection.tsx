@@ -84,7 +84,7 @@ export function TrackingSection() {
                 {tracker.issue ? (
                     <>
                         <Input style={{marginRight: 16, marginLeft: 3}} type="date" onChange={onChangeDate} value={dateString(tracker.start)} />
-                        <TimeInput style={{marginRight: 16}} onChange={onChangeTime} value={timeString(tracker.start)} />
+                        <TimeInput style={{marginRight: 16, marginLeft: 16 }} onChange={onChangeTime} value={timeString(tracker.start)} />
                         &mdash;
                         <Duration start={tracker.start} />
                         <DestructiveButton onClick={() => actions.stop()}>Stop Tracking</DestructiveButton>
