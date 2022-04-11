@@ -45,7 +45,6 @@ const SearchFieldWrapper = styled.div`
 const SearchResultList = styled.ul`
     width: 100%;
     padding: 0 16px;
-    overflow: auto;
     margin: 0;
     list-style: none;
 `
@@ -148,7 +147,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                 )
             })}
             {!Object.keys(options.issues).length && (
-                <IssueRow>No issue tracked</IssueRow>
+                <IssueRow>No issue tracked.</IssueRow>
             )}
         </InputList>
         <Button style={{ marginTop: 8 }} onClick={() => setOpen(true)} disabled={disabled}>
