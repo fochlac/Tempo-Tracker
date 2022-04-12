@@ -1,0 +1,27 @@
+<svg width="110mm" height="110mm" version="1.1" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <marker id="Arrow1Lstart" overflow="visible" orient="auto">
+   <path transform="matrix(.8 0 0 .8 10 0)" d="m0 0 5-5-17.5 5 17.5 5z" fill="context-stroke" fill-rule="evenodd" stroke="context-stroke" stroke-width="1pt"/>
+  </marker>
+ </defs>
+ <g>
+  <g stroke="#000">
+   <ellipse transform="rotate(232.1)" cx="-70.13" cy="8.7352" rx="44.973" ry="44.973" fill="#fff" fill-rule="evenodd" stroke-width="10"/>
+   <path d="m49.973 8.6326v1.8407" fill="none" marker-mid="url(#Arrow1Lstart)" stroke-linecap="square" stroke-width="10"/>
+   <ellipse cx="49.973" cy="49.973" rx="7.6454" ry="7.6454" stroke-linecap="round"/>
+  </g>
+  <g fill="none" stroke="#000" stroke-linecap="square">
+   <path d="m49.973 47.765v-20.765" stroke-width="10"/>
+   <g stroke-width="10">
+    <path d="m49.452 50.448-21.293 16.576"/>
+    <path d="m91.313 49.973h-1.8407" marker-mid="url(#Arrow1Lstart)"/>
+    <path d="m49.973 91.313v-1.8407" marker-mid="url(#Arrow1Lstart)"/>
+    <path d="m8.6326 49.973h1.8407" marker-mid="url(#Arrow1Lstart)"/>
+   </g>
+  </g>
+  <g transform="translate(-32.808 -27.517)" stroke="#01468a" stroke-linecap="round">
+   <circle cx="111.51" cy="105.93" r="25.665" fill="#fff" stroke-width="10"/>
+   <path d="m97.987 109.83 9.8426 10.209 11.777-26.45" fill="none" stroke-linejoin="round" stroke-width="8"/>
+  </g>
+ </g>
+</svg>
