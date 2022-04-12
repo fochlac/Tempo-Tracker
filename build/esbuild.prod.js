@@ -52,7 +52,7 @@ async function build() {
     })
 
     const copy = fse.copy('./static', './dist', { overwrite: true })
-    const copy_ff = fse.copy('./static', './dist_ff', { overwrite: true })
+    const copy_ff = copy.then(() => fse.copy('./static_ff', './dist_ff', { overwrite: true }))
 
     return Promise.all([copy, copy_ff, build, build_jsx, build_jsx_ff, build_ff]).catch(async (e) => {
         console.error(e)
