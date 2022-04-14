@@ -85,7 +85,7 @@ export function WorklogEditor({ log: pureLog }) {
     return (
         <ListRow>
             <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
-            <select style={{ margin: '2px 8px 0' }} onChange={(e) => {
+            <select style={{ margin: '2px 8px 0', maxWidth: 150 }} onChange={(e) => {
                 setDirty(true)
                 const issue = issues.find((i) => i.key === e.target.value)
                 setEdit({ ...log, issue })

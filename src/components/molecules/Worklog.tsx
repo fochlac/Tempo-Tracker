@@ -26,7 +26,7 @@ const ListRow = styled.li<{delete?: Boolean}>`
     ` : ''}
 `
 const IssueKey = styled.div`
-    width: 100px;
+    width: 135px;
     margin: 2px 8px 0;
     cursor: default;
     overflow: hidden;
@@ -86,7 +86,7 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
     if (!log?.issue) {
         return null
     }
-    const alias = options.issues[log.issue.key]?.alias || log.issue.key
+    const alias = options.issues[log.issue.key]?.alias || `${log.issue.key}: ${log.issue.name}`
 
     return (
         <ListRow delete={log.delete && !log.synced}>

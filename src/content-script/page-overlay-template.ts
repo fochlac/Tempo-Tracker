@@ -39,6 +39,7 @@ export const template = `
         width: auto;
         height: auto;
         margin: 0;
+        max-width: 150px;
     }
     .tempo_tracker-time {
         color: black;

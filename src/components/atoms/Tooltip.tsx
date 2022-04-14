@@ -72,8 +72,8 @@ export const ErrorTooltip = styled(Tooltip)`
 `
 export const ErrorTooltipTop = styled(Tooltip)`
     &:before {
-        left: -93px;
         bottom: calc(100% + 7px);
+        right: 0;
         top: unset;
         color: darkred;
         background: lightpink;

@@ -9,6 +9,22 @@ export const DefaultText = styled.p`
     color: rgba(0, 0, 0, 0.87);
 `
 
+export const ErrorText = styled(DefaultText)`
+    color: rgb(224, 4, 4);
+    padding: 0 16px;
+    text-align: justify;
+    letter-spacing: -0.1px;
+    cursor: default;
+`
+export const InfoText = styled(DefaultText)`
+    padding: 2px 0px;
+    text-align: justify;
+    letter-spacing: -0.1px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-family: sans-serif;
+`
+
 export const SmallerText = styled.p`
     font-size: 0.95rem;
     line-height: 1.1rem;

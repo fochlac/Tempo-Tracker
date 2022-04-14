@@ -37,10 +37,12 @@ export const WorklogHeader: React.FC<{date: string;}> = ({date}) => {
         }
         return duration
     }, 0), [date, worklog.data])
+    console.log(date)
+    const isToday = dateHumanized(Date.now()) === date
 
     return (
         <ListRow>
-            <Datum style={{color: "#000"}}>{date}</Datum>
+            <Datum style={{color: "#000"}}>{date}{isToday ? ' (Today)' : ''}</Datum>
             {tracker.start && dateHumanized(tracker.start) === date ? (
                 <DurationTimer start={tracker.start - duration} />
             ) : (
