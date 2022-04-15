@@ -1,16 +1,13 @@
-import { AlertCircle } from 'preact-feather'
+import { AlertCircle, WifiOff } from 'preact-feather'
 import { useMemo } from 'preact/hooks'
 import styled from 'styled-components'
-import { ACTIONS } from '../../constants/actions'
-import { DB_KEYS } from '../../constants/constants'
+import { useInsertWorklog } from '../../hooks/useInsertWorklog'
+import { useLogSync } from '../../hooks/useLogSync'
 import { useOptions } from '../../hooks/useOptions'
-import { useSafeState } from '../../hooks/useSafeState'
 import { useSelf } from '../../hooks/useSelf'
 import { useFetchJiraWorklog } from '../../hooks/useWorklogs'
 import { editIssueDuck } from '../../store/ducks/edit-issue'
 import { useSelector } from '../../utils/atom'
-import { checkTabExistence, triggerBackgroundAction } from '../../utils/background'
-import { useDatabasRefresh } from '../../utils/database'
 import { dateHumanized } from '../../utils/datetime'
 import { ActionLink } from '../atoms/ActionLink'
 import { ProgressIndeterminate } from '../atoms/Progress'
@@ -46,42 +43,11 @@ export const TrackerView: React.FC = () => {
     const worklog = useFetchJiraWorklog()
     const options = useOptions()
     const self = useSelf(options.data)
-    const [isSyncing, setSyncing] = useSafeState(false)
-    const [hasError, setError] = useSafeState(false)
-    const refreshQueueCache = useDatabasRefresh(DB_KEYS.UPDATE_QUEUE)
     const editIssue = useSelector(editIssueDuck.selector)
     const worklogs = useMemo(() => worklog.data.sort((a, b) => b.start - a.start), [worklog.data])
     const hasUnsyncedLog = useMemo(() => worklog.data.some((log) => !log.synced), [worklog.data])
-    const startSync = async () => {
-        setSyncing(true)
-        if (isFirefox) {
-            try {
-                await self.refetch()
-            } catch (e) {
-                return
-            }
-            await options.actions.merge({ forceSync: true })
-            const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
-            const tab = await browser?.tabs?.create({ url, active: true })
-            const timer = setInterval(() => {
-                checkTabExistence(tab.id)
-                    .then(() => {
-                        setSyncing(false)
-                        clearInterval(timer)
-                    })
-                    .catch(() => null)
-            }, 1000)
-        } else {
-            try {
-                await triggerBackgroundAction(ACTIONS.FLUSH_UPDATES.create())
-                setError(false)
-                await refreshQueueCache()
-            } catch (err) {
-                setError(true)
-            }
-            setSyncing(false)
-        }
-    }
+    const { isSyncing, hasError, startSync } = useLogSync(self, worklog)
+    const { newWorklog, createNewWorklog } = useInsertWorklog()
 
     const offlineTooltip = self.error === 'TOKEN' 
         ? 'Invalid token. Please provide a correct token in the options.' 
@@ -92,10 +58,10 @@ export const TrackerView: React.FC = () => {
             <TrackingSection />
             <H6 style={{ margin: '0 0 4px 8px', display: 'flex', width: 'calc(100% - 16px)' }}>
                 <span style={{ marginRight: 'auto' }}>Tracking History</span>
-                {!self.error && (
+                {!self.error && !hasUnsyncedLog && (
                     <ActionLink
                         disabled={!!editIssue.issue}
-                        style={{ marginRight: 4 }}
+                        style={{ marginRight: 4, lineHeight: '16px' }}
                         onClick={() => worklog.forceFetch()}
                     >
                         Refresh
@@ -104,12 +70,19 @@ export const TrackerView: React.FC = () => {
                 {hasUnsyncedLog && !self.error && (
                     <ActionLink
                         disabled={!!editIssue.issue || self.error}
-                        style={{ marginRight: 4 }}
+                        style={{ marginRight: 4, lineHeight: '16px' }}
                         onClick={startSync}
                     >
-                        Synchronize Now
+                        Synchronize
                     </ActionLink>
                 )}
+                <ActionLink
+                    disabled={!!editIssue.issue}
+                    style={{ marginRight: 4, lineHeight: '16px' }}
+                    onClick={createNewWorklog}
+                >
+                    New Entry
+                </ActionLink>
                 {!self.error && hasUnsyncedLog && hasError && (
                     <ErrorTooltipTop content="Last synchronisation failed.">
                         <AlertCircle size={16} style={{ color: 'rgb(224, 4, 4)', marginTop: -2 }} />
@@ -117,7 +90,7 @@ export const TrackerView: React.FC = () => {
                 )}
                 {self.error && (
                     <ErrorTooltipTop content={offlineTooltip}>
-                        <ErrorText style={{ padding: '0 4px' }}>Offline</ErrorText>
+                        <WifiOff size={16} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />
                     </ErrorTooltipTop>
                 )}
             </H6>
@@ -125,6 +98,7 @@ export const TrackerView: React.FC = () => {
                 <ProgressIndeterminate />
             </ProgressWrapper>
             <List>
+                {newWorklog && <WorklogEditor log={newWorklog} />}
                 {
                     worklogs?.reduce(
                         (acc, log) => {

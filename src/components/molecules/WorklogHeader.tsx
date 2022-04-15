@@ -37,7 +37,6 @@ export const WorklogHeader: React.FC<{date: string;}> = ({date}) => {
         }
         return duration
     }, 0), [date, worklog.data])
-    console.log(date)
     const isToday = dateHumanized(Date.now()) === date
 
     return (
