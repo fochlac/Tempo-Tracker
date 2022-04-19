@@ -8,7 +8,7 @@ export const triggerBackgroundAction = (action) => {
             const errTimer = setTimeout(() => {
                 reject(ACTIONS[action.type].response(false, 'Action timed out after 60 seconds.'))
             }, 60000)
-            controller.runtime?.sendMessage(action, function (response) {
+            const callback = (response) => {
                 clearTimeout(errTimer)
                 if (response.payload.success) {
                     resolve(response.payload)
@@ -16,7 +16,13 @@ export const triggerBackgroundAction = (action) => {
                 else {
                     reject(response.payload)
                 }            
-            });
+            }
+            if (isFirefox) {
+                browser.runtime.sendMessage(action, callback)
+            }
+            else {
+                chrome.runtime.sendMessage(action, callback)
+            }
         }
         else {
             reject(ACTIONS[action.type].response(false, 'Could not send message.'))

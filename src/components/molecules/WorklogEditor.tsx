@@ -1,11 +1,11 @@
 import { Check, X } from "preact-feather"
 import { useState } from "preact/hooks"
 import styled from "styled-components"
-import { useCache } from "../../hooks/useCache"
 import { useOptions } from "../../hooks/useOptions"
 import { useJiraWorklog } from "../../hooks/useWorklogs"
 import { useDispatch } from "../../utils/atom"
 import { dateString, durationString, formatDuration, timeString } from "../../utils/datetime"
+import { compareValues } from "../../utils/helper"
 import { IconButton } from "../atoms/IconButton"
 import { Input } from "../atoms/Input"
 import { TimeInput } from "../atoms/TimeInput"
@@ -13,7 +13,11 @@ import { WorklogAtoms } from "./Worklog"
 
 const DateInput = styled(Input)`
     flex-shrink: 0;
-    width: 100px;
+    width: 120px;
+
+    &::-webkit-calendar-picker-indicator {
+        margin: 0;
+    }
 `
 
 const { 
@@ -21,6 +25,8 @@ const {
     TimeRange,
     Duration
 } = WorklogAtoms
+
+const compareLog = compareValues(['start', 'end', 'issue.key'])
 
 export function WorklogEditor({ log: pureLog }) {
     const { data: options } = useOptions()
@@ -73,7 +79,7 @@ export function WorklogEditor({ log: pureLog }) {
     }
 
     async function onSubmit() {
-        if (isDirty) {
+        if (isDirty && compareLog(pureLog, log)) {
             await actions.queue(log)
         }
         
@@ -87,9 +93,14 @@ export function WorklogEditor({ log: pureLog }) {
             <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
             <select style={{ margin: '2px 8px 0', maxWidth: 150 }} onChange={(e) => {
                 setDirty(true)
-                const issue = issues.find((i) => i.key === e.target.value)
+                const issue = issues.find((i) => i.key === e.target.value) || e.target.value === pureLog.issue.key && pureLog.issue || null
                 setEdit({ ...log, issue })
             }}>
+                {!options.issues[pureLog.issue.key] && (
+                    <option value={pureLog.issue.key} key={pureLog.issue.key} selected={log.issue.key === pureLog.issue.key}>
+                        {`${pureLog.issue.key}: ${pureLog.issue.name}`}
+                    </option>
+                )}
                 {issues?.map((issue) => (
                     <option value={issue.key} key={issue.key} selected={log.issue.key === issue.key}>
                         {issue.alias || `${issue.key}: ${issue.name}`}

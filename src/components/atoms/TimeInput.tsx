@@ -14,7 +14,7 @@ const InputWrapper = styled.div`
     padding-left: 1px;
 `
 const TimeSegmentInput = styled.input`
-    width: 16px;
+    width: 17px;
 `
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
