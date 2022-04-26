@@ -110,7 +110,7 @@ const startup = runOnce(async () => {
     }
 
     const domain = options.domain.replace(/https?:\/\//, '').split('/')[0]
-    if (window.location.href.includes(domain)) {
+    if (window.location.href.includes(domain) && isFirefox) {
         checkWorklogQueue()
         window.addEventListener('focus', () => checkWorklogQueue())
     }

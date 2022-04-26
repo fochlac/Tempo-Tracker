@@ -20,7 +20,7 @@ export async function fetchIssueList(issues): Promise<Issue[]> {
     const query = new URLSearchParams()
     query.append('jql', `issuekey in ("${issues.join('","')}")`)
     const url = `${options.domain}/api/2/search?${query.toString()}`
-    const response = await fetch(url, { headers: headers(options.token) })
+    const response = await fetch(url, { headers: headers(options.token), credentials: 'omit' })
     const body = await response.json()
     return body.issues.map(({ id, fields, key }) => ({ id, name: fields.summary, key }))
 }
@@ -40,7 +40,10 @@ export async function searchIssues(searchString) : Promise<Issue[]> {
     const query = new URLSearchParams()
     query.append('q', searchString)
     const url = `${options.domain}/quicksearch/1.0/productsearch/search?${query.toString()}`
-    const response = await fetch(url, { headers: headers(options.token) })
+    const response = await fetch(url, { 
+        headers: headers(options.token),
+        credentials: 'omit'
+    })
     const body = await response.json()
     const issues = body.find((result) => result.id === "quick-search-issues")
     if (!issues || !issues.items.length) {
@@ -75,7 +78,8 @@ export async function fetchAllWorklogs(opts?:Options): Promise<Worklog[]> {
         {
             method: 'POST',
             body: JSON.stringify(payload),
-            headers: headers(options.token)
+            headers: headers(options.token),
+            credentials: 'omit'
         })
     return response.json()
         .then(data => data.map(toLocalWorklog))
@@ -96,7 +100,8 @@ export async function writeWorklog({ issue, end, start }: Partial<Worklog>, opts
             "timeSpentSeconds": seconds,
             "originTaskId": issue.id
         }),
-        "method": "POST"
+        "method": "POST",
+        credentials: 'omit'
     })
         .then(r => r.json())
         .then(toLocalWorklog)
@@ -116,7 +121,8 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>,
             "timeSpentSeconds": seconds,
             "originTaskId": Number(issue.id)
         }),
-        "method": "PUT"
+        "method": "PUT",
+        credentials: 'omit'
     })
         .then(r => r.json())
         .then((log) => {
@@ -132,7 +138,8 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>,
                     "timeSpentSeconds": seconds,
                     "originTaskId": Number(log.originTaskId)
                 }),
-                "method": "PUT"
+                "method": "PUT",
+                credentials: 'omit'
             }).then(r => r.json())
         })
         .then(toLocalWorklog)
@@ -144,7 +151,8 @@ export async function deleteWorklog({ id }: Partial<Worklog>, opts?:Options): Pr
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}`, {
         "headers": headers(options.token),
-        "method": "DELETE"
+        "method": "DELETE",
+        credentials: 'omit'
     })
         .then(async r => {
             if (r.status === 404) {
