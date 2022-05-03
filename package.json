@@ -1,44 +1,46 @@
 {
-  "name": "jira-log-time",
-  "version": "1.0.0",
-  "description": "Code repo for [Jira Log Time](https://chrome.google.com/webstore/detail/jira-log-time/peboekgeiffcaddndeonkmkledekeegl) chrome plugin.",
-  "main": "jira-api.js",
-  "scripts": {
-    "start": "node build/esbuild.js",
-    "build": "node build/esbuild.prod.js && node ./zip-files.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fochlac/jira-log-time.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/fochlac/jira-log-time/issues"
-  },
-  "homepage": "https://github.com/fochlac/jira-log-time#readme",
-  "devDependencies": {
-    "@types/chrome": "^0.0.179",
-    "@types/styled-components": "^5.1.23",
-    "esbuild": "^0.14.23",
-    "esbuild-node-externals": "^1.4.1",
-    "esbuild-plugin-alias": "^0.2.1",
-    "eslint": "^8.9.0",
-    "fs-extra": "^10.0.1",
-    "preact": "^10.6.6",
-    "preact-feather": "^4.2.1",
-    "styled-components": "^5.3.3",
-    "tiny-atom": "^4.2.2",
-    "tsc": "^2.0.4",
-    "typescript": "^4.5.5",
-    "web-ext-types": "^3.2.1"
-  },
-  "dependencies": {
-    "chokidar": "^3.5.3",
-    "idb": "^7.0.0",
-    "regenerator-runtime": "^0.13.9",
-    "uuid": "^8.3.2",
-    "zip-a-folder": "^1.1.3"
-  }
+    "name": "jira-log-time",
+    "version": "1.1.3",
+    "description": "Code repo for [Jira Log Time](https://chrome.google.com/webstore/detail/jira-log-time/peboekgeiffcaddndeonkmkledekeegl) chrome plugin.",
+    "main": "jira-api.js",
+    "scripts": {
+        "start": "node build/esbuild.js",
+        "build": "node build/esbuild.prod.js && node build/zip-files.js",
+        "release": "node build/release.js && pnpm build",
+        "release:patch": "node build/release.js patch && pnpm build",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fochlac/jira-log-time.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/fochlac/jira-log-time/issues"
+    },
+    "homepage": "https://github.com/fochlac/jira-log-time#readme",
+    "devDependencies": {
+        "@types/chrome": "^0.0.179",
+        "@types/styled-components": "^5.1.23",
+        "esbuild": "^0.14.23",
+        "esbuild-node-externals": "^1.4.1",
+        "esbuild-plugin-alias": "^0.2.1",
+        "eslint": "^8.9.0",
+        "fs-extra": "^10.0.1",
+        "preact": "^10.6.6",
+        "preact-feather": "^4.2.1",
+        "styled-components": "^5.3.3",
+        "tiny-atom": "^4.2.2",
+        "tsc": "^2.0.4",
+        "typescript": "^4.5.5",
+        "web-ext-types": "^3.2.1"
+    },
+    "dependencies": {
+        "chokidar": "^3.5.3",
+        "idb": "^7.0.0",
+        "regenerator-runtime": "^0.13.9",
+        "uuid": "^8.3.2",
+        "zip-a-folder": "^1.1.3"
+    }
 }

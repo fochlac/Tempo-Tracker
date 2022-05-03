@@ -3,7 +3,8 @@ import { H6, SmallerText } from '../atoms/Typography'
 import styled from 'styled-components'
 import { useState } from 'preact/hooks'
 import { Modal } from '../atoms/Modal'
-import { X } from 'preact-feather'
+import { Github, X } from 'preact-feather'
+import { openTab } from '../../utils/browser'
 
 const FooterBar = styled.div`
     cursor: default;
@@ -13,13 +14,17 @@ const FooterBar = styled.div`
     border-top: solid 1px lightslategrey;
     margin-top: auto;
 `
-
+const githubUrl = 'https://github.com/fochlac/Tempo-Tracker'
 export function Footer() {
     const [show, setShow] = useState(false)
-
+    
     return (
         <FooterBar>
-            <p style={{ margin: 0 }}>Designed and developed by Florian Riedel. © 2022</p>
+            <ActionLink onClick={() => openTab({ url: githubUrl, active: true })} style={{margin: 0}}>
+                <Github size={16} style={{margin: '0 2px -4px 0'}} />
+                Github
+            </ActionLink>
+            <p style={{ margin: '0 auto' }}>Designed and developed by Florian Riedel. © 2022</p>
             <ActionLink onClick={() => setShow(true)} style={{ whiteSpace: 'nowrap' }}>
                 Legal Disclosure
             </ActionLink>
