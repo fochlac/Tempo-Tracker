@@ -64,9 +64,18 @@ export function TrackingSection() {
     }
     const onChangeTime = (e) => {
         const { value } = e.target
-        if (value !== timeString(tracker.start)) {
+        const oldValue = timeString(tracker.start)
+        if (value !== oldValue) {
             const [h, m] = value.split(':')
-            const newDay = new Date(tracker.start)
+            const [oldH] = oldValue.split(':')
+            
+            let newDay = new Date(tracker.start)
+            if (oldH === '00' && h == '23') {
+                newDay = new Date(newDay.getTime() - 24 * 60 * 60 * 1000)
+            }
+            else if (h === '00' && oldH === '23') {
+                newDay = new Date(newDay.getTime() + 24 * 60 * 60 * 1000)
+            }
             newDay.setHours(h, m)
             if (newDay.getTime() < Date.now()) {
                 actions.updateStart(newDay.getTime())

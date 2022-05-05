@@ -52,6 +52,7 @@ type CACHE = 'WORKLOG_CACHE'
 
 interface LocalIssue extends Issue {
     alias: string;
+    color?: string;
 }
 
 interface Options extends OverlayOptions {
@@ -78,8 +79,11 @@ interface DataBase {
 }
 
 interface Tracking {
-    issue?: Issue;
+    issue?: LocalIssue;
     start?: number;
+    heartbeat?: number;
+    lastHeartbeat?: number;
+    firstHeartbeat?: number;
 }
 
 interface EditIssue {

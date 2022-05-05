@@ -55,7 +55,7 @@ const indexedDBStorage = (name: string) => {
                     request.onerror = reject
                 })
         )
-    const update = (key: string, updater: (originalValue: any) => any) =>
+    const update = <T = any>(key: string, updater: (originalValue: T) => T) =>
         db.then(
             (database: any) =>
                 new Promise((resolve, reject) => {

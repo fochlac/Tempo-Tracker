@@ -128,6 +128,11 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
         newIssues[issueKey].alias = e.target.value
         actions.merge({ issues: newIssues })
     }
+    const handleColorChange = (issueKey) => (e) => {
+        const newIssues = {...options.issues}
+        newIssues[issueKey].color = e.target.value
+        actions.merge({ issues: newIssues })
+    }
 
     return <Wrapper>
         <InputList>
@@ -142,6 +147,11 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                             style={{ flexGrow: 1, marginRight: 8 }} 
                             value={issue?.id ? issue.alias: 'Issue broken, please re-add via "Add Issue" button.'} 
                             onChange={handleAliasChange(issueKey)} />
+                        <Input
+                            type="color"
+                            style={{ width: 20, marginRight: 8 }} 
+                            value={issue.color || '#ffffff'}
+                            onChange={handleColorChange(issueKey)} />
                         <IconButton disabled={!issue} onClick={() => setDelIssue(issue)}><Trash2 /></IconButton>
                     </IssueRow>
                 )
