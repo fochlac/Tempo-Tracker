@@ -90,7 +90,7 @@ export function TrackingSection() {
         <Header>
             <ToggleBar options={optionList.concat()} onChange={(issueId) => actions.swap(issueMap[issueId])} value={tracker.issue?.id || null} />
             <Tracker>
-                {tracker.issue ? (
+                {!tracker.lastHeartbeat && (tracker.issue ? (
                     <>
                         <Input style={{marginRight: 16, marginLeft: 3}} type="date" onChange={onChangeDate} value={dateString(tracker.start)} />
                         <TimeInput style={{marginRight: 16, marginLeft: 16 }} onChange={onChangeTime} value={timeString(tracker.start)} />
@@ -98,7 +98,7 @@ export function TrackingSection() {
                         <Duration start={tracker.start} />
                         <DestructiveButton onClick={() => actions.stop()}>Stop Tracking</DestructiveButton>
                     </>
-                ) : <DefaultText style={{margin: '0 auto'}}>Please select an issue to start tracking.</DefaultText>}
+                ) : <DefaultText style={{margin: '0 auto'}}>Please select an issue to start tracking.</DefaultText>)}
             </Tracker>
         </Header>
     )

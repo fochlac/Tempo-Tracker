@@ -48,3 +48,13 @@ export function durationString (ms: number) {
 
     return `${pad(h)}:${pad(m % 60)}`
 }
+
+const dayInMs = 1000 * 60 * 60 * 24
+export function daysAgo(unixStamp: number) {
+    const days = (new Date().setHours(0, 0, 0, 0) - unixStamp) / dayInMs
+    if (days < -1) return ''
+    if (days < 0) return 'today'
+    if (days < 1) return 'yesterday'
+    if (days < 7) return `${Math.ceil(days)} days ago`
+    return `on ${dateHumanized(unixStamp)}`
+}

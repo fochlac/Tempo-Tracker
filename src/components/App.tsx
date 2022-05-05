@@ -5,6 +5,7 @@ import { useOptions } from "../hooks/useOptions"
 import { viewDuck } from "../store/ducks/view"
 import { useDispatch, useSelector } from "../utils/atom"
 import { Footer } from "./molecules/Footer"
+import { ForgottenTrackingDialog } from "./molecules/ForgottenTrackingDialog"
 import { Header } from "./molecules/Header"
 import { OptionsView } from "./views/Options"
 import { TrackerView } from "./views/Tracker"
@@ -32,6 +33,7 @@ export const App: React.FC = () => {
     return (
         <Main>
             <Header />
+            <ForgottenTrackingDialog />
             {view === VIEWS.TRACKER && <TrackerView />}
             {view === VIEWS.OPTIONS && <OptionsView />}
             <Footer />

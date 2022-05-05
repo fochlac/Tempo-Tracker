@@ -95,7 +95,7 @@ interface DbHelper {
     registerCallback: (key: DB_KEYS, cb:DbListener<DB_KEYS>) => string;
     unregisterCallback: (key: DB_KEYS, id: string) => void;
     checkUpdate: (key: DB_KEYS) => Promise<void>;
-    updateData: <K extends DB_KEYS>(key: K, value: DataBase[K]) => Promise<void>
+    updateData: <K extends DB_KEYS>(key: K, value: DataBase[K]|((val: DataBase[K]) => DataBase[K])) => Promise<void>
 }
 
 type DbListener<K extends DB_KEYS> = (dataSlice: DataBase[K]) => void

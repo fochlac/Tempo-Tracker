@@ -43,6 +43,13 @@ export function useTracking() {
                     await this.stop()
                 }
                 await this.start(issue)
+            },
+            async discardGap() {
+                await updateTracking((tracking) => ({ ...tracking, lastHeartbeat: null, firstHeartbeat: null }))                
+            },
+            async fixGap(newLog: TemporaryWorklog) {
+                await worklog.actions.queue(newLog)
+                await updateTracking({ issue: null, start: null })            
             }
         }
     }

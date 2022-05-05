@@ -7,7 +7,7 @@ import { ButtonBar } from "../atoms/ButtonBar";
 interface Props {
     open: Boolean;
     onClose: () => void;
-    text: string;
+    text: JSX.Element|string;
     buttons: JSX.Element;
     title: string;
 }

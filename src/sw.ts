@@ -6,6 +6,7 @@ import { markWorklogSynced, reserveWorklog, unreserveWorklog } from "./service-w
 import { flushQueue } from "./service-worker/service-worker-sync"
 import { stopTracking } from "./service-worker/tracking"
 import { updateBadgeTitle } from "./service-worker/badge"
+import { heartbeat } from "./service-worker/heartbeat"
 
 const controller = chrome || browser
 
@@ -18,6 +19,7 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
             await flushQueue()
         }
         await updateBadgeTitle()
+        await heartbeat()
     }
 })
 
@@ -131,6 +133,5 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
     }
 })
 
-
-
 updateBadgeTitle()
+heartbeat()
