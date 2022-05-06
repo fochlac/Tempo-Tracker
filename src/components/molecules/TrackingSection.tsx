@@ -25,6 +25,7 @@ const Tracker = styled.div`
     width: 100%;
     align-items: center;
     justify-content: space-between;
+    min-height: 25px;
 `
 const Duration = styled(Timer)`
     margin-left: 16px;
@@ -39,7 +40,7 @@ export function TrackingSection() {
     const { data: options } = useOptions()
     
     const optionList = useMemo(
-        () => Object.values(options.issues).map((issue) => ({ value: issue.id, name: issue.alias || `${issue.key}: ${issue.name}` })),
+        () => Object.values(options.issues).map((issue) => ({ value: issue.id, name: issue.alias || `${issue.key}: ${issue.name}`, color: issue.color })),
         [options.issues]
     )
     const issueMap = useMemo(() => Object.values(options.issues).reduce((issueMap, issue) => {

@@ -1,10 +1,10 @@
 import { useRef, useState } from "preact/hooks";
 import styled from "styled-components";
 import { Button } from "../atoms/Button";
-import { Tooltip } from "../atoms/Tooltip";
 
 interface ToggleBarOption {
     value: string;
+    color?: string;
     name?: string;
     tooltip?: string;
 }
@@ -22,6 +22,15 @@ const Bar = styled.div`
     flex-direction: row;
     width: 100%;
     min-height: 32px;
+`
+const Color = styled.div<{color?: string}>`
+    ${(props) => props.color ? `
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: ${props.color};
+    margin-right: 4px;
+    ` : ''}
 `
 
 const ToggleButton = styled(Button) <{ first?: boolean; last?: boolean; selected?: boolean; firstRow: boolean; lastRow: boolean }>`
@@ -70,7 +79,7 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
             chunks.map((chunk, chunkIndex) => (
                 <Bar key={chunkIndex}>
                     {
-                        chunk.map(({ value, name }, index) => {
+                        chunk.map(({ value, name, color }, index) => {
                             return (
                                 <ToggleButton
                                     firstRow={chunkIndex === 0}
@@ -80,6 +89,7 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
                                     first={index === 0}
                                     last={index === chunk.length - 1}
                                     selected={value === selected}>
+                                    <Color color={color} />
                                     {name || value}
                                 </ToggleButton>
                             )
