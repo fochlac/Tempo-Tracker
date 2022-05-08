@@ -1,14 +1,16 @@
-export function formatDuration(ms: number, noSecond?: boolean): string {
+export function formatDuration(ms: number, noSecond?: boolean, noDays?: boolean): string {
     const s = Math.floor(ms / 1000)
     const m = Math.floor(s / 60)
     const h = Math.floor(m / 60)
     const d = Math.floor(h / 24)
 
-    if (d > 0) {
+    if (d > 0 && !noDays) {
         return `${d}d ${h % 24}h ${pad(m % 60)}m`
     }
     else if (h > 0) {
-        return `${h % 24}h ${pad(m % 60)}m`
+        return m % 60 
+            ? `${noDays ? h : h % 24}h ${pad(m % 60)}m`
+            : `${noDays ? h : h % 24}h`
     }
     else {
         return noSecond 
@@ -18,7 +20,8 @@ export function formatDuration(ms: number, noSecond?: boolean): string {
 }
 
 function pad(n: number): string {
-    return `00${n}`.slice(-2)
+    const length = Math.max(2, String(n).length)
+    return `00${n}`.slice(-length)
 }
 
 export function dateString (unixStamp: number) {
@@ -57,4 +60,22 @@ export function daysAgo(unixStamp: number) {
     if (days < 1) return 'yesterday'
     if (days < 7) return `${Math.ceil(days)} days ago`
     return `on ${dateHumanized(unixStamp)}`
+}
+
+export function getISOWeeks(y) {
+    const d = new Date(y, 0, 1);
+    const isLeap = new Date(y, 1, 29).getMonth() === 1;
+  
+    //check for a Jan 1 that's a Thursday or a leap year that has a 
+    //Wednesday jan 1. Otherwise it's 52
+    return d.getDay() === 4 || isLeap && d.getDay() === 3 ? 53 : 52
+}
+
+export function getISOWeekNumber(unixStamp: number) {
+    const date = new Date(unixStamp);
+    const week1 = new Date(date.getFullYear(), 0, 4)
+    const day = week1.getDay()
+
+    const startOfWeek1 = new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
+    return Math.floor((unixStamp - startOfWeek1) / (7 * dayInMs))
 }

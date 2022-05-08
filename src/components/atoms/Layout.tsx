@@ -22,3 +22,20 @@ export const FlexColumn = styled.div<{justify?: string, align?: string; flip?: n
         flex-direction: row;
     }
 `
+
+
+export const Block = styled.div`
+    display: flex;
+    padding: 8px;
+    padding-right: 0;
+    flex-direction: row;
+    justify-content: space-between;
+`
+export const Column = styled.div`
+    flex-grow: 1;
+    flex-basis: 100%;
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: column;
+    margin-right: 8px;
+`

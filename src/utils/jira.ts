@@ -65,9 +65,14 @@ interface WorklogRemote {
     timeSpent: string;
 }
 export async function fetchAllWorklogs(opts?:Options): Promise<Worklog[]> {
-    const options = opts || await DB.get('options') as Options
     const endDate = Date.now()
     const startDate = endDate - 1000 * 60 * 60 * 24 * 6
+    return fetchWorklogs(startDate, endDate, opts)
+        .then(data => data.map(toLocalWorklog))
+}
+
+export async function fetchWorklogs(startDate:number, endDate: number, opts?: Options): Promise<WorklogRemote[]> {
+    const options = opts || await DB.get('options') as Options
     const payload = {
         'from': dateString(startDate),
         'to': dateString(endDate),
@@ -82,7 +87,6 @@ export async function fetchAllWorklogs(opts?:Options): Promise<Worklog[]> {
             credentials: 'omit'
         })
     return response.json()
-        .then(data => data.map(toLocalWorklog))
 }
 
 export async function writeWorklog({ issue, end, start }: Partial<Worklog>, opts?:Options): Promise<Worklog> {
@@ -184,4 +188,34 @@ function toLocalWorklog(remoteWorklog: WorklogRemote|WorklogRemote[]): Worklog {
         synced: true,
         id: worklog.tempoWorklogId
     }
+}
+
+export async function fetchWorkStatistics(year:number = new Date().getFullYear()):Promise<StatsMap> {
+    const start = new Date().setFullYear(year, 0, 1)
+    const end = new Date().setFullYear(year, 11, 31)
+
+    const worklogs = await fetchWorklogs(start, end)
+    const workMap = {
+        days: {},
+        weeks: {},
+        month: {},
+        total: 0
+    }
+    const firstSunday = new Date(new Date().setFullYear(year, 0, 1))
+    firstSunday.setDate(1 - firstSunday.getDay())
+    firstSunday.setHours(0, 0, 0, 0)
+    const weekInMs = 7 * 24 * 60 * 60 * 1000
+    return worklogs.reduce((workMap, log) => {
+        const ms = new Date(log.started).getTime()
+        const day = dateString(ms)
+        const week = Math.floor((ms - firstSunday.getTime()) / weekInMs)
+        const month = new Date(ms).getMonth() + 1
+
+        workMap.days[day] = (workMap.days[day] || 0) + log.timeSpentSeconds
+        workMap.weeks[week] = (workMap.weeks[week] || 0) + log.timeSpentSeconds
+        workMap.month[month] = (workMap.month[month] || 0) + log.timeSpentSeconds
+        workMap.total += log.timeSpentSeconds
+
+        return workMap
+    }, workMap)
 }

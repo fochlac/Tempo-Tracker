@@ -63,3 +63,11 @@ export const H5 = styled.h5`
     font-size: 1.2rem;
     margin: 8px 0;
 `
+
+export const Value = styled(DefaultText)`
+    margin-top: 2px;
+    height: 20px;
+    padding: 0 2px;
+    border: none;
+    border-bottom: solid 1px;
+`

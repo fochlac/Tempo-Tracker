@@ -20,21 +20,26 @@ const Title = styled.h1`
     margin-left: 4px;
 `
 
-export const Header:React.FC = () => {
+export const Header: React.FC = () => {
     const view = useSelector(viewDuck.selector)
-    const {data: options} = useOptions()
+    const { data: options } = useOptions()
     const mandatoryOptions = options.user?.length && options.token?.length && options.domain?.length && Object.keys(options.issues).length
-    const trackerLink = <InternalLink disabled={!mandatoryOptions} to={VIEWS.TRACKER}>Back to Tracker</InternalLink>
+    const trackerLink = <InternalLink disabled={!mandatoryOptions} to={VIEWS.TRACKER}>Tracker</InternalLink>
 
     return (
         <AppBar>
-            <Logo style={{width: 24, height: 24}} />
+            <Logo style={{ width: 24, height: 24 }} />
             <Title>Tempo-Tracker</Title>
-            {view === VIEWS.TRACKER && <InternalLink to={VIEWS.OPTIONS}>Options</InternalLink>}
-            {view === VIEWS.OPTIONS && (
-                mandatoryOptions 
-                    ? trackerLink 
+            {view !== VIEWS.TRACKER && (
+                mandatoryOptions
+                    ? trackerLink
                     : <Tooltip content="Please fill all mandatory options.">{trackerLink}</Tooltip>
+            )}
+            {!isFirefox && mandatoryOptions && view !== VIEWS.STATS && (
+                <InternalLink style={{ marginRight: 8 }} to={VIEWS.STATS}>Statistics</InternalLink>
+            )}
+            {view !== VIEWS.OPTIONS && (
+                <InternalLink style={VIEWS.STATS === view ? { marginRight: 8 } : {}} to={VIEWS.OPTIONS}>Options</InternalLink>
             )}
         </AppBar>
     )

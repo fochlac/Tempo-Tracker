@@ -21,6 +21,7 @@ async function getDb () {
 }
 
 interface CallbackRef{
+    STATS_CACHE: Record<string, DbListener<'STATS_CACHE'>>;
     WORKLOG_CACHE: Record<string, DbListener<'WORKLOG_CACHE'>>;
     tracking: Record<string, DbListener<'tracking'>>;
     updates: Record<string, DbListener<'updates'>>;

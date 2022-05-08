@@ -44,11 +44,11 @@ interface CacheObject<V> {
     data: V;
 }
 
-type VIEWS = 'tracker' | 'options'
+type VIEWS = 'tracker' | 'options' | 'stats'
 
 type DB_KEYS = keyof DataBase;
 
-type CACHE = 'WORKLOG_CACHE'
+type CACHE = 'WORKLOG_CACHE' | 'STATS_CACHE'
 
 interface LocalIssue extends Issue {
     alias: string;
@@ -71,11 +71,33 @@ interface OverlayOptions {
     overlayHours: [number, number];
 }
 
+interface StatsMap {
+    days: Record<string, number>;
+    month: Record<string, number>;
+    weeks: Record<string, number>;
+    total: number;
+}
+
+interface StatisticsOptions {
+    defaultHours: number;
+    exceptions: HourException[];
+}
+
+interface HourException {
+    startYear: number;
+    startWeek: number;
+    endYear: number;
+    endWeek: number;
+    hours: number;
+}
+
 interface DataBase {
+    STATS_CACHE: CacheObject<StatsMap>;
     WORKLOG_CACHE: CacheObject<Worklog[]>;
     tracking: Tracking;
     updates: TemporaryWorklog[];
     options: Options;
+    statsOptions: StatisticsOptions;
 }
 
 interface Tracking {
