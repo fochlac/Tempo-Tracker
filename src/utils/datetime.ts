@@ -1,3 +1,8 @@
+
+const hourInMs = 1000 * 60 * 60
+const dayInMs = hourInMs * 24
+const weekInMs = dayInMs * 7
+
 export function formatDuration(ms: number, noSecond?: boolean, noDays?: boolean): string {
     const s = Math.floor(ms / 1000)
     const m = Math.floor(s / 60)
@@ -52,7 +57,6 @@ export function durationString (ms: number) {
     return `${pad(h)}:${pad(m % 60)}`
 }
 
-const dayInMs = 1000 * 60 * 60 * 24
 export function daysAgo(unixStamp: number) {
     const days = (new Date().setHours(0, 0, 0, 0) - unixStamp) / dayInMs
     if (days < -1) return ''
@@ -77,5 +81,35 @@ export function getISOWeekNumber(unixStamp: number) {
     const day = week1.getDay()
 
     const startOfWeek1 = new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
-    return Math.floor((unixStamp - startOfWeek1) / (7 * dayInMs))
+    return Math.ceil((unixStamp - startOfWeek1) / weekInMs)
+}
+
+export function getIsoWeekPeriod(y, n) {
+    const week1 = new Date(y, 0, 4)
+    const day = week1.getDay()
+
+    const startOfWeek1 = new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
+    const startOfWeekX = startOfWeek1 + (n - 1) * weekInMs
+
+    return [new Date(startOfWeekX), new Date(startOfWeekX + weekInMs - 1)]
+}
+
+export function getIsoWeekPeriods(y) {
+    const weekNumber = getISOWeeks(y)
+
+    return Array(weekNumber).fill(0)
+        .map((_v, index) => ({ week: index + 1, period: getIsoWeekPeriod(y, index + 1) }))
+}
+
+export function getYearIsoWeeksPeriod (y) {
+    const week1 = new Date(y, 0, 4)
+    const day = week1.getDay()
+
+    const startOfWeek1 = new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
+    const week1NextYear = new Date(y + 1, 0, 4)
+    const dayNextYear = week1.getDay()
+
+    const startOfWeek1NextYear = new Date(week1NextYear.setHours(0, 0, 0, 0) - dayNextYear * dayInMs).setHours(0, 0, 0, 0)
+
+    return [new Date(startOfWeek1), new Date(startOfWeek1NextYear - 1)]
 }

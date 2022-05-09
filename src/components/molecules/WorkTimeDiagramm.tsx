@@ -3,10 +3,11 @@ import { options } from "preact"
 import { ChevronLeft, ChevronRight } from "preact-feather"
 import { useEffect, useState } from "preact/hooks"
 import styled from "styled-components"
-import { durationString, getISOWeekNumber, getISOWeeks } from "../../utils/datetime"
+import { dateHumanized, durationString, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from "../../utils/datetime"
 import { IconButton } from "../atoms/IconButton"
 import { Input } from "../atoms/Input"
 import { Block, Column } from "../atoms/Layout"
+import { Tooltip } from "../atoms/Tooltip"
 import { Label } from "../atoms/Typography"
 
 const Diagramm = styled.div`
@@ -113,8 +114,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                 </Column>
             </Block>
             <Diagramm>
-                {!!stats && Array(weeknumber).fill(0).map((_v, index) => {
-                    const week = index + 1
+                {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).map(({ week, period }) => {
                     const hours = getRequiredSeconds(week)
                     const seconds = (stats.weeks[week] || 0)
                     const hasData = !!stats.weeks[week]
@@ -130,10 +130,10 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                                     height: `${(hours - seconds) / seconds * 100}%`
                                 }} />
                             ))}
-                            {hasData && (
+                            <Tooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`}>
                                 <Duration>{`${durationString((stats.weeks[week] || 0) * 1000)}`}</Duration>
-                            )}
-                            <WeekNumber>{`00${week + 1}`.slice(-2)}</WeekNumber>
+                            </Tooltip>
+                            <WeekNumber>{`00${week}`.slice(-2)}</WeekNumber>
                         </Week>
                     )
                 }).slice(weekOffset - 15, weekOffset)}

@@ -1,5 +1,5 @@
 import { DB } from "./data-layer";
-import { dateString, timeStringFull } from "./datetime";
+import { dateString, getISOWeekNumber, getYearIsoWeeksPeriod, timeStringFull } from "./datetime";
 
 const fetch = isFirefox && content?.fetch || self.fetch
 
@@ -191,14 +191,13 @@ function toLocalWorklog(remoteWorklog: WorklogRemote|WorklogRemote[]): Worklog {
 }
 
 export async function fetchWorkStatistics(year:number = new Date().getFullYear()):Promise<StatsMap> {
-    const start = new Date().setFullYear(year, 0, 1)
-    const end = new Date().setFullYear(year, 11, 31)
+    const [start, end] = getYearIsoWeeksPeriod(year)
 
-    const worklogs = await fetchWorklogs(start, end)
+    const worklogs = await fetchWorklogs(start.getTime(), end.getTime())
     const workMap = {
         days: {},
         weeks: {},
-        month: {},
+        month: {}, 
         total: 0
     }
     const firstSunday = new Date(new Date().setFullYear(year, 0, 1))
@@ -208,11 +207,11 @@ export async function fetchWorkStatistics(year:number = new Date().getFullYear()
     return worklogs.reduce((workMap, log) => {
         const ms = new Date(log.started).getTime()
         const day = dateString(ms)
-        const week = Math.floor((ms - firstSunday.getTime()) / weekInMs)
+        const weekNumber = getISOWeekNumber(ms)
         const month = new Date(ms).getMonth() + 1
 
         workMap.days[day] = (workMap.days[day] || 0) + log.timeSpentSeconds
-        workMap.weeks[week] = (workMap.weeks[week] || 0) + log.timeSpentSeconds
+        workMap.weeks[weekNumber] = (workMap.weeks[weekNumber] || 0) + log.timeSpentSeconds
         workMap.month[month] = (workMap.month[month] || 0) + log.timeSpentSeconds
         workMap.total += log.timeSpentSeconds
 
