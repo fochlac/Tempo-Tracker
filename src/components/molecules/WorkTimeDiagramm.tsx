@@ -3,6 +3,8 @@ import { options } from "preact"
 import { ChevronLeft, ChevronRight } from "preact-feather"
 import { useEffect, useState } from "preact/hooks"
 import styled from "styled-components"
+import { useOptions } from "../../hooks/useOptions"
+import { useSelf } from "../../hooks/useSelf"
 import { dateHumanized, durationString, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from "../../utils/datetime"
 import { IconButton } from "../atoms/IconButton"
 import { Input } from "../atoms/Input"
@@ -40,6 +42,7 @@ const WeekNumber = styled.legend`
     font-size: 12px;
     width: 100%;
     text-align: center;
+    cursor: default;
 
     &:before {
     content: '';
@@ -76,6 +79,11 @@ const MissingHours = styled.span`
     margin-left: -1px;
     border-bottom: none;
 `
+const WeekTooltip = styled(Tooltip)`
+    &:before {
+        white-space: nowrap;
+    }
+`
 
 interface Props {
     stats: StatsMap;
@@ -85,9 +93,12 @@ interface Props {
     setYear: (year: number) => void;
 }
 export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getRequiredSeconds, options }) => {
-    const [weekOffset, setWeekOffset] = useState(getISOWeeks(new Date().getFullYear()))
-    const isCurrentYear = year === new Date().getFullYear()
-    
+    const currentYear = new Date().getFullYear()
+    const [weekOffset, setWeekOffset] = useState(getISOWeeks(currentYear))
+    const { data } = useOptions()
+    const self = useSelf(data)
+    const isCurrentYear = year === currentYear
+
     const maxSeconds = Math.max(stats ? (Math.ceil(Object.values(stats.weeks).reduce((highest, current) => current > highest ? current : highest, 0) / 60 / 60) + 1) * 60 * 60 : 0, (options.defaultHours + 1) * 60 * 60)
     const weeknumber = stats && isCurrentYear ? getISOWeekNumber(Date.now()) : getISOWeeks(year)
 
@@ -97,7 +108,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
 
     return (
         <>
-            <Block style={{userSelect: 'none'}}>
+            <Block style={{ userSelect: 'none' }}>
                 <Column style={{ justifyContent: 'center' }}>
                     <IconButton disabled={weekOffset === 15} onClick={() => setWeekOffset(Math.max(15, weekOffset - 15))}>
                         <ChevronLeft />
@@ -105,7 +116,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                 </Column>
                 <Column style={{ alignItems: 'center' }}>
                     <Label style={{ width: 65 }}>Year</Label>
-                    <Input type="number" style={{ width: 65 }} min={2000} value={year} max={new Date().getFullYear()} step={1} onChange={(e) => setYear(Number(e.target.value))} />
+                    <Input disabled={self.error} type="number" style={{ width: 65 }} min={2000} value={year} max={currentYear} step={1} onChange={(e) => setYear(Number(e.target.value))} />
                 </Column>
                 <Column style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
                     <IconButton disabled={weekOffset === weeknumber} onClick={() => setWeekOffset(Math.min(weeknumber, weekOffset + 15))}>
@@ -114,7 +125,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                 </Column>
             </Block>
             <Diagramm>
-                {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).map(({ week, period }) => {
+                {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).map(({ week, period }, index) => {
                     const hours = getRequiredSeconds(week)
                     const seconds = (stats.weeks[week] || 0)
                     const hasData = !!stats.weeks[week]
@@ -130,10 +141,12 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                                     height: `${(hours - seconds) / seconds * 100}%`
                                 }} />
                             ))}
-                            <Tooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`}>
-                                <Duration>{`${durationString((stats.weeks[week] || 0) * 1000)}`}</Duration>
-                            </Tooltip>
-                            <WeekNumber>{`00${week}`.slice(-2)}</WeekNumber>
+                            <Duration>{`${durationString((stats.weeks[week] || 0) * 1000)}`}</Duration>
+                            <WeekNumber>
+                                <WeekTooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`} right={weeknumber / 2 < index}>
+                                    {`00${week}`.slice(-2)}
+                                </WeekTooltip>
+                            </WeekNumber>
                         </Week>
                     )
                 }).slice(weekOffset - 15, weekOffset)}

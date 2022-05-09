@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{right: boolean;}>`
     position: relative;
     
     &:before {
@@ -20,6 +20,7 @@ const Wrapper = styled.div`
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        ${({right}) => right ? 'right: 0;' : ''}
     }
 
     &:hover:before {
@@ -48,12 +49,13 @@ const Wrapper = styled.div`
 interface TooltipProps {
     content: string;
     className?: string;
+    right?: boolean;
     style?: React.CSSProperties;
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, className }) => {
+export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, className, right }) => {
     if (!content) return <>{children}</>
-    return <Wrapper className={className} data-content={content} style={style}>
+    return <Wrapper className={className} data-content={content} style={style} right={right}>
         {children}
     </Wrapper>
 }
