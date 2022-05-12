@@ -2,6 +2,19 @@ import { DB_KEYS } from "../constants/constants"
 import { useDatabase, useDatabaseUpdate } from "../utils/database"
 import { getISOWeekNumber } from "../utils/datetime"
 
+const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
+    return {
+        defaultHours: Number(rawOptions.defaultHours),
+        exceptions: rawOptions.exceptions.map((e) => ({
+            startYear: Number(e.startYear),
+            startWeek: Number(e.startWeek),
+            endYear: Number(e.endYear),
+            endWeek: Number(e.endWeek),
+            hours: Number(e.hours)
+        }))
+    }
+}
+
 const defaultStatisticsOptions = {
     defaultHours: 40,
     exceptions: []
@@ -11,7 +24,7 @@ export function useStatisticsOptions() {
     const updateOptions = useDatabaseUpdate(DB_KEYS.STATS_OPTIONS)
     
     return {
-        data: options,
+        data: normalizeStatisticsOptions(options),
         actions: {
             async addException() {
                 const year = new Date().getFullYear()

@@ -31,9 +31,16 @@ const Week = styled.div`
     display: flex;
     background: #d2e2f2;
     position: relative;
-    width: 6%;
+    width: 100%;
     border: solid 1px #99a4af;
     border-bottom: none;
+`
+const WeekWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 6%;
+    height: 100%;
+    justify-content: flex-end;
 `
 const WeekNumber = styled.legend`
     position: absolute;
@@ -71,12 +78,8 @@ const OverHours = styled.span`
     background: repeating-linear-gradient( 45deg, #77DD77, #77DD77 2px, transparent 2px, transparent 7px);
 `
 const MissingHours = styled.span`
-    position: absolute;
-    bottom: 100%;
     width: 100%;
     border: dashed 1px #ff9a9a;
-    box-sizing: content-box;
-    margin-left: -1px;
     border-bottom: none;
 `
 const WeekTooltip = styled(Tooltip)`
@@ -131,23 +134,26 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                     const hasData = !!stats.weeks[week]
                     const showOver = hasData && Math.abs(seconds - hours) > 15 * 60
                     return (
-                        <Week key={week} style={{ height: `${seconds / maxSeconds * 100}%` }}>
-                            {showOver && (seconds > hours ? (
-                                <OverHours style={{
-                                    height: `${(seconds - hours) / seconds * 100}%`
-                                }} />
-                            ) : (
+                        <WeekWrapper>
+                            {showOver && seconds < hours && (
                                 <MissingHours style={{
-                                    height: `${(hours - seconds) / seconds * 100}%`
+                                    height: `${(hours - seconds) / maxSeconds * 100}%`
                                 }} />
-                            ))}
-                            <Duration>{`${durationString((stats.weeks[week] || 0) * 1000)}`}</Duration>
-                            <WeekNumber>
-                                <WeekTooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`} right={weeknumber / 2 < index}>
-                                    {`00${week}`.slice(-2)}
-                                </WeekTooltip>
-                            </WeekNumber>
-                        </Week>
+                            )}
+                            <Week key={week} style={{ height: `${seconds / maxSeconds * 100}%` }}>
+                                {showOver && seconds > hours && (
+                                    <OverHours style={{
+                                        height: `${(seconds - hours) / seconds * 100}%`
+                                    }} />
+                                )}
+                                <Duration>{`${durationString((stats.weeks[week] || 0) * 1000)}`}</Duration>
+                                <WeekNumber>
+                                    <WeekTooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`} right={weeknumber / 2 < index}>
+                                        {`00${week}`.slice(-2)}
+                                    </WeekTooltip>
+                                </WeekNumber>
+                            </Week>
+                        </WeekWrapper>
                     )
                 }).slice(weekOffset - 15, weekOffset)}
             </Diagramm>

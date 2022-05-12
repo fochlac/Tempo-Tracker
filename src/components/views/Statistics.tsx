@@ -27,8 +27,8 @@ export const StatisticsView: React.FC = () => {
 
     const { data: options, actions } = useStatisticsOptions()
 
-    const updateOptionKey = (key) => (e) => actions.merge({ [key]: e.target.value })
-    const updateExceptionKey = (key, index) => (e) => actions.mergeException(index, { [key]: e.target.value })
+    const updateOptionKey = (key) => (e) => actions.merge({ [key]: Number(e.target.value) })
+    const updateExceptionKey = (key, index) => (e) => actions.mergeException(index, { [key]: Number(e.target.value) })
     const weekHourMap = useMemo(() => {
         if (!options.exceptions.length) return {}
 
