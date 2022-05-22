@@ -18,7 +18,8 @@ function renderIssues(wrapper: HTMLElement, issues: LocalIssue[], tracking: Trac
 }
 
 function initOverlay() {
-    const wrapper = window.__tempoTracker.wrapper
+    const wrapper = window.__tempoTracker?.wrapper
+    if (!wrapper) return
     const { tracking, issues } = window.__tempoTracker
     wrapper.className = 'tempo_tracker-overlay'
     wrapper.innerHTML = template
@@ -40,7 +41,8 @@ function initOverlay() {
 }
 
 function removeOverlay() {
-    const wrapper = window.__tempoTracker.wrapper
+    const wrapper = window.__tempoTracker?.wrapper
+    if (!wrapper) return
     if (typeof window.__tempoTracker.cleanup.movement === 'function') {
         window.__tempoTracker.cleanup.movement()
     }
@@ -51,7 +53,8 @@ function removeOverlay() {
 }
 
 function checkOverlayVisibility() {
-    const wrapper = window.__tempoTracker.wrapper
+    const wrapper = window.__tempoTracker?.wrapper
+    if (!wrapper) return
     const { options } = window.__tempoTracker
     const dayMinutes = Math.floor((Date.now() - new Date().setHours(0, 0, 0, 0)) / 1000 / 60)
     const shouldBeVisible = (
@@ -73,7 +76,8 @@ function checkOverlayVisibility() {
 let visibilityInterval = setInterval(() => checkOverlayVisibility(), 10000)
 
 async function update() {
-    const wrapper = window.__tempoTracker.wrapper
+    const wrapper = window.__tempoTracker?.wrapper
+    if (!wrapper) return
     const result = await triggerBackgroundAction(ACTIONS.PAGE_SETUP.create()) as ReturnType<typeof ACTIONS.PAGE_SETUP.response>['payload']
     const { tracking, options, issues } = result
     const current = window.__tempoTracker

@@ -46,7 +46,6 @@ let tab
 export function useFetchJiraWorklog() {
     let worklogResult
     const { data, actions, validUntil } = useJiraWorklog()
-    const options = useOptions()
     if (isFirefox) {
         const options = useOptions()
         const fetchLogsFF = async (force?: boolean) => {

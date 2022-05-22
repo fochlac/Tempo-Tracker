@@ -1,7 +1,8 @@
 import { startTimer } from "./timer"
 
 export function setButtonToStart() {
-    const wrapper = window.__tempoTracker.wrapper
+    const wrapper = window.__tempoTracker?.wrapper
+    if (!wrapper) return
     const button = wrapper.querySelector('.tempo_tracker-btn')
     button.classList.remove('stop')
     if (!button.classList.contains('start')) {
@@ -14,7 +15,8 @@ export function setButtonToStart() {
 }
 
 export function setButtonToStop() {
-    const wrapper = window.__tempoTracker.wrapper
+    const wrapper = window.__tempoTracker?.wrapper
+    if (!wrapper) return
     const button = wrapper.querySelector('.tempo_tracker-btn')
     button.classList.remove('start')
     if (!button.classList.contains('stop')) {

@@ -1,6 +1,7 @@
 
 import { DB_KEYS } from "../constants/constants"
 import { DB } from "../utils/data-layer"
+import { v4 } from 'uuid'
 import { deleteWorklog, updateWorklog, writeWorklog } from "../utils/jira"
 const DELETED = 'deleted'
 
@@ -10,8 +11,21 @@ export async function flushQueue() {
         return 
     }
     isRunning = true
+    const id = v4()
     try {
-        const queue = await DB.get(DB_KEYS.UPDATE_QUEUE) as TemporaryWorklog[] || []
+        let queue = []
+        
+        await DB.update(
+            DB_KEYS.UPDATE_QUEUE, 
+            (q: TemporaryWorklog[]) => {
+                queue = q.filter((log) => !log.syncTabId)
+
+                return q.map((log) => ({
+                    ...log,
+                    syncTabId: log.syncTabId ?? id
+                }))
+            }
+        )
         const updated = {}
         for(const log of queue) {
             try {
@@ -35,16 +49,17 @@ export async function flushQueue() {
                 console.log(e)
             }
         }
-        if (queue.length && !Object.keys(updated).length) {
-            return Promise.reject('All updates failed.')
-        }
         await DB.update(DB_KEYS.WORKLOG_CACHE, (cache: CacheObject<Worklog[]>) => ({
             validUntil: cache.validUntil,
             data: [].concat(cache.data.filter((log) => !updated[log.id]), Object.values(updated))
         }))
         await DB.update(
             DB_KEYS.UPDATE_QUEUE, 
-            (queue: TemporaryWorklog[]) => queue.filter((log) => log.tempId ? !updated[log.tempId] : !updated[log.id])
+            (q: TemporaryWorklog[]) => {
+                return q
+                    .filter((log) => log.tempId ? !updated[log.tempId] : !updated[log.id])
+                    .map((log) => log.syncTabId === id ? { ...log, syncTabId: null } : log)
+            }
         )
     }
     finally {

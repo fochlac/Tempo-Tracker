@@ -13,13 +13,11 @@ export function formatDuration(ms: number, noSecond?: boolean, noDays?: boolean)
         return `${d}d ${h % 24}h ${pad(m % 60)}m`
     }
     else if (h > 0) {
-        return m % 60 
-            ? `${noDays ? h : h % 24}h ${pad(m % 60)}m`
-            : `${noDays ? h : h % 24}h`
+        return `${h}h ${pad(m % 60)}m`
     }
     else {
         return noSecond 
-            ? `${m % 60}m`
+            ? `0h ${m % 60}m`
             : `${m % 60}m ${pad(s % 60)}s`
     }
 }

@@ -24,6 +24,8 @@ const Diagramm = styled.div`
     border-left: 1px solid #aeaeae;
     padding-left: 4px;
     margin-bottom: 20px;
+    margin-left: 16px;
+    margin-right: 8px;
     flex-shrink: 0;
 `
 
@@ -38,7 +40,7 @@ const Week = styled.div`
 const WeekWrapper = styled.div`
     display: flex;
     flex-direction: column;
-    width: 6%;
+    width: 32px;
     height: 100%;
     justify-content: flex-end;
 `
@@ -69,6 +71,33 @@ const Duration = styled.legend`
     width: 100%;
     text-align: center;
 `
+const TimeBar = styled.legend`
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    width: 16px;
+    left: -16px;
+`
+const Time = styled.span`
+    position: absolute;
+    white-space: nowrap;
+    height: 20px;
+    font-size: 11px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:before {
+        content: '';
+        position: absolute;
+        width: 488px;
+        height: 0px;
+        top: 10px;
+        left: 15px;
+        border-top: dashed #aeaeae 1px;
+    }
+`
 const OverHours = styled.span`
     position: absolute;
     top: 0;
@@ -88,6 +117,7 @@ const WeekTooltip = styled(Tooltip)`
     }
 `
 
+const columns = 13
 interface Props {
     stats: StatsMap;
     year: number;
@@ -113,7 +143,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
         <>
             <Block style={{ userSelect: 'none' }}>
                 <Column style={{ justifyContent: 'center' }}>
-                    <IconButton disabled={weekOffset === 15} onClick={() => setWeekOffset(Math.max(15, weekOffset - 15))}>
+                    <IconButton disabled={weekOffset === 15} onClick={() => setWeekOffset(Math.max(columns, weekOffset - columns))}>
                         <ChevronLeft />
                     </IconButton>
                 </Column>
@@ -122,12 +152,17 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                     <Input disabled={self.error} type="number" style={{ width: 65 }} min={2000} value={year} max={currentYear} step={1} onChange={(e) => setYear(Number(e.target.value))} />
                 </Column>
                 <Column style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
-                    <IconButton disabled={weekOffset === weeknumber} onClick={() => setWeekOffset(Math.min(weeknumber, weekOffset + 15))}>
+                    <IconButton disabled={weekOffset === weeknumber} onClick={() => setWeekOffset(Math.min(weeknumber, weekOffset + columns))}>
                         <ChevronRight />
                     </IconButton>
                 </Column>
             </Block>
             <Diagramm>
+                <TimeBar>
+                    {[options.defaultHours, Math.floor(options.defaultHours / 2)].map((hours) => (
+                        <Time style={{bottom: `calc(${hours * 60 * 60 / maxSeconds * 100}% - 10px)`}}>{hours}</Time>
+                    ))}
+                </TimeBar>
                 {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).map(({ week, period }, index) => {
                     const hours = getRequiredSeconds(week)
                     const seconds = (stats.weeks[week] || 0)
@@ -155,7 +190,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                             </Week>
                         </WeekWrapper>
                     )
-                }).slice(weekOffset - 15, weekOffset)}
+                }).slice(weekOffset - columns, weekOffset)}
             </Diagramm>
         </>
     )

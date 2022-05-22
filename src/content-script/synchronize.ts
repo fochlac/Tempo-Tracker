@@ -72,15 +72,15 @@ export async function checkWorklogQueue() {
     if (isSyncing) {
         return
     }
-    const { success, queue, forceSync, forceFetch } = await triggerBackgroundAction(ACTIONS.SETUP_PAGE_QUEUE.create())
+    const { success, queue, forceSync, forceFetch } = await triggerBackgroundAction(ACTIONS.SETUP_PAGE_QUEUE.create()) as any
     if (success && (forceSync || forceFetch)){
         try {
             const { setProgress } = renderOverlay(queue)
-            if (forceFetch) {
-                await fetchWorklogs()
-            }
             if (forceSync && queue.length) {
                 await synchronize(queue, setProgress)
+            }
+            if (forceFetch) {
+                await fetchWorklogs()
             }
         }
         finally {

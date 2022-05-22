@@ -19,7 +19,7 @@ export function useLogSync(self, worklog) {
             } catch (e) {
                 return
             }
-            await options.actions.merge({ forceSync: true })
+            await options.actions.merge({ forceSync: true, forceFetch: true })
             const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
             const tab = await browser?.tabs?.create({ url, active: true })
             const timer = setInterval(() => {
@@ -39,8 +39,8 @@ export function useLogSync(self, worklog) {
                 setError(true)
             }
             setSyncing(false)
+            worklog.forceFetch()
         }
-        worklog.forceFetch()
     }
 
     return {

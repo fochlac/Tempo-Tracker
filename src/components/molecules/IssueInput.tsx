@@ -77,7 +77,7 @@ interface Props {
 export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
     const { data: options, actions } = useOptions()
     const [open, setOpen] = useState(false)
-    const [result, setResult] = useState<{isLoading: boolean; data?: Issue[];}>(null)
+    const [result, setResult] = useState<{ isLoading: boolean; data?: Issue[]; }>(null)
     const [search, setSearch] = useState('')
     const [delIssue, setDelIssue] = useState<LocalIssue>(null)
     const currentSearch = useRef(search)
@@ -86,7 +86,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
     useEffect(() => {
         currentSearch.current = search
         if (search.length && search.includes('-') || search.length > 5) {
-            setResult({isLoading: true})
+            setResult({ isLoading: true })
             searchIssues(search)
                 .then((issues) => {
                     if (search === currentSearch.current) {
@@ -113,23 +113,23 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
     }, [open])
 
     const deleteIssue = async () => {
-        const newIssues = {...options.issues}
+        const newIssues = { ...options.issues }
         delete newIssues[delIssue.key]
         await actions.merge({ issues: newIssues })
         setDelIssue(null)
     }
     const addIssue = (issue: Issue) => async () => {
-        const newIssues = {...options.issues, [issue.key]: {...issue, alias: `${issue.key}: ${issue.name}`}}
+        const newIssues = { ...options.issues, [issue.key]: { ...issue, alias: `${issue.key}: ${issue.name}` } }
         await actions.merge({ issues: newIssues })
         setOpen(false)
     }
     const handleAliasChange = (issueKey) => (e) => {
-        const newIssues = {...options.issues}
+        const newIssues = { ...options.issues }
         newIssues[issueKey].alias = e.target.value
         actions.merge({ issues: newIssues })
     }
     const handleColorChange = (issueKey) => (e) => {
-        const newIssues = {...options.issues}
+        const newIssues = { ...options.issues }
         newIssues[issueKey].color = e.target.value
         actions.merge({ issues: newIssues })
     }
@@ -143,15 +143,15 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                         <Tooltip content={`${issue.key}: ${issue.name}`}>
                             <IssueKey>{issueKey}:</IssueKey>
                         </Tooltip>
-                        <Input 
-                            style={{ flexGrow: 1, marginRight: 8 }} 
-                            value={issue?.id ? issue.alias: 'Issue broken, please re-add via "Add Issue" button.'} 
-                            onChange={handleAliasChange(issueKey)} />
                         <Input
+                            style={{ flexGrow: 1, marginRight: 8 }}
+                            value={issue?.id ? issue.alias : 'Issue broken, please re-add via "Add Issue" button.'}
+                            onChange={handleAliasChange(issueKey)} />
+                        {!isFirefox && (<Input
                             type="color"
-                            style={{ width: 20, marginRight: 8 }} 
+                            style={{ width: 20, marginRight: 8 }}
                             value={issue.color || '#ffffff'}
-                            onChange={handleColorChange(issueKey)} />
+                            onChange={handleColorChange(issueKey)} />)}
                         <IconButton disabled={!issue} onClick={() => setDelIssue(issue)}><Trash2 /></IconButton>
                     </IssueRow>
                 )
@@ -175,7 +175,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
         {open && (
             <Modal style={{ padding: 0, justifyContent: 'flex-start', width: 380, height: 430 }}>
                 <FlexRow style={{ width: '100%' }}>
-                    <H5 style={{padding: 8, margin: 0, fontSize: '1rem'}}>Add Issue</H5>
+                    <H5 style={{ padding: 8, margin: 0, fontSize: '1rem' }}>Add Issue</H5>
                     <div style={{ marginLeft: 'auto', cursor: 'pointer', padding: 4 }} onClick={() => setOpen(false)}>
                         <X size={18} />
                     </div>
