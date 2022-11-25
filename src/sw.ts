@@ -11,23 +11,38 @@ import { heartbeat } from "./service-worker/heartbeat"
 const controller = chrome || browser
 
 controller.alarms.create('flushQueue', { periodInMinutes: 1 })
+const testAlarm = controller.alarms.create('test', { periodInMinutes: 2 })
 
 controller.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === 'flushQueue') {
-        const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
-        if (options.autosync) {
-            await flushQueue()
+        try {
+            const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
+            if (options.autosync) {
+                await flushQueue()
+            }
         }
-        await updateBadgeTitle()
-        await heartbeat()
+        catch (e) { console.log(e) }
+        try {
+            await updateBadgeTitle()
+        }
+        catch (e) { console.log(e) }
+        try {
+            await heartbeat()
+        }
+        catch (e) { console.log(e) }
     }
 })
 
+
+controller.alarms.onAlarm.addListener((alarm) => {
+    console.log(alarm)
+})
+console.log('testalarm', testAlarm)
 async function getSetupInfo() {
     const [rawOptions, tracking] = await Promise.all([
         DB.get(DB_KEYS.OPTIONS), DB.get(DB_KEYS.TRACKING)
     ]) as [Options, Tracking]
-    
+
     const options = getOptions(rawOptions)
     return {
         tracking,
@@ -63,7 +78,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
     if (ACTIONS.STORE_RECENT_WORKLOGS.type === request.type) {
         const { worklogs } = request.payload
         DB.set(DB_KEYS.WORKLOG_CACHE, {
-            validUntil: Date.now() + 1000 * 60 * 10, 
+            validUntil: Date.now() + 1000 * 60 * 10,
             data: worklogs
         })
             .then(() => sendResponse(ACTIONS.STORE_RECENT_WORKLOGS.response(true)))
@@ -104,7 +119,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
     }
     if (ACTIONS.PAGE_SETUP.type === request.type) {
         getSetupInfo()
-            .then(({issues, options, tracking}) => sendResponse(ACTIONS.PAGE_SETUP.response(true, tracking, issues, options)))
+            .then(({ issues, options, tracking }) => sendResponse(ACTIONS.PAGE_SETUP.response(true, tracking, issues, options)))
             .catch((e) => sendResponse(ACTIONS.PAGE_SETUP.response(false)))
 
         return true
@@ -114,7 +129,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
             issue: request.payload.issue,
             start: Date.now()
         }
-        
+
         DB.get(DB_KEYS.TRACKING)
             .then((currentTracking: Tracking) => !currentTracking?.issue ? DB.set(DB_KEYS.TRACKING, tracking) : Promise.reject())
             .then(updateBadgeTitle)

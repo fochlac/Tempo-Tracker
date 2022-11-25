@@ -1,16 +1,29 @@
 export function getOptions(options: Partial<Options>): Options {
+    const {
+        issues,
+        domain,
+        user,
+        autosync,
+        forceSync,
+        forceFetch,
+        token,
+        overlay,
+        overlayDays,
+        overlayHours
+    } = options || {}
+
     return {
-        issues: Array.isArray(options.issues) 
-            ? options.issues.reduce((obj, i) => ({...obj, [i]: ''}), {}) 
-            : options.issues ?? {},
-        domain: options.domain ?? '',
-        user: options.user ?? '',
-        autosync: options.autosync ?? false,
-        forceSync: options.forceSync ?? false,
-        forceFetch: options.forceFetch ?? false,
-        token: options.token ?? '',
-        overlay: options.overlay ?? true,
-        overlayDays: options.overlayDays ?? [1, 2, 3, 4, 5],
-        overlayHours: options.overlayHours ?? [6 * 60, 18 * 60]
+        issues: Array.isArray(issues)
+            ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {})
+            : issues ?? {},
+        domain: domain ?? '',
+        user: user ?? '',
+        autosync: autosync ?? false,
+        forceSync: forceSync ?? false,
+        forceFetch: forceFetch ?? false,
+        token: token ?? '',
+        overlay: overlay ?? true,
+        overlayDays: overlayDays ?? [1, 2, 3, 4, 5],
+        overlayHours: overlayHours ?? [6 * 60, 18 * 60]
     }
 }
