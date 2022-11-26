@@ -6,10 +6,7 @@ export function getOptions(options: Partial<Options>): Options {
         autosync,
         forceSync,
         forceFetch,
-        token,
-        overlay,
-        overlayDays,
-        overlayHours
+        token
     } = options || {}
 
     return {
@@ -21,9 +18,6 @@ export function getOptions(options: Partial<Options>): Options {
         autosync: autosync ?? false,
         forceSync: forceSync ?? false,
         forceFetch: forceFetch ?? false,
-        token: token ?? '',
-        overlay: overlay ?? true,
-        overlayDays: overlayDays ?? [1, 2, 3, 4, 5],
-        overlayHours: overlayHours ?? [6 * 60, 18 * 60]
+        token: token ?? ''
     }
 }

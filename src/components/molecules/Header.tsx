@@ -23,8 +23,8 @@ const Title = styled.h1`
 export const Header: React.FC = () => {
     const view = useSelector(viewDuck.selector)
     const { data: options } = useOptions()
-    const mandatoryOptions = options.user?.length && options.token?.length && options.domain?.length && Object.keys(options.issues).length
-    const trackerLink = <InternalLink disabled={!mandatoryOptions} to={VIEWS.TRACKER}>Tracker</InternalLink>
+    const mandatoryOptions = Boolean(options.user?.length && options.token?.length && options.domain?.length && Object.keys(options.issues).length)
+    const trackerLink = <InternalLink style={{ marginRight: 4 }} disabled={!mandatoryOptions} to={VIEWS.TRACKER}>Tracker</InternalLink>
 
     return (
         <AppBar>
@@ -33,13 +33,13 @@ export const Header: React.FC = () => {
             {view !== VIEWS.TRACKER && (
                 mandatoryOptions
                     ? trackerLink
-                    : <Tooltip content="Please fill all mandatory options.">{trackerLink}</Tooltip>
+                    : <Tooltip right content="Please fill all mandatory options.">{trackerLink}</Tooltip>
             )}
             {!isFirefox && mandatoryOptions && view !== VIEWS.STATS && (
-                <InternalLink style={{ marginRight: 8 }} to={VIEWS.STATS}>Statistics</InternalLink>
+                <InternalLink style={{ marginRight: 4 }} to={VIEWS.STATS}>Statistics</InternalLink>
             )}
             {view !== VIEWS.OPTIONS && (
-                <InternalLink style={VIEWS.STATS === view ? { marginRight: 8 } : {}} to={VIEWS.OPTIONS}>Options</InternalLink>
+                <InternalLink style={VIEWS.STATS === view ? { marginRight: 4 } : {}} to={VIEWS.OPTIONS}>Options</InternalLink>
             )}
         </AppBar>
     )

@@ -1,4 +1,4 @@
-import { AlertCircle } from "preact-feather"
+import { AlertCircle, AlertOctagon } from "preact-feather"
 import { useEffect, useState } from "preact/hooks"
 import styled from "styled-components"
 import { useOptions } from "../../hooks/useOptions"
@@ -6,12 +6,13 @@ import { useSafeState } from "../../hooks/useSafeState"
 import { useSelf } from "../../hooks/useSelf"
 import { openTab } from "../../utils/browser"
 import { ActionLink } from "../atoms/ActionLink"
-import { DualRangeSlider } from "../atoms/DualRangeSlider"
 import { Input } from "../atoms/Input"
-import { FlexColumn, FlexRow } from "../atoms/Layout"
-import { Tooltip, ErrorTooltip } from "../atoms/Tooltip"
+import { FlexRow } from "../atoms/Layout"
+import { ErrorTooltip, Tooltip } from "../atoms/Tooltip"
 import { ErrorText, H6, InfoText, Label } from "../atoms/Typography"
 import { IssueInput } from "../molecules/IssueInput"
+import { saveAs } from 'file-saver'
+import { ImportOptionsAction } from "../molecules/ImportOptionsAction"
 
 const Body = styled.div`
     display: flex;
@@ -21,12 +22,8 @@ const Body = styled.div`
 const Option = styled.div`
     display: flex;
     flex-direction: column;
-    margin: 8px 18px;
+    margin: 8px 8px 8px 12px;
     position: relative;
-`
-const TimeRange = styled.time`
-    width: 210px;
-    text-align: center;
 `
 const InputWrapper = styled.time`
     display: flex;
@@ -55,6 +52,7 @@ const SectionHead = styled(H6)`
     top: 0;
     position: sticky;
     z-index: 1;
+    margin-right: 8px;
 `
 const ErrorInfoText = styled(InfoText)`
     height: 0;
@@ -66,8 +64,37 @@ const ErrorInfoText = styled(InfoText)`
 `
 const JiraHead = styled(SectionHead)`
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: flex-end;
+`
+const ImportExportBar = styled.div`
+    font-size: 0.8rem;
+    flex-direction: row;
+    justify-content: flex-end;
+    position: relative;
+    display: flex;
+    padding-right: 6px;
+`
+const Title = styled.span`
+    margin-right: auto;
+`
+const ExportLink = styled(ActionLink)`
+    padding-right: 4px;
+`
+const ErrorBox = styled(ErrorText)`
+    padding: 4px 8px 4px 4px;
+    border: solid rgb(224, 4, 4) 1px;
+    background: rgb(255 232 232);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+`
+const StyledAlertOctagon = styled(AlertOctagon)`
+    margin-left: 4px;
+    margin-right: 8px;
+    height: 28px;
+    width: 28px;
 `
 
 const JIRA_LINK = '/secure/ViewProfile.jspa?selectedTab=com.atlassian.pats.pats-plugin:jira-user-personal-access-tokens'
@@ -88,17 +115,6 @@ export const OptionsView: React.FC = () => {
         }
     }, [userKey])
 
-    const updateOverlayDay = (day) => (e) => {
-        if (e.target.checked) {
-            actions.merge({ overlayDays: [day].concat(options.overlayDays) })
-        }
-        else {
-            actions.merge({ overlayDays: options.overlayDays.filter(v => v !== day) })
-        }
-    }
-
-    const overlayHoursStart = `${Math.floor(options.overlayHours[0] / 60)}:${`00${options.overlayHours[0] % 60}`.slice(-2)}`
-    const overlayHoursEnd = `${Math.floor(options.overlayHours[1] / 60)}:${`00${options.overlayHours[1] % 60}`.slice(-2)}`
     const stars = options.token.length ? Array(Math.max(options.token.length - 8, 12)).fill('*').join('') : ''
     const tokenObfuscated = `${options.token.slice(0, 4)}${stars}${options.token.slice(-4)}`
 
@@ -114,17 +130,30 @@ export const OptionsView: React.FC = () => {
         ? ` Did you mean "${/^https?:\/\/[^/]+/.exec(domain)[0]}/rest"?`
         : ''
     const showError = Boolean(error && !ignoreError && error !== 'TOKEN' && domain.length && storedToken.length)
+    const onExportOptions = () => saveAs(
+        new Blob([JSON.stringify({ ...options, token: '', user: '' }, null, 4)], { type: 'application/json;charset=utf-8' }),
+        'tempo-tracker.options.json'
+    )
 
     return (
         <Body>
             <JiraHead>
-                <span>Jira Options</span>
-                {showError && (
-                    <ErrorTooltip content="Please check your server url and the personal access token.">
-                        <ErrorText>Error connecting to the Jira-API!</ErrorText>
-                    </ErrorTooltip>
-                )}
+                <Title>Jira Options</Title>
+                <ImportExportBar>
+                    <Tooltip right content='This export contains the issue list and the server url. The personal access token and the username are not included in the export.'>
+                        <ExportLink onClick={onExportOptions}>Export</ExportLink>
+                    </Tooltip>
+                    <ImportOptionsAction />
+                </ImportExportBar>
             </JiraHead>
+            {showError && (
+                <Option>
+                    <ErrorBox>
+                        <StyledAlertOctagon />
+                        <span>Error connecting to the Jira-API: Please check the server url and the personal access token.</span>
+                    </ErrorBox>
+                </Option>
+            )}
             <Option>
                 <Label>Server Url<Mandatory>*</Mandatory></Label>
                 <InfoText>Url of your Jira server's REST-API: https://jira.domain.com/rest.</InfoText>
@@ -190,38 +219,6 @@ export const OptionsView: React.FC = () => {
                     </Option>
                 </>
             )}
-            <SectionHead>Browser Overlay</SectionHead>
-            <Option>
-                <Label>Activate Browser Overlay</Label>
-                <FlexRow justify="flex-start">
-                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.overlay} onChange={(e) => actions.merge({ overlay: e.target.checked })} />
-                    <Label>enabled</Label>
-                </FlexRow>
-            </Option>
-            <Option>
-                <Label>Active Days</Label>
-                <FlexRow justify="flex-start">
-                    {['Sun', 'Mo', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx: (0 | 1 | 2 | 3 | 4 | 5 | 6)) => (
-                        <FlexColumn key={day} style={{ width: 25 }}>
-                            <Input type="checkbox" checked={options.overlayDays.includes(idx)} onChange={updateOverlayDay(idx)} />
-                            <Label>{day}</Label>
-                        </FlexColumn>
-                    ))}
-                </FlexRow>
-            </Option>
-            <Option>
-                <Label>Active Hours</Label>
-                <FlexColumn style={{ margin: '0 6px' }} align="flex-start">
-                    <DualRangeSlider max={24 * 60} value={options.overlayHours} onChange={(overlayHours) => actions.merge({ overlayHours })} />
-                    <TimeRange>
-                        {overlayHoursStart}
-                        &nbsp;&nbsp;
-                        {' - '}
-                        &nbsp;&nbsp;
-                        {overlayHoursEnd}
-                    </TimeRange>
-                </FlexColumn>
-            </Option>
         </Body>
     )
 }

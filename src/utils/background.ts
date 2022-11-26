@@ -2,7 +2,7 @@ import { ACTIONS } from "../constants/actions"
 
 const controller = chrome || browser
 
-export const triggerBackgroundAction = (action) => {
+export const triggerBackgroundAction = <R = any>(action): Promise<R> => {
     return new Promise((resolve, reject) => {
         if (controller?.runtime?.sendMessage) {
             const errTimer = setTimeout(() => {
@@ -11,7 +11,7 @@ export const triggerBackgroundAction = (action) => {
             const callback = (response) => {
                 clearTimeout(errTimer)
                 if (response.payload.success) {
-                    resolve(response.payload)
+                    resolve(response.payload as R)
                 }
                 else {
                     reject(response.payload)

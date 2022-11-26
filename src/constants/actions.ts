@@ -35,10 +35,10 @@ export const ACTIONS = {
         create() {
             return {type: 'PAGE_SETUP'}
         },
-        response(success: boolean, tracking?: Tracking, issues?: LocalIssue[], options?: Options) {
+        response(success: boolean, options?: Options) {
             return {
                 type: 'PAGE_SETUP',
-                payload: { success, tracking, issues, options }
+                payload: { success, options }
             }
         }
     },

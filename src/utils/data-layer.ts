@@ -4,17 +4,20 @@ const DATABASE_NAME = 'tempo-tracker'
 
 const stores = [CACHE_STORE]
 
+const ACCESS_MODES = {
+    READ_ONLY: 'readonly',
+    READ_WRITE: 'readwrite'
+}
+
 const indexedDb = self.indexedDB || (self as any).mozIndexedDB || (self as any).webkitIndexedDB
 
 const request = indexedDb.open(DATABASE_NAME, VERSION)
 
 const db = new Promise((resolve, reject) => {
-    request.onsuccess = (e) => {
-        resolve((e.target as any).result)
-    }
-    request.onerror = (e) => {
-        reject(e)
-    }
+    request.onsuccess = (e) => resolve((e.target as any).result)
+    request.onerror = (e) => reject(e)
+    request.onblocked = (e) => reject(e)
+
     request.onupgradeneeded = (e) => {
         const db = (e.target as any).result
         stores.forEach((store) => {
@@ -23,55 +26,56 @@ const db = new Promise((resolve, reject) => {
             }
         })
     }
-
-    request.onblocked = (e) => {
-        reject(e)
-    }
 })
 
-const indexedDBStorage = (name: string) => {
-    const get = (key: string) =>
-        db.then((database: any) =>
-            new Promise((resolve, reject) => {
-                let transaction = database.transaction([name], 'readonly')
-                transaction.onabort = e => { throw e.target.error }
-                const store = transaction.objectStore(name)
-                let request = store.get(key)
-                request.onsuccess = (e) => resolve(e.target.result as any)
-                request.onerror = reject
-            })
-        )
+const createTransaction = async (name, mode) => {
+    const database: any = await db
+    const transaction = database.transaction([name], mode)
+    let fail, succeed
+    
+    const result = new Promise((resolve, reject) => {
+        fail = reject,
+        succeed = resolve
+    })
 
+    transaction.onabort = (e) => fail(e.target.error)
+    const store = transaction.objectStore(name)
+
+    return {
+        get: (key) => {
+            let request = store.get(key)
+            request.onsuccess = (e) => succeed(e.target.result as any)
+            request.onerror = fail
+            return result
+        },
+        set: (key, value) => {
+            let request = store.put(value, key)
+            request.onsuccess = () => succeed(value)
+            request.onerror = fail
+            return result
+        },
+        update: (key, updater) => {
+            let getrequest = store.get(key)
+            getrequest.onsuccess = (e: any) => {
+                const value = updater(e.target.result as any)
+                let request = store.put(value, key)
+                request.onsuccess = () => succeed(value)
+                request.onerror = fail
+            }
+            getrequest.onerror = fail
+            return result
+        }
+    }
+}
+
+const indexedDBStorage = (name: string) => {
+    const get = (key: string) => createTransaction(name, ACCESS_MODES.READ_ONLY).then((store: any) => store.get(key))
 
     const set = (key: string, value: any) =>
-        db.then(
-            (database: any) =>
-                new Promise((resolve, reject) => {
-                    let transaction = database.transaction([name], 'readwrite')
-                    transaction.onabort = e => { throw e.target.error }
-                    const store = transaction.objectStore(name)
-                    let request = store.put(value, key)
-                    request.onsuccess = () => resolve(null)
-                    request.onerror = reject
-                })
-        )
-    const update = <T = any>(key: string, updater: (originalValue: T) => T) =>
-        db.then(
-            (database: any) =>
-                new Promise((resolve, reject) => {
-                    let transaction = database.transaction([name], 'readwrite')
-                    transaction.onabort = e => { throw e.target.error }
-                    const store = transaction.objectStore(name)
+        createTransaction(name, ACCESS_MODES.READ_WRITE).then((store: any) => store.set(key, value))
 
-                    let getrequest = store.get(key)
-                    getrequest.onsuccess = function (e: any) {
-                        let request = store.put(updater(e.target.result as any), key)
-                        request.onsuccess = () => resolve(null)
-                        request.onerror = reject
-                    }
-                    getrequest.onerror = reject
-                })
-        )
+    const update = <T = any>(key: string, updater: (originalValue: T) => T) =>
+        createTransaction(name, ACCESS_MODES.READ_WRITE).then((store: any) => store.update(key, updater))
 
     return {
         get,

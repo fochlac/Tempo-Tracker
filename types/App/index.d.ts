@@ -55,7 +55,7 @@ interface LocalIssue extends Issue {
     color?: string;
 }
 
-interface Options extends OverlayOptions {
+interface Options {
     issues: Record<string, LocalIssue>;
     domain: string;
     user: string;
@@ -63,12 +63,6 @@ interface Options extends OverlayOptions {
     forceSync: boolean;
     forceFetch: boolean;
     token: string;
-}
-
-interface OverlayOptions {
-    overlay: boolean;
-    overlayDays: (1|2|3|4|5|6|0)[];
-    overlayHours: [number, number];
 }
 
 interface StatsMap {

@@ -1,6 +1,4 @@
 import createAtom from 'tiny-atom'
-import { VIEWS } from '../constants/constants'
-import { DB } from '../utils/data-layer'
 import { editIssueDuck } from './ducks/edit-issue'
 import { viewDuck } from './ducks/view'
 

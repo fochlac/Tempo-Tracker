@@ -11,9 +11,9 @@ import { heartbeat } from "./service-worker/heartbeat"
 const controller = chrome || browser
 
 controller.alarms.create('flushQueue', { periodInMinutes: 1 })
-const testAlarm = controller.alarms.create('test', { periodInMinutes: 2 })
 
 controller.alarms.onAlarm.addListener(async (alarm) => {
+    console.info('alarm', alarm)
     if (alarm.name === 'flushQueue') {
         try {
             const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
@@ -33,22 +33,10 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
     }
 })
 
-
-controller.alarms.onAlarm.addListener((alarm) => {
-    console.log(alarm)
-})
-console.log('testalarm', testAlarm)
 async function getSetupInfo() {
-    const [rawOptions, tracking] = await Promise.all([
-        DB.get(DB_KEYS.OPTIONS), DB.get(DB_KEYS.TRACKING)
-    ]) as [Options, Tracking]
-
-    const options = getOptions(rawOptions)
-    return {
-        tracking,
-        options,
-        issues: Object.values(options.issues)
-    }
+    const rawOptions = await DB.get(DB_KEYS.OPTIONS)
+    
+    return getOptions(rawOptions)
 }
 
 controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
@@ -119,8 +107,8 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
     }
     if (ACTIONS.PAGE_SETUP.type === request.type) {
         getSetupInfo()
-            .then(({ issues, options, tracking }) => sendResponse(ACTIONS.PAGE_SETUP.response(true, tracking, issues, options)))
-            .catch((e) => sendResponse(ACTIONS.PAGE_SETUP.response(false)))
+            .then((options) => sendResponse(ACTIONS.PAGE_SETUP.response(true, options)))
+            .catch(() => sendResponse(ACTIONS.PAGE_SETUP.response(false)))
 
         return true
     }

@@ -1,34 +1,37 @@
+import React = require('react')
 import styled from 'styled-components'
 import { preventDefault } from '../../utils/events'
 
 interface ActionLinkRawProps {
-    disabled?: boolean; 
-    small?: boolean;
-    light?: boolean;
+    disabled?: boolean
+    small?: boolean
+    light?: boolean
     theme?: {
-        linkColor: string;
-        linkColorHover: string;
-        linkColorActive: string;
-        linkColorDisabled: string;
-        linkColorLight: string;
-        linkColorHoverLight: string;
-        linkColorActiveLight: string;
-        linkColorDisabledLight: string;
-    };
+        linkColor: string
+        linkColorHover: string
+        linkColorActive: string
+        linkColorDisabled: string
+        linkColorLight: string
+        linkColorHoverLight: string
+        linkColorActiveLight: string
+        linkColorDisabledLight: string
+    }
 }
 
-const getLinkColour = (state = '') => ({theme, light, disabled}: ActionLinkRawProps) => {
-    if (disabled) {
-        return light ? theme.linkColorDisabledLight : theme.linkColorDisabled
+const getLinkColour =
+    (state = '') =>
+    ({ theme, light, disabled }: ActionLinkRawProps) => {
+        if (disabled) {
+            return light ? theme.linkColorDisabledLight : theme.linkColorDisabled
+        }
+        if (state === 'hover') {
+            return light ? theme.linkColorHoverLight : theme.linkColorHover
+        }
+        if (state === 'active') {
+            return light ? theme.linkColorActiveLight : theme.linkColorActive
+        }
+        return light ? theme.linkColorLight : theme.linkColor
     }
-    if (state === 'hover') {
-        return light ? theme.linkColorHoverLight : theme.linkColorHover
-    }
-    if (state === 'active') {
-        return light ? theme.linkColorActiveLight : theme.linkColorActive
-    }
-    return light ? theme.linkColorLight : theme.linkColor
-}
 
 export const ActionLinkRaw = styled.a<ActionLinkRawProps>`
     text-decoration: none;
@@ -59,11 +62,19 @@ ActionLinkRaw.defaultProps = {
     }
 }
 
-export const ActionLink:React.FC<{onClick: (e: Event) => void; disabled?: boolean; small?: boolean; style?: React.CSSProperties}> = ({ onClick, disabled, ...props }) => {
+export const ActionLink: React.FC<{
+    onClick: (e: Event) => void
+    disabled?: boolean
+    small?: boolean
+    style?: React.CSSProperties
+    as?: string | React.ComponentType<any>;
+    for?: string;
+}> = ({ onClick, disabled, as, ...props }) => {
     return (
         <ActionLinkRaw
             onClick={preventDefault((e) => !disabled && typeof onClick === 'function' && onClick(e))}
             disabled={disabled}
+            as={as}
             {...props}
         />
     )
