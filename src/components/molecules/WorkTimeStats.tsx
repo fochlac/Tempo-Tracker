@@ -1,19 +1,19 @@
 
-import styled from "styled-components"
 import {  formatDuration } from "../../utils/datetime"
 import { Block, Column } from "../atoms/Layout"
 import { Label, Value } from "../atoms/Typography"
 
 interface Props {
     stats: StatsMap;
+    unsyncedStats: StatsMap;
     getRequiredSeconds: (week: number) => number;
 }
 
-export const WorkTimeStats: React.FC<Props> = ({stats, getRequiredSeconds}) => {
+export const WorkTimeStats: React.FC<Props> = ({stats, getRequiredSeconds, unsyncedStats}) => {
     const requiredSeconds = Object.keys(stats?.weeks || {}).reduce((requiredSeconds, week) => {
         return requiredSeconds + getRequiredSeconds(Number(week))
     }, 0)
-    const overseconds = stats ? stats.total - requiredSeconds : 0
+    const overseconds = stats ? stats.total + unsyncedStats.total / 1000 - requiredSeconds : 0
     const sortedHours = Object.values(stats?.weeks || {'0': 0}).sort((a, b) => a - b)
     const medianHours = sortedHours.length % 2 
         ? sortedHours[sortedHours.length / 2 - 0.5] 
@@ -23,7 +23,7 @@ export const WorkTimeStats: React.FC<Props> = ({stats, getRequiredSeconds}) => {
         <Block>
             <Column>
                 <Label>Total Hours</Label>
-                <Value>{stats ? formatDuration(stats.total * 1000, true, true) : <>&mdash;</>}</Value>
+                <Value>{stats ? formatDuration(stats.total * 1000 + unsyncedStats.total, true, true) : <>&mdash;</>}</Value>
             </Column>
             <Column>
                 <Label>Required Hours</Label>

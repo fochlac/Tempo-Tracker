@@ -122,10 +122,11 @@ interface Props {
     stats: StatsMap;
     year: number;
     options: StatisticsOptions;
+    unsyncedStats: StatsMap;
     getRequiredSeconds: (week: number) => number;
     setYear: (year: number) => void;
 }
-export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getRequiredSeconds, options }) => {
+export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getRequiredSeconds, options, unsyncedStats }) => {
     const currentYear = new Date().getFullYear()
     const [weekOffset, setWeekOffset] = useState(getISOWeeks(currentYear))
     const { data } = useOptions()
@@ -143,7 +144,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
         <>
             <Block style={{ userSelect: 'none' }}>
                 <Column style={{ justifyContent: 'center' }}>
-                    <IconButton disabled={weekOffset === 15} onClick={() => setWeekOffset(Math.max(columns, weekOffset - columns))}>
+                    <IconButton disabled={weekOffset <= 15} onClick={() => setWeekOffset(Math.max(columns, weekOffset - columns))}>
                         <ChevronLeft />
                     </IconButton>
                 </Column>
@@ -165,7 +166,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                 </TimeBar>
                 {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).map(({ week, period }, index) => {
                     const hours = getRequiredSeconds(week)
-                    const seconds = (stats.weeks[week] || 0)
+                    const seconds = ((stats.weeks[week] || 0) + (unsyncedStats.weeks[week] || 0) / 1000)
                     const hasData = !!stats.weeks[week]
                     const showOver = hasData && Math.abs(seconds - hours) > 15 * 60
                     return (
@@ -181,7 +182,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                                         height: `${(seconds - hours) / seconds * 100}%`
                                     }} />
                                 )}
-                                <Duration>{`${durationString((stats.weeks[week] || 0) * 1000)}`}</Duration>
+                                <Duration>{`${durationString(seconds * 1000)}`}</Duration>
                                 <WeekNumber>
                                     <WeekTooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`} right={weeknumber / 2 < index}>
                                         {`00${week}`.slice(-2)}

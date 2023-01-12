@@ -17,7 +17,7 @@ const Body = styled.div`
 
 export const StatisticsView: React.FC = () => {
     const {
-        data: { stats, year },
+        data: { stats, year, unsyncedStats },
         actions: { setYear, getRequiredSeconds }
     } = useStatistics()
 
@@ -28,9 +28,9 @@ export const StatisticsView: React.FC = () => {
     return (
         <Body>
             <H6>{`Weekly Hours`}</H6>
-            <WorkTimeDiagramm {...{ year, setYear, stats, options }} getRequiredSeconds={getRequiredSeconds} />
+            <WorkTimeDiagramm {...{ year, setYear, stats, options, unsyncedStats }} getRequiredSeconds={getRequiredSeconds} />
             <H6>{`Statistics for ${year}`}</H6>
-            <WorkTimeStats {...{ year, stats }} getRequiredSeconds={getRequiredSeconds} />
+            <WorkTimeStats {...{ year, stats, unsyncedStats }} getRequiredSeconds={getRequiredSeconds} />
             <H6>Work-time Settings</H6>
             <Block>
                 <Column>

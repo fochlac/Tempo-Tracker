@@ -190,20 +190,22 @@ function toLocalWorklog(remoteWorklog: WorklogRemote|WorklogRemote[]): Worklog {
     }
 }
 
+export const createWorkMap = () => ({
+    days: {},
+    weeks: {},
+    month: {}, 
+    total: 0
+})
+
 export async function fetchWorkStatistics(year:number = new Date().getFullYear()):Promise<StatsMap> {
     const [start, end] = getYearIsoWeeksPeriod(year)
 
     const worklogs = await fetchWorklogs(start.getTime(), end.getTime())
-    const workMap = {
-        days: {},
-        weeks: {},
-        month: {}, 
-        total: 0
-    }
+    const workMap = createWorkMap()
     const firstSunday = new Date(new Date().setFullYear(year, 0, 1))
     firstSunday.setDate(1 - firstSunday.getDay())
     firstSunday.setHours(0, 0, 0, 0)
-    const weekInMs = 7 * 24 * 60 * 60 * 1000
+
     return worklogs.reduce((workMap, log) => {
         const ms = new Date(log.started).getTime()
         const day = dateString(ms)
