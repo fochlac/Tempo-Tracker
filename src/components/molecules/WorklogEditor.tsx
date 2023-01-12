@@ -10,6 +10,7 @@ import { IconButton } from "../atoms/IconButton"
 import { Input } from "../atoms/Input"
 import { TimeInput } from "../atoms/TimeInput"
 import { WorklogAtoms } from "./Worklog"
+import { IssueSelector } from "./IssueSelector"
 
 const DateInput = styled(Input)`
     flex-shrink: 0;
@@ -91,22 +92,10 @@ export function WorklogEditor({ log: pureLog }) {
     return (
         <ListRow>
             <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
-            <select style={{ margin: '2px 8px 0', maxWidth: 150 }} onChange={(e) => {
+            <IssueSelector value={log.issue.key} additionalIssues={[pureLog.issue]} style={{ margin: '2px 8px 0', maxWidth: 150 }} onChange={(issue) => {
                 setDirty(true)
-                const issue = issues.find((i) => i.key === e.target.value) || e.target.value === pureLog.issue.key && pureLog.issue || null
                 setEdit({ ...log, issue })
-            }}>
-                {!options.issues[pureLog.issue.key] && (
-                    <option value={pureLog.issue.key} key={pureLog.issue.key} selected={log.issue.key === pureLog.issue.key}>
-                        {`${pureLog.issue.key}: ${pureLog.issue.name}`}
-                    </option>
-                )}
-                {issues?.map((issue) => (
-                    <option value={issue.key} key={issue.key} selected={log.issue.key === issue.key}>
-                        {issue.alias || `${issue.key}: ${issue.name}`}
-                    </option>
-                ))}
-            </select>
+            }} />
             <TimeRange>
                 <TimeInput onChange={onChange('start')} value={timeString(log.start)} />
                 {' - '}

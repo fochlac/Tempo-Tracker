@@ -1,5 +1,5 @@
 import { AlertCircle, WifiOff } from 'preact-feather'
-import { useMemo } from 'preact/hooks'
+import { useMemo, useState } from 'preact/hooks'
 import styled from 'styled-components'
 import { useInsertWorklog } from '../../hooks/useInsertWorklog'
 import { useLogSync } from '../../hooks/useLogSync'
@@ -17,6 +17,7 @@ import { TrackingSection } from '../molecules/TrackingSection'
 import { Worklog } from '../molecules/Worklog'
 import { WorklogEditor } from '../molecules/WorklogEditor'
 import { WorklogHeader } from '../molecules/WorklogHeader'
+import { LogPeriodDialog } from '../molecules/LogPeriodDialog'
 
 const Body = styled.div`
     display: flex;
@@ -48,6 +49,7 @@ export const TrackerView: React.FC = () => {
     const hasUnsyncedLog = useMemo(() => worklog.data.some((log) => !log.synced), [worklog.data])
     const { isSyncing, hasError, startSync } = useLogSync(self, worklog)
     const { newWorklog, createNewWorklog } = useInsertWorklog()
+    const [showPeriodDialog, setShowPeriodDialog] = useState(false)
 
     const offlineTooltip = self.error === 'TOKEN' 
         ? 'Invalid token. Please provide a correct token in the options.' 
@@ -76,6 +78,13 @@ export const TrackerView: React.FC = () => {
                         Synchronize
                     </ActionLink>
                 )}
+                <ActionLink
+                    disabled={!!editIssue.issue}
+                    style={{ marginRight: 4, lineHeight: '16px' }}
+                    onClick={() => setShowPeriodDialog(true)}
+                >
+                    Log Multiple
+                </ActionLink>
                 <ActionLink
                     disabled={!!editIssue.issue}
                     style={{ marginRight: 4, lineHeight: '16px' }}
@@ -127,6 +136,7 @@ export const TrackerView: React.FC = () => {
                     ).list
                 }
             </List>
+            {showPeriodDialog && <LogPeriodDialog onClose={() => setShowPeriodDialog(false)} />}
         </Body>
     )
 }

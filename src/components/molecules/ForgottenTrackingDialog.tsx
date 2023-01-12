@@ -34,12 +34,6 @@ const Line = styled(DefaultText)`
     text-align: left;
 `
 
-// const data = {
-//     heartbeat: 1651791214418,
-//     lastHeartbeat: 1650791214418,
-//     issue: { id: '1708978', name: 'Order Scheduling Board', key: 'TR-554', alias: 'Scheduling Board' },
-//     start: 1650785888452
-// }
 export const ForgottenTrackingDialog: React.FC = () => {
     const { actions, data } = useTracking()
     const [newWorklog, setNewWorklog] = useState<TemporaryWorklog>(null)

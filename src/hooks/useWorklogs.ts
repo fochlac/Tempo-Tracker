@@ -8,6 +8,33 @@ import { useDatabase, useDatabaseUpdate } from "../utils/database"
 import { useOptions } from "./useOptions"
 import { checkTabExistence } from "../utils/background"
 
+export function useWorklogUpdates() {
+    const cache = useCache<'WORKLOG_CACHE'>('WORKLOG_CACHE', [])
+    const queue = useDatabase<'updates'>('updates') || []
+    const logs = cache?.cache?.data || []
+
+    const originals = useMemo(() => {
+        const updateMap = queue?.reduce((updateMap, log) => {
+            if (log.id) {
+                updateMap[log.id] = log
+            }
+            return updateMap
+        }, {})
+        const originals = logs?.reduce((originals, log) => {
+            if (updateMap[log.id]) {
+                originals[log.id] = log
+            }
+            return originals
+        }, {})
+        return originals
+    }, [queue, logs])
+
+    return {
+        updates: queue,
+        originals
+    }
+}
+
 export function useJiraWorklog() {
     const cache = useCache<'WORKLOG_CACHE'>('WORKLOG_CACHE', [])
     const queue = useDatabase<'updates'>('updates') || []
@@ -35,8 +62,17 @@ export function useJiraWorklog() {
                     await updateQueue(queue.filter((log) => log.id !== worklog.id).concat([{...worklog, synced: false, delete: true}]))
                 }
             },
-            async queue(worklog) {
-                await updateQueue([...queue.filter((log) => worklog.id ? log.id !== worklog.id : log.tempId !== worklog.tempId), worklog])
+            async queue(worklog:TemporaryWorklog|TemporaryWorklog[]) {
+                const worklogs = Array.isArray(worklog) ? worklog : [worklog]
+                const cleanQueue = queue.filter((log) => {
+                    if (log.id) {
+                        return !worklogs.some(newLog => newLog.id === log.id)
+                    }
+                    else {
+                        return !worklogs.some(newLog => newLog.tempId === log.tempId)
+                    }
+                })
+                await updateQueue(cleanQueue.concat(worklogs))
             }
         }
     }
