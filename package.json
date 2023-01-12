@@ -15,7 +15,7 @@
         "url": "git+https://github.com/fochlac/jira-log-time.git"
     },
     "author": "",
-    "license": "ISC",
+    "license": "GPL-3.0-or-later",
     "bugs": {
         "url": "https://github.com/fochlac/jira-log-time/issues"
     },

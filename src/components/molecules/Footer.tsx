@@ -63,7 +63,8 @@ export function Footer() {
                     <p>No Usage Data is collected when using the extension.</p>
                     <H6>Tracking Technologies and Cookies</H6>
                     <p>
-                        We use the browser storage to store essential information for the functionality of this page namely your.
+                        We use the browser storage to store essential information for the functionality of this addon. This 
+                        includes your options, unsynced issues and cached requests.
                     </p>
                     <p>We do not use any form of tracking, and we do not pass your information to any third party.</p>
 
