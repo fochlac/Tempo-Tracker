@@ -143,7 +143,7 @@ export const OptionsView: React.FC = () => {
                     <Tooltip right content='This export contains the issue list and the server url. The personal access token and the username are not included in the export.'>
                         <ExportLink onClick={onExportOptions}>Export</ExportLink>
                     </Tooltip>
-                    <ImportOptionsAction />
+                    {!isFirefox && <ImportOptionsAction />}
                 </ImportExportBar>
             </JiraHead>
             {showError && (

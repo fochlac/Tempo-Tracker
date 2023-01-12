@@ -16,13 +16,15 @@ function renderOverlay(queue: TemporaryWorklog[]) {
         setProgress(index: number) {
             progress.innerHTML = `${index} of ${queue.length} completed`
             bar.value = Math.round((index) / queue.length * 100)
+        },
+        removeOverlay() {
+            div.remove()
         }
     }
 }
 
 let isSyncing = false
-async function synchronize (queue, setProgress) {
-    const { options } = window.__tempoTracker
+async function synchronize (queue, setProgress, options) {
     isSyncing = true
     let stack = [].concat(queue)
     setProgress(0)
@@ -60,35 +62,41 @@ async function synchronize (queue, setProgress) {
     isSyncing = false
 }
 
-async function fetchWorklogs() {
+async function fetchWorklogs(options) {
     isSyncing = true
-    const { options } = window.__tempoTracker
     const worklogs = await fetchAllWorklogs(options)
     await triggerBackgroundAction(ACTIONS.STORE_RECENT_WORKLOGS.create(worklogs))
     isSyncing = false
 }
 
-export async function checkWorklogQueue() {
+export async function checkWorklogQueue(options) {
+    const shouldClose = new URLSearchParams(location.search).get('__tt-close') === 'true'
     if (isSyncing) {
         return
     }
     const { success, queue, forceSync, forceFetch } = await triggerBackgroundAction(ACTIONS.SETUP_PAGE_QUEUE.create()) as any
     if (success && (forceSync || forceFetch)){
+        const { setProgress, removeOverlay } = renderOverlay(queue)
         try {
-            const { setProgress } = renderOverlay(queue)
             if (forceSync && queue.length) {
-                await synchronize(queue, setProgress)
+                await synchronize(queue, setProgress, options)
             }
             if (forceFetch) {
-                await fetchWorklogs()
+                await fetchWorklogs(options)
             }
         }
         finally {
-            window.close()
+            removeOverlay()
+            if (shouldClose) {
+                window.close()
+            }
         }
     }
     else if (Date.now() - Number(sessionStorage.getItem('tempo-tracker-last-fetch') || 0) > 1000 * 60 * 5) {
         sessionStorage.setItem('tempo-tracker-last-fetch', String(Date.now()))
-        fetchWorklogs()
+        fetchWorklogs(options)
+    }
+    if (shouldClose) {
+        window.close()
     }
 }

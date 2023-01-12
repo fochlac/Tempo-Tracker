@@ -1,7 +1,7 @@
 import { DB } from "./data-layer";
 import { dateString, getISOWeekNumber, getYearIsoWeeksPeriod, timeStringFull } from "./datetime";
 
-const fetch = isFirefox && content?.fetch || self.fetch
+const fetch = isFirefox && typeof content !== 'undefined' && content?.fetch || self.fetch
 
 export const headers = (token) => ({
     "accept": "application/json",
@@ -65,8 +65,8 @@ interface WorklogRemote {
     timeSpent: string;
 }
 export async function fetchAllWorklogs(opts?:Options): Promise<Worklog[]> {
-    const endDate = Date.now()
-    const startDate = endDate - 1000 * 60 * 60 * 24 * 6
+    const endDate = Date.now() + 1000 * 60 * 60 * 24 * 6
+    const startDate = Date.now() - 1000 * 60 * 60 * 24 * 6
     return fetchWorklogs(startDate, endDate, opts)
         .then(data => data.map(toLocalWorklog))
 }

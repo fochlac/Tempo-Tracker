@@ -20,8 +20,8 @@ export function useLogSync(self, worklog) {
                 return
             }
             await options.actions.merge({ forceSync: true, forceFetch: true })
-            const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
-            const tab = await browser?.tabs?.create({ url, active: true })
+            const url = options.data.domain.split('/rest')[0]
+            const tab = await browser?.tabs?.create({ url: `${url}/secure/dashboard.jspa?__tt-close=true`, active: true })
             const timer = setInterval(() => {
                 checkTabExistence(tab.id)
                     .then(() => {

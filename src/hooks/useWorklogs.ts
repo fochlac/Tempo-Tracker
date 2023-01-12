@@ -102,13 +102,12 @@ export function useFetchJiraWorklog() {
             }
             options.actions.merge({ forceFetch: true })
                 .then(async () => {
-                    const url = /https?:\/\/[^/]*/.exec(options.data.domain)?.[0]
-                    tab = await browser?.tabs?.create({ url , active: false })
+                    const url = options.data.domain.split('/rest')[0]
+                    tab = await browser?.tabs?.create({ url: `${url}/secure/Dashboard.jspa?__tt-close=true`, active: false })
                     while (await checkTabExistence(tab.id)) {
                         await new Promise(resolve => setTimeout(() => resolve(null), 1000))
                     }
                     tab = null
-                    console.log('closed')
                 })
         }
 
