@@ -3,10 +3,10 @@ import { dateString, getISOWeekNumber, getYearIsoWeeksPeriod, timeStringFull } f
 
 const fetch = isFirefox && content?.fetch || self.fetch
 
-export const headers = (token) => ({
+export const headers = (token, instance) => ({
     "accept": "application/json",
     "content-type": "application/json",
-    'Authorization': `Bearer ${token}`
+    'Authorization': instance === 'datacenter' ? `Bearer ${token}` : `Basic ${btoa(token)}`
 })
 
 export async function fetchIssues(): Promise<Issue[]> {
@@ -20,14 +20,14 @@ export async function fetchIssueList(issues): Promise<Issue[]> {
     const query = new URLSearchParams()
     query.append('jql', `issuekey in ("${issues.join('","')}")`)
     const url = `${options.domain}/api/2/search?${query.toString()}`
-    const response = await fetch(url, { headers: headers(options.token), credentials: 'omit' })
+    const response = await fetch(url, { headers: headers(options.token, options.instance), credentials: 'omit' })
     const body = await response.json()
     return body.issues.map(({ id, fields, key }) => ({ id, name: fields.summary, key }))
 }
 
 export async function fetchSelf(customOptions?: Partial<Options>) {
     const options = customOptions || await DB.get('options') as Options
-    const result = await fetch(`${options.domain}/api/2/myself`, { headers: headers(options.token), credentials: 'omit' })
+    const result = await fetch(`${options.domain}/api/2/myself`, { headers: headers(options.token, options.instance), credentials: 'omit' })
     if (result.status >= 400) {
         return Promise.reject(result)
     }
@@ -41,7 +41,7 @@ export async function searchIssues(searchString) : Promise<Issue[]> {
     query.append('q', searchString)
     const url = `${options.domain}/quicksearch/1.0/productsearch/search?${query.toString()}`
     const response = await fetch(url, { 
-        headers: headers(options.token),
+        headers: headers(options.token, options.instance),
         credentials: 'omit'
     })
     const body = await response.json()
@@ -78,12 +78,14 @@ export async function fetchWorklogs(startDate:number, endDate: number, opts?: Op
         'to': dateString(endDate),
         'worker': [options.user]
     }
-    const url = `${options.domain}/tempo-timesheets/4/worklogs/search`
+    // also setup https://apidocs.tempo.io/#section/Authentication token in options
+    const domain = options.instance === 'datacenter' ? options.domain : 'https://app.tempo.io/rest/'
+    const url = `${domain}/tempo-timesheets/4/worklogs/search`
     const response = await fetch(url,
         {
             method: 'POST',
             body: JSON.stringify(payload),
-            headers: headers(options.token),
+            headers: headers(options.token, options.instance),
             credentials: 'omit'
         })
     return response.json()
@@ -95,7 +97,7 @@ export async function writeWorklog({ issue, end, start }: Partial<Worklog>, opts
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/`, {
-        "headers": headers(options.token),
+        "headers": headers(options.token, options.instance),
         "body": JSON.stringify({
             "originId": -1,
             "worker": options.user, 
@@ -117,7 +119,7 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>,
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}`, {
-        "headers": headers(options.token),
+        "headers": headers(options.token, options.instance),
         "body": JSON.stringify({
             "worker": options.user,
             "originId": id,
@@ -134,7 +136,7 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>,
                 return log
             }
             return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}/issue/${issue.id}`, {
-                "headers": headers(options.token),
+                "headers": headers(options.token, options.instance),
                 "body": JSON.stringify({
                     "worker": options.user,
                     "originId": id,
@@ -154,7 +156,7 @@ export async function deleteWorklog({ id }: Partial<Worklog>, opts?:Options): Pr
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
     return fetch(`${options.domain}/tempo-timesheets/4/worklogs/${id}`, {
-        "headers": headers(options.token),
+        "headers": headers(options.token, options.instance),
         "method": "DELETE",
         credentials: 'omit'
     })

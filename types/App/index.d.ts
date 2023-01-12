@@ -63,6 +63,7 @@ interface Options {
     forceSync: boolean;
     forceFetch: boolean;
     token: string;
+    instance: 'cloud'|'datacenter';
 }
 
 interface StatsMap {

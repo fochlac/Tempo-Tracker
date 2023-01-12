@@ -6,7 +6,8 @@ export function getOptions(options: Partial<Options>): Options {
         autosync,
         forceSync,
         forceFetch,
-        token
+        token,
+        instance
     } = options || {}
 
     return {
@@ -18,6 +19,7 @@ export function getOptions(options: Partial<Options>): Options {
         autosync: autosync ?? false,
         forceSync: forceSync ?? false,
         forceFetch: forceFetch ?? false,
-        token: token ?? ''
+        token: token ?? '',
+        instance: instance ?? 'datacenter'
     }
 }

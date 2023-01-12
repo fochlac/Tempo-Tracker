@@ -1,18 +1,19 @@
-import { AlertCircle, AlertOctagon } from "preact-feather"
-import { useEffect, useState } from "preact/hooks"
-import styled from "styled-components"
-import { useOptions } from "../../hooks/useOptions"
-import { useSafeState } from "../../hooks/useSafeState"
-import { useSelf } from "../../hooks/useSelf"
-import { openTab } from "../../utils/browser"
-import { ActionLink } from "../atoms/ActionLink"
-import { Input } from "../atoms/Input"
-import { FlexRow } from "../atoms/Layout"
-import { ErrorTooltip, Tooltip } from "../atoms/Tooltip"
-import { ErrorText, H6, InfoText, Label } from "../atoms/Typography"
-import { IssueInput } from "../molecules/IssueInput"
+import { AlertCircle, AlertOctagon } from 'preact-feather'
+import { useEffect, useState } from 'preact/hooks'
+import styled from 'styled-components'
+import { useOptions } from '../../hooks/useOptions'
+import { useSafeState } from '../../hooks/useSafeState'
+import { useSelf } from '../../hooks/useSelf'
+import { openTab } from '../../utils/browser'
+import { ActionLink } from '../atoms/ActionLink'
+import { Input } from '../atoms/Input'
+import { FlexRow } from '../atoms/Layout'
+import { ErrorTooltip, Tooltip } from '../atoms/Tooltip'
+import { ErrorText, H6, InfoText, Label } from '../atoms/Typography'
+import { IssueInput } from '../molecules/IssueInput'
 import { saveAs } from 'file-saver'
-import { ImportOptionsAction } from "../molecules/ImportOptionsAction"
+import { ImportOptionsAction } from '../molecules/ImportOptionsAction'
+import { ToggleBar } from '../molecules/ToggleBar'
 
 const Body = styled.div`
     display: flex;
@@ -115,7 +116,11 @@ export const OptionsView: React.FC = () => {
         }
     }, [userKey])
 
-    const stars = options.token.length ? Array(Math.max(options.token.length - 8, 12)).fill('*').join('') : ''
+    const stars = options.token.length
+        ? Array(Math.max(options.token.length - 8, 12))
+              .fill('*')
+              .join('')
+        : ''
     const tokenObfuscated = `${options.token.slice(0, 4)}${stars}${options.token.slice(-4)}`
 
     const tokenBlur = async () => {
@@ -125,22 +130,36 @@ export const OptionsView: React.FC = () => {
         setTokenFocused(false)
         checkDomainToken({ token, domain })
     }
+    const tokenCloudBlur = async () => {
+        if (token?.length && token !== options.token) {
+            await actions.merge({ token })
+        }
+        setTokenFocused(false)
+        checkDomainToken({ token, domain })
+    }
     const validDomain = /^https?:\/\/[^/]+(\/[^/]+)*\/rest/.test(domain) || !error || error === 'TOKEN'
-    const domainMessage = !validDomain && /^https?:\/\/[^/]+(\/[^/]+)*/.test(domain)
-        ? ` Did you mean "${/^https?:\/\/[^/]+/.exec(domain)[0]}/rest"?`
-        : ''
+    const domainMessage =
+        !validDomain && /^https?:\/\/[^/]+(\/[^/]+)*/.test(domain)
+            ? ` Did you mean "${/^https?:\/\/[^/]+/.exec(domain)[0]}/rest"?`
+            : ''
     const showError = Boolean(error && !ignoreError && error !== 'TOKEN' && domain.length && storedToken.length)
-    const onExportOptions = () => saveAs(
-        new Blob([JSON.stringify({ ...options, token: '', user: '' }, null, 4)], { type: 'application/json;charset=utf-8' }),
-        'tempo-tracker.options.json'
-    )
+    const onExportOptions = () =>
+        saveAs(
+            new Blob([JSON.stringify({ ...options, token: '', user: '' }, null, 4)], {
+                type: 'application/json;charset=utf-8'
+            }),
+            'tempo-tracker.options.json'
+        )
 
     return (
         <Body>
             <JiraHead>
                 <Title>Jira Options</Title>
                 <ImportExportBar>
-                    <Tooltip right content='This export contains the issue list and the server url. The personal access token and the username are not included in the export.'>
+                    <Tooltip
+                        right
+                        content="This export contains the issue list and the server url. The personal access token and the username are not included in the export."
+                    >
                         <ExportLink onClick={onExportOptions}>Export</ExportLink>
                     </Tooltip>
                     <ImportOptionsAction />
@@ -150,61 +169,126 @@ export const OptionsView: React.FC = () => {
                 <Option>
                     <ErrorBox>
                         <StyledAlertOctagon />
-                        <span>Error connecting to the Jira-API: Please check the server url and the personal access token.</span>
+                        <span>
+                            Error connecting to the Jira-API: Please check the server url and the personal access token.
+                        </span>
                     </ErrorBox>
                 </Option>
             )}
             <Option>
-                <Label>Server Url<Mandatory>*</Mandatory></Label>
+                <Label>Instance Type</Label>
+                <InfoText>Whether you use the datacenter (on-site) or the cloud version of Jira.</InfoText>
+                <InputWrapper>
+                    <ToggleBar
+                        value={options.instance}
+                        onChange={async (value: Options['instance']) => {
+                            await actions.merge({ instance: value })
+                            checkDomainToken({ token: storedToken, domain })
+                        }}
+                        options={[
+                            { value: 'datacenter', name: 'Data Center' },
+                            { value: 'cloud', name: 'Jira Cloud' }
+                        ]}
+                    />
+                </InputWrapper>
+            </Option>
+            <Option>
+                <Label>
+                    Server Url<Mandatory>*</Mandatory>
+                </Label>
                 <InfoText>Url of your Jira server's REST-API: https://jira.domain.com/rest.</InfoText>
                 <InputWrapper>
                     <Input
                         style={{ marginBottom: 4 }}
                         error={showError || !validDomain}
-                        onBlur={() => checkDomainToken()} value={options.domain}
+                        onBlur={() => checkDomainToken()}
+                        value={options.domain}
                         onChange={(e) => {
                             setIgnoreError(true)
                             actions.merge({ domain: e.target.value })
-                        }} />
+                        }}
+                    />
                     {!validDomain && <InputErrorIcon size={16} />}
                 </InputWrapper>
-                {!validDomain && <ErrorInfoText>The url is not matching the expected pattern.{domainMessage}</ErrorInfoText>}
-            </Option>
-            <Option>
-                <Label>Personal Access Token<Mandatory>*</Mandatory></Label>
-                <InfoText>A personal access token can be generated via your Jira profile.</InfoText>
-                <InputWrapper>
-                    <Input
-                        style={{ marginBottom: 4 }}
-                        error={showError || (error === 'TOKEN' && !ignoreError)}
-                        value={isTokenFocused ? token : tokenObfuscated}
-                        onFocus={() => setTokenFocused(true)}
-                        onBlur={tokenBlur}
-                        onChange={(e) => {
-                            setIgnoreError(true)
-                            setToken(e.target.value)
-                        }} />
-                    {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
-                </InputWrapper>
-                {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token is invalid.</ErrorInfoText>}
-                {Boolean((validDomain && !options.token?.length) || (error === 'TOKEN' && !ignoreError)) && (
-                    <ActionLink
-                        style={{ height: 6, marginTop: -2, marginLeft: 0 }}
-                        onClick={() => {
-                            const url = `${options.domain.match(/^https?\:\/\/[^/]+/)?.[0]}${JIRA_LINK}`
-                            openTab({ url, active: true })
-                        }}>
-                        Generate a token
-                    </ActionLink>
+                {!validDomain && (
+                    <ErrorInfoText>The url is not matching the expected pattern.{domainMessage}</ErrorInfoText>
                 )}
             </Option>
+            {options.instance === 'datacenter' ? (
+                <Option>
+                    <Label>
+                        Personal Access Token<Mandatory>*</Mandatory>
+                    </Label>
+                    <InfoText>A personal access token can be generated via your Jira profile.</InfoText>
+                    <InputWrapper>
+                        <Input
+                            style={{ marginBottom: 4 }}
+                            error={showError || (error === 'TOKEN' && !ignoreError)}
+                            value={isTokenFocused ? token : tokenObfuscated}
+                            onFocus={() => setTokenFocused(true)}
+                            onBlur={tokenBlur}
+                            onChange={(e) => {
+                                setIgnoreError(true)
+                                setToken(e.target.value)
+                            }}
+                        />
+                        {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
+                    </InputWrapper>
+                    {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token is invalid.</ErrorInfoText>}
+                    {Boolean((validDomain && !options.token?.length) || (error === 'TOKEN' && !ignoreError)) && (
+                        <ActionLink
+                            style={{ height: 6, marginTop: -2, marginLeft: 0 }}
+                            onClick={() => {
+                                const url = `${options.domain.match(/^https?\:\/\/[^/]+/)?.[0]}${JIRA_LINK}`
+                                openTab({ url, active: true })
+                            }}
+                        >
+                            Generate a token
+                        </ActionLink>
+                    )}
+                </Option>
+            ) : (
+                <Option>
+                    <Label>
+                        Email and Api Token<Mandatory>*</Mandatory>
+                    </Label>
+                    <InfoText>Your email address and the api token seperated with a colon. For example: me@example.com:my-api-token</InfoText>
+                    <InputWrapper>
+                        <Input
+                            style={{ marginBottom: 4 }}
+                            error={showError || (error === 'TOKEN' && !ignoreError)}
+                            value={isTokenFocused ? token : tokenObfuscated}
+                            onFocus={() => setTokenFocused(true)}
+                            onBlur={tokenCloudBlur}
+                            onChange={(e) => {
+                                setIgnoreError(true)
+                                setToken(e.target.value)
+                            }}
+                        />
+                        {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
+                    </InputWrapper>
+                    {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token is invalid.</ErrorInfoText>}
+                    {Boolean((validDomain && !options.token?.length) || (error === 'TOKEN' && !ignoreError)) && (
+                        <ActionLink
+                            style={{ height: 6, marginTop: -2, marginLeft: 0 }}
+                            onClick={() => openTab({ url: 'https://id.atlassian.com/manage-profile/security/api-tokens', active: true })}
+                        >
+                            Generate a token
+                        </ActionLink>
+                    )}
+                </Option>
+            )}
             <Option>
                 <Label>User</Label>
                 <Input readOnly value={name ? `${name} (${options.user})` : options.user} />
             </Option>
             <Option>
-                <Label>Tracked Issues<Mandatory>*</Mandatory></Label>
-                <InfoText>Please add all issues you want to use for time tracking. You can set an alias for each issue.</InfoText>
+                <Label>
+                    Tracked Issues<Mandatory>*</Mandatory>
+                </Label>
+                <InfoText>
+                    Please add all issues you want to use for time tracking. You can set an alias for each issue.
+                </InfoText>
                 <IssueInput disabled={!valid} />
             </Option>
             {!isFirefox && (
@@ -213,7 +297,12 @@ export const OptionsView: React.FC = () => {
                     <Option>
                         <Label>Automatic Synchronization</Label>
                         <FlexRow justify="flex-start">
-                            <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.autosync} onChange={(e) => actions.merge({ autosync: e.target.checked })} />
+                            <Input
+                                style={{ margin: '0 6px' }}
+                                type="checkbox"
+                                checked={options.autosync}
+                                onChange={(e) => actions.merge({ autosync: e.target.checked })}
+                            />
                             <Label>enabled</Label>
                         </FlexRow>
                     </Option>
