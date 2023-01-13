@@ -23,7 +23,9 @@
     },
     "permissions": [
         "alarms",
-        "<all_urls>"
+        "<all_urls>",
+        "menus"
+
     ],
     "content_scripts": [
         {

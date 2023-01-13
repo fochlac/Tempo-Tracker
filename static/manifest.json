@@ -13,7 +13,8 @@
         "service_worker": "./sw.js"
     },
     "permissions": [
-        "alarms"
+        "alarms",
+        "contextMenus"
     ],
     "host_permissions": [
         "*://*/*"

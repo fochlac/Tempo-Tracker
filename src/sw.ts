@@ -1,14 +1,57 @@
-import { ACTIONS } from "./constants/actions"
-import { DB_KEYS } from "./constants/constants"
-import { DB } from "./utils/data-layer"
-import { getOptions } from "./utils/options"
-import { markWorklogSynced, reserveWorklog, unreserveWorklog } from "./service-worker/on-page-sync"
-import { flushQueue } from "./service-worker/service-worker-sync"
-import { stopTracking } from "./service-worker/tracking"
-import { updateBadgeTitle } from "./service-worker/badge"
-import { heartbeat } from "./service-worker/heartbeat"
+import { ACTIONS } from './constants/actions'
+import { DB_KEYS, VIEWS } from './constants/constants'
+import { DB } from './utils/data-layer'
+import { getOptions } from './utils/options'
+import { markWorklogSynced, reserveWorklog, unreserveWorklog } from './service-worker/on-page-sync'
+import { flushQueue } from './service-worker/service-worker-sync'
+import { stopTracking } from './service-worker/tracking'
+import { updateBadgeTitle } from './service-worker/badge'
+import { heartbeat } from './service-worker/heartbeat'
+import { openAsTab } from './utils/browser'
 
 const controller = chrome || browser
+
+
+function contextClick(info) {
+    const { menuItemId } = info
+
+    if (menuItemId === 'open-webapp') {
+        openAsTab(VIEWS.TRACKER)
+    }
+    else if (menuItemId === 'open-webapp-options') {
+        openAsTab(VIEWS.OPTIONS)
+    }
+}
+
+if (!isFirefox) {
+    chrome.contextMenus.create({
+        id: 'open-webapp',
+        title: 'Open Webapp',
+        contexts: ['action']
+    })
+    chrome.contextMenus.create({
+        id: 'open-webapp-options',
+        title: 'Options',
+        contexts: ['action']
+    })
+
+    chrome.contextMenus.onClicked.addListener(contextClick)
+}
+else {
+    browser.menus.create({
+        id: 'open-webapp',
+        title: 'Open Webapp',
+        contexts: ['browser_action']
+    })
+    browser.menus.create({
+        id: 'open-webapp-options',
+        title: 'Options',
+        contexts: ['browser_action']
+    })
+
+    browser.menus.onClicked.addListener(contextClick)
+
+}
 
 controller.alarms.create('flushQueue', { periodInMinutes: 1 })
 
@@ -20,22 +63,25 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
             if (options.autosync) {
                 await flushQueue()
             }
+        } catch (e) {
+            console.log(e)
         }
-        catch (e) { console.log(e) }
         try {
             await updateBadgeTitle()
+        } catch (e) {
+            console.log(e)
         }
-        catch (e) { console.log(e) }
         try {
             await heartbeat()
+        } catch (e) {
+            console.log(e)
         }
-        catch (e) { console.log(e) }
     }
 })
 
 async function getSetupInfo() {
     const rawOptions = await DB.get(DB_KEYS.OPTIONS)
-    
+
     return getOptions(rawOptions)
 }
 
@@ -56,7 +102,11 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
             .then(([queue, options]: [TemporaryWorklog[], Options]) => {
                 sendResponse(ACTIONS.SETUP_PAGE_QUEUE.response(true, queue, options.forceSync, options.forceFetch))
                 if (options.forceSync || options.forceFetch) {
-                    return DB.update(DB_KEYS.OPTIONS, (options) => ({ ...options, forceSync: false, forceFetch: false }))
+                    return DB.update(DB_KEYS.OPTIONS, (options) => ({
+                        ...options,
+                        forceSync: false,
+                        forceFetch: false
+                    }))
                 }
             })
             .catch((e) => sendResponse(ACTIONS.SETUP_PAGE_QUEUE.response(false)))
@@ -119,7 +169,9 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
         }
 
         DB.get(DB_KEYS.TRACKING)
-            .then((currentTracking: Tracking) => !currentTracking?.issue ? DB.set(DB_KEYS.TRACKING, tracking) : Promise.reject())
+            .then((currentTracking: Tracking) =>
+                !currentTracking?.issue ? DB.set(DB_KEYS.TRACKING, tracking) : Promise.reject()
+            )
             .then(updateBadgeTitle)
             .then(() => sendResponse(ACTIONS.START_TRACKING.response(true, tracking)))
             .catch((e) => sendResponse(ACTIONS.START_TRACKING.response(false)))

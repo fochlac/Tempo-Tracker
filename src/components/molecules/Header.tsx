@@ -9,7 +9,7 @@ import { Tooltip } from "../atoms/Tooltip"
 import { ActionLink } from "../atoms/ActionLink"
 import { isPopped } from "../../utils/url"
 import { ExternalLink } from "preact-feather"
-import { openTab } from "../../utils/browser"
+import { openAsTab } from "../../utils/browser"
 
 const AppBar = styled.header`
     display: flex;
@@ -34,10 +34,6 @@ export const Header: React.FC = () => {
     const { data: options } = useOptions()
     const mandatoryOptions = Boolean(options.user?.length && options.token?.length && options.domain?.length && Object.keys(options.issues).length)
     const trackerLink = <InternalLink style={{ marginRight: 4 }} disabled={!mandatoryOptions} to={VIEWS.TRACKER}>Tracker</InternalLink>
-    const openAsTab = (view) => {
-        openTab({ active: true, url: `popup.html?popped=1&view=${view}` })
-        window.close()
-    }
 
     return (
         <AppBar>
