@@ -105,12 +105,14 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
             <Duration>
                 <Time>{formatDuration(log.end - log.start, true)}</Time>
             </Duration>
-            <IconButton disabled={(options.autosync && !log.id) || disableButtons} onClick={() => dispatch('setEditIssue', { issue: log.id || log.tempId })} style={{ marginLeft: 16 }}>
-                <Edit3 />
-            </IconButton>
-            <IconButton disabled={disableButtons} onClick={() => setStartDelete(true)} style={{ marginLeft: 4 }}>
-                {log.id && log.synced ? <Trash2 /> : <X />}
-            </IconButton>
+            <div style={{marginLeft: 'auto'}}>
+                <IconButton disabled={(options.autosync && !log.id) || disableButtons} onClick={() => dispatch('setEditIssue', { issue: log.id || log.tempId })} style={{ marginLeft: 16 }}>
+                    <Edit3 />
+                </IconButton>
+                <IconButton disabled={disableButtons} onClick={() => setStartDelete(true)} style={{ marginLeft: 4 }}>
+                    {log.id && log.synced ? <Trash2 /> : <X />}
+                </IconButton>
+            </div>
             <DeleteWorklogDialog open={startDelete} log={log} onClose={() => setStartDelete(false)} onDelete={(updateOnly) => onDelete(log, updateOnly)} />
         </ListRow>
     )

@@ -28,11 +28,15 @@ export function ImportOptionsAction() {
             }
             if (options.domain.length && options.token.length) {
                 if (options.domain === importData.domain) {
-                    importData.token === options.token
+                    importData.token = options.token
+                    importData.user = options.user
                 }
                 setImportData(importData)
             }
-            actions.set(getOptions(importData))
+            else {
+                actions.set(getOptions(importData))
+            }
+            e.target.value = ''
         }
     }
 

@@ -7,19 +7,33 @@ import { H6, Label } from "../atoms/Typography"
 import { WorkTimeDiagramm } from "../molecules/WorkTimeDiagramm"
 import { WorkTimeExceptions } from "../molecules/WorkTimeExceptions"
 import { WorkTimeStats } from "../molecules/WorkTimeStats"
+import { useSelf } from "../../hooks/useSelf"
+import { useOptions } from "../../hooks/useOptions"
+import { ErrorTooltip } from "../atoms/Tooltip"
+import { WifiOff } from "preact-feather"
 
 const Body = styled.div`
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     height: 100%;
 `
+const Title = styled(H6)`
+    display: flex;
+    justify-content: space-between;
+    padding-right: 4px;
+`
+
 
 export const StatisticsView: React.FC = () => {
     const {
         data: { stats, year, unsyncedStats },
         actions: { setYear, getRequiredSeconds }
     } = useStatistics()
+    const { data } = useOptions()
+    const self = useSelf(data)
+    
 
     const { data: options, actions } = useStatisticsOptions()
 
@@ -27,8 +41,15 @@ export const StatisticsView: React.FC = () => {
 
     return (
         <Body>
-            <H6>{`Weekly Hours`}</H6>
-            <WorkTimeDiagramm {...{ year, setYear, stats, options, unsyncedStats }} getRequiredSeconds={getRequiredSeconds} />
+            <Title>
+                {`Weekly Hours`}
+                {self.error && (
+                    <ErrorTooltip style={{ paddingBottom: 2 }} right content="No connection to Jira instance - only cached statistics available">
+                        <WifiOff size={14} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />
+                    </ErrorTooltip>
+                )}
+            </Title>
+            <WorkTimeDiagramm {...{ year, setYear, stats, options, unsyncedStats, error: self.error }} getRequiredSeconds={getRequiredSeconds} />
             <H6>{`Statistics for ${year}`}</H6>
             <WorkTimeStats {...{ year, stats, unsyncedStats }} getRequiredSeconds={getRequiredSeconds} />
             <H6>Work-time Settings</H6>

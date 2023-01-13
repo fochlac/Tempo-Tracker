@@ -147,11 +147,11 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                             style={{ flexGrow: 1, marginRight: 8 }}
                             value={issue?.id ? issue.alias : 'Issue broken, please re-add via "Add Issue" button.'}
                             onChange={handleAliasChange(issueKey)} />
-                        {!isFirefox && (<Input
+                        <Input
                             type="color"
                             style={{ width: 20, marginRight: 8 }}
                             value={issue.color || '#ffffff'}
-                            onChange={handleColorChange(issueKey)} />)}
+                            onChange={handleColorChange(issueKey)} />
                         <IconButton disabled={!issue} onClick={() => setDelIssue(issue)}><Trash2 /></IconButton>
                     </IssueRow>
                 )

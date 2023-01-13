@@ -13,6 +13,7 @@ import { IssueSelector } from './IssueSelector'
 import { v4 } from 'uuid'
 import { useOptions } from '../../hooks/useOptions'
 import { useJiraWorklog } from '../../hooks/useWorklogs'
+import { useKeyBinding } from '../../hooks/useKeyBinding'
 
 const Row = styled.div`
     display: flex;
@@ -52,6 +53,8 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     const [week, setWeek] = useState(getISOWeekNumber(Date.now()))
     const getRequiredSeconds = useGetRequiredSettings(year)
     const {actions} = useJiraWorklog()
+
+    useKeyBinding('Escape', onClose)
 
     const [options, setOptions] = useState({
         issue: Object.values(issues)?.[0],

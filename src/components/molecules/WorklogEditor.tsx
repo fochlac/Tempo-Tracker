@@ -1,7 +1,6 @@
 import { Check, X } from "preact-feather"
 import { useState } from "preact/hooks"
 import styled from "styled-components"
-import { useOptions } from "../../hooks/useOptions"
 import { useJiraWorklog } from "../../hooks/useWorklogs"
 import { useDispatch } from "../../utils/atom"
 import { dateString, durationString, formatDuration, timeString } from "../../utils/datetime"
@@ -11,6 +10,7 @@ import { Input } from "../atoms/Input"
 import { TimeInput } from "../atoms/TimeInput"
 import { WorklogAtoms } from "./Worklog"
 import { IssueSelector } from "./IssueSelector"
+import { useKeyBinding } from "../../hooks/useKeyBinding"
 
 const DateInput = styled(Input)`
     flex-shrink: 0;
@@ -30,12 +30,13 @@ const {
 const compareLog = compareValues(['start', 'end', 'issue.key'])
 
 export function WorklogEditor({ log: pureLog }) {
-    const { data: options } = useOptions()
     const [log, setEdit] = useState({...pureLog, synced: false})
     const [isDirty, setDirty] = useState(false)
     const dispatch = useDispatch()
     const {actions} = useJiraWorklog()
-
+    useKeyBinding('Escape', () => {
+        dispatch('resetEditIssue')
+    })
     const onChange = (key) => (e) => {
         const { value } = e.target
         if (value !== timeString(log[key])) {
@@ -87,8 +88,6 @@ export function WorklogEditor({ log: pureLog }) {
         dispatch('resetEditIssue')
     }
 
-    const issues = Object.values(options.issues)
-
     return (
         <ListRow>
             <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
@@ -104,12 +103,14 @@ export function WorklogEditor({ log: pureLog }) {
             <Duration>
                 <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
             </Duration>
-            <IconButton onClick={onSubmit} style={{ marginLeft: 16 }}>
-                <Check />
-            </IconButton>
-            <IconButton onClick={() => dispatch('resetEditIssue')}  style={{ marginLeft: 4 }}>
-                <X />
-            </IconButton>
+            <div style={{marginLeft: 'auto'}}>
+                <IconButton onClick={onSubmit} style={{ marginLeft: 16 }}>
+                    <Check />
+                </IconButton>
+                <IconButton onClick={() => dispatch('resetEditIssue')}  style={{ marginLeft: 4 }}>
+                    <X />
+                </IconButton>
+            </div>
         </ListRow>
     )
 }

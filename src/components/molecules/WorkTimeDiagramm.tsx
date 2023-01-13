@@ -27,6 +27,15 @@ const Diagramm = styled.div`
     margin-left: 16px;
     margin-right: 8px;
     flex-shrink: 0;
+
+    &:after {
+        content: '';
+        height: 100%;
+        position: absolute;
+        width: 20px;
+        right: -20px;
+        background-color: white;
+    }
 `
 
 const Week = styled.div`
@@ -91,7 +100,7 @@ const Time = styled.span`
     &:before {
         content: '';
         position: absolute;
-        width: 488px;
+        width: 100vw;
         height: 0px;
         top: 10px;
         left: 15px;
@@ -121,16 +130,15 @@ const columns = 13
 interface Props {
     stats: StatsMap;
     year: number;
+    error: boolean;
     options: StatisticsOptions;
     unsyncedStats: StatsMap;
     getRequiredSeconds: (week: number) => number;
     setYear: (year: number) => void;
 }
-export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getRequiredSeconds, options, unsyncedStats }) => {
+export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getRequiredSeconds, options, unsyncedStats, error }) => {
     const currentYear = new Date().getFullYear()
     const [weekOffset, setWeekOffset] = useState(getISOWeeks(currentYear))
-    const { data } = useOptions()
-    const self = useSelf(data)
     const isCurrentYear = year === currentYear
 
     const maxSeconds = Math.max(stats ? (Math.ceil(Object.values(stats.weeks).reduce((highest, current) => current > highest ? current : highest, 0) / 60 / 60) + 1) * 60 * 60 : 0, (options.defaultHours + 1) * 60 * 60)
@@ -150,7 +158,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                 </Column>
                 <Column style={{ alignItems: 'center' }}>
                     <Label style={{ width: 65 }}>Year</Label>
-                    <Input disabled={self.error} type="number" style={{ width: 65 }} min={2000} value={year} max={currentYear} step={1} onChange={(e) => setYear(Number(e.target.value))} />
+                    <Input disabled={error} type="number" style={{ width: 65 }} min={2000} value={year} max={currentYear} step={1} onChange={(e) => setYear(Number(e.target.value))} />
                 </Column>
                 <Column style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
                     <IconButton disabled={weekOffset === weeknumber} onClick={() => setWeekOffset(Math.min(weeknumber, weekOffset + columns))}>

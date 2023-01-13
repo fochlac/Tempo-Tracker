@@ -14,7 +14,7 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
         map[issue.key] = issue
         return map
     }, {})
-    const issues = Object.values({...options.issues, ...additionalIssueMap})
+    const issues = Object.values({...additionalIssueMap, ...options.issues})
 
     return (
         <select style={style} onChange={(e) => {

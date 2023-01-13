@@ -8,7 +8,7 @@ import { openTab } from "../../utils/browser"
 import { ActionLink } from "../atoms/ActionLink"
 import { Input } from "../atoms/Input"
 import { FlexRow } from "../atoms/Layout"
-import { ErrorTooltip, Tooltip } from "../atoms/Tooltip"
+import { Tooltip } from "../atoms/Tooltip"
 import { ErrorText, H6, InfoText, Label } from "../atoms/Typography"
 import { IssueInput } from "../molecules/IssueInput"
 import { saveAs } from 'file-saver'
@@ -143,7 +143,7 @@ export const OptionsView: React.FC = () => {
                     <Tooltip right content='This export contains the issue list and the server url. The personal access token and the username are not included in the export.'>
                         <ExportLink onClick={onExportOptions}>Export</ExportLink>
                     </Tooltip>
-                    {!isFirefox && <ImportOptionsAction />}
+                    <ImportOptionsAction />
                 </ImportExportBar>
             </JiraHead>
             {showError && (
@@ -207,18 +207,15 @@ export const OptionsView: React.FC = () => {
                 <InfoText>Please add all issues you want to use for time tracking. You can set an alias for each issue.</InfoText>
                 <IssueInput disabled={!valid} />
             </Option>
-            {!isFirefox && (
-                <>
-                    <SectionHead>App Options</SectionHead>
-                    <Option>
-                        <Label>Automatic Synchronization</Label>
-                        <FlexRow justify="flex-start">
-                            <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.autosync} onChange={(e) => actions.merge({ autosync: e.target.checked })} />
-                            <Label>enabled</Label>
-                        </FlexRow>
-                    </Option>
-                </>
-            )}
+            <SectionHead>App Options</SectionHead>
+            <Option>
+                <Label>Automatic Synchronization</Label>
+                <FlexRow justify="flex-start">
+                    <Input style={{ margin: '0 6px' }} type="checkbox" disabled={isFirefox} checked={isFirefox ? false : options.autosync} onChange={(e) => actions.merge({ autosync: e.target.checked })} />
+                    <Label>enabled</Label>
+                </FlexRow>
+                {isFirefox && <InfoText>For Firefox this setting is always inactive. Due to browser restrictions it is neccesary to open jira in a new tab and use that tab for synchronization.</InfoText>}
+            </Option>
         </Body>
     )
 }

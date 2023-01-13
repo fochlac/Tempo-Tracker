@@ -18,6 +18,7 @@ const Main = styled.main`
     padding-bottom: 0;
     overflow: hidden;
     ${() => `height: ${Math.floor(600 / window.devicePixelRatio)}px`};
+    min-height: 100%;
 `
 
 export const App: React.FC = () => {
