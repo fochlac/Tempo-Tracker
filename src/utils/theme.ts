@@ -31,7 +31,7 @@ export const createTheme = ({
         '--default-button-active': darken(0.025, button),
         '--default-button-hover': lighten(0.025, button),
         '--destructive': destructive,
-        '--destructive-lightest': lighten(0.52, destructive),
+        '--destructive-lightest': lighten(0.45, destructive),
         '--destructive-button-active': darken(0.025, destructive),
         '--destructive-button-hover': lighten(0.025, destructive),
         '--destructive-dark': darken(0.2, destructive),

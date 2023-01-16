@@ -9,8 +9,7 @@ import { updateBadgeTitle } from './service-worker/badge'
 import { heartbeat } from './service-worker/heartbeat'
 import { openAsTab } from './utils/browser'
 
-const controller = chrome || browser
-
+const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
 
 function contextClick(info) {
     const { menuItemId } = info

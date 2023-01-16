@@ -5,7 +5,7 @@ export const THEMES = {
         background: '#f9f7fb',
         font: '#1b1928',
         link: '#1e6bf7',
-        destructive: '#e00404',
+        destructive: '#f50016',
         diagramm: '#d2e2f2',
         diagrammGreen: '#77DD77'
     }),
