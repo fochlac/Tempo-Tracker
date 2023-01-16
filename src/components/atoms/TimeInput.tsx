@@ -60,6 +60,7 @@ export const TimeInput: React.FC<Props> = ({ value, onChange, duration, maxHours
             return
         }
         const value = `00${newValue}`.slice(-2)
+        minutesInput.current.value = value
         onChange(createEvent(`${hours}:${value}`))
         if (!duration && Number(value) > 5) {
             minutesInput.current?.blur()

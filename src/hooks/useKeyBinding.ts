@@ -5,9 +5,11 @@ export function useKeyBinding (key: string, callback: () => void) {
     cb.current = callback
     useEffect(() => {
         const handler = (e) => {
-            e.stopPropagation()
-            e.preventDefault()
-            typeof cb.current === 'function' && cb.current()
+            if (e.key === key) {
+                e.stopPropagation()
+                e.preventDefault()
+                typeof cb.current === 'function' && cb.current()
+            }
         }
         document.addEventListener('keydown', handler)
         return () => {
