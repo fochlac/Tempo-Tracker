@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const BaseButton = styled.button<{disabled?: boolean}>`
     border: 1px solid var(--contrast);
-    background-color: var(--contrast-lighter);
+    background-color: var(--default-button-background);
     color: var(--color);    
     cursor: ${(props) => props.disabled ? 'default' : 'pointer'};
     opacity: ${(props) => props.disabled ? 0.5 : 1};
@@ -10,12 +10,12 @@ export const BaseButton = styled.button<{disabled?: boolean}>`
     border-radius: 3px;
 
     &:hover {
-        background: var(--contrast-button-hover);
+        background: var(--default-button-hover);
         border-color: var(--contrast-dark);
     }
 
     &:active {
-        background: var(--contrast-button-active);
+        background: var(--default-button-active);
         border-color: var(--contrast-dark);
     }
 `
