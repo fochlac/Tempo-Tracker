@@ -37,9 +37,12 @@ const ToggleButton = styled(Button) <{ first?: boolean; last?: boolean; selected
     border-radius: 0;
     font-size: 12px;
     flex-grow: 1;
+    border-left-color: var(--contrast) !important;
+    border-right-color: var(--contrast) !important;
+    border-top-color: var(--contrast) !important;
     ${({ selected }) => selected ? `
-        background: white !important;
-        border-bottom: black solid 1px !important;
+        background: var(--background) !important;
+        border-bottom: var(--font) solid 1px !important;
         font-weight: 700;
     ` : ''}
     ${({ first, firstRow }) => first && firstRow ? 'border-top-left-radius: 3px;' : ''}

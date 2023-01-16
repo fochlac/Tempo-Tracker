@@ -37,7 +37,7 @@ export const Header: React.FC = () => {
 
     return (
         <AppBar>
-            <Logo style={{ width: 24, height: 24 }} />
+            <Logo style={{ width: 24, height: 24, filter: 'drop-shadow(0 0 2px #ffffff99)' }} />
             <Title>Tempo-Tracker</Title>
             {view !== VIEWS.TRACKER && (
                 mandatoryOptions

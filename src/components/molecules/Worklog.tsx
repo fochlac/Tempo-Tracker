@@ -15,7 +15,7 @@ const ListRow = styled.li<{delete?: Boolean}>`
     justify-content: space-between;
     align-items: center;
     margin-bottom: 5px;
-    border-bottom: solid 1px #d5d5d5;
+    border-bottom: solid 1px var(--contrast-light);
     padding-bottom: 6px;
     white-space: nowrap;
     position: relative;
@@ -34,7 +34,7 @@ const IssueKey = styled.div`
 `
 const Datum = styled.span`
     width: 100px;
-    color: darkgrey;
+    color: var(--contrast);
     flex-shrink: 0;
     margin-top: 2px;
     padding-left: 4px;

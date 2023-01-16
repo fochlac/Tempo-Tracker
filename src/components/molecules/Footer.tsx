@@ -11,7 +11,7 @@ const FooterBar = styled.div`
     display: flex;
     justify-content: space-between;
     padding: 2px;
-    border-top: solid 1px lightslategrey;
+    border-top: solid 1px var(--contrast-dark);
     margin-top: auto;
 `
 const githubUrl = 'https://github.com/fochlac/Tempo-Tracker'

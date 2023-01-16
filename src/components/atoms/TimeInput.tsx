@@ -8,13 +8,16 @@ const InputWrapper = styled.div`
     margin-top: 2px;
     height: 20px;
     border: none;
-    border-bottom: solid 1px;
+    border-bottom: solid 1px var(--contrast);
+    color: var(--font);
     outline: none;
     align-items: center;
     padding-left: 1px;
 `
 const TimeSegmentInput = styled.input`
     width: 17px;
+    background: var(--background);
+    color: var(--font);
 `
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {

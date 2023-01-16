@@ -6,11 +6,11 @@ export const DefaultText = styled.p`
     font-size: 14px;
     line-height: 16px;
     letter-spacing: 0.01071em;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--font);
 `
 
 export const ErrorText = styled(DefaultText)`
-    color: rgb(224, 4, 4);
+    color: var(--destructive);
     padding: 0 16px;
     text-align: justify;
     letter-spacing: -0.1px;
@@ -33,6 +33,7 @@ export const SmallerText = styled.p`
     margin-top: 4px;
     margin-bottom: 8px;
     overflow: hidden;
+    color: var(--font);
     width: 100%;
     text-align: justify;
     padding: 0 4px;
@@ -47,7 +48,7 @@ export const Label = styled.legend`
     height: 11px;
     font-size: 0.75em;
     max-width: 100%;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--font);
     margin-bottom: 2px;
     font-weight: 600;
 `
@@ -55,13 +56,15 @@ export const Label = styled.legend`
 export const H6 = styled.h6`
     font-size: 0.8rem;
     margin: 16px 0 4px;
-    border-bottom: solid 1px lightslategrey;
+    border-bottom: solid 1px var(--contrast-dark);
     padding-left: 2px;
+    color: var(--font);
 `
 
 export const H5 = styled.h5`
     font-size: 1.2rem;
     margin: 8px 0;
+    color: var(--font);
 `
 
 export const Value = styled(DefaultText)`

@@ -94,12 +94,12 @@ export const TrackerView: React.FC = () => {
                 </ActionLink>
                 {!self.error && hasUnsyncedLog && hasError && (
                     <ErrorTooltipTop content="Last synchronisation failed.">
-                        <AlertCircle size={16} style={{ color: 'rgb(224, 4, 4)', marginTop: -2 }} />
+                        <AlertCircle size={16} style={{ color: 'var(--destructive)', marginTop: -2 }} />
                     </ErrorTooltipTop>
                 )}
                 {self.error && (
                     <ErrorTooltipTop content={offlineTooltip}>
-                        <WifiOff size={16} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />
+                        <WifiOff size={16} style={{ color: 'var(--destructive)', marginTop: -2, marginBottom: -3 }} />
                     </ErrorTooltipTop>
                 )}
             </H6>

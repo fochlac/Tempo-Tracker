@@ -53,11 +53,12 @@ const SearchResultItem = styled.li`
     align-items: flex-start;
     padding: 3px 0 3px;
     line-height: 20px;
-    border-bottom: solid 1px #cacaca;
+    border-bottom: solid 1px var(--contrast);
+    color: var(--font);
     cursor: pointer;
 
     &:hover {
-        background: #e2e2e2;
+        background:  var(--background-off-strong);
     }
     &:last-child {
         border-bottom: none;
@@ -177,7 +178,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                 <FlexRow style={{ width: '100%' }}>
                     <H5 style={{ padding: 8, margin: 0, fontSize: '1rem' }}>Add Issue</H5>
                     <div style={{ marginLeft: 'auto', cursor: 'pointer', padding: 4 }} onClick={() => setOpen(false)}>
-                        <X size={18} />
+                        <X style={{color: 'var(--font)'}} size={18} />
                     </div>
                 </FlexRow>
                 <SearchFieldWrapper>

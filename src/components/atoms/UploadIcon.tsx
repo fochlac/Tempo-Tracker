@@ -27,7 +27,7 @@ const AnimatedChevronUp = styled(ChevronUp)`
     left: 0;
     top: 0;
     opacity: 0;
-    color: 	#2A52BE;
+    color: 	var(--link);
     animation: ${visibility} 2s linear infinite;
 `
 const Wrapper = styled.div`

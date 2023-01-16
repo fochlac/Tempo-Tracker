@@ -11,10 +11,10 @@ const { Datum } = WorklogAtoms
 const ListRow = styled(WorklogAtoms.ListRow)`
     padding-top: 6px;
     padding-bottom: 2px;
-    border-bottom-color: black;
+    border-bottom-color: var(--font);
     position: sticky;
     top: 0;
-    background: white;
+    background: var(--background);
     z-index: 9;
 `
 const Duration = styled(WorklogAtoms.Duration)`
@@ -41,7 +41,7 @@ export const WorklogHeader: React.FC<{date: string;}> = ({date}) => {
 
     return (
         <ListRow>
-            <Datum style={{color: "#000"}}>{date}{isToday ? ' (Today)' : ''}</Datum>
+            <Datum style={{color: "var(--font)"}}>{date}{isToday ? ' (Today)' : ''}</Datum>
             {tracker.start && dateHumanized(tracker.start) === date ? (
                 <DurationTimer start={tracker.start - duration} />
             ) : (

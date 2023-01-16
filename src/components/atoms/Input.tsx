@@ -8,8 +8,10 @@ export const Input = styled.input<Props>`
     padding: 0 2px;
     border: none;
     border-bottom: solid 1px;
-    ${({error}) => error ? 'border-color: #e00404;' : ''}
-    ${({error}) => error ? 'color: #e00404;' : ''}
+    background: var(--background);
+    color: var(--font);
+    ${({error}) => error ? 'border-color: var(--destructive);' : ''}
+    ${({error}) => error ? 'color: var(--destructive);' : ''}
     ${({readOnly}) => readOnly ? 'border-bottom: none;' : ''}
     outline: none;
 `

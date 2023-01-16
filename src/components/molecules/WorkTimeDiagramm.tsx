@@ -1,10 +1,7 @@
 
-import { options } from "preact"
 import { ChevronLeft, ChevronRight } from "preact-feather"
 import { useEffect, useState } from "preact/hooks"
 import styled from "styled-components"
-import { useOptions } from "../../hooks/useOptions"
-import { useSelf } from "../../hooks/useSelf"
 import { dateHumanized, durationString, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from "../../utils/datetime"
 import { IconButton } from "../atoms/IconButton"
 import { Input } from "../atoms/Input"
@@ -18,10 +15,10 @@ const Diagramm = styled.div`
     align-items: flex-end;
     height: 200px;
     justify-content: space-around;
-    border-bottom: 1px solid #aeaeae;
+    border-bottom: 1px solid var(--contrast);
     margin-top: 16px;
     position: relative;
-    border-left: 1px solid #aeaeae;
+    border-left: 1px solid var(--contrast);
     padding-left: 4px;
     margin-bottom: 20px;
     margin-left: 16px;
@@ -34,16 +31,15 @@ const Diagramm = styled.div`
         position: absolute;
         width: 20px;
         right: -20px;
-        background-color: white;
+        background-color: var(--background);
     }
 `
 
 const Week = styled.div`
     display: flex;
-    background: #d2e2f2;
+    background: var(--diagramm);
     position: relative;
     width: 100%;
-    border: solid 1px #99a4af;
     border-bottom: none;
 `
 const WeekWrapper = styled.div`
@@ -67,7 +63,7 @@ const WeekNumber = styled.legend`
     position: absolute;
     width: 2px;
     height: 4px;
-    background: #aeaeae;
+    background:  var(--contrast);
     top: -4px;
     left: calc(50% - 1px);
 }
@@ -104,21 +100,22 @@ const Time = styled.span`
         height: 0px;
         top: 10px;
         left: 15px;
-        border-top: dashed #aeaeae 1px;
+        border-top: dashed var(--contrast) 1px;
     }
 `
 const OverHours = styled.span`
     position: absolute;
     top: 0;
     width: 100%;
-    border: solid 1px #77DD77;
+    border: solid 1px var(--diagramm-green);
     border-bottom: none;
-    background: repeating-linear-gradient( 45deg, #77DD77, #77DD77 2px, transparent 2px, transparent 7px);
+    background: var(--diagramm-green);
 `
 const MissingHours = styled.span`
     width: 100%;
-    border: dashed 1px #ff9a9a;
+    border: dashed 1px var(--destructive);
     border-bottom: none;
+    z-index: 2;
 `
 const WeekTooltip = styled(Tooltip)`
     &:before {

@@ -28,7 +28,7 @@ const Box = styled(Layers)`
     }
 `
 const White = styled.div`
-    background-color: white;
+    background-color: var(--background);
     position: absolute;
     width: 8px;
     height: 9px;

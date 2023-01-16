@@ -62,6 +62,7 @@ interface Options {
     autosync: boolean;
     forceSync: boolean;
     forceFetch: boolean;
+    theme: 'DEFAULT'|'DARK';
     token: string;
 }
 

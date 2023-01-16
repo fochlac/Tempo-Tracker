@@ -32,13 +32,13 @@ const InputWrapper = styled.time`
     flex-direction: column;
 `
 const InputErrorIcon = styled(AlertCircle)`
-    color: rgb(224, 4, 4);
+    color: var(--destructive);
     position: absolute;
     right: 4px;
     top: 2px;
 `
 const Mandatory = styled.span`
-    color: red;
+    color: var(--destructive);
     font-size: 14px;
     display: inline-block;
     margin-top: -3px;
@@ -48,7 +48,7 @@ const SectionHead = styled(H6)`
     font-size: 1rem;
     padding: 16px 0 4px 8px;
     margin: 0;
-    background: white;
+    background: var(--background);
     top: 0;
     position: sticky;
     z-index: 1;
@@ -57,7 +57,7 @@ const SectionHead = styled(H6)`
 const ErrorInfoText = styled(InfoText)`
     height: 0;
     padding: 0;
-    color: rgb(224, 4, 4);
+    color: var(--destructive);
     text-align: right;
     margin-top: -4px;
     margin-bottom: 4px;
@@ -78,13 +78,16 @@ const ImportExportBar = styled.div`
 const Title = styled.span`
     margin-right: auto;
 `
+const Select = styled.select`
+    width: 200px;
+`
 const ExportLink = styled(ActionLink)`
     padding-right: 4px;
 `
 const ErrorBox = styled(ErrorText)`
     padding: 4px 8px 4px 4px;
-    border: solid rgb(224, 4, 4) 1px;
-    background: rgb(255 232 232);
+    border: solid var(--destructive) 1px;
+    background: var(--destructive-lightest);
     border-radius: 2px;
     display: flex;
     flex-direction: row;
@@ -215,6 +218,13 @@ export const OptionsView: React.FC = () => {
                     <Label>enabled</Label>
                 </FlexRow>
                 {isFirefox && <InfoText>For Firefox this setting is always inactive. Due to browser restrictions it is neccesary to open jira in a new tab and use that tab for synchronization.</InfoText>}
+            </Option>
+            <Option>
+                <Label>Theme</Label>
+                <Select onChange={(e) => actions.merge({ theme: e.target.value })}>
+                    <option selected={options.theme === "DEFAULT"} value="DEFAULT">Light Theme (default)</option>
+                    <option selected={options.theme === "DARK"} value="DARK">Dark Theme</option>
+                </Select>
             </Option>
         </Body>
     )

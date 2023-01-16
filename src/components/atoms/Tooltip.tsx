@@ -12,8 +12,8 @@ const Wrapper = styled.div<{right: boolean;}>`
         white-space: normal;
         display: none;
         font-size: 12px;
-        background: white;
-        border: grey solid 1px;
+        background: var(--background);
+        border: var(--contrast) solid 1px;
         padding: 4px;
         text-align: center;
         z-index: 1000;
@@ -63,12 +63,12 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, clas
 
 export const ErrorTooltip = styled(Tooltip)`
     &:before {
-        color: darkred;
-        background: lightpink;
-        border-color: darkred;
+        color: var(--destructive-dark);
+        background: var(--destructive-lightest);
+        border-color: var(--destructive-dark);
     }
     &:after {
-        border-bottom: 6px solid darkred;
+        border-bottom: 6px solid var(--destructive-dark);
         z-index: 1000
     }
 `
@@ -77,9 +77,9 @@ export const ErrorTooltipTop = styled(Tooltip)`
         bottom: calc(100% + 7px);
         right: 0;
         top: unset;
-        color: darkred;
-        background: lightpink;
-        border-color: darkred;
+        color: var(--destructive-dark);
+        background: var(--destructive-lightest);
+        border-color: var(--destructive-dark);
     }
 
     &:after {
@@ -87,7 +87,7 @@ export const ErrorTooltipTop = styled(Tooltip)`
         bottom: calc(100%);
         border-left: 4px solid transparent;
         border-right: 4px solid transparent;
-        border-top: 6px solid darkred;
+        border-top: 6px solid var(--destructive-dark);
         border-bottom: transparent solid;
     }
 `

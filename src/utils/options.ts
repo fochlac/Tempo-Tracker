@@ -1,3 +1,5 @@
+import { THEMES } from "../constants/themes"
+
 export function getOptions(options: Partial<Options>): Options {
     const {
         issues,
@@ -6,7 +8,8 @@ export function getOptions(options: Partial<Options>): Options {
         autosync,
         forceSync,
         forceFetch,
-        token
+        token,
+        theme
     } = options || {}
 
     return {
@@ -18,6 +21,7 @@ export function getOptions(options: Partial<Options>): Options {
         autosync: autosync ?? false,
         forceSync: forceSync ?? false,
         forceFetch: forceFetch ?? false,
-        token: token ?? ''
+        token: token ?? '',
+        theme: THEMES[theme] ? theme : 'DEFAULT'
     }
 }
