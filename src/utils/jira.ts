@@ -9,12 +9,7 @@ export const headers = (token) => ({
     'Authorization': `Bearer ${token}`
 })
 
-export async function fetchIssues(): Promise<Issue[]> {
-    const options = await DB.get('options') as Options
-    return fetchIssueList(Object.keys(options.issues))
-}
-
-export async function fetchIssueList(issues): Promise<Issue[]> {
+async function fetchIssueList(issues): Promise<Issue[]> {
     const options = await DB.get('options') as Options
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const query = new URLSearchParams()
@@ -64,14 +59,8 @@ interface WorklogRemote {
     started: string;
     timeSpent: string;
 }
-export async function fetchAllWorklogs(opts?:Options): Promise<Worklog[]> {
-    const endDate = Date.now() + 1000 * 60 * 60 * 24 * 6
-    const startDate = Date.now() - 1000 * 60 * 60 * 24 * 6
-    return fetchWorklogs(startDate, endDate, opts)
-        .then(data => data.map(toLocalWorklog))
-}
 
-export async function fetchWorklogs(startDate:number, endDate: number, opts?: Options): Promise<WorklogRemote[]> {
+async function fetchWorklogs(startDate:number, endDate: number, opts?: Options): Promise<WorklogRemote[]> {
     const options = opts || await DB.get('options') as Options
     const payload = {
         'from': dateString(startDate),
@@ -87,6 +76,13 @@ export async function fetchWorklogs(startDate:number, endDate: number, opts?: Op
             credentials: 'omit'
         })
     return response.json()
+}
+
+export async function fetchAllWorklogs(opts?:Options): Promise<Worklog[]> {
+    const endDate = Date.now() + 1000 * 60 * 60 * 24 * 6
+    const startDate = Date.now() - 1000 * 60 * 60 * 24 * 6
+    return fetchWorklogs(startDate, endDate, opts)
+        .then(data => data.map(toLocalWorklog))
 }
 
 export async function writeWorklog({ issue, end, start }: Partial<Worklog>, opts?:Options): Promise<Worklog> {

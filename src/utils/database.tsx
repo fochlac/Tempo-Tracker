@@ -3,6 +3,7 @@ import { useContext, useState, useRef, useEffect } from 'preact/hooks'
 import { DB_KEYS } from '../constants/constants'
 import { DB } from './data-layer'
 import { v4 } from 'uuid'
+import { FlexRow } from '../components/atoms/Layout'
 
 const DBContext = createContext<Partial<DbHelper>>({})
 
@@ -84,11 +85,11 @@ export function DBProvider({ children }) {
         }
     }
 
-    return (
+    return !isLoading ? (
         <Provider value={dbHelpers}>
-            {!isLoading && children}
+             {children}
         </Provider>
-    )
+    ) : <FlexRow justify="center" style={{ height: '100%' }}>Loading Database...</FlexRow>
 }
 
 export function useDatabase<K extends DB_KEYS>(uuid: K) {

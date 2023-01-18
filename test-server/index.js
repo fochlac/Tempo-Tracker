@@ -7,6 +7,8 @@ const chromeApiMock = `
     chrome = {
         badge: {},
         menus: [],
+        tabsList: [],
+        messages: [],
         alarmList: [],
         alarmListeners: [],
         menuListeners: [],
@@ -18,10 +20,10 @@ const chromeApiMock = `
           }
         },
         tabs: {
-            create: Function.prototype
+            create: (options) => chrome.tabsList.push(options)
         },
         runtime: {
-            sendMessage: Function.prototype,
+            sendMessage: (message, callback) => { chrome.messages.push({message, callback}) },
             onMessage:{
               addListener: (alarm) => chrome.messageListeners.push(alarm)
             }
@@ -54,33 +56,14 @@ app.get('/', (req, res) => res.status(200).send(`
         <head>
             <script>
                 ${chromeApiMock}
-                const registerServiceWorker = async () => {
-                    if ("serviceWorker" in navigator) {
-                      try {
-                        const registration = await navigator.serviceWorker.register("/sw.js", {
-                          scope: "/",
-                        });
-                        if (registration.installing) {
-                          console.log("Service worker installing");
-                        } else if (registration.waiting) {
-                          console.log("Service worker installed");
-                        } else if (registration.active) {
-                          console.log("Service worker active");
-                        }
-                      } catch (error) {
-                        console.error(\`Registration failed with \${error}\`);
-                      }
-                    }
-                  }
-                  registerServiceWorker()
             </script>
             <title>Tempo Tracker</title>
             <link rel="stylesheet" type="text/css" href="./popup.css">
         </head>
         <body>
+            <div class="root"></div>
             <div class="modal"></div>
         </body>
-        <script src="popup.js"></script>
     </html>
 `))
 

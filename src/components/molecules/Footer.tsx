@@ -1,10 +1,12 @@
 import { ActionLink } from '../atoms/ActionLink'
-import { H6, SmallerText } from '../atoms/Typography'
+import { H5, H6, SmallerText } from '../atoms/Typography'
 import styled from 'styled-components'
 import { useState } from 'preact/hooks'
 import { Modal } from '../atoms/Modal'
 import { Github, X } from 'preact-feather'
 import { openTab } from '../../utils/browser'
+import { FlexRow } from '../atoms/Layout'
+import { useKeyBinding } from '../../hooks/useKeyBinding'
 
 const FooterBar = styled.div`
     cursor: default;
@@ -17,21 +19,26 @@ const FooterBar = styled.div`
 const githubUrl = 'https://github.com/fochlac/Tempo-Tracker'
 export function Footer() {
     const [show, setShow] = useState(false)
-    
+
+    useKeyBinding(show ? 'Escape' : 'Off', () => setShow(false))
+
     return (
         <FooterBar>
-            <ActionLink onClick={() => openTab({ url: githubUrl, active: true })} style={{margin: 0}}>
-                <Github size={16} style={{margin: '0 2px -4px 0'}} />
+            <ActionLink onClick={() => openTab({ url: githubUrl, active: true })} style={{ margin: 0 }}>
+                <Github size={16} style={{ margin: '0 2px -4px 0' }} />
                 Github
             </ActionLink>
             <p style={{ margin: '0 auto' }}>Designed and developed by Florian Riedel. © 2022</p>
             <ActionLink onClick={() => setShow(true)} style={{ whiteSpace: 'nowrap' }}>
                 Legal Disclosure
             </ActionLink>
-            {show && <Modal style={{ padding: 0 }}>
-                <div style={{ marginLeft: 'auto', cursor: 'pointer', padding: 4 }} onClick={() => setShow(false)}>
-                    <X size={18} />
-                </div>
+            {show && <Modal style={{ padding: 0, color: 'var(--font)' }}>
+                <FlexRow style={{width: '100%'}}>
+                    <H5 style={{marginLeft: 8}}>Legal Disclosure</H5>
+                    <div style={{ marginLeft: 'auto', cursor: 'pointer', padding: 4, paddingRight: 8 }} onClick={() => setShow(false)}>
+                        <X size={18} />
+                    </div>
+                </FlexRow>
                 <div style={{ overflow: 'auto', width: '100%', padding: 8 }}>
                     <H6 style={{ marginTop: 0 }}>Information in accordance with Section 5 TMG</H6>
                     <p>Florian Riedel</p>
@@ -63,7 +70,7 @@ export function Footer() {
                     <p>No Usage Data is collected when using the extension.</p>
                     <H6>Tracking Technologies and Cookies</H6>
                     <p>
-                        We use the browser storage to store essential information for the functionality of this addon. This 
+                        We use the browser storage to store essential information for the functionality of this addon. This
                         includes your options, unsynced issues and cached requests.
                     </p>
                     <p>We do not use any form of tracking, and we do not pass your information to any third party.</p>

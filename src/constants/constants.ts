@@ -16,3 +16,6 @@ export const DB_KEYS: Record<string, DB_KEYS> = {
     UPDATE_QUEUE: 'updates',
     ...CACHE
 }
+
+export const CACHE_STORE = 'CACHE_STORE'
+export const DATABASE_NAME = 'tempo-tracker'

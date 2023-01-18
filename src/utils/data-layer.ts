@@ -1,6 +1,4 @@
-const VERSION = 1
-const CACHE_STORE = 'CACHE_STORE'
-const DATABASE_NAME = 'tempo-tracker'
+import { CACHE_STORE, DATABASE_NAME } from "../constants/constants"
 
 const stores = [CACHE_STORE]
 
@@ -11,9 +9,9 @@ const ACCESS_MODES = {
 
 const indexedDb = self.indexedDB || (self as any).mozIndexedDB || (self as any).webkitIndexedDB
 
-const request = indexedDb.open(DATABASE_NAME, VERSION)
+const request = indexedDb.open(DATABASE_NAME)
 
-const db = new Promise((resolve, reject) => {
+const db:Promise<IDBDatabase> = new Promise((resolve, reject) => {
     request.onsuccess = (e) => resolve((e.target as any).result)
     request.onerror = (e) => reject(e)
     request.onblocked = (e) => reject(e)
@@ -29,7 +27,7 @@ const db = new Promise((resolve, reject) => {
 })
 
 const createTransaction = async (name, mode) => {
-    const database: any = await db
+    const database = await db
     const transaction = database.transaction([name], mode)
     let fail, succeed
     
@@ -38,13 +36,13 @@ const createTransaction = async (name, mode) => {
         succeed = resolve
     })
 
-    transaction.onabort = (e) => fail(e.target.error)
+    transaction.onabort = (e) => fail((e.target as any).error)
     const store = transaction.objectStore(name)
 
     return {
         get: (key) => {
             let request = store.get(key)
-            request.onsuccess = (e) => succeed(e.target.result as any)
+            request.onsuccess = (e) => succeed((e.target as any).result as any)
             request.onerror = fail
             return result
         },

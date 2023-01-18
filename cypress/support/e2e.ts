@@ -1,17 +1,72 @@
-// ***********************************************************
-// This example support/e2e.ts is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
+import './src/index'
+import { CACHE_STORE, DATABASE_NAME, DB_KEYS } from '../../src/constants/constants'
+import './default'
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            clearIndexedDb(databaseName: string): void
+            openIndexedDb(databaseName: string, version?: number): Chainable<IDBDatabase>
+            createObjectStore(storeName: string): Chainable<IDBObjectStore>
+            getStore(storeName: string): Chainable<IDBObjectStore>
+            createItem(key: string, value: unknown): Chainable<IDBObjectStore>
+            readItem<T = unknown>(key: IDBValidKey | IDBKeyRange): Chainable<T>
+            updateItem(key: string, value: unknown): Chainable<IDBObjectStore>
+            deleteItem(key: string): Chainable<IDBObjectStore>
+
+            fakeTimers(now: number)
+            startApp()
+            networkMocks(domain?: string)
+            openWithOptions(options?: Partial<Options>)
+            open(clearStorage?: boolean)
+            setOptions(options: Partial<Options>)
+            getOptions(): Chainable<Partial<Options>>
+            injectUnsyncedWorklog(worklog: TemporaryWorklog)
+        }
+    }
+}
+
+Cypress.Commands.add('open', (clearStorage = true) => {
+    cy.visit('http://localhost:3000', {onBeforeLoad(win) {
+        if (clearStorage) {
+            return win.indexedDB.deleteDatabase(DATABASE_NAME)
+        }
+    }})
+    cy.startApp()
+})
+Cypress.Commands.add('startApp', () => {
+    cy.window().then(win => {
+        const script = win.document.createElement('script')
+        script.src = './popup.js';
+        win.document.querySelector('head').appendChild(script)
+    })
+})
+
+
+
+Cypress.Commands.add('setOptions', (options) => {
+    cy.openIndexedDb(DATABASE_NAME)
+        .createObjectStore(CACHE_STORE)
+        .updateItem(DB_KEYS.OPTIONS, options)
+})
+
+Cypress.Commands.add('getOptions', () => {
+    return cy.openIndexedDb(DATABASE_NAME)
+        .createObjectStore(CACHE_STORE)
+        .readItem(DB_KEYS.OPTIONS)
+        .then((options) => cy.wrap(options))
+})
+
+Cypress.Commands.add('injectUnsyncedWorklog', (worklog) => {
+    cy.openIndexedDb(DATABASE_NAME)
+        .createObjectStore(CACHE_STORE).asStore('Store')
+    
+    cy.getStore('@Store')
+        .readItem(DB_KEYS.UPDATE_QUEUE)
+        .then((queue: TemporaryWorklog[]) => {
+            const newQueue = [...(queue || []), worklog]
+            return cy.getStore('@Store')
+                .updateItem(DB_KEYS.UPDATE_QUEUE, newQueue)
+        })
+        
+})

@@ -23,33 +23,36 @@ function contextClick(info) {
 }
 
 if (!isFirefox) {
-    chrome.contextMenus.create({
-        id: 'open-webapp',
-        title: 'Open Webapp',
-        contexts: ['action']
-    })
-    chrome.contextMenus.create({
-        id: 'open-webapp-options',
-        title: 'Options',
-        contexts: ['action']
-    })
+    chrome.runtime.onInstalled.addListener(() => {
+        chrome.contextMenus.create({
+            id: 'open-webapp',
+            title: 'Open Webapp',
+            contexts: ['action']
+        })
+        chrome.contextMenus.create({
+            id: 'open-webapp-options',
+            title: 'Options',
+            contexts: ['action']
+        })
 
-    chrome.contextMenus.onClicked.addListener(contextClick)
+        chrome.contextMenus.onClicked.addListener(contextClick)
+    })
 }
 else {
-    browser.menus.create({
-        id: 'open-webapp',
-        title: 'Open Webapp',
-        contexts: ['browser_action']
-    })
-    browser.menus.create({
-        id: 'open-webapp-options',
-        title: 'Options',
-        contexts: ['browser_action']
-    })
+    browser.runtime.onInstalled.addListener(() => {
+        browser.menus.create({
+            id: 'open-webapp',
+            title: 'Open Webapp',
+            contexts: ['browser_action']
+        })
+        browser.menus.create({
+            id: 'open-webapp-options',
+            title: 'Options',
+            contexts: ['browser_action']
+        })
 
-    browser.menus.onClicked.addListener(contextClick)
-
+        browser.menus.onClicked.addListener(contextClick)
+    })
 }
 
 controller.alarms.create('flushQueue', { periodInMinutes: 1 })

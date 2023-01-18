@@ -1,5 +1,5 @@
 import { AlertCircle, AlertOctagon } from "preact-feather"
-import { useEffect, useState } from "preact/hooks"
+import { useEffect, useRef, useState } from "preact/hooks"
 import styled from "styled-components"
 import { useOptions } from "../../hooks/useOptions"
 import { useSafeState } from "../../hooks/useSafeState"
@@ -120,14 +120,30 @@ export const OptionsView: React.FC = () => {
 
     const stars = options.token.length ? Array(Math.max(options.token.length - 8, 12)).fill('*').join('') : ''
     const tokenObfuscated = `${options.token.slice(0, 4)}${stars}${options.token.slice(-4)}`
-
+    
+    const timeout = useRef<NodeJS.Timeout>()
     const tokenBlur = async () => {
+        clearTimeout(timeout.current)
         if (token?.length && token !== options.token) {
             await actions.merge({ token })
+            checkDomainToken({ token, domain })
         }
         setTokenFocused(false)
-        checkDomainToken({ token, domain })
     }
+    const tokenChange = (e) => {
+        const token = e.target.value
+        setIgnoreError(true)
+        setToken(token)
+        clearTimeout(timeout.current)
+        timeout.current = setTimeout(() => {
+            if (token.length) {
+                refetch({ token, domain })
+                    .then(() => tokenBlur())
+                    .catch(e => console.log('error', e))
+            }
+        }, 1500)
+    }
+
     const validDomain = /^https?:\/\/[^/]+(\/[^/]+)*\/rest/.test(domain) || !error || error === 'TOKEN'
     const domainMessage = !validDomain && /^https?:\/\/[^/]+(\/[^/]+)*/.test(domain)
         ? ` Did you mean "${/^https?:\/\/[^/]+/.exec(domain)[0]}/rest"?`
@@ -183,10 +199,7 @@ export const OptionsView: React.FC = () => {
                         value={isTokenFocused ? token : tokenObfuscated}
                         onFocus={() => setTokenFocused(true)}
                         onBlur={tokenBlur}
-                        onChange={(e) => {
-                            setIgnoreError(true)
-                            setToken(e.target.value)
-                        }} />
+                        onChange={tokenChange} />
                     {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
                 </InputWrapper>
                 {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token is invalid.</ErrorInfoText>}

@@ -12,5 +12,5 @@ render(
             <App />
         </Provider>
     </DBProvider>,
-    document.body
+    document.querySelector('.root')
 )
