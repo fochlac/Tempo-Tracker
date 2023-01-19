@@ -9,5 +9,6 @@ workflows:
   build:
     jobs:
       - cypress/run:
+          executor: cypress/base-16
           build: "npm run build"
           start: "npm run test:server"
