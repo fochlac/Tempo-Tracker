@@ -24,6 +24,6 @@ workflows:
             - cypress/run
           filters:
             branches:
-              only: /release\/\d+\.\d+\.\d+/
-            tags:
               ignore: /.*/
+            tags:
+              only: /.*/
