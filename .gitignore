@@ -6,3 +6,4 @@ images
 dist
 dist_ff
 extension_*.zip
+credentials.json

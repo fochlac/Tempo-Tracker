@@ -4,6 +4,13 @@ version: 2.1
 
 orbs:
   cypress: cypress-io/cypress@2
+jobs:
+  release:
+    executor: cypress/base-16-14-2-slim
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: npm run publish
 
 workflows:
   build:
@@ -12,3 +19,11 @@ workflows:
           executor: cypress/base-16-14-2-slim
           build: "npm run build"
           start: "npm run test:server"
+      - release:
+          requires:
+            - cypress/run
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^release\/\d+\.\d+\.\d+$/

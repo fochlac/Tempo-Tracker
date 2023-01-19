@@ -151,6 +151,10 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
         return true
     }
     if (ACTIONS.UPDATE_BADGE.type === request.type) {
+        controller.alarms.clear('flushQueue', () => {
+            controller.alarms.create('flushQueue', { periodInMinutes: 1 })
+        })
+
         updateBadgeTitle()
             .then(() => sendResponse(ACTIONS.UPDATE_BADGE.response(true)))
             .catch((e) => sendResponse(ACTIONS.UPDATE_BADGE.response(false, e.message)))

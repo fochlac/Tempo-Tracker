@@ -1,7 +1,8 @@
+const { execSync } = require('child_process')
 const packageJson = require('../package.json')
 const manifest = require('../static/manifest.json')
 const manifest_ff = require('../static_ff/manifest.json')
-const { writeJSONSync, fstat } = require('fs-extra')
+const { writeJSONSync } = require('fs-extra')
 
 const packageVersion = packageJson.version?.split('.')
 const manifestVersion = manifest.version?.split('.')
@@ -36,3 +37,6 @@ manifest_ff.version = newVersion
 writeJSONSync('./package.json', packageJson, { spaces: 4 })
 writeJSONSync('./static/manifest.json', manifest, { spaces: 4 })
 writeJSONSync('./static_ff/manifest.json', manifest_ff, { spaces: 4 })
+
+execSync(`git commit -am "release/${newVersion}"`)
+execSync(`git tag -a "release/${newVersion}" -m "release/${newVersion}"`)
