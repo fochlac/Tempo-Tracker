@@ -19,6 +19,9 @@ workflows:
           executor: cypress/base-16-14-2-slim
           build: "npm run build"
           start: "npm run test:server"
+          filters:
+            tags:
+              only: /release.*/
       - release:
           requires:
             - cypress/run
@@ -26,4 +29,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /.*/
+              only: /release.*/
