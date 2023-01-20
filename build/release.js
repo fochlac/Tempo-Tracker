@@ -40,3 +40,4 @@ writeJSONSync('./static_ff/manifest.json', manifest_ff, { spaces: 4 })
 
 execSync(`git commit -am "release/${newVersion}"`)
 execSync(`git tag -a "release/${newVersion}" -m "release/${newVersion}"`)
+execSync(`git push --follow-tags`)
