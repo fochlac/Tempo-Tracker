@@ -37,7 +37,6 @@ describe('Options view & initial setup', () => {
             .type(serverUrl, { delay: 50 })
             .invoke('attr', 'error')
             .should('be.undefined')
-        cy.get('@clock').invoke('tick', 2000)
 
         cy.getOptions().its('domain').should('equal', serverUrl)
 
@@ -55,6 +54,8 @@ describe('Options view & initial setup', () => {
             .find('input')
             .type(testtoken, { delay: 50 })
             .should('have.value', testtoken)
+        
+        cy.get('@clock').invoke('tick', 2000)
 
         cy.get('@myself.all').should('have.length', 2)
 

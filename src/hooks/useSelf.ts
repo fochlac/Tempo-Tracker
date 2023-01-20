@@ -18,7 +18,7 @@ export function useSelf() {
         const localDomain = override?.domain || domain
         if (localDomain.length && localToken.length) {
             const id = `${localDomain}${localToken}`
-            if (cacheInfo.id === id && cacheInfo.time > Date.now()) return 
+            if (cacheInfo.id === id && cacheInfo.time > Date.now() && !(override && Object.values(override).length)) return 
             cacheInfo.id = id
             try {
                 const res = await fetchSelf({ token: localToken, domain: localDomain })
@@ -27,7 +27,7 @@ export function useSelf() {
                     setError(null)
                     setName(res.displayName)
                     if (res.key !== user) {
-                        actions.merge({ user: res.key })
+                        return actions.merge({ user: res.key })
                     }
                     return
                 }

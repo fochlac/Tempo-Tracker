@@ -112,27 +112,32 @@ export const OptionsView: React.FC = () => {
     const valid = ignoreError || !error
     const checkDomainToken = (options?: Partial<Options>) => refetch(options).finally(() => setIgnoreError(false))
 
-    const stars = options.token.length ? Array(Math.max(options.token.length - 8, 12)).fill('*').join('') : ''
-    const tokenObfuscated = `${options.token.slice(0, 4)}${stars}${options.token.slice(-4)}`
+    const stars = storedToken.length ? Array(Math.max(storedToken.length - 8, 12)).fill('*').join('') : ''
+    const tokenObfuscated = `${storedToken.slice(0, 4)}${stars}${storedToken.slice(-4)}`
     
     const timeout = useRef<NodeJS.Timeout>()
-    const tokenBlur = async () => {
+    const tokenBlur = async (e) => {
+        const newToken = e?.newToken || token
         clearTimeout(timeout.current)
-        if (token?.length && token !== options.token) {
-            await actions.merge({ token })
-            checkDomainToken({ token, domain })
+        if (newToken?.length && newToken !== storedToken) {
+            await actions.merge({ token: newToken })
+            await checkDomainToken({ token: newToken, domain })
         }
-        setTokenFocused(false)
+        if (!e?.skipFocus) {
+            setTokenFocused(false)
+        }
     }
     const tokenChange = (e) => {
-        const token = e.target.value
+        const newToken = e.target.value
         setIgnoreError(true)
-        setToken(token)
+        setToken(newToken)
         clearTimeout(timeout.current)
         timeout.current = setTimeout(() => {
-            if (token.length) {
-                refetch({ token, domain })
-                    .then(() => tokenBlur())
+            if (newToken.length) {
+                refetch({ token: newToken, domain })
+                    .then(() => {
+                        return tokenBlur({ newToken, skipFocus: true })
+                    })
                     .catch(e => console.log('error', e))
             }
         }, 1500)
