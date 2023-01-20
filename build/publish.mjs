@@ -10,39 +10,14 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Chrome 
-const store = chromeWebstoreUpload({
-    extensionId: 'gcicdbcmacjeaepmfkibdbhickbdiafj',
-    clientId: process.env.clientId,
-    clientSecret: process.env.clientSecret,
-    refreshToken: process.env.refreshToken
-})
-
-const myZipFile = fs.createReadStream(path.join(__dirname, '../extension_chrome.zip'))
-store
-    .fetchToken()
-    .then((token) => {
-        console.log('token', token)
-        return store.uploadExisting(myZipFile, token).then((r) => {
-            console.log('uploaded', r)
-            return store.publish('default', token)
-        })
-    })
-    .catch((e) => {
-        console.log('error', e)
-    })
-
 // Firefox
-function getJWT ()  {
- return JWT.sign(
-    { iss: process.env.mozApiKey },
-    process.env.mozApiSecret,
-    {
+function getJWT() {
+    return JWT.sign({ iss: process.env.mozApiKey }, process.env.mozApiSecret, {
         algorithm: 'HS256',
         expiresIn: '5m'
-    }
-)
+    })
 }
+
 async function publishFF() {
     const uuid = 'tempo-tracker@fochlac.com'
     const basePath = 'https://addons.mozilla.org'
@@ -81,8 +56,32 @@ async function publishFF() {
             .json()
         console.log('created version', version)
     } catch (e) {
-        console.log((await e?.response.body) || e)
+        console.log((await e?.response?.body) || e)
     }
 }
 
-publishFF()
+// Chrome
+const store = chromeWebstoreUpload({
+    extensionId: 'gcicdbcmacjeaepmfkibdbhickbdiafj',
+    clientId: process.env.clientId,
+    clientSecret: process.env.clientSecret,
+    refreshToken: process.env.refreshToken
+})
+
+const myZipFile = fs.createReadStream(path.join(__dirname, '../extension_chrome.zip'))
+store
+    .fetchToken()
+    .then((token) => {
+        return store.uploadExisting(myZipFile, token)
+            .then((r) => {
+                console.log('uploaded chrome extension', r)
+                return store.publish('default', token)
+            })
+    })
+    .catch((e) => {
+        console.log('error', e)
+    })
+    .then((r) => {
+        console.log('published chrome extension', r)
+        publishFF()
+    })
