@@ -33,7 +33,7 @@ const Main = styled.main`
     padding: 8px;
     padding-bottom: 0;
     overflow: hidden;
-    ${() => `height: ${Math.floor(600 / window.devicePixelRatio)}px`};
+    ${() => `height: ${Math.floor(600 / (typeof window !== 'undefined' ? window.devicePixelRatio : 1))}px`};
     min-height: 100%;
     background-color: var(--background);
     color: var(--font);

@@ -9,5 +9,7 @@ export function openTab(options) {
 
 export const openAsTab = (view) => {
     openTab({ active: true, url: `popup.html?popped=1&view=${view}` })
-    window?.close()
+    if (typeof window !== 'undefined') {
+        window.close()
+    }
 }

@@ -7,7 +7,7 @@ const startup = runOnce(async () => {
     const { options } = await triggerBackgroundAction<ReturnType<typeof ACTIONS.PAGE_SETUP.response>['payload']>(ACTIONS.PAGE_SETUP.create())
 
     const domain = options.domain.replace(/https?:\/\//, '').split('/')[0]
-    if (window.location.href.includes(domain) && isFirefox) {
+    if (typeof window !== 'undefined' && window.location.href.includes(domain) && isFirefox) {
         checkWorklogQueue(options)
         window.addEventListener('focus', () => checkWorklogQueue(options))
     }

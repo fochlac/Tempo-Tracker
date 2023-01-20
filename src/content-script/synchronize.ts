@@ -87,7 +87,7 @@ export async function checkWorklogQueue(options) {
         }
         finally {
             removeOverlay()
-            if (shouldClose) {
+            if (typeof window !== 'undefined' && shouldClose) {
                 window.close()
             }
         }
@@ -96,7 +96,7 @@ export async function checkWorklogQueue(options) {
         sessionStorage.setItem('tempo-tracker-last-fetch', String(Date.now()))
         fetchWorklogs(options)
     }
-    if (shouldClose) {
+    if (typeof window !== 'undefined' && shouldClose) {
         window.close()
     }
 }

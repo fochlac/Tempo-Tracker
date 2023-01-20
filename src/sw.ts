@@ -55,6 +55,8 @@ else {
     })
 }
 
+controller.alarms.clearAll()
+
 controller.alarms.create('flushQueue', { periodInMinutes: 1 })
 
 controller.alarms.onAlarm.addListener(async (alarm) => {
