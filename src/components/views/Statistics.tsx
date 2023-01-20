@@ -31,8 +31,7 @@ export const StatisticsView: React.FC = () => {
         data: { stats, year, unsyncedStats },
         actions: { setYear, getRequiredSeconds }
     } = useStatistics()
-    const { data } = useOptions()
-    const self = useSelf(data)
+    const self = useSelf()
     
 
     const { data: options, actions } = useStatisticsOptions()

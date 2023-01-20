@@ -1,16 +1,17 @@
 import { useEffect } from "preact/hooks"
 import { fetchSelf } from "../utils/jira"
 import { useSafeState } from "./useSafeState"
+import { useOptions } from "./useOptions"
 
 let cacheInfo = {
     id: null,
     time: 0
 }
 
-export function useSelf({ token, domain }: Partial<Options>) {
+export function useSelf() {
     const [error, setError] = useSafeState(null)
     const [name, setName] = useSafeState(null)
-    const [userKey, setUserKey] = useSafeState(null)
+    const { data: {token, domain, user}, actions } = useOptions()
 
     const checkDomainToken = async (override?: Partial<Options>) => {
         const localToken = override?.token || token
@@ -25,7 +26,9 @@ export function useSelf({ token, domain }: Partial<Options>) {
                     cacheInfo.time = Date.now() + 1000 * 60
                     setError(null)
                     setName(res.displayName)
-                    setUserKey(res.key)
+                    if (res.key !== user) {
+                        actions.merge({ user: res.key })
+                    }
                     return
                 }
                 setError(true)
@@ -49,5 +52,5 @@ export function useSelf({ token, domain }: Partial<Options>) {
         checkDomainToken()
     }, [])
 
-    return { name, error, userKey, refetch: (options?: Partial<Options>) => checkDomainToken(options) }
+    return { name, error, refetch: (options?: Partial<Options>) => checkDomainToken(options) }
 }

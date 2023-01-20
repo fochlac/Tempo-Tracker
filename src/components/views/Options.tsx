@@ -108,15 +108,9 @@ export const OptionsView: React.FC = () => {
     const [token, setToken] = useState('')
     const [ignoreError, setIgnoreError] = useSafeState(false)
     const { domain, token: storedToken } = options
-    const { userKey, name, error, refetch } = useSelf(options)
+    const { name, error, refetch } = useSelf()
     const valid = ignoreError || !error
     const checkDomainToken = (options?: Partial<Options>) => refetch(options).finally(() => setIgnoreError(false))
-
-    useEffect(() => {
-        if (userKey && userKey !== options.user) {
-            actions.merge({ user: userKey })
-        }
-    }, [userKey])
 
     const stars = options.token.length ? Array(Math.max(options.token.length - 8, 12)).fill('*').join('') : ''
     const tokenObfuscated = `${options.token.slice(0, 4)}${stars}${options.token.slice(-4)}`

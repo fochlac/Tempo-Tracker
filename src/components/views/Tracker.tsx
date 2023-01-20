@@ -42,8 +42,7 @@ const ProgressWrapper = styled.div<{ visible: boolean }>`
 
 export const TrackerView: React.FC = () => {
     const worklog = useFetchJiraWorklog()
-    const options = useOptions()
-    const self = useSelf(options.data)
+    const self = useSelf()
     const editIssue = useSelector(editIssueDuck.selector)
     const worklogs = useMemo(() => worklog.data.sort((a, b) => b.start - a.start), [worklog.data])
     const hasUnsyncedLog = useMemo(() => worklog.data.some((log) => !log.synced), [worklog.data])
