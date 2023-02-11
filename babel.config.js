@@ -1,4 +1,4 @@
-{
+module.exports = {
   "presets": [
     "@babel/env",
     ["@babel/typescript", { "jsxPragma": "h" }]
@@ -16,6 +16,7 @@
       "import": "h",
       "export": "h"
     }],
-    "babel-plugin-styled-components"
+    "babel-plugin-styled-components",
+    "@babel/plugin-transform-modules-commonjs"
   ]
 }

@@ -1,9 +1,10 @@
-import { ACTIONS } from "../constants/actions"
-import { DB_KEYS } from "../constants/constants"
-import { checkTabExistence, triggerBackgroundAction } from "../utils/background"
-import { useDatabasRefresh } from "../utils/database"
-import { useOptions } from "./useOptions"
-import { useSafeState } from "./useSafeState"
+import { ACTIONS } from '../constants/actions'
+import { DB_KEYS } from '../constants/constants'
+import { checkTabExistence, triggerBackgroundAction } from '../utils/background'
+import { openTab } from '../utils/browser'
+import { useDatabasRefresh } from '../utils/database'
+import { useOptions } from './useOptions'
+import { useSafeState } from './useSafeState'
 
 export function useLogSync(self, worklog) {
     const [isSyncing, setSyncing] = useSafeState(false)
@@ -21,7 +22,10 @@ export function useLogSync(self, worklog) {
             }
             await options.actions.merge({ forceSync: true, forceFetch: true })
             const url = options.data.domain.split('/rest')[0]
-            const tab = await browser?.tabs?.create({ url: `${url}/secure/dashboard.jspa?__tt-close=true`, active: true })
+            const tab = await openTab({
+                url: `${url}/secure/dashboard.jspa?__tt-close=true`,
+                active: true
+            })
             const timer = setInterval(() => {
                 checkTabExistence(tab.id)
                     .then(() => {
@@ -32,7 +36,7 @@ export function useLogSync(self, worklog) {
             }, 1000)
         } else {
             try {
-                await triggerBackgroundAction(ACTIONS.FLUSH_UPDATES.create())
+                await triggerBackgroundAction(ACTIONS.FLUSH_UPDATES)
                 setError(false)
                 await refreshQueueCache()
             } catch (err) {
@@ -45,7 +49,7 @@ export function useLogSync(self, worklog) {
 
     return {
         isSyncing,
-hasError,
-startSync
+        hasError,
+        startSync
     }
 }

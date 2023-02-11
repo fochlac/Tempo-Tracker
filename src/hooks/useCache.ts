@@ -11,7 +11,8 @@ export function useCache<K extends CACHE>(uuid: K, initialData): CacheHookResult
 
     const updateData = async (fn: (data:DataBase[K]) => DataBase[K]) => {
         const newData = fn(dbData as DataBase[K])
-        DB.set(uuid, { validUntil: cache.validUntil, data: newData })        
+        DB.set(uuid, { validUntil: cache.validUntil, data: newData })
+        setMemoryCache(newData)
     }
     useEffect(() => {
         setMemoryCache(dbData)
@@ -22,7 +23,10 @@ export function useCache<K extends CACHE>(uuid: K, initialData): CacheHookResult
             setMemoryCache(cache)
             await DB.set(uuid, cache)
         },
-        resetCache: () => DB.set(uuid, defaultCache) as Promise<void>,
+        resetCache: async () => {
+            setMemoryCache(defaultCache)
+            await DB.set(uuid, defaultCache)
+        },
         updateData,
         cache
     }

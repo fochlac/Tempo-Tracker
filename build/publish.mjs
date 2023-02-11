@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename)
 
 // Firefox
 function getJWT() {
-    return JWT.sign({ iss: process.env.mozApiKey || "user:17050180:448" }, process.env.mozApiSecret || "6d21d8eb54456c3818dcd81f75acf8b56bb1cd0d60c5470dce7275482d7d9596", {
+    return JWT.sign({ iss: process.env.mozApiKey }, process.env.mozApiSecret, {
         algorithm: 'HS256',
         expiresIn: '5m'
     })

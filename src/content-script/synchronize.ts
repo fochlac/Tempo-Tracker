@@ -24,15 +24,15 @@ function renderOverlay(queue: TemporaryWorklog[]) {
 }
 
 let isSyncing = false
-async function synchronize (queue, setProgress, options) {
+async function synchronize (queue: TemporaryWorklog[], setProgress, options) {
     isSyncing = true
-    let stack = [].concat(queue)
+    let stack = [...queue]
     setProgress(0)
     while (stack.length) {
         const log = stack.shift()
         try {
             console.info(`Reserving log item: ${JSON.stringify(log)}`)
-            const { success } = await triggerBackgroundAction(ACTIONS.RESERVE_QUEUE_ITEM.create(log))
+            const { success } = await triggerBackgroundAction(ACTIONS.RESERVE_QUEUE_ITEM, log)
             if (success) {
                 let result
                 let deleted = false
@@ -49,12 +49,12 @@ async function synchronize (queue, setProgress, options) {
                     result = await updateWorklog(log, options)
                 }
                 console.info(`Synchronized log item: ${JSON.stringify(log)}`)
-                await triggerBackgroundAction(ACTIONS.QUEUE_ITEM_SYNCHRONIZED.create(result, deleted))
+                await triggerBackgroundAction(ACTIONS.QUEUE_ITEM_SYNCHRONIZED, result, deleted)
             }
         }
         catch(e) {
             console.info(`Error while synchronizing log item: ${JSON.stringify(log)}`)
-            await triggerBackgroundAction(ACTIONS.UNRESERVE_QUEUE_ITEM.create(log))
+            await triggerBackgroundAction(ACTIONS.UNRESERVE_QUEUE_ITEM, log)
             console.log(e)
         }
         setProgress(queue.length - stack.length)
@@ -65,7 +65,7 @@ async function synchronize (queue, setProgress, options) {
 async function fetchWorklogs(options) {
     isSyncing = true
     const worklogs = await fetchAllWorklogs(options)
-    await triggerBackgroundAction(ACTIONS.STORE_RECENT_WORKLOGS.create(worklogs))
+    await triggerBackgroundAction(ACTIONS.STORE_RECENT_WORKLOGS, worklogs)
     isSyncing = false
 }
 
@@ -74,7 +74,7 @@ export async function checkWorklogQueue(options) {
     if (isSyncing) {
         return
     }
-    const { success, queue, forceSync, forceFetch } = await triggerBackgroundAction(ACTIONS.SETUP_PAGE_QUEUE.create()) as any
+    const { success, queue, forceSync, forceFetch } = await triggerBackgroundAction(ACTIONS.SETUP_PAGE_QUEUE)
     if (success && (forceSync || forceFetch)){
         const { setProgress, removeOverlay } = renderOverlay(queue)
         try {

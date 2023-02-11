@@ -2,8 +2,9 @@ import { ACTIONS } from "../constants/actions"
 
 const controller = chrome || browser
 
-export const triggerBackgroundAction = <R = any>(action): Promise<R> => {
+export const triggerBackgroundAction = <R extends ActionDefinition>(actionDefinition: R, ...params: Parameters<R['create']>): Promise<ReturnType<R['response']>['payload']> => {
     return new Promise((resolve, reject) => {
+        const action = actionDefinition.create(...params as [])
         if (controller?.runtime?.sendMessage) {
             const errTimer = setTimeout(() => {
                 reject(ACTIONS[action.type].response(false, 'Action timed out after 60 seconds.'))
@@ -18,7 +19,7 @@ export const triggerBackgroundAction = <R = any>(action): Promise<R> => {
                 }            
             }
             if (isFirefox) {
-                browser.runtime.sendMessage(action, callback)
+                browser.runtime.sendMessage(action).then(callback)
             }
             else {
                 chrome.runtime.sendMessage(action, callback)

@@ -18,7 +18,7 @@ export function useTracking() {
                     start: Date.now()
                 }
                 await updateTracking(update)
-                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE.create())
+                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
             },
             async updateStart(start) {
                 const update = {
@@ -26,7 +26,7 @@ export function useTracking() {
                     start
                 }
                 await updateTracking(update)
-                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE.create())
+                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
             },
             async stop() {
                 const {issue, start} = tracking
@@ -36,7 +36,7 @@ export function useTracking() {
                     await worklog.actions.queue(newLog)
                 }
                 await updateTracking({ issue: null, start: null })
-                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE.create())
+                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
             },
             async swap(issue) {
                 if (tracking.issue) {

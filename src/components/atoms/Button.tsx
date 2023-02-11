@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const BaseButton = styled.button<{disabled?: boolean}>`
     border: 1px solid var(--contrast);
     background-color: var(--default-button-background);
-    color: var(--color);    
+    color: var(--font);    
     cursor: ${(props) => props.disabled ? 'default' : 'pointer'};
     opacity: ${(props) => props.disabled ? 0.5 : 1};
     pointer-events: ${(props) => props.disabled ? 'none' : 'all'};

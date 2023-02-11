@@ -4,7 +4,7 @@ import { triggerBackgroundAction } from "./utils/background"
 import { runOnce } from "./utils/function"
 
 const startup = runOnce(async () => {
-    const { options } = await triggerBackgroundAction<ReturnType<typeof ACTIONS.PAGE_SETUP.response>['payload']>(ACTIONS.PAGE_SETUP.create())
+    const { options } = await triggerBackgroundAction(ACTIONS.PAGE_SETUP)
 
     const domain = options.domain.replace(/https?:\/\//, '').split('/')[0]
     if (typeof window !== 'undefined' && window.location.href.includes(domain) && isFirefox) {

@@ -1,10 +1,8 @@
-export function openTab(options) {
+export function openTab(options: Parameters<typeof browser.tabs.create>[0]) {
     if (isFirefox){
-        browser.tabs.create(options)
+        return browser.tabs.create(options)
     }
-    else {
-        chrome.tabs.create(options)
-    }
+    return chrome.tabs.create(options)
 }
 
 export const openAsTab = (view) => {

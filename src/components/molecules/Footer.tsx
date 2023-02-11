@@ -16,6 +16,9 @@ const FooterBar = styled.div`
     border-top: solid 1px var(--contrast-dark);
     margin-top: auto;
 `
+const Text = styled.p`
+    margin-left: 4px;
+`
 const githubUrl = 'https://github.com/fochlac/Tempo-Tracker'
 export function Footer() {
     const [show, setShow] = useState(false)
@@ -32,7 +35,7 @@ export function Footer() {
             <ActionLink onClick={() => setShow(true)} style={{ whiteSpace: 'nowrap' }}>
                 Legal Disclosure
             </ActionLink>
-            {show && <Modal style={{ padding: 0, color: 'var(--font)' }}>
+            {show && <Modal style={{ padding: 0, color: 'var(--font)', justifyContent: 'flex-start' }}>
                 <FlexRow style={{width: '100%'}}>
                     <H5 style={{marginLeft: 8}}>Legal Disclosure</H5>
                     <div style={{ marginLeft: 'auto', cursor: 'pointer', padding: 4, paddingRight: 8 }} onClick={() => setShow(false)}>
@@ -41,58 +44,58 @@ export function Footer() {
                 </FlexRow>
                 <div style={{ overflow: 'auto', width: '100%', padding: 8 }}>
                     <H6 style={{ marginTop: 0 }}>Information in accordance with Section 5 TMG</H6>
-                    <p>Florian Riedel</p>
-                    <p>Nonnenstr. 36</p>
-                    <p>04229 Leipzig</p>
-                    <p>Email: info@fochlac.com</p>
+                    <Text>Florian Riedel</Text>
+                    <Text>Nonnenstr. 36</Text>
+                    <Text>04229 Leipzig</Text>
+                    <Text>Email: info@fochlac.com</Text>
                     <H6>Accountability for content</H6>
-                    <p>
+                    <Text>
                         The contents of our pages have been created with the utmost care. However, we cannot guarantee the
                         contents' accuracy, completeness or topicality. According to statutory provisions, we are furthermore
                         responsible for our own content on these web pages. In this matter, please note that we are not obliged
                         to monitor the transmitted or saved information of third parties, or investigate circumstances pointing
                         to illegal activity.
-                    </p>
-                    <p>
+                    </Text>
+                    <Text>
                         Our obligations to remove or block the use of information under generally applicable laws remain
                         unaffected by this as per §§ 8 to 10 of the Telemedia Act (TMG).
-                    </p>
+                    </Text>
                     <H6>Accountability for links</H6>
-                    <p>
+                    <Text>
                         Responsibility for the content of external links (to web pages of third parties) lies solely with the
                         operators of the linked pages.
-                    </p>
-                    <p>
+                    </Text>
+                    <Text>
                         No violations were evident to us at the time of linking. Should any legal infringement become known to
                         us, we will remove the respective link immediately.
-                    </p>
+                    </Text>
                     <H6>Usage Data</H6>
-                    <p>No Usage Data is collected when using the extension.</p>
+                    <Text>No Usage Data is collected when using the extension.</Text>
                     <H6>Tracking Technologies and Cookies</H6>
-                    <p>
+                    <Text>
                         We use the browser storage to store essential information for the functionality of this addon. This
                         includes your options, unsynced issues and cached requests.
-                    </p>
-                    <p>We do not use any form of tracking, and we do not pass your information to any third party.</p>
+                    </Text>
+                    <Text>We do not use any form of tracking, and we do not pass your information to any third party.</Text>
 
                     <H6>Use of Your Personal Data</H6>
-                    <p>We do not use or store Your personal data.</p>
+                    <Text>We do not use or store Your personal data.</Text>
                     <H6>Security of Your Personal Data</H6>
-                    <p>
+                    <Text>
                         The security of Your Personal Data is important to Us, but remember that no method of transmission over
                         the Internet, or method of electronic storage is 100% secure. While We strive to use commercially
                         acceptable means to protect Your Personal Data, We cannot guarantee its absolute security.
-                    </p>
+                    </Text>
                     <H6>Copyright</H6>
-                    <p>
+                    <Text>
                         Our web pages and their contents are subject to German copyright law. Unless expressly permitted by law,
                         every form of utilizing, reproducing or processing works subject to copyright protection on our web
                         pages requires the prior consent of the respective owner of the rights.
-                    </p>
-                    <p>
+                    </Text>
+                    <Text>
                         Individual reproductions of a work are only allowed for private use. The materials from these pages are
                         copyrighted and any unauthorized use may violate copyright laws.
-                    </p>
+                    </Text>
                 </div>
             </Modal>}
         </FooterBar>
