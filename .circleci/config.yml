@@ -17,8 +17,7 @@ workflows:
     jobs:
       - cypress/run:
           executor: cypress/base-16-14-2-slim
-          build: "npm run build"
-          build: "npm run test:unit"
+          build: "npm run test:unit && npm run build"
           start: "npm run test:server"
           filters:
             tags:
