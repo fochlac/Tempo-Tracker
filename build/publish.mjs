@@ -42,6 +42,7 @@ async function publishFF() {
             isValidated = true
         } else if (status.processed && status.validation) {
             console.log('Version is not valid:\n', status)
+            console.log('Error messages:\n', JSON.stringify(status.validation?.messages, null, 4))
             throw new Error('Version is not valid', JSON.stringify(status.validation, null, 4))
         }
     }
