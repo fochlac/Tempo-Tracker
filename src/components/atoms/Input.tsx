@@ -15,3 +15,20 @@ export const Input = styled.input<Props>`
     ${({readOnly}) => readOnly ? 'border-bottom: none;' : ''}
     outline: none;
 `
+
+export const Textarea = styled.textarea<Props>`
+    margin-top: 2px;
+    height: 56px;
+    padding: 0 2px;
+    border: none;
+    border-bottom: solid 1px;
+    background: var(--background);
+    color: var(--font);
+    ${({error}) => error ? 'border-color: var(--destructive);' : ''}
+    ${({error}) => error ? 'color: var(--destructive);' : ''}
+    ${({readOnly}) => readOnly ? 'border-bottom: none;' : ''}
+    outline: none;
+    width: 100%;
+    resize: vertical;
+    background: var(--default-button-background);
+`

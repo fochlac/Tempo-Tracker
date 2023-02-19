@@ -28,10 +28,13 @@ export function useTracking() {
                 await updateTracking(update)
                 await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
             },
+            updateComment(comment) {
+                return updateTracking((tracking) => ({...tracking, comment}))
+            },
             async stop() {
-                const {issue, start} = tracking
+                const {issue, start, comment = ''} = tracking
                 const end = Date.now()
-                const newLog: TemporaryWorklog = { issue, start, end, synced: false, tempId: v4() }
+                const newLog: TemporaryWorklog = { issue, comment, start, end, synced: false, tempId: v4() }
                 if (end - start > 30000) {
                     await worklog.actions.queue(newLog)
                 }

@@ -18,6 +18,8 @@ import { Worklog } from '../molecules/Worklog'
 import { WorklogEditor } from '../molecules/WorklogEditor'
 import { WorklogHeader } from '../molecules/WorklogHeader'
 import { LogPeriodDialog } from '../molecules/LogPeriodDialog'
+import { CommentDialog } from '../molecules/CommentDialog'
+import { editCommentDuck } from '../../store/ducks/edit-comment'
 
 const Body = styled.div`
     display: flex;
@@ -44,6 +46,7 @@ export const TrackerView: React.FC = () => {
     const worklog = useFetchJiraWorklog()
     const self = useSelf()
     const editIssue = useSelector(editIssueDuck.selector)
+    const { issue: commentId } = useSelector(editCommentDuck.selector)
     const worklogs = useMemo(() => worklog.data.sort((a, b) => b.start - a.start), [worklog.data])
     const hasUnsyncedLog = useMemo(() => worklog.data.some((log) => !log.synced), [worklog.data])
     const { isSyncing, hasError, startSync } = useLogSync(self, worklog)
@@ -53,6 +56,8 @@ export const TrackerView: React.FC = () => {
     const offlineTooltip = self.error === 'TOKEN' 
         ? 'Invalid token. Please provide a correct token in the options.' 
         : 'No connection to Jira instance - syncing and refresh not available.'
+
+    const commentLog = commentId && worklogs.find((log) => log.id === commentId || log.tempId === commentId)
 
     return (
         <Body>
@@ -136,6 +141,7 @@ export const TrackerView: React.FC = () => {
                 }
             </List>
             {showPeriodDialog && <LogPeriodDialog onClose={() => setShowPeriodDialog(false)} />}
+            {Boolean(commentLog) && <CommentDialog log={commentLog} />}
         </Body>
     )
 }

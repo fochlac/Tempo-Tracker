@@ -2,13 +2,14 @@ import { useMemo } from "preact/hooks"
 import { dateString, timeString } from "../../utils/datetime"
 import { DestructiveButton } from "../atoms/Button"
 import styled from "styled-components"
-import { Input } from "../atoms/Input"
+import { Input, Textarea } from "../atoms/Input"
 import { Timer } from "../atoms/Timer"
 import { ToggleBar } from "../molecules/ToggleBar"
 import { DefaultText } from "../atoms/Typography"
 import { useTracking } from "../../hooks/useTracking"
 import { TimeInput } from "../atoms/TimeInput"
 import { useOptions } from "../../hooks/useOptions"
+import { FlexColumn, FlexRow } from "../atoms/Layout"
 
 const Header = styled.div`
     padding: 0 8px;
@@ -38,7 +39,7 @@ const Duration = styled(Timer)`
 export function TrackingSection() {
     const { data: tracker, actions } = useTracking()
     const { data: options } = useOptions()
-    
+
     const optionList = useMemo(
         () => Object.values(options.issues).map((issue) => ({ value: issue.id, name: issue.alias || `${issue.key}: ${issue.name}`, color: issue.color })),
         [options.issues]
@@ -69,7 +70,7 @@ export function TrackingSection() {
         if (value !== oldValue) {
             const [h, m] = value.split(':')
             const [oldH] = oldValue.split(':')
-            
+
             let newDay = new Date(tracker.start)
             if (oldH === '00' && h == '23') {
                 newDay = new Date(newDay.getTime() - 24 * 60 * 60 * 1000)
@@ -86,20 +87,30 @@ export function TrackingSection() {
             }
         }
     }
-
+    const showComment = options.showComments
+    const stopButton = (
+        <DestructiveButton style={{ height: '100%', flexShrink: 100 }} onClick={() => actions.stop()}>
+            Stop Tracking
+        </DestructiveButton>
+    )
     return (
         <Header>
             <ToggleBar options={optionList.concat()} onChange={(issueId) => actions.swap(issueMap[issueId])} value={tracker.issue?.id || null} />
             <Tracker>
                 {!tracker.lastHeartbeat && (tracker.issue ? (
-                    <>
-                        <Input style={{marginRight: 16, marginLeft: 3}} type="date" onChange={onChangeDate} value={dateString(tracker.start)} />
-                        <TimeInput style={{marginRight: 16, marginLeft: 16 }} onChange={onChangeTime} value={timeString(tracker.start)} />
-                        &mdash;
-                        <Duration start={tracker.start} />
-                        <DestructiveButton onClick={() => actions.stop()}>Stop Tracking</DestructiveButton>
-                    </>
-                ) : <DefaultText style={{margin: '0 auto'}}>Please select an issue to start tracking.</DefaultText>)}
+                    <FlexColumn align="stretch" style={{ marginRight: showComment ? 4 : 0 }}>
+                        <FlexRow style={{ marginBottom: 6 }}>
+                            <Input style={{ marginRight: 16, marginLeft: 3 }} type="date" onChange={onChangeDate} value={dateString(tracker.start)} />
+                            <TimeInput style={{ marginRight: 16 }} onChange={onChangeTime} value={timeString(tracker.start)} />
+                            &mdash;
+                            <Duration start={tracker.start} style={{ marginRight: 'auto' }} />
+                            {stopButton}
+                        </FlexRow>
+                        {showComment && (<FlexRow>
+                            <Textarea placeholder="Comment" style={{ height: 31, marginLeft: 3 }} onChange={(e) => actions.updateComment(e.target.value)}>{tracker.comment}</Textarea>
+                        </FlexRow>)}
+                    </FlexColumn>
+                ) : <DefaultText style={{ margin: '0 auto' }}>Please select an issue to start tracking.</DefaultText>)}
             </Tracker>
         </Header>
     )

@@ -6,7 +6,7 @@ interface FetchResult<D=any> {
 }
 
 interface TemporaryWorklog extends Omit<Worklog, 'id'> {
-    tempId: string;
+    tempId?: string;
     id?: string;
     syncTabId?: number;
 }
@@ -32,6 +32,7 @@ interface Issue {
 
 interface Worklog {
     issue: Issue;
+    comment: string;
     end: number;
     start: number;
     synced: boolean;
@@ -55,10 +56,26 @@ interface LocalIssue extends Issue {
     color?: string;
 }
 
+type JQLTemplateParameterType = 'string'|'number'|'boolean'
+
+interface JQLTemplateParameter {
+    type: JQLTemplateParameterType;
+    name: string;
+    key: string;
+}
+
+interface JQLTemplate {
+    templateString: string;
+    parameters: JQLTemplateParameter[];
+}
+
 interface Options {
     issues: Record<string, LocalIssue>;
     domain: string;
     user: string;
+    customJQL: string;
+    JQLTemplates: JQLTemplate[];
+    showComments: boolean;
     autosync: boolean;
     forceSync: boolean;
     forceFetch: boolean;
@@ -98,6 +115,7 @@ interface DataBase {
 interface Tracking {
     issue?: LocalIssue;
     start?: number;
+    comment?: string;
     heartbeat?: number;
     lastHeartbeat?: number;
     firstHeartbeat?: number;

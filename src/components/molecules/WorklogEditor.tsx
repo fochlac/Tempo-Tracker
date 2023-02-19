@@ -22,7 +22,8 @@ const DateInput = styled(Input)`
 `
 
 const { 
-    ListRow,
+    WorklogEntry,
+    WorklogBody,
     TimeRange,
     Duration
 } = WorklogAtoms
@@ -89,28 +90,30 @@ export function WorklogEditor({ log: pureLog }) {
     }
 
     return (
-        <ListRow>
-            <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
-            <IssueSelector value={log.issue.key} additionalIssues={[pureLog.issue]} style={{ margin: '2px 8px 0', maxWidth: 150 }} onChange={(issue) => {
-                setDirty(true)
-                setEdit({ ...log, issue })
-            }} />
-            <TimeRange>
-                <TimeInput onChange={onChange('start')} value={timeString(log.start)} />
-                {' - '}
-                <TimeInput onChange={onChange('end')} value={timeString(log.end)} />
-            </TimeRange>
-            <Duration>
-                <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
-            </Duration>
-            <div style={{marginLeft: 'auto'}}>
-                <IconButton onClick={onSubmit} style={{ marginLeft: 16 }}>
-                    <Check />
-                </IconButton>
-                <IconButton onClick={() => dispatch('resetEditIssue')}  style={{ marginLeft: 4 }}>
-                    <X />
-                </IconButton>
-            </div>
-        </ListRow>
+        <WorklogEntry>
+            <WorklogBody>
+                <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
+                <IssueSelector value={log.issue.key} additionalIssues={[pureLog.issue]} style={{ margin: '2px 8px 0', maxWidth: 150 }} onChange={(issue) => {
+                    setDirty(true)
+                    setEdit({ ...log, issue })
+                }} />
+                <TimeRange>
+                    <TimeInput onChange={onChange('start')} value={timeString(log.start)} />
+                    {' - '}
+                    <TimeInput onChange={onChange('end')} value={timeString(log.end)} />
+                </TimeRange>
+                <Duration>
+                    <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
+                </Duration>
+                <div style={{marginLeft: 'auto'}}>
+                    <IconButton onClick={onSubmit} style={{ marginLeft: 16 }}>
+                        <Check />
+                    </IconButton>
+                    <IconButton onClick={() => dispatch('resetEditIssue')}  style={{ marginLeft: 4 }}>
+                        <X />
+                    </IconButton>
+                </div>
+            </WorklogBody>
+        </WorklogEntry>
     )
 }

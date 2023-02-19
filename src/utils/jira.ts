@@ -9,11 +9,14 @@ export const headers = (token) => ({
     'Authorization': `Bearer ${token}`
 })
 
-async function fetchIssueList(issues): Promise<Issue[]> {
+async function fetchIssueList(issues?: string[]): Promise<Issue[]> {
     const options = await DB.get('options') as Options
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const query = new URLSearchParams()
-    query.append('jql', `issuekey in ("${issues.join('","')}")`)
+    const jql = typeof options.customJQL === 'string' && options.customJQL.length 
+        ? options.customJQL 
+        : `issuekey in ("${issues.join('","')}")`
+    query.append('jql', jql)
     const url = `${options.domain}/api/2/search?${query.toString()}`
     const response = await fetch(url, { headers: headers(options.token), credentials: 'omit' })
     const body = await response.json()
@@ -57,6 +60,7 @@ interface WorklogRemote {
     tempoWorklogId: string;
     timeSpentSeconds: number;
     started: string;
+    comment: string;
     timeSpent: string;
 }
 
@@ -85,7 +89,7 @@ export async function fetchAllWorklogs(opts?:Options): Promise<Worklog[]> {
         .then(data => data.map(toLocalWorklog))
 }
 
-export async function writeWorklog({ issue, end, start }: Partial<Worklog>, opts?:Options): Promise<Worklog> {
+export async function writeWorklog({ issue, end, start, comment }: Partial<Worklog>, opts?:Options): Promise<Worklog> {
     const options = opts || await DB.get('options') as Options
     const seconds = Math.round((end - start) / 1000)
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
@@ -94,8 +98,8 @@ export async function writeWorklog({ issue, end, start }: Partial<Worklog>, opts
         "headers": headers(options.token),
         "body": JSON.stringify({
             "originId": -1,
-            "worker": options.user, 
-            "comment": null,
+            "worker": options.user,
+            "comment": comment || null,
             "started": `${dateString(start)} ${timeStringFull(start)}`,
             "timeSpentSeconds": seconds,
             "originTaskId": issue.id
@@ -107,7 +111,7 @@ export async function writeWorklog({ issue, end, start }: Partial<Worklog>, opts
         .then(toLocalWorklog)
 }
 
-export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>, opts?:Options): Promise<Worklog> {
+export async function updateWorklog({ issue, end, start, id, comment }: Partial<Worklog>, opts?:Options): Promise<Worklog> {
     const options = opts || await DB.get('options') as Options
     const seconds = Math.round((end - start) / 1000)
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
@@ -119,6 +123,7 @@ export async function updateWorklog({ issue, end, start, id }: Partial<Worklog>,
             "originId": id,
             "started": `${dateString(start)} ${timeStringFull(start)}`,
             "timeSpentSeconds": seconds,
+            "comment": comment || null,
             "originTaskId": Number(issue.id)
         }),
         "method": "PUT",
@@ -179,6 +184,7 @@ function toLocalWorklog(remoteWorklog: WorklogRemote|WorklogRemote[]): Worklog {
             key: worklog.issue.key,
             name: worklog.issue.summary
         },
+        comment: worklog.comment,
         start: new Date(worklog.started).getTime(),
         end: new Date(worklog.started).getTime() + worklog.timeSpentSeconds * 1000,
         synced: true,

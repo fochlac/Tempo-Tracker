@@ -224,6 +224,14 @@ export const OptionsView: React.FC = () => {
             </Option>
             <SectionHead>App Options</SectionHead>
             <Option>
+                <Label>Extended Comments</Label>
+                <InfoText>Show comments in the worklog list and show an input field for entering a comment while tracking.</InfoText>
+                <FlexRow justify="flex-start">
+                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.showComments} onChange={(e) => actions.merge({ showComments: e.target.checked })} />
+                    <Label>enabled</Label>
+                </FlexRow>
+            </Option>
+            <Option>
                 <Label>Automatic Synchronization</Label>
                 <FlexRow justify="flex-start">
                     <Input style={{ margin: '0 6px' }} type="checkbox" disabled={isFirefox} checked={isFirefox ? false : options.autosync} onChange={(e) => actions.merge({ autosync: e.target.checked })} />

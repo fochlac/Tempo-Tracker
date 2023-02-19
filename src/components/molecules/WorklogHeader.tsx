@@ -8,10 +8,14 @@ import { WorklogAtoms } from "./Worklog";
 
 const { Datum } = WorklogAtoms
 
-const ListRow = styled(WorklogAtoms.ListRow)`
+const ListRow = styled.li`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    border-bottom: solid 1px var(--font);
     padding-top: 6px;
     padding-bottom: 2px;
-    border-bottom-color: var(--font);
     position: sticky;
     top: 0;
     background: var(--background);
@@ -28,7 +32,7 @@ const DurationTimer = styled(Timer)`
     text-align: end;
 `
 
-export const WorklogHeader: React.FC<{date: string;}> = ({date}) => {
+export const WorklogHeader: React.FC<{ date: string; }> = ({ date }) => {
     const { data: tracker } = useTracking()
     const worklog = useJiraWorklog()
     const duration = useMemo(() => worklog.data?.reduce((duration, log) => {
@@ -41,7 +45,7 @@ export const WorklogHeader: React.FC<{date: string;}> = ({date}) => {
 
     return (
         <ListRow>
-            <Datum style={{color: "var(--font)"}}>{date}{isToday ? ' (Today)' : ''}</Datum>
+            <Datum style={{ color: "var(--font)", whiteSpace: 'nowrap' }}>{date}{isToday ? ' (Today)' : ''}</Datum>
             {tracker.start && dateHumanized(tracker.start) === date ? (
                 <DurationTimer start={tracker.start - duration} />
             ) : (

@@ -7,7 +7,10 @@ export function getOptions(options: Partial<Options>): Options {
         user,
         autosync,
         forceSync,
+        JQLTemplates,
         forceFetch,
+        showComments,
+        customJQL,
         token,
         theme
     } = options || {}
@@ -18,7 +21,10 @@ export function getOptions(options: Partial<Options>): Options {
             : issues ?? {},
         domain: domain ?? '',
         user: user ?? '',
+        JQLTemplates: Array.isArray(JQLTemplates) ? JQLTemplates : [],
+        customJQL: customJQL ?? '',
         autosync: autosync ?? false,
+        showComments: showComments ?? false,
         forceSync: forceSync ?? false,
         forceFetch: forceFetch ?? false,
         token: token ?? '',
