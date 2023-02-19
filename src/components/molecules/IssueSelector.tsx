@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import { useOptions } from "../../hooks/useOptions"
 import { IssueSearchDialog } from "./IssueSearchDialog";
+import { useJqlQueryResults } from "../../hooks/useJqlQueryResult";
 
 interface Props {
     onChange: (issue: LocalIssue) => void; 
@@ -15,7 +16,9 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
     const [searchActive, setSearchActive] = useState(false)
     const [localIssues, setLocalIssues] = useState([])
 
-    const issueMap: Record<string, LocalIssue> = (additionalIssues || []).concat(localIssues).reduce((map, issue) => {
+    const remoteIssues = useJqlQueryResults() as LocalIssue[]
+    
+    const issueMap: Record<string, LocalIssue> = (additionalIssues || []).concat(options.useJqlQuery ? remoteIssues : [], localIssues).reduce((map, issue) => {
         map[issue.key] = issue
         return map
     }, {...options.issues})

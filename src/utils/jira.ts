@@ -9,14 +9,23 @@ export const headers = (token) => ({
     'Authorization': `Bearer ${token}`
 })
 
-async function fetchIssueList(issues?: string[]): Promise<Issue[]> {
+export async function fetchIssueList() {
+    const options = await DB.get('options') as Options
+    if (!options?.token || !options.domain || !options.user || !options.useJqlQuery || !options.jqlQuery?.length)  {
+        return Promise.reject('Missing options.')
+    }
+
+    return fetchIssues(options.jqlQuery, 15)
+}
+
+async function fetchIssues(jql, limit?: number): Promise<Issue[]> {
     const options = await DB.get('options') as Options
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const query = new URLSearchParams()
-    const jql = typeof options.customJQL === 'string' && options.customJQL.length 
-        ? options.customJQL 
-        : `issuekey in ("${issues.join('","')}")`
     query.append('jql', jql)
+    if (limit) {
+        query.append('maxResults', String(limit))
+    }
     const url = `${options.domain}/api/2/search?${query.toString()}`
     const response = await fetch(url, { headers: headers(options.token), credentials: 'omit' })
     const body = await response.json()
@@ -48,7 +57,7 @@ export async function searchIssues(searchString) : Promise<Issue[]> {
         return []
     }
     const issueKeys = issues.items.map((item) => item.subtitle)
-    return fetchIssueList(issueKeys.reverse())
+    return fetchIssues(`issuekey in ("${issueKeys.reverse().join('","')}")`)
 }
 
 interface WorklogRemote {

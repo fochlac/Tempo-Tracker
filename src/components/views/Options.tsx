@@ -6,13 +6,14 @@ import { useSafeState } from "../../hooks/useSafeState"
 import { useSelf } from "../../hooks/useSelf"
 import { openTab } from "../../utils/browser"
 import { ActionLink } from "../atoms/ActionLink"
-import { Input } from "../atoms/Input"
+import { Input, Textarea } from "../atoms/Input"
 import { FlexRow } from "../atoms/Layout"
 import { Tooltip } from "../atoms/Tooltip"
 import { ErrorText, H6, InfoText, Label } from "../atoms/Typography"
 import { IssueInput } from "../molecules/IssueInput"
 import { saveAs } from 'file-saver'
 import { ImportOptionsAction } from "../molecules/ImportOptionsAction"
+import { fetchIssueList } from "../../utils/jira"
 
 const Body = styled.div`
     display: flex;
@@ -101,6 +102,22 @@ const StyledAlertOctagon = styled(AlertOctagon)`
 `
 
 const JIRA_LINK = '/secure/ViewProfile.jspa?selectedTab=com.atlassian.pats.pats-plugin:jira-user-personal-access-tokens'
+const JQL_LINK = 'https://www.atlassian.com/blog/jira-software/jql-the-most-flexible-way-to-search-jira-14'
+const JQL_TEMPLATES = {
+    'recent_assigned': 'assignee was currentUser() and status not in (open) ORDER BY updated DESC'
+}
+let isChecking = false
+const checkJql = () => {
+    if (!isChecking) {
+        isChecking = true
+        fetchIssueList()
+            .then(list => alert(list.map(i => i.key).join(', ')))
+            .catch((e) => alert(e?.message || e))
+            .finally(() => {
+                isChecking = false
+            })
+    }
+}
 
 export const OptionsView: React.FC = () => {
     const { data: options, actions } = useOptions()
@@ -114,7 +131,7 @@ export const OptionsView: React.FC = () => {
 
     const stars = storedToken.length ? Array(Math.max(storedToken.length - 8, 12)).fill('*').join('') : ''
     const tokenObfuscated = `${storedToken.slice(0, 4)}${stars}${storedToken.slice(-4)}`
-    
+
     const timeout = useRef<NodeJS.Timeout>()
     const tokenBlur = async (e) => {
         const newToken = e?.newToken || token
@@ -156,7 +173,7 @@ export const OptionsView: React.FC = () => {
     return (
         <Body>
             <JiraHead>
-                <Title>Jira Options</Title>
+                <Title>Jira Connection</Title>
                 <ImportExportBar>
                     <Tooltip right content='This export contains the issue list and the server url. The personal access token and the username are not included in the export.'>
                         <ExportLink onClick={onExportOptions}>Export</ExportLink>
@@ -217,11 +234,42 @@ export const OptionsView: React.FC = () => {
                 <Label>User</Label>
                 <Input readOnly value={name ? `${name} (${options.user})` : options.user} />
             </Option>
+            <SectionHead>Issue Options</SectionHead>
             <Option>
                 <Label>Tracked Issues</Label>
                 <InfoText>Please add all issues you want to use for time tracking. You can set an alias for each issue.</InfoText>
                 <IssueInput disabled={!valid} />
             </Option>
+            <Option>
+                <Label>Advanced Issue Selection</Label>
+                <InfoText>You can set up a custom JQL-query to automatically add to your manually created issue list. This will add issues up to a total of 15 issues.</InfoText>
+                <FlexRow justify="flex-start">
+                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.useJqlQuery} onChange={(e) => actions.merge({ useJqlQuery: e.target.checked })} />
+                    <Label>enabled</Label>
+                </FlexRow>
+            </Option>
+            {options.useJqlQuery && (
+                <Option>
+                    <Label>Custom JQL Query</Label>
+                    <InfoText>
+                        Automatically select issues based on a 
+                        <ActionLink onClick={() => openTab({active: true, url: JQL_LINK })}>custom JQL-query</ActionLink>
+                    </InfoText>
+                    <Textarea onChange={(e) => actions.merge({ jqlQuery: e.target.value })} value={options.jqlQuery} />
+                    <FlexRow justify="space-between">
+                        <Select style={{marginTop: 4}} onChange={(e) => {
+                            actions.merge({ jqlQuery: JQL_TEMPLATES[e.target.value] })
+                            e.target.value = ""
+                        }}>
+                            <option value="" disabled selected hidden>JQL Templates</option>
+                            <option value="recent_assigned">Recently assigned Issues</option>
+                        </Select>
+                        <ActionLink onClick={checkJql}>
+                            Test Query
+                        </ActionLink>
+                    </FlexRow>
+                </Option>
+            )}
             <SectionHead>App Options</SectionHead>
             <Option>
                 <Label>Extended Comments</Label>

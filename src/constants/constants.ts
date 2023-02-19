@@ -6,7 +6,8 @@ export const VIEWS: Record<string, VIEWS> =  {
 
 export const CACHE: Record<string, CACHE> =  {
     WORKLOG_CACHE: 'WORKLOG_CACHE',
-    STATS_CACHE: 'STATS_CACHE'
+    STATS_CACHE: 'STATS_CACHE',
+    ISSUE_CACHE: 'ISSUE_CACHE'
 }
 
 export const DB_KEYS: Record<string, DB_KEYS> = {

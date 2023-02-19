@@ -1,4 +1,4 @@
-import { useMemo, useState } from "preact/hooks"
+import { useEffect, useMemo, useState } from "preact/hooks"
 import { dateString, timeString } from "../../utils/datetime"
 import { DestructiveButton } from "../atoms/Button"
 import styled from "styled-components"
@@ -12,6 +12,9 @@ import { useOptions } from "../../hooks/useOptions"
 import { FlexColumn, FlexRow } from "../atoms/Layout"
 import { IssueSearchDialog } from "./IssueSearchDialog"
 import { IssueSelector } from "./IssueSelector"
+import { useSafeState } from "../../hooks/useSafeState"
+import { fetchIssueList } from "../../utils/jira"
+import { useJqlQueryResults } from "../../hooks/useJqlQueryResult"
 
 const Header = styled.div`
     padding: 0 8px;
@@ -44,24 +47,32 @@ export function TrackingSection({ hasError }) {
     const { data: tracker, actions } = useTracking()
     const { data: options } = useOptions()
     const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
+    const remoteIssues = useJqlQueryResults() as LocalIssue[]
+    const issues = Object.values(options.issues).concat(options.useJqlQuery ? remoteIssues : [])
 
-    const optionList = useMemo(
+    const optionList:ToggleBarOption[] = useMemo(
         () => {
-            return Object.values(options.issues)
-                .map((issue) => ({ value: issue.id, name: issue.alias || `${issue.key}: ${issue.name}`, color: issue.color, disabled: false }))
+            return issues
+                .map((issue) => ({ 
+                    value: issue.id, 
+                    name: issue.alias || issue.key, 
+                    title: `${issue.key}: ${issue.name}`, 
+                    color: issue.color
+                }) as ToggleBarOption)
                 .concat([{
                     value: CUSTOM_ISSUE,
                     name: 'Search Issue...',
                     color: undefined,
-                    disabled: hasError
+                    disabled: hasError,
+                    full: true
                 }])
         },
-        [options.issues, hasError]
+        [issues, hasError]
     )
-    const issueMap = useMemo(() => Object.values(options.issues).reduce((issueMap, issue) => {
+    const issueMap = useMemo(() => issues.reduce((issueMap, issue) => {
         issueMap[issue.id] = issue
         return issueMap
-    }, {}), [options.issues])
+    }, {}), [issues])
     const onChangeDate = (e) => {
         const { value } = e.target
         if (value !== dateString(tracker.start)) {
@@ -137,7 +148,7 @@ export function TrackingSection({ hasError }) {
                             {stopButton}
                         </FlexRow>
                         {showComment && (<FlexRow>
-                            <Textarea placeholder="Comment" style={{ height: 31, marginLeft: 3 }} onChange={(e) => actions.updateComment(e.target.value)}>{tracker.comment}</Textarea>
+                            <Textarea placeholder="Comment" style={{ height: 31, marginLeft: 3 }} onChange={(e) => actions.updateComment(e.target.value)} value={tracker.comment} />
                         </FlexRow>)}
                     </FlexColumn>
                 ) : <DefaultText style={{ margin: '0 auto' }}>Please select an issue to start tracking.</DefaultText>)}

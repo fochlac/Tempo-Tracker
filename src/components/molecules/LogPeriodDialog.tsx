@@ -187,18 +187,19 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
                     </Col>
                 </Row>
                 <Row style={{justifyContent: 'space-between'}}>
-                    <Col>
+                    <Col style={{ maxWidth: '65%' }}>
                         <Label>Issue</Label>
                         <IssueSelector
                             value={options.issue?.key}
-                            style={{ marginTop: 4 }}
+                            style={{ marginTop: 3 }}
                             onChange={(issue) => setOptions({ ...options, issue })}
+                            enableSearch
                         />
                     </Col>
                     <Col>
                         <Label>Hours Per Day</Label>
                         <TimeInput
-                            style={{ marginTop: 6, width: '100%' }}
+                            style={{ marginTop: 2, width: '100%' }}
                             duration
                             value={durationString(options.timePerDay || options.defaultTimePerDay * 1000)}
                             onChange={updateDurationPerDay}

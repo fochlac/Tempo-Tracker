@@ -51,7 +51,7 @@ export const CommentDialog: React.FC<Props> = ({ log }) => {
             <Title title={title}>{title}</Title>
             <div style={{ textAlign: 'center', marginBottom: 16, width: '100%', padding: '0 8px' }}>
                 <Label>Comment</Label>
-                <Textarea onChange={(e) => setComment(e.target.value)}>{comment}</Textarea>
+                <Textarea onChange={(e) => setComment(e.target.value)} value={comment} />
             </div>
             <ButtonBar>
                 <Button onClick={() => dispatch('resetEditComment')}>Cancel</Button>

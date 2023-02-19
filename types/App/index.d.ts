@@ -5,9 +5,10 @@ interface FetchResult<D=any> {
     data: D;
 }
 
-interface TemporaryWorklog extends Omit<Worklog, 'id'> {
+interface TemporaryWorklog extends Omit<Worklog, 'id'|'comment'> {
     tempId?: string;
     id?: string;
+    comment?: string;
     syncTabId?: number;
 }
 
@@ -49,32 +50,19 @@ type VIEWS = 'tracker' | 'options' | 'stats'
 
 type DB_KEYS = keyof DataBase;
 
-type CACHE = 'WORKLOG_CACHE' | 'STATS_CACHE'
+type CACHE = 'WORKLOG_CACHE' | 'STATS_CACHE' | 'ISSUE_CACHE'
 
 interface LocalIssue extends Issue {
     alias: string;
     color?: string;
 }
 
-type JQLTemplateParameterType = 'string'|'number'|'boolean'
-
-interface JQLTemplateParameter {
-    type: JQLTemplateParameterType;
-    name: string;
-    key: string;
-}
-
-interface JQLTemplate {
-    templateString: string;
-    parameters: JQLTemplateParameter[];
-}
-
 interface Options {
     issues: Record<string, LocalIssue>;
     domain: string;
     user: string;
-    customJQL: string;
-    JQLTemplates: JQLTemplate[];
+    useJqlQuery: boolean;
+    jqlQuery: string;
     showComments: boolean;
     autosync: boolean;
     forceSync: boolean;
@@ -106,6 +94,7 @@ interface HourException {
 interface DataBase {
     STATS_CACHE: CacheObject<StatsMap>;
     WORKLOG_CACHE: CacheObject<Worklog[]>;
+    ISSUE_CACHE: CacheObject<Issue[]>;
     tracking: Tracking;
     updates: TemporaryWorklog[];
     options: Options;

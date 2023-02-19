@@ -129,7 +129,7 @@ export function Worklog({ log, disableButtons, onDelete, isSyncing }) {
                     <IconButton disabled={(options.autosync && !log.id) || disableButtons} onClick={() => dispatch('setEditIssue', { issue: log.id || log.tempId })} style={{ marginLeft: 16 }}>
                         <Edit3 />
                     </IconButton>
-                    <IconButton disabled={(options.autosync && !log.id) || disableButtons} onClick={() => dispatch('setEditComment', { issue: log.id || log.tempId })} style={{ marginLeft: 4 }}>
+                    <IconButton title={log.comment} disabled={(options.autosync && !log.id) || disableButtons} onClick={() => dispatch('setEditComment', { issue: log.id || log.tempId })} style={{ marginLeft: 4 }}>
                         <MessageSquare />
                     </IconButton>
                     <IconButton disabled={disableButtons} onClick={() => setStartDelete(true)} style={{ marginLeft: 4 }}>

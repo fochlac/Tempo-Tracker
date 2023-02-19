@@ -104,6 +104,9 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
     }
 
     return <Wrapper>
+        <Button style={{ marginBottom: 8 }} onClick={() => setOpen(true)} disabled={disabled}>
+            Add Issue
+        </Button>
         <InputList>
             {Object.keys(options.issues).map((issueKey) => {
                 const issue = options.issues[issueKey]
@@ -129,9 +132,6 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
                 <IssueRow style={{ justifyContent: 'center' }}>No tracked issues.</IssueRow>
             )}
         </InputList>
-        <Button style={{ marginTop: 8 }} onClick={() => setOpen(true)} disabled={disabled}>
-            Add Issue
-        </Button>
         <ConfirmDialog
             open={!!delIssue}
             onClose={() => setDelIssue(null)}

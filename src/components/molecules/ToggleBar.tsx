@@ -1,12 +1,16 @@
 import { useRef, useState } from "preact/hooks";
 import styled from "styled-components";
 import { Button } from "../atoms/Button";
-
-interface ToggleBarOption {
-    value: string;
-    color?: string;
-    name?: string;
-    tooltip?: string;
+declare global {
+    interface ToggleBarOption {
+        value: string;
+        color?: string;
+        name?: string;
+        title?: string;
+        tooltip?: string;
+        disabled?: boolean;
+        full?: boolean;
+    }
 }
 interface Props {
     options: ToggleBarOption[];
@@ -37,6 +41,11 @@ const ToggleButton = styled(Button) <{ first?: boolean; last?: boolean; selected
     border-radius: 0;
     font-size: 12px;
     flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-left-color: var(--contrast) !important;
     border-right-color: var(--contrast) !important;
     border-top-color: var(--contrast) !important;
@@ -50,6 +59,10 @@ const ToggleButton = styled(Button) <{ first?: boolean; last?: boolean; selected
     ${({ last, firstRow }) => last && firstRow ? 'border-top-right-radius: 3px;' : ''}
     ${({ last, lastRow }) => last && lastRow ? 'border-bottom-right-radius: 3px;' : ''}
     ${({ firstRow }) => !firstRow ? 'border-top: none;' : ''}
+`
+const ButtonText = styled.span`
+    overflow: hidden;
+    text-overflow: ellipsis;
 `
 
 export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, value, onChange }) => {
@@ -83,19 +96,22 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
             chunks.map((chunk, chunkIndex) => (
                 <Bar key={chunkIndex}>
                     {
-                        chunk.map(({ value, name, color, disabled }, index) => {
+                        chunk.map(({ value, name, color, disabled, full, title }, index) => {
                             return (
                                 <ToggleButton
                                     firstRow={chunkIndex === 0}
                                     lastRow={chunkIndex === chunks.length - 1}
-                                    style={{ marginLeft: (index === 0) ? 0 : -1 }}
+                                    style={{ marginLeft: (index === 0) ? 0 : -1, flexShrink: full ? 0 : 1 }}
                                     onClick={onClick(value, disabled)}
                                     first={index === 0}
                                     last={index === chunk.length - 1}
                                     disabled={disabled}
+                                    title={title || name || value}
                                     selected={value === selected}>
                                     <Color color={color} />
-                                    {name || value}
+                                    <ButtonText>
+                                        {name || value}
+                                    </ButtonText>
                                 </ToggleButton>
                             )
                         })

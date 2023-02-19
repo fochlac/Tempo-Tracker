@@ -46,7 +46,7 @@ export const Label = styled.legend`
     width: auto;
     padding: 0px;
     height: 11px;
-    font-size: 0.75em;
+    font-size: 0.75rem;
     max-width: 100%;
     color: var(--font);
     margin-bottom: 2px;
