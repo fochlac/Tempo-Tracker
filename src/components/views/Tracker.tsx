@@ -61,7 +61,7 @@ export const TrackerView: React.FC = () => {
 
     return (
         <Body>
-            <TrackingSection />
+            <TrackingSection hasError={!!self.error} />
             <H6 style={{ margin: '0 0 4px 8px', display: 'flex', width: 'calc(100% - 16px)' }}>
                 <span style={{ marginRight: 'auto' }}>Tracking History</span>
                 {!self.error && !hasUnsyncedLog && (

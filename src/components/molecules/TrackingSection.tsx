@@ -1,4 +1,4 @@
-import { useMemo } from "preact/hooks"
+import { useMemo, useState } from "preact/hooks"
 import { dateString, timeString } from "../../utils/datetime"
 import { DestructiveButton } from "../atoms/Button"
 import styled from "styled-components"
@@ -10,6 +10,8 @@ import { useTracking } from "../../hooks/useTracking"
 import { TimeInput } from "../atoms/TimeInput"
 import { useOptions } from "../../hooks/useOptions"
 import { FlexColumn, FlexRow } from "../atoms/Layout"
+import { IssueSearchDialog } from "./IssueSearchDialog"
+import { IssueSelector } from "./IssueSelector"
 
 const Header = styled.div`
     padding: 0 8px;
@@ -36,13 +38,25 @@ const Duration = styled(Timer)`
     margin-top: 2px;
 `
 
-export function TrackingSection() {
+const CUSTOM_ISSUE = 'CUSTOM_ISSUE'
+
+export function TrackingSection({ hasError }) {
     const { data: tracker, actions } = useTracking()
     const { data: options } = useOptions()
+    const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
 
     const optionList = useMemo(
-        () => Object.values(options.issues).map((issue) => ({ value: issue.id, name: issue.alias || `${issue.key}: ${issue.name}`, color: issue.color })),
-        [options.issues]
+        () => {
+            return Object.values(options.issues)
+                .map((issue) => ({ value: issue.id, name: issue.alias || `${issue.key}: ${issue.name}`, color: issue.color, disabled: false }))
+                .concat([{
+                    value: CUSTOM_ISSUE,
+                    name: 'Search Issue...',
+                    color: undefined,
+                    disabled: hasError
+                }])
+        },
+        [options.issues, hasError]
     )
     const issueMap = useMemo(() => Object.values(options.issues).reduce((issueMap, issue) => {
         issueMap[issue.id] = issue
@@ -87,6 +101,15 @@ export function TrackingSection() {
             }
         }
     }
+    const onChangeTracking = (issueId) => {
+        if (issueId === CUSTOM_ISSUE) {
+            showCustomIssueDialog(true)
+        }
+        else {
+            actions.swap(issueMap[issueId])
+        }
+    }
+
     const showComment = options.showComments
     const stopButton = (
         <DestructiveButton style={{ height: '100%', flexShrink: 100 }} onClick={() => actions.stop()}>
@@ -95,12 +118,19 @@ export function TrackingSection() {
     )
     return (
         <Header>
-            <ToggleBar options={optionList.concat()} onChange={(issueId) => actions.swap(issueMap[issueId])} value={tracker.issue?.id || null} />
+            {customIssueDialogVisible && (
+                <IssueSearchDialog title="Search Issue for Tracking" onCancel={() => showCustomIssueDialog(false)} onSelect={(issue) => {
+                    actions.swap(issue)
+                    showCustomIssueDialog(false)
+                }} />
+            )}
+            <ToggleBar options={optionList} onChange={onChangeTracking} value={tracker.issue?.id || null} />
             <Tracker>
                 {!tracker.lastHeartbeat && (tracker.issue ? (
                     <FlexColumn align="stretch" style={{ marginRight: showComment ? 4 : 0 }}>
                         <FlexRow style={{ marginBottom: 6 }}>
-                            <Input style={{ marginRight: 16, marginLeft: 3 }} type="date" onChange={onChangeDate} value={dateString(tracker.start)} />
+                            <IssueSelector style={{width: 'max(18%, 96px)', height: 25}} additionalIssues={[tracker.issue]} value={tracker.issue.key} onChange={(issue) => actions.updateIssue(issue)} />
+                            <Input style={{ marginRight: 16, marginLeft: 6 }} type="date" onChange={onChangeDate} value={dateString(tracker.start)} />
                             <TimeInput style={{ marginRight: 16 }} onChange={onChangeTime} value={timeString(tracker.start)} />
                             &mdash;
                             <Duration start={tracker.start} style={{ marginRight: 'auto' }} />

@@ -32,7 +32,7 @@ const ExpandIcon = styled(ExternalLink)`
 export const Header: React.FC = () => {
     const view = useSelector(viewDuck.selector)
     const { data: options } = useOptions()
-    const mandatoryOptions = Boolean(options.user?.length && options.token?.length && options.domain?.length && Object.keys(options.issues).length)
+    const mandatoryOptions = Boolean(options.user?.length && options.token?.length && options.domain?.length)
     const trackerLink = <InternalLink style={{ marginRight: 4 }} disabled={!mandatoryOptions} to={VIEWS.TRACKER}>Tracker</InternalLink>
 
     return (

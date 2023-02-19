@@ -218,7 +218,7 @@ export const OptionsView: React.FC = () => {
                 <Input readOnly value={name ? `${name} (${options.user})` : options.user} />
             </Option>
             <Option>
-                <Label>Tracked Issues<Mandatory>*</Mandatory></Label>
+                <Label>Tracked Issues</Label>
                 <InfoText>Please add all issues you want to use for time tracking. You can set an alias for each issue.</InfoText>
                 <IssueInput disabled={!valid} />
             </Option>

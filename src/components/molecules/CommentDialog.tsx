@@ -45,7 +45,6 @@ export const CommentDialog: React.FC<Props> = ({ log }) => {
         }
         dispatch('resetEditComment')
     }
-    console.log(comment)
 
     return (
         <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>

@@ -12,6 +12,7 @@ import { FlexRow } from "../atoms/Layout";
 import { Button, DestructiveButton } from "../atoms/Button";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { Tooltip } from "../atoms/Tooltip";
+import { IssueSearchDialog } from "./IssueSearchDialog";
 
 const InputList = styled.ul`
     width: 100%;
@@ -78,40 +79,7 @@ interface Props {
 export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
     const { data: options, actions } = useOptions()
     const [open, setOpen] = useState(false)
-    const [result, setResult] = useState<{ isLoading: boolean; data?: Issue[]; }>(null)
-    const [search, setSearch] = useState('')
     const [delIssue, setDelIssue] = useState<LocalIssue>(null)
-    const currentSearch = useRef(search)
-    const searchInput = useRef(null)
-
-    useEffect(() => {
-        currentSearch.current = search
-        if (search.length && search.includes('-') || search.length > 5) {
-            setResult({ isLoading: true })
-            searchIssues(search)
-                .then((issues) => {
-                    if (search === currentSearch.current) {
-                        setResult({
-                            isLoading: false,
-                            data: issues
-                        })
-                    }
-                })
-                .catch((e) => {
-                    console.error(e)
-                    if (search === currentSearch.current) {
-                        setResult(null)
-                    }
-                })
-        }
-    }, [search])
-    useEffect(() => {
-        setSearch('')
-        setResult(null)
-        if (open) {
-            searchInput.current?.focus()
-        }
-    }, [open])
 
     const deleteIssue = async () => {
         const newIssues = { ...options.issues }
@@ -119,7 +87,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
         await actions.merge({ issues: newIssues })
         setDelIssue(null)
     }
-    const addIssue = (issue: Issue) => async () => {
+    const addIssue = async (issue: Issue) => {
         const newIssues = { ...options.issues, [issue.key]: { ...issue, alias: `${issue.key}: ${issue.name}` } }
         await actions.merge({ issues: newIssues })
         setOpen(false)
@@ -174,29 +142,7 @@ export const IssueInput: React.FC<Props> = ({ disabled, className }) => {
             }
         />
         {open && (
-            <Modal style={{ padding: 0, justifyContent: 'flex-start', width: 380, height: 430 }}>
-                <FlexRow style={{ width: '100%' }}>
-                    <H5 style={{ padding: 8, margin: 0, fontSize: '1rem' }}>Add Issue</H5>
-                    <div style={{ marginLeft: 'auto', cursor: 'pointer', padding: 4 }} onClick={() => setOpen(false)}>
-                        <X style={{color: 'var(--font)'}} size={18} />
-                    </div>
-                </FlexRow>
-                <SearchFieldWrapper>
-                    <Label>Issue Key / Search Term</Label>
-                    <Input ref={searchInput} style={{ width: '100%' }} value={search} onChange={(e) => setSearch(e.target.value || '')} />
-                    {result?.isLoading && <ProgressIndeterminate />}
-                </SearchFieldWrapper>
-                <SearchResultList>
-                    {!result?.isLoading && !!result?.data?.length && (
-                        result.data.map((issue) => (
-                            <SearchResultItem onClick={addIssue(issue)}>
-                                <span>{`${issue.key}:`}</span>
-                                <span>{issue.name}</span>
-                            </SearchResultItem>
-                        ))
-                    )}
-                </SearchResultList>
-            </Modal>
+            <IssueSearchDialog title='Add Issue' onCancel={() => setOpen(false)} onSelect={addIssue} />
         )}
     </Wrapper>
 }

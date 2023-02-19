@@ -20,7 +20,7 @@ const Bar = styled.div`
     justify-content: flex-start;
     align-items: center
     flex-direction: row;
-    width: 100%;
+    width: 99.99%;
     min-height: 32px;
 `
 const Color = styled.div<{color?: string}>`
@@ -56,7 +56,8 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
     const isControlled = useRef(value !== undefined)
     const [localSelected, setSelected] = useState(defaultValue)
     const selected = isControlled.current ? value : localSelected
-    const onClick = (val) => () => {
+    const onClick = (val, disabled) => () => {
+        if (disabled) return
         if (val !== selected) {
             onChange(val)
             setSelected(val)
@@ -82,15 +83,16 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
             chunks.map((chunk, chunkIndex) => (
                 <Bar key={chunkIndex}>
                     {
-                        chunk.map(({ value, name, color }, index) => {
+                        chunk.map(({ value, name, color, disabled }, index) => {
                             return (
                                 <ToggleButton
                                     firstRow={chunkIndex === 0}
                                     lastRow={chunkIndex === chunks.length - 1}
                                     style={{ marginLeft: (index === 0) ? 0 : -1 }}
-                                    onClick={onClick(value)}
+                                    onClick={onClick(value, disabled)}
                                     first={index === 0}
                                     last={index === chunk.length - 1}
+                                    disabled={disabled}
                                     selected={value === selected}>
                                     <Color color={color} />
                                     {name || value}

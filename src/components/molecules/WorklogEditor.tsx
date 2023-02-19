@@ -93,7 +93,7 @@ export function WorklogEditor({ log: pureLog }) {
         <WorklogEntry>
             <WorklogBody>
                 <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
-                <IssueSelector value={log.issue.key} additionalIssues={[pureLog.issue]} style={{ margin: '2px 8px 0', maxWidth: 150 }} onChange={(issue) => {
+                <IssueSelector enableSearch value={log.issue.key} additionalIssues={[pureLog.issue]} style={{ margin: '2px 8px 0', maxWidth: 150, height: 20 }} onChange={(issue) => {
                     setDirty(true)
                     setEdit({ ...log, issue })
                 }} />

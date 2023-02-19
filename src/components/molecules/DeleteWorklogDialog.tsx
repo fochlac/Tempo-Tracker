@@ -12,7 +12,7 @@ interface DeleteWorklogProps {
 export const DeleteWorklogDialog: React.FC<DeleteWorklogProps> = ({ open, onDelete, onClose, log }) => {
     const { data: options } = useOptions()
     const text = `Do you really want to ${!!log.id && !log.synced ? 'cancel the update for' : 'delete'} the worklog` +
-        ` from ${timeString(log.start)} till ${timeString(log.end)} for Ticket "${options.issues[log.issue.key]?.alias || log.issue.name}".`
+        ` from ${timeString(log.start)} till ${timeString(log.end)} for Issue "${options.issues[log.issue.key]?.alias || log.issue.name}".`
     const buttons = !!log.id && !log.synced ? (
         <DestructiveButton onClick={() => { onClose(); onDelete(true) }}>
             {!log.delete ? 'Undo Edit' : 'Undo Delete'}

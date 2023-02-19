@@ -28,6 +28,14 @@ export function useTracking() {
                 await updateTracking(update)
                 await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
             },
+            async updateIssue(issue) {
+                const update = {
+                    issue,
+                    start: tracking.start
+                }
+                await updateTracking(update)
+                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
+            },
             updateComment(comment) {
                 return updateTracking((tracking) => ({...tracking, comment}))
             },
