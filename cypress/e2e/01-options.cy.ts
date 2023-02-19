@@ -5,7 +5,7 @@ describe('Options view & initial setup', () => {
         cy.intercept('https://jira.test.com/**/*', (req) => req.reply(404))
         cy.open()
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
-        cy.contains('h6', 'Jira Options').should('be.visible')
+        cy.contains('h6', 'Jira Connection').should('be.visible')
     })
 
     it('has all input fields without any data', () => {
@@ -15,7 +15,7 @@ describe('Options view & initial setup', () => {
             key: 'test1'
         }).as('myself')
 
-        cy.contains('h6', 'Jira Options').should('be.visible')
+        cy.contains('h6', 'Jira Connection').should('be.visible')
         cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(249, 247, 251)')
 
         cy.contains('div', 'Server Url')
@@ -165,6 +165,64 @@ describe('Options view & initial setup', () => {
             .first()
             .contains('li', 'TE-12')
             .should('exist')
+
+        cy.contains('div', 'Custom JQL Query').should('not.exist')
+
+        cy.getOptions().its('useJqlQuery').should('equal', false)
+    
+        cy.contains('div', 'Advanced Issue Selection')
+            .find('input')
+            .should('be.visible')
+            .should('not.be.checked')
+            .click()
+            .should('be.checked')
+
+        cy.getOptions().its('useJqlQuery').should('equal', true)
+
+        cy.contains('div', 'Custom JQL Query')
+            .should('be.visible')
+            .find('textarea')
+            .type('test123', {delay: 50})
+        
+        cy.intercept('https://jira.test.com/rest/api/2/search?*', []).as('search')
+
+        cy.contains('div', 'Custom JQL Query')
+            .contains('a', 'Test Query')
+            .click()
+        cy.wait('@search')
+            .its('request.url')
+            .should('contain', 'jql=test123')
+
+        cy.contains('div', 'Custom JQL Query')
+            .find('select')
+            .should('be.visible')
+            .should('contain.text', 'JQL Templates')
+            .select('Recently assigned Issues')
+        
+        cy.contains('div', 'Custom JQL Query')
+            .should('be.visible')
+            .find('textarea')
+            .should('contain.value', 'assignee was currentUser()')
+        
+        cy.contains('div', 'Custom JQL Query')
+            .contains('a', 'Test Query')
+            .click()
+
+        cy.wait('@search')
+            .its('request.url')
+            .should('contain', 'jql=assignee+was+currentUser')
+
+        cy.getOptions().its('showComments').should('equal', false)
+    
+        cy.contains('div', 'Extended Comments')
+            .find('input')
+            .scrollIntoView()
+            .should('be.visible')
+            .should('not.be.checked')
+            .click()
+            .should('be.checked')
+
+        cy.getOptions().its('showComments').should('equal', true)
 
         cy.getOptions().its('autosync').should('equal', false)
         

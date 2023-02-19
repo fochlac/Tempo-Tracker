@@ -14,6 +14,7 @@ import { IssueInput } from "../molecules/IssueInput"
 import { saveAs } from 'file-saver'
 import { ImportOptionsAction } from "../molecules/ImportOptionsAction"
 import { fetchIssueList } from "../../utils/jira"
+import { JQL_TEMPLATES } from "../../constants/jql-templates"
 
 const Body = styled.div`
     display: flex;
@@ -103,9 +104,8 @@ const StyledAlertOctagon = styled(AlertOctagon)`
 
 const JIRA_LINK = '/secure/ViewProfile.jspa?selectedTab=com.atlassian.pats.pats-plugin:jira-user-personal-access-tokens'
 const JQL_LINK = 'https://www.atlassian.com/blog/jira-software/jql-the-most-flexible-way-to-search-jira-14'
-const JQL_TEMPLATES = {
-    'recent_assigned': 'assignee was currentUser() and status not in (open) ORDER BY updated DESC'
-}
+const TMPL_LINK = 'https://github.com/fochlac/Tempo-Tracker/blob/master/src/constants/jql-templates.ts'
+
 let isChecking = false
 const checkJql = () => {
     if (!isChecking) {
@@ -253,16 +253,20 @@ export const OptionsView: React.FC = () => {
                     <Label>Custom JQL Query</Label>
                     <InfoText>
                         Automatically select issues based on a 
-                        <ActionLink onClick={() => openTab({active: true, url: JQL_LINK })}>custom JQL-query</ActionLink>
+                        <ActionLink onClick={() => openTab({active: true, url: JQL_LINK })}>custom JQL-query</ActionLink>.
+                        Feel free to extend the 
+                        <ActionLink onClick={() => openTab({active: true, url: TMPL_LINK })}>template list</ActionLink>.
                     </InfoText>
                     <Textarea onChange={(e) => actions.merge({ jqlQuery: e.target.value })} value={options.jqlQuery} />
                     <FlexRow justify="space-between">
                         <Select style={{marginTop: 4}} onChange={(e) => {
-                            actions.merge({ jqlQuery: JQL_TEMPLATES[e.target.value] })
+                            actions.merge({ jqlQuery: JQL_TEMPLATES[e.target.value]?.template })
                             e.target.value = ""
                         }}>
                             <option value="" disabled selected hidden>JQL Templates</option>
-                            <option value="recent_assigned">Recently assigned Issues</option>
+                            {Object.values(JQL_TEMPLATES).map((template) => (
+                                <option value={template.id}>{template.name}</option>
+                            ))}
                         </Select>
                         <ActionLink onClick={checkJql}>
                             Test Query
