@@ -2,6 +2,7 @@ import { useState } from "preact/hooks";
 import { useOptions } from "../../hooks/useOptions"
 import { IssueSearchDialog } from "./IssueSearchDialog";
 import { useJqlQueryResults } from "../../hooks/useJqlQueryResult";
+import { useSelf } from "../../hooks/useSelf";
 
 interface Props {
     onChange: (issue: LocalIssue) => void; 
@@ -15,6 +16,7 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
     const { data: options } = useOptions()
     const [searchActive, setSearchActive] = useState(false)
     const [localIssues, setLocalIssues] = useState([])
+    const self = useSelf()
 
     const remoteIssues = useJqlQueryResults() as LocalIssue[]
     
@@ -44,7 +46,7 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
                     </option>
                 ))}
                 {enableSearch && (
-                    <option value={SEARCH_ISSUE}>
+                    <option value={SEARCH_ISSUE} disabled={self.error}>
                         Search Issue...
                     </option>
                 )}
