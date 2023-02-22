@@ -24,11 +24,13 @@ if (
     const sortedVersions = [packageVersion, manifestVersion, manifestFFVersion].sort(compareVersion)
     version = sortedVersions[0]
 }
-
-const newVersion =
-    process.argv[2] === 'patch'
-        ? `${version[0]}.${version[1]}.${Number(version[2]) + 1}`
-        : `${version[0]}.${Number(version[1]) + 1}.0`
+let newVersion = `${version[0]}.${Number(version[1]) + 1}.0`
+if (process.argv[2] === 'patch') {
+    newVersion = `${version[0]}.${version[1]}.${Number(version[2]) + 1}`
+}
+else if (process.argv[2] === 'major') {
+    newVersion = `${Number(version[0]) + 1}.0.0`
+}
 
 packageJson.version = newVersion
 manifest.version = newVersion
