@@ -9,6 +9,7 @@ export const createTheme = ({
     diagrammGreen
 }) => {
     const contrast = mix(0.5, font, background)
+    const fontDisabled = mix(0.8, font, background)
     const button = mix(0.1, font, background)
     return {
         '--background': background,
@@ -18,6 +19,7 @@ export const createTheme = ({
         '--diagramm': diagramm,
         '--diagramm-green': diagrammGreen,
         '--font': font,
+        '--font-disabled': fontDisabled,
         '--link': link,
         '--backdrop': '#00000040',
         '--link-hover': lighten(0.1, link),

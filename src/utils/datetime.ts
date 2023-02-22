@@ -43,10 +43,15 @@ export function timeString (unixStamp: number) {
 
     return `${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
+export function timeStringSeconds (unixStamp: number) {
+    const date = new Date(unixStamp)
+
+    return `${timeString(unixStamp)}:${pad(date.getSeconds())}`
+}
 export function timeStringFull (unixStamp: number) {
     const date = new Date(unixStamp)
 
-    return `${timeString(unixStamp)}:${pad(date.getSeconds())}.${date.getMilliseconds()}`
+    return `${timeStringSeconds(unixStamp)}.${date.getMilliseconds()}`
 }
 export function durationString (ms: number) {
     const m = Math.floor(ms / 1000 / 60)

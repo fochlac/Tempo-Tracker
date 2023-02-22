@@ -69,6 +69,9 @@ interface Options {
     forceFetch: boolean;
     theme: 'DEFAULT'|'DARK';
     token: string;
+    ttToken: string;
+    email: string;
+    instance: 'cloud'|'datacenter';
 }
 
 interface StatsMap {

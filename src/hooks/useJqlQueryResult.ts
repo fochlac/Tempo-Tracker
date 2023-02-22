@@ -1,5 +1,5 @@
 import { CACHE } from "../constants/constants"
-import { fetchIssueList } from "../utils/jira"
+import { fetchIssueList } from "../utils/api"
 import { useOptions } from "./useOptions"
 import { usePersitentFetch } from "./usePersitedFetch"
 

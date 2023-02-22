@@ -1,6 +1,6 @@
 import { usePersitentFetch } from "./usePersitedFetch"
 
-import { fetchAllWorklogs, fetchSelf } from "../utils/jira"
+import { fetchAllWorklogs, fetchSelf } from "../utils/api"
 import { useEffect, useMemo, useState } from "preact/hooks"
 import { CACHE } from "../constants/constants"
 import { useCache } from "./useCache"

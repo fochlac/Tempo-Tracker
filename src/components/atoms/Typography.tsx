@@ -24,6 +24,14 @@ export const InfoText = styled(DefaultText)`
     font-size: 12px;
     font-family: sans-serif;
 `
+export const ErrorInfoText = styled(InfoText)`
+    height: 0;
+    padding: 0;
+    color: var(--destructive);
+    text-align: right;
+    margin-top: -4px;
+    margin-bottom: 4px;
+`
 
 export const SmallerText = styled.p`
     font-size: 0.95rem;

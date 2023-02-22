@@ -1,14 +1,9 @@
-import { Trash2, X } from "preact-feather";
-import { useEffect, useRef, useState } from "preact/hooks";
+import { Trash2, } from "preact-feather";
+import { useState } from "preact/hooks";
 import { useOptions } from "../../hooks/useOptions";
 import { IconButton } from "../atoms/IconButton";
 import { Input } from "../atoms/Input";
-import { Modal } from "../atoms/Modal";
 import styled from 'styled-components'
-import { H5, Label } from "../atoms/Typography";
-import { ProgressIndeterminate } from "../atoms/Progress";
-import { searchIssues } from "../../utils/jira";
-import { FlexRow } from "../atoms/Layout";
 import { Button, DestructiveButton } from "../atoms/Button";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { Tooltip } from "../atoms/Tooltip";

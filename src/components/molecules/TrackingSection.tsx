@@ -13,7 +13,7 @@ import { FlexColumn, FlexRow } from "../atoms/Layout"
 import { IssueSearchDialog } from "./IssueSearchDialog"
 import { IssueSelector } from "./IssueSelector"
 import { useSafeState } from "../../hooks/useSafeState"
-import { fetchIssueList } from "../../utils/jira"
+import { fetchIssueList } from "../../utils/api"
 import { useJqlQueryResults } from "../../hooks/useJqlQueryResult"
 
 const Header = styled.div`
@@ -140,8 +140,17 @@ export function TrackingSection({ hasError }) {
                 {!tracker.lastHeartbeat && (tracker.issue ? (
                     <FlexColumn align="stretch" style={{ marginRight: showComment ? 4 : 0 }}>
                         <FlexRow style={{ marginBottom: 6 }}>
-                            <IssueSelector style={{width: 'max(18%, 96px)', height: 25}} additionalIssues={[tracker.issue]} value={tracker.issue.key} onChange={(issue) => actions.updateIssue(issue)} />
-                            <Input style={{ marginRight: 16, marginLeft: 6 }} type="date" onChange={onChangeDate} value={dateString(tracker.start)} />
+                            <IssueSelector 
+                                enableSearch 
+                                style={{width: 'max(18%, 96px)', height: 25}} 
+                                additionalIssues={[tracker.issue]} 
+                                value={tracker.issue.key} 
+                                onChange={(issue) => actions.updateIssue(issue)} />
+                            <Input 
+                                style={{ marginRight: 16, marginLeft: 6 }} 
+                                type="date" 
+                                onChange={onChangeDate} 
+                                value={dateString(tracker.start)} />
                             <TimeInput style={{ marginRight: 16 }} onChange={onChangeTime} value={timeString(tracker.start)} />
                             &mdash;
                             <Duration start={tracker.start} style={{ marginRight: 'auto' }} />

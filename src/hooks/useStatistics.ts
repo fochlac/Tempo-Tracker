@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "preact/hooks"
 import { CACHE } from "../constants/constants"
 import { dateString, getISOWeekNumber, getISOWeeks } from "../utils/datetime"
-import { createWorkMap, fetchWorkStatistics } from "../utils/jira"
+import { createWorkMap, fetchWorkStatistics } from "../utils/api"
 import { usePersitentFetch } from "./usePersitedFetch"
 import { useSafeState } from "./useSafeState"
 import { useStatisticsOptions } from "./useStatisticsOptions"
@@ -84,9 +84,11 @@ export function useStatistics () {
 
     useEffect(() => {
         setOverwriteData(null)
-        fetchWorkStatistics(year)
-            .then((data) => setOverwriteData(data))
-    }, [year])
+        if (!isCurrentYear) {
+            fetchWorkStatistics(year)
+                .then((data) => setOverwriteData(data))
+        }
+    }, [year, isCurrentYear])
 
     const getRequiredSeconds = useGetRequiredSettings(year)
 

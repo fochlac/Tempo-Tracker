@@ -1,50 +1,26 @@
-import { AlertCircle, AlertOctagon } from "preact-feather"
-import { useEffect, useRef, useState } from "preact/hooks"
-import styled from "styled-components"
-import { useOptions } from "../../hooks/useOptions"
-import { useSafeState } from "../../hooks/useSafeState"
-import { useSelf } from "../../hooks/useSelf"
-import { openTab } from "../../utils/browser"
-import { ActionLink } from "../atoms/ActionLink"
-import { Input, Textarea } from "../atoms/Input"
-import { FlexRow } from "../atoms/Layout"
-import { Tooltip } from "../atoms/Tooltip"
-import { ErrorText, H6, InfoText, Label } from "../atoms/Typography"
-import { IssueInput } from "../molecules/IssueInput"
-import { saveAs } from 'file-saver'
-import { ImportOptionsAction } from "../molecules/ImportOptionsAction"
-import { fetchIssueList } from "../../utils/jira"
-import { JQL_TEMPLATES } from "../../constants/jql-templates"
+import { AlertCircle, AlertOctagon } from 'preact-feather'
+import { useRef, useState } from 'preact/hooks'
+import styled from 'styled-components'
+import { useOptions } from '../../hooks/useOptions'
+import { useSafeState } from '../../hooks/useSafeState'
+import { useSelf } from '../../hooks/useSelf'
+import { openTab } from '../../utils/browser'
+import { ActionLink } from '../atoms/ActionLink'
+import { Input } from '../atoms/Input'
+import { ErrorInfoText, H6, InfoText, Label } from '../atoms/Typography'
+import { AppOptionsSection } from '../molecules/AppOptions'
+import { IssueOptions } from '../molecules/IssueOptions'
+import { Option } from '../atoms/Option'
+import { ObfuscatedInput } from '../atoms/ObfuscatedInput'
+import { OptionsImportExport } from '../molecules/OptionImportExport'
+import { Alert, InfoBox } from '../atoms/Alert'
+import { MandatoryStar } from '../atoms/MandatoryStar'
+import { DomainEditor } from '../molecules/DomainEditor'
 
 const Body = styled.div`
     display: flex;
     flex-direction: column;
     overflow: auto;
-`
-const Option = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin: 8px 8px 8px 12px;
-    position: relative;
-`
-const InputWrapper = styled.time`
-    display: flex;
-    position: relative;
-    justify-content: stretch;
-    flex-direction: column;
-`
-const InputErrorIcon = styled(AlertCircle)`
-    color: var(--destructive);
-    position: absolute;
-    right: 4px;
-    top: 2px;
-`
-const Mandatory = styled.span`
-    color: var(--destructive);
-    font-size: 14px;
-    display: inline-block;
-    margin-top: -3px;
-    margin-left: 1px;
 `
 const SectionHead = styled(H6)`
     font-size: 1rem;
@@ -56,81 +32,39 @@ const SectionHead = styled(H6)`
     z-index: 1;
     margin-right: 8px;
 `
-const ErrorInfoText = styled(InfoText)`
-    height: 0;
-    padding: 0;
-    color: var(--destructive);
-    text-align: right;
-    margin-top: -4px;
-    margin-bottom: 4px;
-`
 const JiraHead = styled(SectionHead)`
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
 `
-const ImportExportBar = styled.div`
-    font-size: 0.8rem;
-    flex-direction: row;
-    justify-content: flex-end;
-    position: relative;
+const InputWrapper = styled.div`
     display: flex;
-    padding-right: 6px;
+    position: relative;
+    justify-content: stretch;
+    flex-direction: column;
+`
+const InputErrorIcon = styled(AlertCircle)`
+    color: var(--destructive);
+    position: absolute;
+    right: 4px;
+    top: 2px;
 `
 const Title = styled.span`
     margin-right: auto;
 `
-const Select = styled.select`
-    width: 200px;
-`
-const ExportLink = styled(ActionLink)`
-    padding-right: 4px;
-`
-const ErrorBox = styled(ErrorText)`
-    padding: 4px 8px 4px 4px;
-    border: solid var(--destructive) 1px;
-    background: var(--destructive-lightest);
-    border-radius: 2px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-`
-const StyledAlertOctagon = styled(AlertOctagon)`
-    margin-left: 4px;
-    margin-right: 8px;
-    height: 28px;
-    width: 28px;
-`
 
 const JIRA_LINK = '/secure/ViewProfile.jspa?selectedTab=com.atlassian.pats.pats-plugin:jira-user-personal-access-tokens'
-const JQL_LINK = 'https://www.atlassian.com/blog/jira-software/jql-the-most-flexible-way-to-search-jira-14'
-const TMPL_LINK = 'https://github.com/fochlac/Tempo-Tracker/blob/master/src/constants/jql-templates.ts'
-
-let isChecking = false
-const checkJql = () => {
-    if (!isChecking) {
-        isChecking = true
-        fetchIssueList()
-            .then(list => alert(list.map(i => i.key).join(', ')))
-            .catch((e) => alert(e?.message || e))
-            .finally(() => {
-                isChecking = false
-            })
-    }
-}
+const ATL_API_LINK = 'https://id.atlassian.com/manage-profile/security/api-tokens'
+const TEMPO_API_LINK = '/plugins/servlet/ac/io.tempo.jira/tempo-app#!/configuration/api-integration'
 
 export const OptionsView: React.FC = () => {
     const { data: options, actions } = useOptions()
-    const [isTokenFocused, setTokenFocused] = useState(false)
-    const [token, setToken] = useState('')
     const [ignoreError, setIgnoreError] = useSafeState(false)
-    const { domain, token: storedToken } = options
+    const { domain, token: storedToken, ttToken, instance, email } = options
+    const [token, setToken] = useState(storedToken)
     const { name, error, refetch } = useSelf()
     const valid = ignoreError || !error
     const checkDomainToken = (options?: Partial<Options>) => refetch(options).finally(() => setIgnoreError(false))
-
-    const stars = storedToken.length ? Array(Math.max(storedToken.length - 8, 12)).fill('*').join('') : ''
-    const tokenObfuscated = `${storedToken.slice(0, 4)}${stars}${storedToken.slice(-4)}`
 
     const timeout = useRef<NodeJS.Timeout>()
     const tokenBlur = async (e) => {
@@ -140,12 +74,8 @@ export const OptionsView: React.FC = () => {
             await actions.merge({ token: newToken })
             await checkDomainToken({ token: newToken, domain })
         }
-        if (!e?.skipFocus) {
-            setTokenFocused(false)
-        }
     }
-    const tokenChange = (e) => {
-        const newToken = e.target.value
+    const tokenChange = (newToken) => {
         setIgnoreError(true)
         setToken(newToken)
         clearTimeout(timeout.current)
@@ -155,149 +85,154 @@ export const OptionsView: React.FC = () => {
                     .then(() => {
                         return tokenBlur({ newToken, skipFocus: true })
                     })
-                    .catch(e => console.log('error', e))
+                    .catch((e) => console.log('error', e))
             }
         }, 1500)
     }
 
     const validDomain = /^https?:\/\/[^/]+(\/[^/]+)*\/rest/.test(domain) || !error || error === 'TOKEN'
-    const domainMessage = !validDomain && /^https?:\/\/[^/]+(\/[^/]+)*/.test(domain)
-        ? ` Did you mean "${/^https?:\/\/[^/]+/.exec(domain)[0]}/rest"?`
-        : ''
     const showError = Boolean(error && !ignoreError && error !== 'TOKEN' && domain.length && storedToken.length)
-    const onExportOptions = () => saveAs(
-        new Blob([JSON.stringify({ ...options, token: '', user: '' }, null, 4)], { type: 'application/json;charset=utf-8' }),
-        'tempo-tracker.options.json'
+
+    const showOtherOptions = Boolean(
+        domain.length && instance === 'datacenter'
+            ? storedToken.length
+            : storedToken.length && email.length && ttToken.length
     )
 
     return (
         <Body>
             <JiraHead>
-                <Title>Jira Connection</Title>
-                <ImportExportBar>
-                    <Tooltip right content='This export contains the issue list and the server url. The personal access token and the username are not included in the export.'>
-                        <ExportLink onClick={onExportOptions}>Export</ExportLink>
-                    </Tooltip>
-                    <ImportOptionsAction />
-                </ImportExportBar>
+                <Title>Authentification</Title>
+                <OptionsImportExport />
             </JiraHead>
             {showError && (
                 <Option>
-                    <ErrorBox>
-                        <StyledAlertOctagon />
-                        <span>Error connecting to the Jira-API: Please check the server url and the personal access token.</span>
-                    </ErrorBox>
+                    <Alert text="Error connecting to the Jira-API: Please check the server url and the personal access token." />
                 </Option>
             )}
-            <Option>
-                <Label>Server Url<Mandatory>*</Mandatory></Label>
-                <InfoText>Url of your Jira server's REST-API: https://jira.domain.com/rest.</InfoText>
-                <InputWrapper>
-                    <Input
-                        style={{ marginBottom: 4 }}
-                        error={showError || !validDomain}
-                        onBlur={() => checkDomainToken()} value={options.domain}
-                        onChange={(e) => {
-                            setIgnoreError(true)
-                            actions.merge({ domain: e.target.value })
-                        }} />
-                    {!validDomain && <InputErrorIcon size={16} />}
-                </InputWrapper>
-                {!validDomain && <ErrorInfoText>The url is not matching the expected pattern.{domainMessage}</ErrorInfoText>}
-            </Option>
-            <Option>
-                <Label>Personal Access Token<Mandatory>*</Mandatory></Label>
-                <InfoText>A personal access token can be generated via your Jira profile.</InfoText>
-                <InputWrapper>
-                    <Input
-                        style={{ marginBottom: 4 }}
-                        error={showError || (error === 'TOKEN' && !ignoreError)}
-                        value={isTokenFocused ? token : tokenObfuscated}
-                        onFocus={() => setTokenFocused(true)}
-                        onBlur={tokenBlur}
-                        onChange={tokenChange} />
-                    {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
-                </InputWrapper>
-                {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token is invalid.</ErrorInfoText>}
-                {Boolean((validDomain && !options.token?.length) || (error === 'TOKEN' && !ignoreError)) && (
-                    <ActionLink
-                        style={{ height: 6, marginTop: -2, marginLeft: 0 }}
-                        onClick={() => {
-                            const url = `${options.domain.match(/^https?\:\/\/[^/]+/)?.[0]}${JIRA_LINK}`
-                            openTab({ url, active: true })
-                        }}>
-                        Generate a token
-                    </ActionLink>
-                )}
-            </Option>
-            <Option>
-                <Label>User</Label>
-                <Input readOnly value={name ? `${name} (${options.user})` : options.user} />
-            </Option>
-            <SectionHead>Issue Options</SectionHead>
-            <Option>
-                <Label>Tracked Issues</Label>
-                <InfoText>Please add all issues you want to use for time tracking. You can set an alias for each issue.</InfoText>
-                <IssueInput disabled={!valid} />
-            </Option>
-            <Option>
-                <Label>Advanced Issue Selection</Label>
-                <InfoText>You can set up a custom JQL-query to automatically add to your manually created issue list. This will add issues up to a total of 15 issues.</InfoText>
-                <FlexRow justify="flex-start">
-                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.useJqlQuery} onChange={(e) => actions.merge({ useJqlQuery: e.target.checked })} />
-                    <Label>enabled</Label>
-                </FlexRow>
-            </Option>
-            {options.useJqlQuery && (
+            {instance === 'cloud' && (
                 <Option>
-                    <Label>Custom JQL Query</Label>
-                    <InfoText>
-                        Automatically select issues based on a 
-                        <ActionLink onClick={() => openTab({active: true, url: JQL_LINK })}>custom JQL-query</ActionLink>.
-                        Feel free to extend the 
-                        <ActionLink onClick={() => openTab({active: true, url: TMPL_LINK })}>template list</ActionLink>.
-                    </InfoText>
-                    <Textarea onChange={(e) => actions.merge({ jqlQuery: e.target.value })} value={options.jqlQuery} />
-                    <FlexRow justify="space-between">
-                        <Select style={{marginTop: 4}} onChange={(e) => {
-                            actions.merge({ jqlQuery: JQL_TEMPLATES[e.target.value]?.template })
-                            e.target.value = ""
-                        }}>
-                            <option value="" disabled selected hidden>JQL Templates</option>
-                            {Object.values(JQL_TEMPLATES).map((template) => (
-                                <option value={template.id}>{template.name}</option>
-                            ))}
-                        </Select>
-                        <ActionLink onClick={checkJql}>
-                            Test Query
-                        </ActionLink>
-                    </FlexRow>
+                    <InfoBox text="Support for Jira Cloud is Experimental. Please report an issues you may find." />
                 </Option>
             )}
-            <SectionHead>App Options</SectionHead>
-            <Option>
-                <Label>Extended Comments</Label>
-                <InfoText>Show comments in the worklog list and show an input field for entering a comment while tracking.</InfoText>
-                <FlexRow justify="flex-start">
-                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.showComments} onChange={(e) => actions.merge({ showComments: e.target.checked })} />
-                    <Label>enabled</Label>
-                </FlexRow>
-            </Option>
-            <Option>
-                <Label>Automatic Synchronization</Label>
-                <FlexRow justify="flex-start">
-                    <Input style={{ margin: '0 6px' }} type="checkbox" disabled={isFirefox} checked={isFirefox ? false : options.autosync} onChange={(e) => actions.merge({ autosync: e.target.checked })} />
-                    <Label>enabled</Label>
-                </FlexRow>
-                {isFirefox && <InfoText>For Firefox this setting is always inactive. Due to browser restrictions it is neccesary to open jira in a new tab and use that tab for synchronization.</InfoText>}
-            </Option>
-            <Option>
-                <Label>Theme</Label>
-                <Select onChange={(e) => actions.merge({ theme: e.target.value })}>
-                    <option selected={options.theme === "DEFAULT"} value="DEFAULT">Light Theme (default)</option>
-                    <option selected={options.theme === "DARK"} value="DARK">Dark Theme</option>
-                </Select>
-            </Option>
+            <DomainEditor />
+
+            {Boolean(domain.length && instance === 'datacenter') && (
+                <>
+                    <Option style={{ marginBottom: 12 }}>
+                        <Label>
+                            Personal Access Token
+                            <MandatoryStar />
+                        </Label>
+                        <InfoText>A personal access token can be generated via your Jira profile.</InfoText>
+                        <InputWrapper>
+                            <ObfuscatedInput
+                                key={options.domain}
+                                style={{ marginBottom: 4 }}
+                                error={showError || (error === 'TOKEN' && !ignoreError)}
+                                value={token}
+                                onBlur={tokenBlur}
+                                onChange={tokenChange}
+                            />
+                            {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
+                        </InputWrapper>
+                        {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token is invalid.</ErrorInfoText>}
+                        {Boolean((validDomain && !options.token?.length) || (error === 'TOKEN' && !ignoreError)) && (
+                            <ActionLink
+                                style={{ height: 6, marginTop: -2, marginLeft: 0 }}
+                                onClick={() => {
+                                    const url = `${options.domain.match(/^https?\:\/\/[^/]+/)?.[0]}${JIRA_LINK}`
+                                    openTab({ url, active: true })
+                                }}
+                            >
+                                Generate a token
+                            </ActionLink>
+                        )}
+                    </Option>
+                </>
+            )}
+
+            {Boolean(domain.length && instance === 'cloud') && (
+                <>
+                    <Option>
+                        <Label>
+                            Email Address
+                            <MandatoryStar />
+                        </Label>
+                        <InfoText>The email address you used for your Atlassian account.</InfoText>
+                        <Input
+                            style={{ marginBottom: 4 }}
+                            error={showError || (error === 'TOKEN' && !ignoreError)}
+                            value={email}
+                            onChange={(e) => actions.merge({ email: e.target.value })}
+                        />
+                        {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>}
+                    </Option>
+                    <Option style={{ marginBottom: 12 }}>
+                        <Label>
+                            API Token
+                            <MandatoryStar />
+                        </Label>
+                        <InfoText>An API token can be generated via your Atlassian profile.</InfoText>
+                        <InputWrapper>
+                            <ObfuscatedInput
+                                key={options.domain}
+                                style={{ marginBottom: 4 }}
+                                error={showError || (error === 'TOKEN' && !ignoreError)}
+                                value={token}
+                                onBlur={tokenBlur}
+                                onChange={tokenChange}
+                            />
+                            {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
+                        </InputWrapper>
+                        {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>}
+                        {Boolean(!options.token?.length || (error === 'TOKEN' && !ignoreError)) && (
+                            <ActionLink
+                                style={{ height: 6, marginTop: -2, marginLeft: 0 }}
+                                onClick={() => openTab({ url: ATL_API_LINK, active: true })}
+                            >
+                                Generate a API token
+                            </ActionLink>
+                        )}
+                    </Option>
+                    
+                    <Option style={{ marginBottom: 12 }}>
+                        <Label>
+                            Tempo API Token
+                            <MandatoryStar />
+                        </Label>
+                        <InfoText>To access the Tempo REST API an access token with the right to manage and view worklogs is needed.</InfoText>
+                        <ObfuscatedInput
+                            key={options.domain}
+                            style={{ marginBottom: 4 }}
+                            value={ttToken}
+                            onChange={(ttToken) => actions.merge({ ttToken })}
+                        />
+                        {Boolean(!options.ttToken?.length || (error === 'TOKEN' && !ignoreError)) && (
+                            <ActionLink
+                                style={{ height: 6, marginTop: -2, marginLeft: 0 }}
+                                onClick={() => openTab({ url: `${domain}${TEMPO_API_LINK}`, active: true })}
+                            >
+                                Generate a API token
+                            </ActionLink>
+                        )}
+                    </Option>
+                </>
+            )}
+            {Boolean(domain?.length) && (
+                <Option>
+                    <Label>User</Label>
+                    <Input readOnly value={name ? `${name} (${options.user})` : options.user} />
+                </Option>
+            )}
+
+            {showOtherOptions && (<>
+                <SectionHead>Issue Options</SectionHead>
+                <IssueOptions valid={valid} />
+
+                <SectionHead>App Options</SectionHead>
+                <AppOptionsSection />
+            </>)}
         </Body>
     )
 }

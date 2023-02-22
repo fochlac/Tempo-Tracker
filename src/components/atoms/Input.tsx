@@ -12,7 +12,8 @@ export const Input = styled.input<Props>`
     color: var(--font);
     ${({error}) => error ? 'border-color: var(--destructive);' : ''}
     ${({error}) => error ? 'color: var(--destructive);' : ''}
-    ${({readOnly}) => readOnly ? 'border-bottom: none;' : ''}
+    ${({readOnly}) => readOnly ? 'color: var(--font-disabled);' : ''}
+    ${({readOnly}) => readOnly ? 'cursor: default;' : ''}
     outline: none;
 `
 
@@ -26,7 +27,8 @@ export const Textarea = styled.textarea<Props>`
     color: var(--font);
     ${({error}) => error ? 'border-color: var(--destructive);' : ''}
     ${({error}) => error ? 'color: var(--destructive);' : ''}
-    ${({readOnly}) => readOnly ? 'border-bottom: none;' : ''}
+    ${({readOnly}) => readOnly ? 'color: var(--font-disabled);' : ''}
+    ${({readOnly}) => readOnly ? 'cursor: default;' : ''}
     outline: none;
     width: 100%;
     resize: vertical;

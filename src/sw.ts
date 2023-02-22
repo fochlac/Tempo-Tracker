@@ -35,8 +35,8 @@ if (!isFirefox) {
             contexts: ['action']
         })
 
-        chrome.contextMenus.onClicked.addListener(contextClick)
     })
+    chrome.contextMenus.onClicked.addListener(contextClick)
 }
 else {
     browser.runtime.onInstalled.addListener(() => {
@@ -51,8 +51,8 @@ else {
             contexts: ['browser_action']
         })
 
-        browser.menus.onClicked.addListener(contextClick)
     })
+    browser.menus.onClicked.addListener(contextClick)
 }
 
 controller.alarms.clearAll()

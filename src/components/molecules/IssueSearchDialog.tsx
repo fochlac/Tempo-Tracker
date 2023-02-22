@@ -5,7 +5,7 @@ import { Modal } from '../atoms/Modal'
 import styled from 'styled-components'
 import { H5, Label } from '../atoms/Typography'
 import { ProgressIndeterminate } from '../atoms/Progress'
-import { searchIssues } from '../../utils/jira'
+import { searchIssues } from '../../utils/api'
 import { FlexRow } from '../atoms/Layout'
 
 const SearchFieldWrapper = styled.div`

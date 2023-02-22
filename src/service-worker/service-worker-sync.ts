@@ -2,7 +2,7 @@
 import { DB_KEYS } from "../constants/constants"
 import { DB } from "../utils/data-layer"
 import { v4 } from 'uuid'
-import { deleteWorklog, updateWorklog, writeWorklog } from "../utils/jira"
+import { deleteWorklog, updateWorklog, writeWorklog } from "../utils/api"
 const DELETED = 'deleted'
 
 let isRunning = false

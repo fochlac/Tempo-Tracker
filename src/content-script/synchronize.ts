@@ -1,6 +1,6 @@
 import { ACTIONS } from '../constants/actions'
 import { triggerBackgroundAction } from '../utils/background'
-import { deleteWorklog, fetchAllWorklogs, updateWorklog, writeWorklog } from '../utils/jira'
+import { deleteWorklog, fetchAllWorklogs, updateWorklog, writeWorklog } from '../utils/api'
 import { syncTemplate } from './sync-template'
 
 function renderOverlay(queue: TemporaryWorklog[]) {

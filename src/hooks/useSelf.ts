@@ -1,33 +1,38 @@
 import { useEffect } from "preact/hooks"
-import { fetchSelf } from "../utils/jira"
+import { fetchSelf } from "../utils/api"
 import { useSafeState } from "./useSafeState"
 import { useOptions } from "./useOptions"
 
 let cacheInfo = {
     id: null,
-    time: 0
+    time: 0,
+    name: null
 }
 
 export function useSelf() {
     const [error, setError] = useSafeState(null)
     const [name, setName] = useSafeState(null)
-    const { data: {token, domain, user}, actions } = useOptions()
+    const { data: { token, domain, user }, actions } = useOptions()
 
     const checkDomainToken = async (override?: Partial<Options>) => {
         const localToken = override?.token || token
         const localDomain = override?.domain || domain
         if (localDomain.length && localToken.length) {
             const id = `${localDomain}${localToken}`
-            if (cacheInfo.id === id && cacheInfo.time > Date.now() && !(override && Object.values(override).length)) return 
+            if (cacheInfo.id === id && cacheInfo.time > Date.now() && !(override && Object.values(override).length)) {
+                setName(cacheInfo.name)
+                return 
+            } 
             cacheInfo.id = id
             try {
                 const res = await fetchSelf({ token: localToken, domain: localDomain })
-                if (cacheInfo.id === id && res?.key) {
+                if (cacheInfo.id === id && res.user) {
                     cacheInfo.time = Date.now() + 1000 * 60
                     setError(null)
                     setName(res.displayName)
-                    if (res.key !== user) {
-                        return actions.merge({ user: res.key })
+                    cacheInfo.name = res.displayName
+                    if (res.user !== user) {
+                        return actions.merge({ user: res.user })
                     }
                     return
                 }

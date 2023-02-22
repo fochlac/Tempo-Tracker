@@ -2,7 +2,7 @@ import { createTheme } from "../utils/theme";
 
 export const THEMES = {
     DEFAULT: createTheme({
-        background: '#f9f7fb',
+        background: '#f7f8fb',
         font: '#1b1928',
         link: '#1e6bf7',
         destructive: '#f50016',
