@@ -1,23 +1,25 @@
 import { useRef } from "preact/hooks"
 import styled from "styled-components";
 
-const InputWrapper = styled.div`
+const InputWrapper = styled.fieldset`
     display: inline-flex;
     flex-direction: row;
-    width: 41px;
+    width: 42px;
     margin-top: 2px;
     height: 20px;
     border: none;
-    border-bottom: solid 1px var(--contrast);
+    border-bottom: solid 1px var(--font);
     color: var(--font);
     outline: none;
     align-items: center;
     padding-left: 1px;
+    text-align: center;
 `
 const TimeSegmentInput = styled.input`
-    width: 17px;
+    width: 18px;
     background: var(--background);
     color: var(--font);
+    text-align: center;
 `
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {

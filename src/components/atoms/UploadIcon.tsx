@@ -28,7 +28,7 @@ const AnimatedChevronUp = styled(ChevronUp)`
     top: 0;
     opacity: 0;
     color: 	var(--link);
-    animation: ${visibility} 2s linear infinite;
+    animation: ${visibility} 1s linear infinite;
 `
 const Wrapper = styled.div`
     position: relative;
@@ -41,8 +41,8 @@ const Wrapper = styled.div`
 
 export function UploadIcon({style}) {
     return <Wrapper style={style}>
-        <AnimatedChevronUp size={18} style={{ top: -6, animationDelay: '0.4s' }} />
-        <AnimatedChevronUp size={18}  style={{ animationDelay: '0.2s' }} />
+        <AnimatedChevronUp size={18} style={{ top: -6, animationDelay: '0.2s' }} />
+        <AnimatedChevronUp size={18}  style={{ animationDelay: '0.1s' }} />
         <AnimatedChevronUp size={18} style={{ top: 6 }}  />
     </Wrapper>
 }

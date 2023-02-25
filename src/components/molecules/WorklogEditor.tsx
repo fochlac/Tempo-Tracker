@@ -91,7 +91,7 @@ export function WorklogEditor({ log: pureLog }) {
 
     return (
         <WorklogEntry>
-            <WorklogBody>
+            <WorklogBody as='form' onSubmit={(e) => e.preventDefault()}>
                 <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
                 <IssueSelector enableSearch value={log.issue.key} additionalIssues={[pureLog.issue]} style={{ margin: '2px 8px 0', maxWidth: 150, height: 20 }} onChange={(issue) => {
                     setDirty(true)
@@ -106,10 +106,10 @@ export function WorklogEditor({ log: pureLog }) {
                     <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
                 </Duration>
                 <div style={{marginLeft: 'auto'}}>
-                    <IconButton onClick={onSubmit} style={{ marginLeft: 16 }}>
+                    <IconButton title="Save" onClick={onSubmit} style={{ marginLeft: 16 }}>
                         <Check />
                     </IconButton>
-                    <IconButton onClick={() => dispatch('resetEditIssue')}  style={{ marginLeft: 4 }}>
+                    <IconButton title="Cancel" onClick={() => dispatch('resetEditIssue')}  style={{ marginLeft: 4 }}>
                         <X />
                     </IconButton>
                 </div>

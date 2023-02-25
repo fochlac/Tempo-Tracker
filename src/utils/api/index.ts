@@ -1,5 +1,6 @@
 import { DB } from '../data-layer';
 import { dateString, getISOWeekNumber, getYearIsoWeeksPeriod } from '../datetime';
+import { getOptions } from '../options';
 import * as cloudApi from './cloud-api'
 import * as datacenterApi from './datacenter-api'
 
@@ -29,7 +30,7 @@ export async function fetchSelf(customOptions?: Partial<Options>, useCredentials
 }
 
 export async function fetchIssueList() {
-    const options = (await DB.get('options')) as Options
+    const options = getOptions(await DB.get('options'))
     if (!options?.token || !options.domain || !options.user || !options.useJqlQuery || !options.jqlQuery?.length) {
         return Promise.reject('Missing options.')
     }
@@ -39,7 +40,7 @@ export async function fetchIssueList() {
 }
 
 export async function searchIssues(searchString): Promise<Issue[]> {
-    const options = (await DB.get('options')) as Options
+    const options = getOptions(await DB.get('options'))
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const api = options.instance === 'cloud' ?  cloudApi : datacenterApi
     
@@ -56,14 +57,14 @@ export async function fetchAllWorklogs(opts?: Options): Promise<Worklog[]> {
 }
 
 export async function fetchWorklogs(startDate: number, endDate: number, opts?: Options, simpleMapping?: boolean): Promise<Worklog[]> {
-    const options = opts || (await DB.get('options')) as Options
+    const options = opts || getOptions(await DB.get('options'))
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const api = options.instance === 'cloud' ?  cloudApi : datacenterApi
     return api.fetchWorklogs(startDate, endDate, options, simpleMapping)
 }
 
 export async function writeWorklog(worklog: Partial<Worklog>, opts?: Options): Promise<Worklog> {
-    const options = opts || ((await DB.get('options')) as Options)
+    const options = opts || getOptions(await DB.get('options'))
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const api = options.instance === 'cloud' ?  cloudApi : datacenterApi
 
@@ -71,15 +72,15 @@ export async function writeWorklog(worklog: Partial<Worklog>, opts?: Options): P
 }
 
 export async function updateWorklog(worklog: Partial<Worklog>, opts?: Options): Promise<Worklog> {
-    const options = opts || ((await DB.get('options')) as Options)
+    const options = opts || getOptions(await DB.get('options'))
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
     const api = options.instance === 'cloud' ?  cloudApi : datacenterApi
 
-    return api.writeWorklog(worklog, options)
+    return api.updateWorklog(worklog, options)
 }
 
 export async function deleteWorklog({ id }: Partial<Worklog>, opts?: Options): Promise<void> {
-    const options = opts || ((await DB.get('options')) as Options)
+    const options = opts || getOptions(await DB.get('options'))
     if (!options?.token || !options.domain || !options.user) return Promise.reject('Missing options.')
 
     const api = options.instance === 'cloud' ?  cloudApi : datacenterApi

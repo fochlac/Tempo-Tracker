@@ -22,7 +22,7 @@ export function getOptions(options: Partial<Options>): Options {
 
     // migration from old domain format
     let updatedDomain = domain
-    if (!instance) {
+    if (domain && !instance) {
         const result = domain.trim().match(domainRegexp)
         const baseDomain = result[2]
         const protocol = result[1] || 'https://'

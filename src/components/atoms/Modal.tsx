@@ -1,7 +1,7 @@
 import { createPortal } from 'preact/compat';
 import styled from 'styled-components';
 
-const Dialog = styled.aside`
+const Dialog = styled.dialog`
     width: 100%;
     height: 100%;
     background-color: var(--background);
@@ -32,7 +32,7 @@ interface Props {
 export const Modal: React.FC<Props> = ({ children, style }) => {
     return createPortal(
         <Overlay>
-            <Dialog style={style}>{children}</Dialog>
+            <Dialog open style={style}>{children}</Dialog>
         </Overlay>,
         document.querySelector('.modal')
     )

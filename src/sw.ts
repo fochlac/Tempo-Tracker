@@ -3,7 +3,7 @@ import { DB_KEYS, VIEWS } from './constants/constants'
 import { DB } from './utils/data-layer'
 import { getOptions } from './utils/options'
 import { markWorklogSynced, reserveWorklog, unreserveWorklog } from './service-worker/on-page-sync'
-import { flushQueue } from './service-worker/service-worker-sync'
+import { flushQueue, flushQueueRecursive } from './service-worker/service-worker-sync'
 import { stopTracking } from './service-worker/tracking'
 import { updateBadgeTitle } from './service-worker/badge'
 import { heartbeat } from './service-worker/heartbeat'
@@ -95,7 +95,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
     }
 
     if (ACTIONS.FLUSH_UPDATES.type === request.type) {
-        flushQueue()
+        flushQueueRecursive()
             .then(() => sendResponse(ACTIONS.FLUSH_UPDATES.response(true)))
             .catch((e) => sendResponse(ACTIONS.FLUSH_UPDATES.response(false, e.message)))
 

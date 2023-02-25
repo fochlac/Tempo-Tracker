@@ -10,6 +10,7 @@ interface TemporaryWorklog extends Omit<Worklog, 'id'|'comment'> {
     id?: string;
     comment?: string;
     syncTabId?: number;
+    syncTimeout?: number;
 }
 
 interface PersistentFetchResult<K extends CACHE> extends FetchResult<DataBase[K]['data']> {
@@ -55,6 +56,17 @@ type CACHE = 'WORKLOG_CACHE' | 'STATS_CACHE' | 'ISSUE_CACHE'
 interface LocalIssue extends Issue {
     alias: string;
     color?: string;
+}
+
+interface Action {
+    type: string;
+    payload?: Record<string, any>
+}
+
+interface ActionDefinition {
+    type: string;
+    create(...params: any): Action;
+    response(success: boolean, ...params: any): Action;
 }
 
 interface Options {

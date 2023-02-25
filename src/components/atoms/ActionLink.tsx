@@ -14,6 +14,7 @@ export const ActionLinkRaw = styled.a<ActionLinkRawProps>`
     letter-spacing: 0.1px;
     cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
     color: ${(props) => (props.disabled ? 'var(--contrast)' : 'var(--link)')};
+    pointer-events: ${(props) => (props.disabled ? 'none' : 'all')};
     margin-left: 4px;
 
     &:hover {
@@ -28,6 +29,7 @@ export const ActionLink: React.FC<{
     onClick: (e: Event) => void
     disabled?: boolean
     small?: boolean
+    title?: string;
     style?: React.CSSProperties
     as?: string | React.ComponentType<any>;
     for?: string;

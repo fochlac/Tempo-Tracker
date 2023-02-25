@@ -21,7 +21,10 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
     const remoteIssues = useJqlQueryResults() as LocalIssue[]
     
     const issueMap: Record<string, LocalIssue> = (additionalIssues || []).concat(options.useJqlQuery ? remoteIssues : [], localIssues).reduce((map, issue) => {
-        map[issue.key] = issue
+        map[issue.key] = {
+            ...(map[issue.key] || {}),
+            ...issue
+        }
         return map
     }, {...options.issues})
 
@@ -41,18 +44,23 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
         <>
             <select style={style} title={title} onChange={handleChange}>
                 {issues?.map((issue) => (
-                    <option value={issue.key} key={issue.key} selected={value === issue.key}>
+                    <option value={issue.key} key={issue.key} selected={!searchActive && value === issue.key}>
                         {issue.alias || `${issue.key}: ${issue.name}`}
                     </option>
                 ))}
                 {enableSearch && (
-                    <option value={SEARCH_ISSUE} disabled={self.error}>
+                    <option value={SEARCH_ISSUE} disabled={self.error} selected={searchActive}>
                         Search Issue...
                     </option>
                 )}
             </select>
             {searchActive && (
-                <IssueSearchDialog title="Search Issue for Tracking" onCancel={() => setSearchActive(false)} onSelect={(issue) => {
+                <IssueSearchDialog title="Search Issue for Tracking" 
+                onCancel={() => {
+                    onChange(issueMap[value])
+                    setSearchActive(false)
+                }} 
+                onSelect={(issue) => {
                     onChange(issue as LocalIssue)
                     setLocalIssues((issues) => [...issues, issue])
                     setSearchActive(false)

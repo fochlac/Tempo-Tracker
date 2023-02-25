@@ -59,7 +59,7 @@ export const Header: React.FC = () => {
                 )
             )}
             {!isPopped() && (
-                <ActionLink onClick={() => openAsTab(view)}>
+                <ActionLink title="Open in Tab" onClick={() => openAsTab(view)}>
                     <ExpandIcon size={16} />
                 </ActionLink>
             )}

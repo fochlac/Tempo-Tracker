@@ -10,7 +10,7 @@ export async function updateBadgeTitle() {
         action.setBadgeBackgroundColor({ color })
         const h = Math.floor((Date.now() - tracking.start) / 60 / 60 / 1000)
         const m = `00${Math.floor((Date.now() - tracking.start) / 60 / 1000) % 60}`.slice(-2)
-        action.setBadgeText({ text: `${h}:${m}` })
+        action.setBadgeText({ text: h > 99 ? `${h}h` : `${h}:${m}` })
         action.setTitle({ title: `Tempo Tracker\n${tracking.issue.alias} — ${h}:${m}` })
     }
     else {

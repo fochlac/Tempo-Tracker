@@ -7,13 +7,11 @@ import { useOptions } from './useOptions'
 import { useSafeState } from './useSafeState'
 
 export function useLogSync(self, worklog) {
-    const [isSyncing, setSyncing] = useSafeState(false)
     const [hasError, setError] = useSafeState(false)
     const refreshQueueCache = useDatabasRefresh(DB_KEYS.UPDATE_QUEUE)
     const options = useOptions()
 
     const startSync = async () => {
-        setSyncing(true)
         if (isFirefox) {
             try {
                 await self.refetch()
@@ -29,7 +27,6 @@ export function useLogSync(self, worklog) {
             const timer = setInterval(() => {
                 checkTabExistence(tab.id)
                     .then(() => {
-                        setSyncing(false)
                         clearInterval(timer)
                     })
                     .catch(() => null)
@@ -42,13 +39,11 @@ export function useLogSync(self, worklog) {
             } catch (err) {
                 setError(true)
             }
-            setSyncing(false)
             worklog.forceFetch()
         }
     }
 
     return {
-        isSyncing,
         hasError,
         startSync
     }

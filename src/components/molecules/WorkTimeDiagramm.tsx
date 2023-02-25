@@ -196,7 +196,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                             </Week>
                         </WeekWrapper>
                     )
-                }).slice(weekOffset - columns, weekOffset)}
+                }).slice(Math.max(weekOffset - columns, 0), weekOffset)}
             </Diagramm>
         </>
     )

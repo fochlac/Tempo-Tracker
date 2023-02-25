@@ -21,13 +21,19 @@ const issues = {
     '123466': { alias: 'Test6', id: '123466', key: 'TE-16', name: 'testname 6' },
     '123467': { alias: 'Test7', id: '123467', key: 'TE-17', name: 'testname 7' },
 }
-const defaultOptions: Options = {
+export const defaultOptions: Options = {
     autosync: false,
-    domain: 'https://jira.test.com/rest',
+    domain: 'https://jira.test.com',
     forceFetch: false,
     forceSync: false,
     theme: 'DARK',
     token: 'testtoken',
+    instance: 'datacenter',
+    email: '',
+    ttToken: '',
+    useJqlQuery: false,
+    showComments: false,
+    jqlQuery: '',
     user: 'testid',
     issues: { 
         'TE-12': issues['123462'],
@@ -39,7 +45,7 @@ const defaultOptions: Options = {
     }
 }
 const baseDate = new Date('2020-10-08T15:00:00.000Z')
-Cypress.Commands.add('openWithOptions', (options = defaultOptions) => {
+Cypress.Commands.add('openWithOptions', (options = defaultOptions, skipStartApp = false) => {
     cy.visit('http://localhost:3000', {
         onBeforeLoad(win) {
             return win.indexedDB.deleteDatabase(DATABASE_NAME)
@@ -47,11 +53,9 @@ Cypress.Commands.add('openWithOptions', (options = defaultOptions) => {
     })
     cy.fakeTimers(baseDate.getTime())
     cy.setOptions(options)
-    cy.window().then(win => {
-        const script = win.document.createElement('script')
-        script.src = './popup.js';
-        win.document.querySelector('head').appendChild(script)
-    })
+    if (!skipStartApp) {
+        cy.startApp()
+    }
 })
 
 let id = 13241
@@ -85,12 +89,12 @@ const worklogs = [
 
 Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {
     cy.intercept(`${domain}/**/*`, (req) => req.reply(404))
-    cy.intercept('GET', `${domain}/api/2/myself`, {
+    cy.intercept('GET', `${domain}/rest/api/2/myself`, {
         displayName: 'Testuser',
         key: 'testid'
     }).as('myself')
-    cy.intercept('POST', `${domain}/tempo-timesheets/4/worklogs/search`, worklogs).as('getWorklogs')
-    cy.intercept('POST', `${domain}/tempo-timesheets/4/worklogs`, (req) => {
+    cy.intercept('POST', `${domain}/rest/tempo-timesheets/4/worklogs/search`, worklogs).as('getWorklogs')
+    cy.intercept('POST', `${domain}/rest/tempo-timesheets/4/worklogs`, (req) => {
         const { started, timeSpentSeconds, originTaskId } = req.body
         const issue = issues[originTaskId] || { id: '-1', key: 'UK-1', summary: 'UNKNOWN TICKET' }
         req.reply({
@@ -104,7 +108,7 @@ Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {
             }
         })
     }).as('insertWorklog')
-    cy.intercept('PUT', `${domain}/tempo-timesheets/4/worklogs/*`, (req) => {
+    cy.intercept('PUT', `${domain}/rest/tempo-timesheets/4/worklogs/*`, (req) => {
         const { started, timeSpentSeconds, originTaskId, originId } = req.body
         const issue = issues[originTaskId] || { id: '-1', key: 'UK-1', summary: 'UNKNOWN TICKET' }
         req.reply({
@@ -118,5 +122,5 @@ Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {
             }
         })
     }).as('updateWorklog')
-    cy.intercept('DELETE', `${domain}/tempo-timesheets/4/worklogs/*`, {}).as('deleteWorklog')
+    cy.intercept('DELETE', `${domain}/rest/tempo-timesheets/4/worklogs/*`, {}).as('deleteWorklog')
 })

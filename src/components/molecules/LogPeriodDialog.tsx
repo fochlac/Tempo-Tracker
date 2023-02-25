@@ -227,8 +227,8 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 </Row>
             </div>
             <ButtonBar>
-                <Button onClick={createWorklogs}>Create Worklogs</Button>
                 <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={createWorklogs}>Create Worklogs</Button>
             </ButtonBar>
         </Modal>
     )

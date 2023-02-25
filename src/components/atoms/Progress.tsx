@@ -9,7 +9,7 @@ const movebar = keyframes`
     }
 `
 
-export const ProgressIndeterminate = styled.div`
+export const ProgressIndeterminate = styled.figure`
     width: 100%;
     height: 4px;
     position: relative;
@@ -21,7 +21,7 @@ export const ProgressIndeterminate = styled.div`
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: linear-gradient(90deg, #fff 0%, cornflowerblue 20%, cornflowerblue 60%, #fff 80%);
+        background-image: linear-gradient(90deg, var(--background) 0%, cornflowerblue 20%, cornflowerblue 60%, var(--background) 80%);
         background-position: 0 0;
         background-repeat: repeat-x;
         animation: ${movebar} 3s linear infinite;

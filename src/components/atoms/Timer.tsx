@@ -8,5 +8,5 @@ export function Timer({ start, noSeconds, ...spanProps }) {
         return () => clearInterval(interval)
     }, [])
 
-    return <span {...spanProps} >{formatDuration(start ? Date.now() - start : 0, noSeconds)}</span>
+    return <time {...spanProps} >{formatDuration(start ? Date.now() - start : 0, noSeconds, true)}</time>
 }

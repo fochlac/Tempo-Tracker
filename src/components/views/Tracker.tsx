@@ -3,7 +3,6 @@ import { useMemo, useState } from 'preact/hooks'
 import styled from 'styled-components'
 import { useInsertWorklog } from '../../hooks/useInsertWorklog'
 import { useLogSync } from '../../hooks/useLogSync'
-import { useOptions } from '../../hooks/useOptions'
 import { useSelf } from '../../hooks/useSelf'
 import { useFetchJiraWorklog } from '../../hooks/useWorklogs'
 import { editIssueDuck } from '../../store/ducks/edit-issue'
@@ -12,7 +11,7 @@ import { dateHumanized } from '../../utils/datetime'
 import { ActionLink } from '../atoms/ActionLink'
 import { ProgressIndeterminate } from '../atoms/Progress'
 import { ErrorTooltipTop } from '../atoms/Tooltip'
-import { ErrorText, H6 } from '../atoms/Typography'
+import { H6 } from '../atoms/Typography'
 import { TrackingSection } from '../molecules/TrackingSection'
 import { Worklog } from '../molecules/Worklog'
 import { WorklogEditor } from '../molecules/WorklogEditor'
@@ -21,7 +20,7 @@ import { LogPeriodDialog } from '../molecules/LogPeriodDialog'
 import { CommentDialog } from '../molecules/CommentDialog'
 import { editCommentDuck } from '../../store/ducks/edit-comment'
 
-const Body = styled.div`
+const Body = styled.section`
     display: flex;
     overflow: hidden;
     flex-direction: column;
@@ -49,7 +48,7 @@ export const TrackerView: React.FC = () => {
     const { issue: commentId } = useSelector(editCommentDuck.selector)
     const worklogs = useMemo(() => worklog.data.sort((a, b) => b.start - a.start), [worklog.data])
     const hasUnsyncedLog = useMemo(() => worklog.data.some((log) => !log.synced), [worklog.data])
-    const { isSyncing, hasError, startSync } = useLogSync(self, worklog)
+    const { hasError, startSync } = useLogSync(self, worklog)
     const { newWorklog, createNewWorklog } = useInsertWorklog()
     const [showPeriodDialog, setShowPeriodDialog] = useState(false)
 
@@ -126,7 +125,6 @@ export const TrackerView: React.FC = () => {
                             } else {
                                 acc.list.push(
                                     <Worklog
-                                        isSyncing={isSyncing}
                                         onDelete={worklog.actions.delete}
                                         disableButtons={editIssue?.issue}
                                         log={log}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useMemo, useState } from "preact/hooks"
 import { dateString, timeString } from "../../utils/datetime"
 import { DestructiveButton } from "../atoms/Button"
 import styled from "styled-components"
@@ -12,11 +12,9 @@ import { useOptions } from "../../hooks/useOptions"
 import { FlexColumn, FlexRow } from "../atoms/Layout"
 import { IssueSearchDialog } from "./IssueSearchDialog"
 import { IssueSelector } from "./IssueSelector"
-import { useSafeState } from "../../hooks/useSafeState"
-import { fetchIssueList } from "../../utils/api"
 import { useJqlQueryResults } from "../../hooks/useJqlQueryResult"
 
-const Header = styled.div`
+const Header = styled.form`
     padding: 0 8px;
     display: flex;
     flex-direction: column;
@@ -34,7 +32,8 @@ const Tracker = styled.div`
     min-height: 25px;
 `
 const Duration = styled(Timer)`
-    margin-left: 16px;
+    white-space: nowrap;
+    margin-left: 12px;
     border-bottom: solid 1px;
     padding: 0 6px 2px 4px;
     height: 20px;
@@ -128,7 +127,7 @@ export function TrackingSection({ hasError }) {
         </DestructiveButton>
     )
     return (
-        <Header>
+        <Header onSubmit={(e) => e.preventDefault()}>
             {customIssueDialogVisible && (
                 <IssueSearchDialog title="Search Issue for Tracking" onCancel={() => showCustomIssueDialog(false)} onSelect={(issue) => {
                     actions.swap(issue)
@@ -147,11 +146,11 @@ export function TrackingSection({ hasError }) {
                                 value={tracker.issue.key} 
                                 onChange={(issue) => actions.updateIssue(issue)} />
                             <Input 
-                                style={{ marginRight: 16, marginLeft: 6 }} 
+                                style={{ marginRight: 12, marginLeft: 6 }} 
                                 type="date" 
                                 onChange={onChangeDate} 
                                 value={dateString(tracker.start)} />
-                            <TimeInput style={{ marginRight: 16 }} onChange={onChangeTime} value={timeString(tracker.start)} />
+                            <TimeInput style={{ marginRight: 12 }} onChange={onChangeTime} value={timeString(tracker.start)} />
                             &mdash;
                             <Duration start={tracker.start} style={{ marginRight: 'auto' }} />
                             {stopButton}

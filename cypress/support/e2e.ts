@@ -15,13 +15,16 @@ declare global {
             deleteItem(key: string): Chainable<IDBObjectStore>
 
             fakeTimers(now: number)
+            sendMessage(action: Action)
             startApp()
+            startSw()
             networkMocks(domain?: string)
-            openWithOptions(options?: Partial<Options>)
+            openWithOptions(options?: Partial<Options>, skipStartApp?: boolean)
             open(clearStorage?: boolean)
             setOptions(options: Partial<Options>)
             getOptions(): Chainable<Partial<Options>>
             injectUnsyncedWorklog(worklog: TemporaryWorklog)
+            getUnsyncedWorklogs(): Chainable<TemporaryWorklog>
         }
     }
 }
@@ -42,7 +45,23 @@ Cypress.Commands.add('startApp', () => {
     })
 })
 
+Cypress.Commands.add('startSw', () => {
+    cy.window().then(win => {
+        const script = win.document.createElement('script')
+        script.src = './sw.js';
+        win.document.querySelector('head').appendChild(script)
+    })
+})
 
+Cypress.Commands.add('sendMessage', (message) => {
+    cy.window().then((win: any) => {
+        win.chrome.messageListeners.forEach((listener) => {
+            if (typeof listener === 'function') {
+                listener(message)
+            }
+        })
+    })
+})
 
 Cypress.Commands.add('setOptions', (options) => {
     cy.openIndexedDb(DATABASE_NAME)
@@ -69,4 +88,12 @@ Cypress.Commands.add('injectUnsyncedWorklog', (worklog) => {
                 .updateItem(DB_KEYS.UPDATE_QUEUE, newQueue)
         })
         
+})
+
+Cypress.Commands.add('getUnsyncedWorklogs', () => {
+    cy.openIndexedDb(DATABASE_NAME)
+        .createObjectStore(CACHE_STORE).asStore('Store')
+    
+    return cy.getStore('@Store')
+        .readItem(DB_KEYS.UPDATE_QUEUE)
 })

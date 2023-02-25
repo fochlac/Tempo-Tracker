@@ -76,10 +76,10 @@ export const ForgottenTrackingDialog: React.FC = () => {
             <H5>Activity Gap Detected</H5>
             <div style={{ padding: '0 8px', marginBottom: 8 }}>
                 <Line>
-                    You were tracking work on {data.issue.alias} while your computer was turned off.
+                    You were tracking work on {data.issue.alias} while your computer was turned off or your browser was closed.
                     Your last activity was detected <b>{daysAgo(data.lastHeartbeat)}</b> at <b>{timeString(data.lastHeartbeat)}</b>.
                 </Line>
-                <Line>Do you want to finalize the worklog entry like this:</Line>
+                <Line>Do you want to finalize the worklog entry as follows and resume tracking from when you returned at <b>{timeString(data.firstHeartbeat)}</b>?</Line>
                 <Row>
                     <Col>
                         <Label>Start</Label>
@@ -100,8 +100,8 @@ export const ForgottenTrackingDialog: React.FC = () => {
                 </Row>
             </div>
             <ButtonBar>
-                <Button onClick={() => actions.fixGap(newWorklog)}>Create Worklog</Button>
                 <Button onClick={actions.discardGap}>Ignore Gap</Button>
+                <Button onClick={() => actions.fixGap(newWorklog)}>Create Worklog</Button>
             </ButtonBar>
         </Modal>
     )

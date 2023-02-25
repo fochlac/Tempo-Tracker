@@ -17,6 +17,7 @@ const defaults = {
     token: '',
     ttToken: '',
     email: '',
+    user: '',
     issues: {}
 }
 
@@ -97,7 +98,8 @@ export function DomainEditor() {
             </FlexRow>
             {edit && (<Modal style={{ padding: 16, alignItems: 'stretch', width: 380, height: 'unset' }}>
                 <H5>Change Server Url</H5>
-                <FlexColumn align="flex-end">
+                <FlexColumn align="flex-start">
+                    <Label>Server Url<MandatoryStar /></Label>
                     <Input error={error} style={{ width: '100%', marginBottom: 4 }} value={domain} onChange={(e) => {
                         setDomain(e.target.value)
                         setError(false)

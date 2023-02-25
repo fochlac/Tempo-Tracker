@@ -1,16 +1,3 @@
-declare global {
-    interface ActionDefinition {
-        type: string;
-        create(...params: any): {
-            type: string;
-            payload?: Record<string, any>
-        };
-        response(success: boolean, ...params: any): {
-            type: string;
-            payload?: Record<string, any>
-        };
-    }
-}
 export const ACTIONS = {
     FLUSH_UPDATES: {
         type: 'FLUSH_UPDATES',

@@ -52,26 +52,30 @@ export const IssueSearchDialog: React.FC<Props> = ({ onSelect, onCancel, title }
     const [search, setSearch] = useState('')
     const currentSearch = useRef(search)
     const searchInput = useRef(null)
+    const searchTimeout = useRef(null)
 
     useEffect(() => {
         currentSearch.current = search
-        if ((search.length && search.includes('-')) || search.length > 5) {
+        if ((search.length && search.includes('-')) || search.length > 3) {
+            clearTimeout(searchTimeout.current)
             setResult({ isLoading: true })
-            searchIssues(search)
-                .then((issues) => {
-                    if (search === currentSearch.current) {
-                        setResult({
-                            isLoading: false,
-                            data: issues
-                        })
-                    }
-                })
-                .catch((e) => {
-                    console.error(e)
-                    if (search === currentSearch.current) {
-                        setResult(null)
-                    }
-                })
+            searchTimeout.current = setTimeout(() => {
+                searchIssues(search)
+                    .then((issues) => {
+                        if (search === currentSearch.current) {
+                            setResult({
+                                isLoading: false,
+                                data: issues
+                            })
+                        }
+                    })
+                    .catch((e) => {
+                        console.error(e)
+                        if (search === currentSearch.current) {
+                            setResult(null)
+                        }
+                    })
+            }, 300)
         }
     }, [search])
 
