@@ -6,10 +6,10 @@
     "scripts": {
         "start": "node build/esbuild.js",
         "build": "node build/esbuild.prod.js && node build/zip-files.js",
-        "release": "node build/release.js && pnpm build",
+        "release": "node build/release.js && npm run build",
         "publish": "node build/publish.mjs",
-        "patch": "node build/release.js patch && pnpm build",
-        "major": "node build/release.js major && pnpm build",
+        "patch": "node build/release.js patch && npm run build",
+        "major": "node build/release.js major && npm run build",
         "test": "concurrently --kill-others \"npm run test:server\" \"cypress run\"",
         "test:open": "concurrently --kill-others \"npm run test:server\" \"cypress open\"",
         "cypress:open": "cypress open",
