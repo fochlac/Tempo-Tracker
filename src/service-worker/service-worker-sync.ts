@@ -6,44 +6,6 @@ import { checkSameWorklog } from '../utils/worklogs'
 const DELETED = 'deleted'
 
 let isRunning = false
-export async function flushQueue() {
-    if (isRunning) {
-        return
-    }
-    isRunning = true
-    const id = v4()
-    try {
-        let queue = []
-
-        await DB.update(DB_KEYS.UPDATE_QUEUE, (q: TemporaryWorklog[]) => {
-            queue = q.filter((log) => !log.syncTabId)
-
-            return q.map((log) => ({
-                ...log,
-                syncTabId: log.syncTabId ?? id
-            }))
-        })
-        let updated = {}
-        for (const log of queue) {
-            const update = await syncLog(log)
-            updated = { ...update, ...updated }
-        }
-        await DB.update(DB_KEYS.WORKLOG_CACHE, (cache: CacheObject<Worklog[]>) => ({
-            validUntil: cache.validUntil,
-            data: [].concat(
-                cache.data.filter((log) => !updated[log.id]),
-                Object.values(updated)
-            )
-        }))
-        await DB.update(DB_KEYS.UPDATE_QUEUE, (q: TemporaryWorklog[]) => {
-            return q
-                .filter((log) => (log.tempId ? !updated[log.tempId] : !updated[log.id]))
-                .map((log) => (log.syncTabId === id ? { ...log, syncTabId: null } : log))
-        })
-    } finally {
-        isRunning = false
-    }
-}
 
 async function getNextUnsyncedLog() {
     const queue = ((await DB.get(DB_KEYS.UPDATE_QUEUE)) || []) as TemporaryWorklog[]
@@ -99,13 +61,13 @@ export async function flushQueueRecursive() {
         while (nextLog) {
             await reserveWorklog(nextLog, id)
             const updated = await syncLog(nextLog)
-            await DB.update(DB_KEYS.WORKLOG_CACHE, (cache: CacheObject<Worklog[]>) => ({
+            await DB.update(DB_KEYS.WORKLOG_CACHE, (cache: CacheObject<Worklog[]>) => cache ? ({
                 validUntil: cache.validUntil,
                 data: [].concat(
                     cache.data.filter((log) => !updated[log.id]),
                     Object.values(updated)
                 )
-            }))
+            }) : cache)
             await DB.update(DB_KEYS.UPDATE_QUEUE, (q: TemporaryWorklog[]) => {
                 return q
                     .filter((log) => (log.tempId ? !updated[log.tempId] : !updated[log.id]))

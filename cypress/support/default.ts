@@ -122,5 +122,19 @@ Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {
             }
         })
     }).as('updateWorklog')
+    cy.intercept('PUT', `${domain}/rest/tempo-timesheets/4/worklogs/*/issue/*`, (req) => {
+        const { started, timeSpentSeconds, originTaskId, originId } = req.body
+        const issue = issues[originTaskId] || { id: '-1', key: 'UK-1', summary: 'UNKNOWN TICKET' }
+        req.reply({
+            started, 
+            timeSpentSeconds,
+            tempoWorklogId: originId,
+            issue: {
+                summary: issue.name,
+                key: issue.key,
+                id: issue.id
+            }
+        })
+    }).as('moveWorklog')
     cy.intercept('DELETE', `${domain}/rest/tempo-timesheets/4/worklogs/*`, {}).as('deleteWorklog')
 })

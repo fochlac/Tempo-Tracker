@@ -1,4 +1,4 @@
-describe('Tracking view', () => {
+describe('Tracking View - Header Actions', () => {
     it('should be possible to refresh', () => {
         cy.networkMocks()
         cy.openWithOptions()

@@ -2,7 +2,7 @@ import { CACHE_STORE, DATABASE_NAME, DB_KEYS } from '../../src/constants/constan
 import { issueBody, issues } from '../fixtures/issues'
 import { defaultOptions } from '../support/default'
 
-describe('Tracking Area', () => {
+describe('Tracking View - Tracking Area', () => {
     it('should show all entries', () => {
         cy.networkMocks()
         cy.openWithOptions()

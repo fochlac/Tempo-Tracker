@@ -13,10 +13,15 @@ const chromeApiMock = `
         alarmListeners: [],
         menuListeners: [],
         messageListeners: [],
+        installListeners: [],
         alarms: {
-          create: (settings) => chrome.alarmList.push(settings),
+          create: (name, settings) => chrome.alarmList.push({name, settings}),
           onAlarm: {
             addListener: (alarm) => chrome.alarmListeners.push(alarm)
+          },
+          clearAll: (cb) => {
+            chrome.alarmList = []
+            cb()
           }
         },
         tabs: {
@@ -26,12 +31,15 @@ const chromeApiMock = `
             sendMessage: (message, callback) => { chrome.messages.push({message, callback}) },
             onMessage:{
               addListener: (alarm) => chrome.messageListeners.push(alarm)
+            },
+            onInstalled: {
+                addListener: (alarm) => chrome.installListeners.push(alarm)
             }
         },
         action: {
-            setBadgeBackgroundColor: (color) => {chrome.badge.backgroundColor = color},
-            setBadgeText: (text) => {chrome.badge.text = text},
-            setTitle: (title) => {chrome.badge.title = title}
+            setBadgeBackgroundColor: ({color}) => {chrome.badge.backgroundColor = color},
+            setBadgeText: ({text}) => {chrome.badge.text = text},
+            setTitle: ({title}) => {chrome.badge.title = title}
         },
         contextMenus: {
             create: (menu) => chrome.menus.push(menu),

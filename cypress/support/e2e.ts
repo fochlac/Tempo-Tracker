@@ -23,6 +23,8 @@ declare global {
             open(clearStorage?: boolean)
             setOptions(options: Partial<Options>)
             getOptions(): Chainable<Partial<Options>>
+            getTracking(): Chainable<Partial<Tracking>>
+            setTracking(options: Partial<Tracking>)
             injectUnsyncedWorklog(worklog: TemporaryWorklog)
             getUnsyncedWorklogs(): Chainable<TemporaryWorklog>
         }
@@ -57,7 +59,7 @@ Cypress.Commands.add('sendMessage', (message) => {
     cy.window().then((win: any) => {
         win.chrome.messageListeners.forEach((listener) => {
             if (typeof listener === 'function') {
-                listener(message)
+                listener(message, {tab: {id: 'tabId'}}, win.chrome.runtime.sendMessage)
             }
         })
     })
@@ -96,4 +98,20 @@ Cypress.Commands.add('getUnsyncedWorklogs', () => {
     
     return cy.getStore('@Store')
         .readItem(DB_KEYS.UPDATE_QUEUE)
+})
+
+Cypress.Commands.add('getTracking', () => {
+    cy.openIndexedDb(DATABASE_NAME)
+        .createObjectStore(CACHE_STORE).asStore('Store')
+    
+    return cy.getStore('@Store')
+        .readItem(DB_KEYS.TRACKING)
+})
+
+Cypress.Commands.add('setTracking', (tracking: Tracking) => {
+    cy.openIndexedDb(DATABASE_NAME)
+        .createObjectStore(CACHE_STORE).asStore('Store')
+    
+    return cy.getStore('@Store')
+        .updateItem(DB_KEYS.TRACKING, tracking)
 })
