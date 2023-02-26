@@ -30,7 +30,6 @@
         "@babel/plugin-transform-modules-commonjs": "^7.20.11",
         "@testing-library/preact-hooks": "^1.1.0",
         "@types/chrome": "^0.0.179",
-        "@types/cypress": "^1.1.3",
         "@types/jest": "^29.2.6",
         "@types/sinonjs__fake-timers": "^8.1.2",
         "@types/styled-components": "^5.1.23",
