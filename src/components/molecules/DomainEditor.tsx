@@ -10,9 +10,8 @@ import { Modal } from "../atoms/Modal"
 import { ButtonBar } from "../atoms/ButtonBar"
 import { fetchSelf } from "../../utils/api"
 import { useKeyBinding } from "../../hooks/useKeyBinding"
+import { atlassianRegexp, domainRegexp } from "../../constants/constants"
 
-const atlassianRegexp = /(https?:\/\/|^)([\w-]+\.atlassian\.\w+)(\/|$)/
-export const domainRegexp = /(https?:\/\/|^)(([\w-]+\.|)[\w-]+\.\w+)(\/|$)/
 const defaults = {
     token: '',
     ttToken: '',

@@ -11,7 +11,7 @@ import { OptionsView } from "./views/Options"
 import { StatisticsView } from "./views/Statistics"
 import { TrackerView } from "./views/Tracker"
 import { createGlobalStyle } from "styled-components"
-import { THEMES } from "../constants/themes"
+import { Themes } from "../constants/themes"
 
 const CssVariables = createGlobalStyle`
     :root {
@@ -60,7 +60,7 @@ export const App: React.FC = () => {
 
     return (
         <Main>
-            <CssVariables theme={THEMES[options.theme]} />
+            <CssVariables theme={Themes[options.theme]} />
             <Header />
             <ForgottenTrackingDialog />
             {view === VIEWS.TRACKER && <TrackerView />}

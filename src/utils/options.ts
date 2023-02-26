@@ -1,5 +1,4 @@
-import { domainRegexp } from "../components/molecules/DomainEditor"
-import { THEMES } from "../constants/themes"
+import { THEMES, domainRegexp } from "../constants/constants"
 import { fetchIssueList } from "./api"
 
 export function getOptions(options: Partial<Options>): Options {
@@ -42,7 +41,7 @@ export function getOptions(options: Partial<Options>): Options {
         forceSync: forceSync ?? false,
         forceFetch: forceFetch ?? false,
         token: token ?? '',
-        theme: THEMES[theme] ? theme : 'DEFAULT',
+        theme: THEMES[theme] ? theme : THEMES.DEFAULT,
         ttToken: ttToken ?? '',
         email: email ?? '',
         instance: instance ?? 'datacenter',

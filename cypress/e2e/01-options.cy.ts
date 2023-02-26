@@ -1,3 +1,4 @@
+import { THEMES } from '../../src/constants/constants'
 import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
 
 describe('Options view & initial setup', () => {
@@ -503,7 +504,7 @@ describe('Options view & initial setup', () => {
             domain: 'https://jira.test.com',
             forceFetch: false,
             forceSync: false,
-            theme: 'DARK',
+            theme: THEMES.DARK,
             token: 'testtoken123',
             user: 'riedel'
         })
@@ -575,7 +576,7 @@ describe('Options view & initial setup', () => {
             email: 'hans@wurst.com',
             forceFetch: false,
             forceSync: false,
-            theme: 'DARK',
+            theme: THEMES.DARK,
             token: 'testtoken123',
             user: 'riedel'
         })
@@ -620,7 +621,7 @@ describe('Options view & initial setup', () => {
             domain: 'https://jira.test.com/rest',
             forceFetch: false,
             forceSync: false,
-            theme: 'DARK',
+            theme: THEMES.DARK,
             token: 'testtoken',
             user: 'riedel'
         })
@@ -648,7 +649,7 @@ describe('Options view & initial setup', () => {
             forceFetch: false,
             forceSync: false,
             issues: { 'TE-12': { alias: 'Test', id: '12346', key: 'TE-12', name: 'Sickness' } },
-            theme: 'DARK',
+            theme: THEMES.DARK,
             token: 'testtoken',
             user: 'riedel'
         })

@@ -1,7 +1,8 @@
 import { createTheme } from "../utils/theme";
+import { THEMES } from "./constants";
 
-export const THEMES = {
-    DEFAULT: createTheme({
+export const Themes = {
+    [THEMES.DEFAULT]: createTheme({
         background: '#f7f8fb',
         font: '#1b1928',
         link: '#1e6bf7',
@@ -9,7 +10,7 @@ export const THEMES = {
         diagramm: '#d2e2f2',
         diagrammGreen: '#77DD77'
     }),
-    DARK: createTheme({
+    [THEMES.DARK]: createTheme({
         background: '#0f0f0f',
         font: '#f1f1f1',
         link: '#58a3fd',

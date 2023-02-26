@@ -69,6 +69,11 @@ interface ActionDefinition {
     response(success: boolean, ...params: any): Action;
 }
 
+interface THEMES {
+    DEFAULT: 'DEFAULT';
+    DARK: 'DARK';
+}
+
 interface Options {
     issues: Record<string, LocalIssue>;
     domain: string;
@@ -79,7 +84,7 @@ interface Options {
     autosync: boolean;
     forceSync: boolean;
     forceFetch: boolean;
-    theme: 'DEFAULT'|'DARK';
+    theme: keyof THEMES;
     token: string;
     ttToken: string;
     email: string;

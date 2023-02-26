@@ -1,4 +1,4 @@
-import { DATABASE_NAME } from "../../src/constants/constants"
+import { DATABASE_NAME, THEMES } from "../../src/constants/constants"
 import {withGlobal} from '@sinonjs/fake-timers'
 
 Cypress.Commands.add('fakeTimers', (now: number) => {
@@ -26,7 +26,7 @@ export const defaultOptions: Options = {
     domain: 'https://jira.test.com',
     forceFetch: false,
     forceSync: false,
-    theme: 'DARK',
+    theme: THEMES.DARK,
     token: 'testtoken',
     instance: 'datacenter',
     email: '',
