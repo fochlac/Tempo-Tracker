@@ -82,6 +82,43 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('li', '08.10.20 (Today)').should('contain.text', '8h 05m')
     })
 
+    it.only('should consider show comments setting', () => {
+        cy.networkMocks()
+        cy.openWithOptions({
+            ...defaultOptions,
+            showComments: true
+        })
+        cy.window().then((win: any) => {
+            win.chrome.runtime.sendMessage = (message, callback) => {
+                win.messages = win.messages || []
+                win.messages.push(message)
+                callback({ payload: { success: true } })
+            }
+        })
+        cy.contains('form', 'Please select an issue').find('button').should('have.length', 7).contains('Test4').click()
+
+        cy.contains('form', 'Stop Tracking')
+            .should('be.visible')
+
+        cy.contains('form', 'Stop Tracking').find('textarea[placeholder="Comment"]').should('have.value', '')
+            .type('Some Comment', {delay: 80})
+
+        cy.get('@clock').invoke('tick', 300000)
+
+        cy.contains('button', 'Stop Tracking').click()
+
+        cy.contains('p', 'Please select an issue').should('be.visible')
+
+        cy.contains('li', '17:00 - 17:05')
+            .should('be.visible')
+            .should('contain.text', 'Test4')
+            .should('contain.text', 'Comment:Some Comment')
+            .find('[data-content="Queued for synchronization."]')
+            .should('exist')
+
+        cy.getUnsyncedWorklogs().its(0).should('have.a.property', 'comment', 'Some Comment')
+    })
+
     it('should adapt old domain', () => {
         cy.networkMocks()
         cy.openWithOptions({

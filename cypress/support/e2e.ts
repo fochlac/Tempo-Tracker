@@ -19,6 +19,7 @@ declare global {
             startApp()
             startSw()
             networkMocks(domain?: string)
+            networkMocksCloud()
             openWithOptions(options?: Partial<Options>, skipStartApp?: boolean)
             open(clearStorage?: boolean)
             setOptions(options: Partial<Options>)

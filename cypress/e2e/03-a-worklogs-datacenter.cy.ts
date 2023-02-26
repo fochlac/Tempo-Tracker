@@ -8,7 +8,7 @@ function validateWorklogTimeInput(row, index, value1, value2) {
     cy.get('@timeInput').find('input').eq(1).should('have.value', value2)
 }
 
-describe('Tracking View - Worklog Entries', () => {
+describe('Tracking View - Worklog Entries - Datacenter Api', () => {
     it('should be possible to delete logs and to cancel deletion for unsynced logs', () => {
         cy.networkMocks()
         cy.openWithOptions()

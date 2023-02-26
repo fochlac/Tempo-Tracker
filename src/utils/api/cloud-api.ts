@@ -47,7 +47,7 @@ enum URLS {
 const JIRA = 'JIRA'
 const TEMPO = 'TEMPO'
 
-const PATHS: Record<URLS, PathDefinition> = {
+export const PATHS: Record<URLS, PathDefinition> = {
     [URLS.ISSUE]: { url: '/api/3/issue', type: JIRA },
     [URLS.QUICKSEARCH]: { url: '/api/3/issue/picker', type: JIRA },
     [URLS.SEARCH]: { url: '/api/2/search', type: JIRA },

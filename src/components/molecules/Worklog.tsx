@@ -31,7 +31,7 @@ const WorklogBody = styled.div`
 const WorklogComment = styled(InfoText)`
     padding: 0;
     padding-top: 2px;
-    padding-left: 6px;
+    padding-left: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
