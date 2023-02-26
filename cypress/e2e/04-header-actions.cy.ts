@@ -122,7 +122,7 @@ describe('Tracking View - Header Actions', () => {
         cy.get('@newRows').contains('10.10.20').should('have.length', 1)
     })
 
-    it.only('should synchronize if unsynced logs exist', () => {
+    it('should synchronize if unsynced logs exist', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
         let callbacks = []

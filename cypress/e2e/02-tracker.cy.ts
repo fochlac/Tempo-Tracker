@@ -82,7 +82,7 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('li', '08.10.20 (Today)').should('contain.text', '8h 05m')
     })
 
-    it.only('should consider show comments setting', () => {
+    it('should consider show comments setting', () => {
         cy.networkMocks()
         cy.openWithOptions({
             ...defaultOptions,

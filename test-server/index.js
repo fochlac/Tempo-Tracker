@@ -21,7 +21,7 @@ const chromeApiMock = `
           },
           clearAll: (cb) => {
             chrome.alarmList = []
-            cb()
+            typeof cb === 'function' && cb()
           }
         },
         tabs: {
