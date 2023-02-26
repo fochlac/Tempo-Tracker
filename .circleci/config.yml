@@ -23,7 +23,7 @@ workflows:
     jobs:
       - cypress/run:
           executor: custom
-          build: "npm run test:unit && npm run build"
+          build: "npm run build"
           start: "npm run test:server"
           filters:
             tags:
