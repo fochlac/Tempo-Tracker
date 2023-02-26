@@ -34,6 +34,7 @@
         "@types/sinonjs__fake-timers": "^8.1.2",
         "@types/styled-components": "^5.1.23",
         "babel-plugin-jsx-pragmatic": "^1.0.2",
+        "babel-plugin-styled-components": "^2.0.7",
         "chrome-webstore-upload": "^1.0.0",
         "concurrently": "^7.6.0",
         "cypress": "^12.3.0",
