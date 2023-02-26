@@ -6,13 +6,13 @@ orbs:
   cypress: cypress-io/cypress@2
 executors:
   custom:
-   docker:
-    - image: cypress/base-16-14-2-slim
+    docker:
+      - image: "cypress/base-16-14-2-slim"
     environment:
-      TZ="Europe/Berlin"
+      TZ: "Europe/Berlin"
 jobs:
   release:
-    executor: cypress/base-16-14-2-slim
+    executor: custom
     steps:
       - attach_workspace:
           at: ~/
@@ -22,7 +22,7 @@ workflows:
   build:
     jobs:
       - cypress/run:
-          executor: cypress/base-16-14-2-slim
+          executor: custom
           build: "npm run test:unit && npm run build"
           start: "npm run test:server"
           filters:
