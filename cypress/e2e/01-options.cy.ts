@@ -5,6 +5,7 @@ describe('Options view & initial setup', () => {
     beforeEach(() => {
         cy.intercept('https://jira.test.com/**/*', (req) => req.reply(404))
         cy.open()
+        cy.startApp()
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
     })
 

@@ -1,5 +1,5 @@
 import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
-import { defaultOptions } from '../support/default'
+import { defaultOptions } from '../support/defaults'
 
 function validateWorklogTimeInput(row, index, value1, value2) {
     row.find('fieldset').eq(index).as('timeInput')

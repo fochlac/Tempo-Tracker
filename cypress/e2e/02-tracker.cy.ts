@@ -1,6 +1,6 @@
 import { CACHE_STORE, DATABASE_NAME, DB_KEYS } from '../../src/constants/constants'
 import { issueBody, issues } from '../fixtures/issues'
-import { defaultOptions } from '../support/default'
+import { defaultOptions } from '../support/defaults'
 
 describe('Tracking View - Tracking Area', () => {
     it('should show all entries', () => {

@@ -1,26 +1,5 @@
-import { DATABASE_NAME, THEMES } from '../../src/constants/constants'
+import { THEMES } from '../../src/constants/constants'
 import { timeStringSeconds } from '../../src/utils/datetime'
-import { withGlobal } from '@sinonjs/fake-timers'
-
-Cypress.Commands.add('fakeTimers', (now: number) => {
-    cy.window().then((win) => {
-        const clock = withGlobal(win).install({
-            now,
-            shouldAdvanceTime: true,
-            advanceTimeDelta: 20,
-            toFake: [
-                'setTimeout',
-                'clearTimeout',
-                'setInterval',
-                'clearInterval',
-                'Date',
-                'requestAnimationFrame',
-                'cancelAnimationFrame'
-            ]
-        })
-        cy.wrap(clock).as('clock')
-    })
-})
 
 const issues = {
     '123462': { alias: 'Test2', id: '123462', key: 'TE-12', fields: { summary: 'testname 2' }, name: 'testname 2' },
@@ -60,19 +39,7 @@ export const defaultOptions: Options = {
         'TE-17': issues['123467']
     }
 }
-const baseDate = new Date('2020-10-08T15:00:00.000Z')
-Cypress.Commands.add('openWithOptions', (options = defaultOptions, skipStartApp = false) => {
-    cy.visit('http://localhost:3000', {
-        onBeforeLoad(win) {
-            return win.indexedDB.deleteDatabase(DATABASE_NAME)
-        }
-    })
-    cy.fakeTimers(baseDate.getTime())
-    cy.setOptions(options)
-    if (!skipStartApp) {
-        cy.startApp()
-    }
-})
+export const baseDate = new Date('2020-10-08T15:00:00.000Z')
 
 let id = 13241
 const createWorklog = (started, issue, hours) => {
