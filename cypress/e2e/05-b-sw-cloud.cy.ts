@@ -48,6 +48,8 @@ describe('Service Worker - Cloud API', () => {
             issueId: 123462
         })
 
+        cy.wait(100)
+
         cy.getUnsyncedWorklogs().should('have.length', 0)
     })
 
@@ -98,6 +100,8 @@ describe('Service Worker - Cloud API', () => {
             issueId: 123462
         })
 
+        cy.wait(100)
+
         cy.getUnsyncedWorklogs().should('have.length', 0)
     })
 
@@ -140,6 +144,8 @@ describe('Service Worker - Cloud API', () => {
 
         cy.wait('@deleteWorklog')
         cy.get('@deleteWorklog.1').its('request.url').should('include', '123456789')
+
+        cy.wait(100)
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
 
