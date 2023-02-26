@@ -4,6 +4,12 @@ version: 2.1
 
 orbs:
   cypress: cypress-io/cypress@2
+executors:
+  custom:
+   docker:
+    - image: cypress/base-16-14-2-slim
+    environment:
+      TZ="Europe/Berlin"
 jobs:
   release:
     executor: cypress/base-16-14-2-slim

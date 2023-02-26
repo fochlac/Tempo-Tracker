@@ -5,10 +5,10 @@ describe('Options view & initial setup', () => {
         cy.intercept('https://jira.test.com/**/*', (req) => req.reply(404))
         cy.open()
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
-        cy.contains('h6', 'Authentification').should('be.visible')
     })
 
     it('should setup and select issues for datacenter', () => {
+        cy.contains('h6', 'Authentification').should('be.visible')
         cy.fakeTimers(Date.now())
         cy.intercept('https://jira.test.com/rest/api/2/myself', {
             displayName: 'Testuser',
@@ -30,13 +30,13 @@ describe('Options view & initial setup', () => {
 
         const serverUrl = 'https://jira.test.com/rest'
         const serverDomain = 'https://jira.test.com'
-        cy.contains('aside', 'Change Server Url')
+        cy.contains('dialog', 'Change Server Url')
             .find('input')
             .type(serverUrl, { delay: 50 })
             .invoke('attr', 'error')
             .should('be.undefined')
 
-        cy.contains('aside', 'Change Server Url').contains('button', 'Save').click()
+        cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
         cy.get('@myself.all').should('have.length', 1)
         cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', serverDomain)
@@ -81,13 +81,13 @@ describe('Options view & initial setup', () => {
             .click()
 
         cy.get('.modal')
-            .contains('aside', 'Add Issue')
+            .contains('dialog', 'Add Issue')
             .should('be.visible')
             .contains('div', 'Add Issue')
             .find('svg')
             .click()
 
-        cy.get('.modal').contains('aside', 'Add Issue').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Add Issue').should('not.exist')
 
         cy.contains('div', 'Tracked Issues').contains('button', 'Add Issue').click()
 
@@ -117,21 +117,21 @@ describe('Options view & initial setup', () => {
         })
 
         cy.get('.modal')
-            .contains('aside', 'Add Issue')
+            .contains('dialog', 'Add Issue')
             .should('be.visible')
             .contains('div', 'Issue Key')
             .find('input')
             .type('TE-1', { delay: 50 })
 
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible')
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'TE-12').should('be.visible')
-        cy.get('.modal').contains('aside', 'Add Issue').find('li').should('have.length', 2)
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible')
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible')
+        cy.get('.modal').contains('dialog', 'Add Issue').find('li').should('have.length', 2)
 
-        cy.get('.modal').contains('aside', 'Add Issue').contains('div', 'Issue Key').find('input').type('2')
-        cy.get('.modal').contains('aside', 'Add Issue').find('li').should('have.length', 1)
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'ARCHTE-6').should('not.exist')
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'TE-12').should('be.visible').click()
-        cy.get('.modal').contains('aside', 'Add Issue').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('div', 'Issue Key').find('input').type('2')
+        cy.get('.modal').contains('dialog', 'Add Issue').find('li').should('have.length', 1)
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible').click()
+        cy.get('.modal').contains('dialog', 'Add Issue').should('not.exist')
 
         cy.contains('div', 'Tracked Issues').find('li').should('have.length', 1)
         cy.contains('div', 'Tracked Issues')
@@ -147,22 +147,22 @@ describe('Options view & initial setup', () => {
 
         cy.contains('div', 'Tracked Issues').contains('button', 'Add Issue').click()
         cy.get('.modal')
-            .contains('aside', 'Add Issue')
+            .contains('dialog', 'Add Issue')
             .should('be.visible')
             .contains('div', 'Issue Key')
             .find('input')
             .type('TE-1', { delay: 50 })
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
 
         cy.getOptions().its('issues.ARCHTE-6.alias').should('equal', 'ARCHTE-6: Unpaid leave')
         cy.getOptions().its('issues.ARCHTE-6.name').should('equal', 'Unpaid leave')
 
-        cy.get('.modal').contains('aside', 'Add Issue').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Add Issue').should('not.exist')
         cy.contains('div', 'Tracked Issues').find('li').should('have.length', 2)
         cy.contains('div', 'Tracked Issues').contains('li', 'ARCHTE-6').find('button').click()
 
         cy.get('.modal')
-            .contains('aside', 'Confirm Removal')
+            .contains('dialog', 'Confirm Removal')
             .should('be.visible')
             .should('contain.text', 'ARCHTE-6')
             .contains('button', 'Delete')
@@ -243,6 +243,7 @@ describe('Options view & initial setup', () => {
     })
 
     it('should setup and select issues for cloud', () => {
+        cy.contains('h6', 'Authentification').should('be.visible')
         cy.fakeTimers(Date.now())
         cy.intercept('https://jira.atlassian.com/rest/api/2/myself', {
             displayName: 'Testuser',
@@ -265,13 +266,13 @@ describe('Options view & initial setup', () => {
 
         const serverUrl = 'https://jira.atlassian.com/rest'
         const serverDomain = 'https://jira.atlassian.com'
-        cy.contains('aside', 'Change Server Url')
+        cy.contains('dialog', 'Change Server Url')
             .find('input')
             .type(serverUrl, { delay: 50 })
             .invoke('attr', 'error')
             .should('be.undefined')
 
-        cy.contains('aside', 'Change Server Url').contains('button', 'Save').click()
+        cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
         cy.get('@myself.all').should('have.length', 1)
         cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', serverDomain)
@@ -350,13 +351,13 @@ describe('Options view & initial setup', () => {
             .click()
 
         cy.get('.modal')
-            .contains('aside', 'Add Issue')
+            .contains('dialog', 'Add Issue')
             .should('be.visible')
             .contains('div', 'Add Issue')
             .find('svg')
             .click()
 
-        cy.get('.modal').contains('aside', 'Add Issue').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Add Issue').should('not.exist')
 
         cy.contains('div', 'Tracked Issues').contains('button', 'Add Issue').click()
 
@@ -386,21 +387,21 @@ describe('Options view & initial setup', () => {
         })
 
         cy.get('.modal')
-            .contains('aside', 'Add Issue')
+            .contains('dialog', 'Add Issue')
             .should('be.visible')
             .contains('div', 'Issue Key')
             .find('input')
             .type('TE-1', { delay: 50 })
 
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible')
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'TE-12').should('be.visible')
-        cy.get('.modal').contains('aside', 'Add Issue').find('li').should('have.length', 2)
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible')
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible')
+        cy.get('.modal').contains('dialog', 'Add Issue').find('li').should('have.length', 2)
 
-        cy.get('.modal').contains('aside', 'Add Issue').contains('div', 'Issue Key').find('input').type('2')
-        cy.get('.modal').contains('aside', 'Add Issue').find('li').should('have.length', 1)
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'ARCHTE-6').should('not.exist')
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'TE-12').should('be.visible').click()
-        cy.get('.modal').contains('aside', 'Add Issue').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('div', 'Issue Key').find('input').type('2')
+        cy.get('.modal').contains('dialog', 'Add Issue').find('li').should('have.length', 1)
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible').click()
+        cy.get('.modal').contains('dialog', 'Add Issue').should('not.exist')
 
         cy.contains('div', 'Tracked Issues').find('li').should('have.length', 1)
         cy.contains('div', 'Tracked Issues')
@@ -416,22 +417,22 @@ describe('Options view & initial setup', () => {
 
         cy.contains('div', 'Tracked Issues').contains('button', 'Add Issue').click()
         cy.get('.modal')
-            .contains('aside', 'Add Issue')
+            .contains('dialog', 'Add Issue')
             .should('be.visible')
             .contains('div', 'Issue Key')
             .find('input')
             .type('TE-1', { delay: 50 })
-        cy.get('.modal').contains('aside', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
+        cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
 
         cy.getOptions().its('issues.ARCHTE-6.alias').should('equal', 'ARCHTE-6: Unpaid leave')
         cy.getOptions().its('issues.ARCHTE-6.name').should('equal', 'Unpaid leave')
 
-        cy.get('.modal').contains('aside', 'Add Issue').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Add Issue').should('not.exist')
         cy.contains('div', 'Tracked Issues').find('li').should('have.length', 2)
         cy.contains('div', 'Tracked Issues').contains('li', 'ARCHTE-6').find('button').click()
 
         cy.get('.modal')
-            .contains('aside', 'Confirm Removal')
+            .contains('dialog', 'Confirm Removal')
             .should('be.visible')
             .should('contain.text', 'ARCHTE-6')
             .contains('button', 'Delete')
@@ -483,6 +484,7 @@ describe('Options view & initial setup', () => {
     })
 
     it('should reset sensitive data when the domain is changed from datacenter to cloud', () => {
+        cy.contains('h6', 'Authentification').should('be.visible')
         cy.intercept('https://jira.atlassian.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/rest/api/2/myself', {
@@ -519,28 +521,28 @@ describe('Options view & initial setup', () => {
         const badServerUrl = 'https://jira.nonexistent.com/rest'
         const serverUrl = 'https://jira.atlassian.com/rest'
         const serverDomain = 'https://jira.atlassian.com'
-        cy.contains('aside', 'Change Server Url').find('input').clear().type(badServerUrl, { delay: 50 })
+        cy.contains('dialog', 'Change Server Url').find('input').clear().type(badServerUrl, { delay: 50 })
 
-        cy.contains('aside', 'Change Server Url').contains('button', 'Save').click()
+        cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
         cy.wait('@myselfBad')
 
-        cy.contains('aside', 'Change Server Url')
+        cy.contains('dialog', 'Change Server Url')
             .find('input')
             .should('be.visible')
             .invoke('attr', 'error')
             .should('equal', 'true')
 
-        cy.contains('aside', 'Change Server Url')
+        cy.contains('dialog', 'Change Server Url')
             .find('input')
             .clear()
             .type(serverUrl, { delay: 50 })
             .invoke('attr', 'error')
             .should('be.undefined')
 
-        cy.contains('aside', 'Change Server Url').contains('button', 'Save').click()
+        cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
-        cy.contains('aside', 'Change Server Url')
+        cy.contains('dialog', 'Change Server Url')
             .should('not.exist')
         
         cy.getOptions().its('user').should('equal', '')
@@ -552,6 +554,7 @@ describe('Options view & initial setup', () => {
     })
 
     it('should reset sensitive data when the domain is changed from cloud to datacenter', () => {
+        cy.contains('h6', 'Authentification').should('be.visible')
         cy.intercept('https://jira.atlassian.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/rest/api/2/myself', {
@@ -590,16 +593,16 @@ describe('Options view & initial setup', () => {
         const serverUrl = 'https://jira.test.com/rest'
         const serverDomain = 'https://jira.test.com'
 
-        cy.contains('aside', 'Change Server Url')
+        cy.contains('dialog', 'Change Server Url')
             .find('input')
             .clear()
             .type(serverUrl, { delay: 50 })
             .invoke('attr', 'error')
             .should('be.undefined')
 
-        cy.contains('aside', 'Change Server Url').contains('button', 'Save').click()
+        cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
-        cy.contains('aside', 'Change Server Url')
+        cy.contains('dialog', 'Change Server Url')
             .should('not.exist')
         
         cy.getOptions().its('user').should('equal', '')
@@ -627,11 +630,11 @@ describe('Options view & initial setup', () => {
     it('should open legal disclosure', () => {
         cy.contains('Legal Disclosure').should('be.visible').click()
         cy.get('.modal')
-            .contains('aside', 'Information in accordance with Section 5 TMG')
+            .contains('dialog', 'Information in accordance with Section 5 TMG')
             .contains('div', 'Legal Disclosure')
             .find('svg')
             .click()
-        cy.get('.modal').contains('aside', 'Information in accordance with Section 5 TMG').should('not.exist')
+        cy.get('.modal').contains('dialog', 'Information in accordance with Section 5 TMG').should('not.exist')
     })
 
     it('should go to tracking view with all settings valid', () => {
