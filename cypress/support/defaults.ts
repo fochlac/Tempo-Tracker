@@ -82,6 +82,7 @@ Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {
         req.reply({
             started,
             timeSpentSeconds,
+            originTaskId,
             tempoWorklogId: id++,
             issue: {
                 summary: issue.name,

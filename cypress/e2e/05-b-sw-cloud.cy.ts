@@ -51,6 +51,10 @@ describe('Service Worker - Cloud API', () => {
         cy.wait(100)
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
+        cy.getWorklogCache().its('data').should('have.length', 1)
+            .its(0)
+            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
     it('should update unsynced logs with id on flush message', () => {
@@ -103,6 +107,10 @@ describe('Service Worker - Cloud API', () => {
         cy.wait(100)
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
+        cy.getWorklogCache().its('data').should('have.length', 1)
+            .its(0)
+            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
     it('should delete unsynced logs with id and delete=true on flush message', () => {

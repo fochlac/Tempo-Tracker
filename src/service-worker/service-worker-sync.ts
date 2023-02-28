@@ -64,13 +64,13 @@ export async function flushQueueRecursive() {
             await reserveWorklog(nextLog, id)
             const updated = await syncLog(nextLog)
             if (Object.keys(updated).length) {
-                await DB.update(DB_KEYS.WORKLOG_CACHE, (cache: CacheObject<Worklog[]>) => cache ? ({
-                    validUntil: cache.validUntil,
+                await DB.update(DB_KEYS.WORKLOG_CACHE, (cache: CacheObject<Worklog[]>) => ({
+                    validUntil: cache?.validUntil || Date.now(),
                     data: [].concat(
-                        cache.data.filter((log) => !updated[log.id]),
+                        cache?.data?.filter((log) => !updated[log.id]) || [],
                         Object.values(updated)
                     )
-                }) : cache)
+                }))
             }
             await DB.update(DB_KEYS.UPDATE_QUEUE, (q: TemporaryWorklog[]) => {
                 const isThisWorklog = checkSameWorklog(nextLog)

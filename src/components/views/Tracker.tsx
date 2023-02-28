@@ -31,6 +31,7 @@ const List = styled.ul`
     list-style: none;
     overflow-y: auto;
     height: 100%;
+    min-height: 350px;
 `
 const ProgressWrapper = styled.div<{ visible: boolean }>`
     margin-top: -3px;

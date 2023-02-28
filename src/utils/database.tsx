@@ -79,7 +79,7 @@ export function DBProvider({ children }) {
         },
         checkUpdate: async (key: DB_KEYS) => {
             const value = await DB.get(key)
-            if (value !== currentDb.current[key]) {
+            if (JSON.stringify(value) !== JSON.stringify(currentDb.current[key])) {
                 Object.values(callbacks.current[key as keyof CallbackRef]).forEach(cb => cb(value))
             }
         }

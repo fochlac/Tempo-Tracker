@@ -29,6 +29,7 @@ declare global {
             setTracking(options: Partial<Tracking>)
             injectUnsyncedWorklog(worklog: TemporaryWorklog)
             getUnsyncedWorklogs(): Chainable<TemporaryWorklog>
+            getWorklogCache(): Chainable<CacheObject<Worklog>>
         }
     }
 }

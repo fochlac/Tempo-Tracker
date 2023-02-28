@@ -229,9 +229,13 @@ describe('Service Worker - Datacenter API', () => {
         })
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
+        cy.getWorklogCache().its('data').should('have.length', 1)
+            .its(0)
+            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
-    it('should update unsynced logs with id on alarm when autosync is on', () => {
+    it('should update and move unsynced logs with id and changed originId on alarm when autosync is on', () => {
         cy.networkMocks()
         cy.openWithOptions(
             {
@@ -290,6 +294,92 @@ describe('Service Worker - Datacenter API', () => {
         })
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
+        cy.getWorklogCache().its('data').should('have.length', 1)
+            .its(0)
+            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
+    })
+
+    it.only('should update unsynced logs with id on alarm when autosync is on', () => {
+        cy.networkMocks()
+        cy.openWithOptions(
+            {
+                ...defaultOptions,
+                autosync: true
+            },
+            true
+        )
+        cy.window().then((win: any) => {
+            win.chrome.runtime.sendMessage = (message, callback) => {
+                win.messages = win.messages || []
+                win.messages.push(message)
+                callback({ payload: { success: true } })
+            }
+        })
+        cy.startSw()
+        const unsyncedLog = {
+            id: '123456789',
+            comment: 'comment',
+            start: new Date('2020-10-07 08:00').getTime(),
+            end: new Date('2020-10-07 12:00').getTime(),
+            issue: {
+                key: 'TE-12',
+                id: '12345',
+                name: 'Test2'
+            },
+            synced: false
+        }
+        cy.injectUnsyncedWorklog({
+            id: '123456789',
+            comment: 'comment',
+            start: new Date('2020-10-07 08:00').getTime(),
+            end: new Date('2020-10-07 12:00').getTime(),
+            issue: {
+                key: 'TE-12',
+                id: '12345',
+                name: 'Test2'
+            },
+            synced: false
+        })
+
+        cy.window().its('chrome.badge.backgroundColor').should('equal', '#028A0F')
+        cy.window().its('chrome.badge.text').should('equal', '')
+        cy.window().its('chrome.badge.title').should('equal', 'Tempo Tracker')
+
+        cy.intercept('PUT', `https://jira.test.com/rest/tempo-timesheets/4/worklogs/${unsyncedLog.id}`, (req) => {
+            req.reply({
+                started: '2020-10-07 08:00:00.0',
+                timeSpentSeconds: (unsyncedLog.end - unsyncedLog.start) / 1000,
+                tempoWorklogId: unsyncedLog.id,
+                originTaskId: unsyncedLog.issue.id,
+                issue: {
+                    summary: unsyncedLog.issue.name,
+                    key: unsyncedLog.issue.key,
+                    id: unsyncedLog.issue.id
+                }
+            })
+        }).as('updateWorklog')
+
+        cy.window()
+            .its('chrome.alarmListeners')
+            .should('have.length', 1)
+            .then((listeners) => listeners[0]({ name: 'flushQueue' }))
+
+        cy.wait('@updateWorklog')
+        cy.get('@updateWorklog.1').its('request.body').should('deep.equal', {
+            originId: 123456789,
+            worker: 'testid',
+            comment: 'comment',
+            started: '2020-10-07 08:00:00.0',
+            timeSpentSeconds: 14400,
+            originTaskId: '12345'
+        })
+        cy.get('@moveWorklog.all').should('have.length', 0)
+        cy.getUnsyncedWorklogs().should('have.length', 0)
+        cy.getWorklogCache().its('data').should('have.length', 1)
+            .its(0)
+            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
     it('should delete unsynced logs with id and delete=true on alarm when autosync is on', () => {

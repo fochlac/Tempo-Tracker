@@ -71,6 +71,14 @@ Cypress.Commands.add('injectUnsyncedWorklog', (worklog) => {
         
 })
 
+Cypress.Commands.add('getWorklogCache', () => {
+    cy.openIndexedDb(DATABASE_NAME)
+        .createObjectStore(CACHE_STORE).asStore('Store')
+    
+    return cy.getStore('@Store')
+        .readItem(DB_KEYS.WORKLOG_CACHE)
+})
+
 Cypress.Commands.add('getUnsyncedWorklogs', () => {
     cy.openIndexedDb(DATABASE_NAME)
         .createObjectStore(CACHE_STORE).asStore('Store')

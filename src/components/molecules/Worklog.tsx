@@ -112,7 +112,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
             <WorklogBody>
                 <Datum>
                     {dateHumanized(log.start)}
-                    {!log.synced && <RightTooltip content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></RightTooltip>}
+                    {(!log.synced || log.syncTabId) && <RightTooltip content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></RightTooltip>}
                 </Datum>
                 <Tooltip content={`${log.issue.key}: ${log.issue.name}`}>
                     <IssueKey>{alias}</IssueKey>

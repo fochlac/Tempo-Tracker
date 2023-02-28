@@ -167,7 +167,7 @@ export async function updateWorklog(worklog: Partial<Worklog>, options?: Options
     })
 
     if (Number(updatedLog.originTaskId) === Number(payload.originTaskId)) {
-        return updatedLog
+        return toLocalWorklog(updatedLog)
     }
 
     return fetchJson(`${getUrl(options, URLS.CREATE_WORKLOG)}/${payload.originId}/issue/${payload.originTaskId}`, {
