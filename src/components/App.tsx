@@ -34,6 +34,7 @@ const Main = styled.main`
     padding-bottom: 0;
     overflow: hidden;
     min-height: 100%;
+    width: 100%;
     background-color: var(--background);
     color: var(--font);
     
@@ -57,6 +58,7 @@ export const App: React.FC = () => {
         }
     }, [])
 
+    document.querySelector('body').style.height = '100%'
     return (
         <Main>
             <CssVariables theme={Themes[options.theme]} />

@@ -5,11 +5,17 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Montserrat', sans-serif;
+    background-color: black;
 }
 
 *,
 html {
     box-sizing: border-box;
+}
+
+body {
+    height: 10000px;
+    overflow: hidden;
 }
 
 div,
@@ -139,6 +145,9 @@ input {
     margin: 0 auto;
     border: 0;
     padding: 0;
+    display: flex;
+    justify-content: stretch;
+    max-height: 100%;
 }
 
 ::-webkit-scrollbar {
