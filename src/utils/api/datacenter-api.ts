@@ -23,7 +23,7 @@ interface WorklogPayload {
     comment?: string
     started: string
     timeSpentSeconds: number
-    originTaskId: string
+    originTaskId: number
 }
 
 enum URLS {
@@ -71,7 +71,7 @@ const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklo
         comment: comment || null,
         started: `${dateString(start)} ${timeStringFull(start)}`,
         timeSpentSeconds: seconds,
-        originTaskId: issue.id
+        originTaskId: Number(issue.id)
     }
 }
 
@@ -169,8 +169,10 @@ export async function updateWorklog(worklog: Partial<Worklog>, options?: Options
     if (Number(updatedLog.originTaskId) === Number(payload.originTaskId)) {
         return toLocalWorklog(updatedLog)
     }
+    const url = `${getUrl(options, URLS.CREATE_WORKLOG)}/${payload.originId}/issue/${payload.originTaskId}`
+    payload.originTaskId = Number(updatedLog.originTaskId)
 
-    return fetchJson(`${getUrl(options, URLS.CREATE_WORKLOG)}/${payload.originId}/issue/${payload.originTaskId}`, {
+    return fetchJson(url, {
         headers: headers(options),
         body: JSON.stringify(payload),
         method: 'PUT',
