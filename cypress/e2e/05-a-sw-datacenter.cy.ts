@@ -225,7 +225,7 @@ describe('Service Worker - Datacenter API', () => {
             comment: 'comment',
             started: '2020-10-07 08:00:00.0',
             timeSpentSeconds: 14400,
-            originTaskId: '12345'
+            originTaskId: 12345
         })
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
@@ -282,7 +282,7 @@ describe('Service Worker - Datacenter API', () => {
             comment: 'comment',
             started: '2020-10-07 08:00:00.0',
             timeSpentSeconds: 14400,
-            originTaskId: '12345'
+            originTaskId: 12345
         })
         cy.get('@moveWorklog.1').its('request.body').should('deep.equal', {
             originId: 123456789,
@@ -290,7 +290,7 @@ describe('Service Worker - Datacenter API', () => {
             comment: 'comment',
             started: '2020-10-07 08:00:00.0',
             timeSpentSeconds: 14400,
-            originTaskId: '12345'
+            originTaskId: 12345
         })
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
@@ -324,7 +324,7 @@ describe('Service Worker - Datacenter API', () => {
             end: new Date('2020-10-07 12:00').getTime(),
             issue: {
                 key: 'TE-12',
-                id: '12345',
+                id: 12345,
                 name: 'Test2'
             },
             synced: false
@@ -372,7 +372,7 @@ describe('Service Worker - Datacenter API', () => {
             comment: 'comment',
             started: '2020-10-07 08:00:00.0',
             timeSpentSeconds: 14400,
-            originTaskId: '12345'
+            originTaskId: 12345
         })
         cy.get('@moveWorklog.all').should('have.length', 0)
         cy.getUnsyncedWorklogs().should('have.length', 0)
