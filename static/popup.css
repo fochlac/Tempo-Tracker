@@ -136,7 +136,7 @@ input {
 }
 
 .root {
-    min-width: min(80%, 1000px);
+    min-width: min(100%, 1000px);
     height: 100%;
     width: 550px;
     font-family: 'Montserrat', sans-serif;
@@ -156,4 +156,19 @@ input {
 
 ::-webkit-scrollbar-track {
     background: transparent;
+}
+
+@keyframes opacityAnimation {
+    0% {
+        opacity: 0;
+    }
+    33% {
+        opacity: 1;
+    }
+    66% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
