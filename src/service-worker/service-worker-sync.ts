@@ -3,7 +3,6 @@ import { DB } from '../utils/data-layer'
 import { v4 } from 'uuid'
 import { deleteWorklog, updateWorklog, writeWorklog } from '../utils/api'
 import { checkSameWorklog } from '../utils/worklogs'
-const DELETED = 'deleted'
 
 let isRunning = false
 
@@ -12,42 +11,70 @@ async function getNextUnsyncedLog(skip) {
     return queue.find((log) => !skip[log.id || log.tempId] && (!log.syncTabId || log.syncTimeout < Date.now()))
 }
 
-async function syncLog(log: TemporaryWorklog) {
-    const updated = {}
-    try {
-        if (log.id && log.delete) {
-            await deleteWorklog(log)
-            updated[log.id] = DELETED
-        } else if (log.id) {
-            const newLog = await updateWorklog(log)
-            updated[log.id] = newLog
-        } else if (log.tempId) {
-            const newLog = await writeWorklog(log)
-            updated[log.tempId] = newLog
-        } 
-        if (updated[log.id]) {
-            console.log(`Updated log ${log.id} to: ${JSON.stringify(updated[log.id])}`)
-        }
-    } catch (e) {
-        console.log(e)
-    }
-    return updated
+interface SyncResult {
+    isDeleted?: boolean;
+    oldId: string;
+    newLog?: Worklog;
 }
 
-function reserveWorklog(worklog: TemporaryWorklog, id: string) {
+async function syncLog(log: TemporaryWorklog): Promise<SyncResult> {
+    if (log.id && log.delete) {
+        await deleteWorklog(log)
+        console.log(`Deleted log ${log.id}.`)
+        return { isDeleted: true, oldId: log.id }
+    } else if (log.id) {
+        const newLog = await updateWorklog(log)
+        console.log(`Updated log ${log.id} to: ${JSON.stringify(newLog)}`)
+        return { oldId: log.id, newLog }
+    } else if (log.tempId) {
+        const newLog = await writeWorklog(log)
+        console.log(`Created log: ${JSON.stringify(newLog)}`)
+        return { oldId: log.tempId, newLog }
+    }
+}
+
+function setWorklogReservation(worklog: TemporaryWorklog, reserve: boolean, id?: string) {
     const isThisWorklog = checkSameWorklog(worklog)
-    return DB.update(DB_KEYS.UPDATE_QUEUE, (q: TemporaryWorklog[]) => {
-        return q.map((log) =>
-            isThisWorklog(log)
-                ? {
-                      ...log,
-                      syncTabId: log.syncTabId ?? id,
-                      syncTimeout: Date.now() + 60000
-                  }
-                : log
-        )
+    const updateWorklogQueue = (q: TemporaryWorklog[]) => q.map((log) => {
+        if (!isThisWorklog(log)) return log
+        if (reserve && log.syncTabId && log.syncTimeout > Date.now()) throw new Error('Log already reserved.')
+        if (reserve) {
+            return {
+                ...log,
+                syncTabId: log.syncTabId ?? id,
+                syncTimeout: Date.now() + 60000
+            }
+        }
+        else {
+            return {
+                ...log,
+                syncTabId: null,
+                syncTimeout: null
+            }
+        }
     })
 
+    return DB.update(DB_KEYS.UPDATE_QUEUE, updateWorklogQueue)
+}
+
+function injectNewWorklogsToCache(worklogUpdate: SyncResult) {
+    return DB.update(DB_KEYS.WORKLOG_CACHE, (cache: CacheObject<Worklog[]>) => {
+        const data = cache?.data || []
+        const cleanedData = data.filter((existingLog) => existingLog.id !== worklogUpdate.oldId)
+        if (!worklogUpdate.isDeleted) {
+            cleanedData.push(worklogUpdate.newLog)
+        }
+
+        return ({
+            validUntil: cache?.validUntil || Date.now(),
+            data: cleanedData
+        })
+    })
+}
+
+function removeLogFromQueue(worklog: TemporaryWorklog) {
+    const isThisWorklog = checkSameWorklog(worklog)
+    return DB.update<TemporaryWorklog[]>(DB_KEYS.UPDATE_QUEUE, (q) => q.filter(isThisWorklog))
 }
 
 export async function flushQueueRecursive() {
@@ -58,27 +85,20 @@ export async function flushQueueRecursive() {
     const id = v4()
     try {
         let tried = {}
-        let nextLog = await getNextUnsyncedLog(tried)
-        while (nextLog) {
-            tried[nextLog.id || nextLog.tempId] = true
-            await reserveWorklog(nextLog, id)
-            const updated = await syncLog(nextLog)
-            if (Object.keys(updated).length) {
-                await DB.update(DB_KEYS.WORKLOG_CACHE, (cache: CacheObject<Worklog[]>) => ({
-                    validUntil: cache?.validUntil || Date.now(),
-                    data: [].concat(
-                        cache?.data?.filter((log) => !updated[log.id]) || [],
-                        Object.values(updated)
-                    )
-                }))
+        let unsyncedLog = await getNextUnsyncedLog(tried)
+        while (unsyncedLog) {
+            try {
+                tried[unsyncedLog.id || unsyncedLog.tempId] = true
+                await setWorklogReservation(unsyncedLog, true, id)
+                const result = await syncLog(unsyncedLog)
+                await injectNewWorklogsToCache(result)
+                await removeLogFromQueue(unsyncedLog)
             }
-            await DB.update(DB_KEYS.UPDATE_QUEUE, (q: TemporaryWorklog[]) => {
-                const isThisWorklog = checkSameWorklog(nextLog)
-                return q
-                    .filter((log) => (log.tempId ? !updated[log.tempId] : !updated[log.id]))
-                    .map((log) => isThisWorklog(log) ? { ...log, syncTabId: null } : log)
-            })
-            nextLog = await getNextUnsyncedLog(tried)
+            catch(e) {
+                console.log(`Error while syncing log ${unsyncedLog.id}:`, e)
+                await setWorklogReservation(unsyncedLog, false)
+            }
+            unsyncedLog = await getNextUnsyncedLog(tried)
         }
     } finally {
         isRunning = false
