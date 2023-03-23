@@ -118,6 +118,7 @@ interface DataBase {
     tracking: Tracking;
     updates: TemporaryWorklog[];
     options: Options;
+    idMap: Record<string, Issue>;
     statsOptions: StatisticsOptions;
 }
 

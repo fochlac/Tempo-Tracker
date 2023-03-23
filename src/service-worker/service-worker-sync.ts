@@ -66,10 +66,10 @@ function injectNewWorklogsToCache(worklogUpdate: SyncResult) {
             cleanedData.push(worklogUpdate.newLog)
         }
 
-        return ({
+        return {
             validUntil: cache?.validUntil || Date.now(),
             data: cleanedData
-        })
+        }
     })
 }
 

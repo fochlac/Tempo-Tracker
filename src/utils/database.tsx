@@ -43,11 +43,12 @@ export function DBProvider({ children }) {
             return getDb().then(db => {
                 const oldDb = currentDb.current
                 currentDb.current = db
-                Object.keys(callbacks.current).forEach((key: keyof CallbackRef) => {
-                    if (JSON.stringify(db[key]) !== JSON.stringify(oldDb[key])) {
-                        Object.values(callbacks.current[key]).forEach((cb) => typeof cb === 'function' && cb(db[key]))
-                    }
-                })
+                Object.keys(callbacks.current)
+                    .forEach((key: keyof CallbackRef) => {
+                        if (JSON.stringify(db[key]) !== JSON.stringify(oldDb[key])) {
+                            Object.values(callbacks.current[key]).forEach((cb) => typeof cb === 'function' && cb(db[key]))
+                        }
+                    })
             })
         }
 
@@ -96,9 +97,7 @@ export function useDatabase<K extends DB_KEYS>(uuid: K) {
     const db = useContext(DBContext)
     const [data, setData] = useState(db.getDb()[uuid])
     useEffect(() => {
-        const id = db.registerCallback(uuid, (newData) => {
-            setData(newData as DataBase[K])
-        })
+        const id = db.registerCallback(uuid, setData as DbListener<K>)
         return () => db.unregisterCallback(uuid, id)
     }, [db])
 

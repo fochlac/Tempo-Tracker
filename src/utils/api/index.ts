@@ -19,7 +19,7 @@ declare global {
 
 export async function fetchSelf(customOptions?: Partial<Options>, useCredentials?: boolean) {
     const options = {
-        ...(await DB.get('options')),
+        ...(await DB.get('options') as Options),
         ...(customOptions || {})
     }
     if (!options.domain) {

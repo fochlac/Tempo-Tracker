@@ -1,3 +1,4 @@
+import { DB_KEYS } from '../../constants/constants'
 import { DB } from '../data-layer'
 import { dateString, timeStringSeconds } from '../datetime'
 import { jsonHeaders } from './constants'
@@ -99,8 +100,8 @@ const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklo
     }
 }
 
-let idMap: Record<string, Issue> = {}
-DB.get('idMap').then((map) => {
+let idMap: DataBase['idMap'] = {}
+DB.get(DB_KEYS.ID_MAP).then((map: DataBase['idMap']) => {
     idMap = map || idMap
 })
 function toLocalWorklog(options: Options, simpleMapping?: boolean) {
@@ -108,7 +109,7 @@ function toLocalWorklog(options: Options, simpleMapping?: boolean) {
         const storedIssue = Object.values(options.issues).find((issue) => String(issue.id) === String(id))
         if (storedIssue) {
             idMap[storedIssue.id] = storedIssue
-            await DB.set('idMap', idMap)
+            await DB.set(DB_KEYS.ID_MAP, idMap)
             return storedIssue
         }
 
@@ -118,7 +119,7 @@ function toLocalWorklog(options: Options, simpleMapping?: boolean) {
             name: issue.fields.summary,
             key: issue.key
         }
-        await DB.set('idMap', idMap)
+        await DB.set(DB_KEYS.ID_MAP, idMap)
         return idMap[issue.id]
     }
 

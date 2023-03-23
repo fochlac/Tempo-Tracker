@@ -15,6 +15,7 @@ export const DB_KEYS: Record<string, DB_KEYS> = {
     STATS_OPTIONS: 'statsOptions',
     TRACKING: 'tracking',
     UPDATE_QUEUE: 'updates',
+    ID_MAP: 'idMap',
     ...CACHE
 }
 
