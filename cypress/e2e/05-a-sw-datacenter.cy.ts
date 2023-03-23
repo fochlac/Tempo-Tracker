@@ -290,7 +290,7 @@ describe('Service Worker - Datacenter API', () => {
             comment: 'comment',
             started: '2020-10-07 08:00:00.0',
             timeSpentSeconds: 14400,
-            originTaskId: 12345
+            originTaskId: -1
         })
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
@@ -300,7 +300,7 @@ describe('Service Worker - Datacenter API', () => {
         cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
-    it.only('should update unsynced logs with id on alarm when autosync is on', () => {
+    it('should update unsynced logs with id on alarm when autosync is on', () => {
         cy.networkMocks()
         cy.openWithOptions(
             {

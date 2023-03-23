@@ -164,13 +164,13 @@ export async function updateWorklog(worklog: Partial<Worklog>, options?: Options
         body: JSON.stringify(payload),
         method: 'PUT',
         credentials: 'omit'
-    })
+    }).then(toLocalWorklog)
 
-    if (Number(updatedLog.originTaskId) === Number(payload.originTaskId)) {
-        return toLocalWorklog(updatedLog)
+    if (Number(updatedLog.issue.id) === Number(payload.originTaskId)) {
+        return updatedLog
     }
     const url = `${getUrl(options, URLS.CREATE_WORKLOG)}/${payload.originId}/issue/${payload.originTaskId}`
-    payload.originTaskId = Number(updatedLog.originTaskId)
+    payload.originTaskId = Number(updatedLog.issue.id)
 
     return fetchJson(url, {
         headers: headers(options),

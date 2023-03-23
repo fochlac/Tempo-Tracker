@@ -8,3 +8,7 @@ export function runOnce (fn) {
         }
     }
 }
+
+export function invert(fn) {
+    return (...args) => !fn(...args)
+}

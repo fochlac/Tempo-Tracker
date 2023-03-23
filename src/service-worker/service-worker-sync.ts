@@ -3,6 +3,7 @@ import { DB } from '../utils/data-layer'
 import { v4 } from 'uuid'
 import { deleteWorklog, updateWorklog, writeWorklog } from '../utils/api'
 import { checkSameWorklog } from '../utils/worklogs'
+import { invert } from '../utils/function'
 
 let isRunning = false
 
@@ -73,8 +74,8 @@ function injectNewWorklogsToCache(worklogUpdate: SyncResult) {
 }
 
 function removeLogFromQueue(worklog: TemporaryWorklog) {
-    const isThisWorklog = checkSameWorklog(worklog)
-    return DB.update<TemporaryWorklog[]>(DB_KEYS.UPDATE_QUEUE, (q) => q.filter(isThisWorklog))
+    const isNotThisWorklog = invert(checkSameWorklog(worklog))
+    return DB.update<TemporaryWorklog[]>(DB_KEYS.UPDATE_QUEUE, (q) => q.filter(isNotThisWorklog))
 }
 
 export async function flushQueueRecursive() {
