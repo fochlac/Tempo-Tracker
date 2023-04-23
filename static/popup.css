@@ -157,18 +157,3 @@ input {
 ::-webkit-scrollbar-track {
     background: transparent;
 }
-
-@keyframes opacityAnimation {
-    0% {
-        opacity: 0;
-    }
-    33% {
-        opacity: 1;
-    }
-    66% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
-}

@@ -44,7 +44,7 @@
         "polished": "^4.2.2",
         "preact": "^10.11.3",
         "preact-feather": "^4.2.1",
-        "styled-components": "6.0.0-beta.13",
+        "styled-components": "6.0.0-beta.15",
         "tiny-atom": "^4.2.2",
         "tsc": "^2.0.4",
         "typescript": "^4.5.5",

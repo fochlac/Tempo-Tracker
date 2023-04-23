@@ -1,13 +1,28 @@
 import { ChevronUp } from "preact-feather";
 import styled, { keyframes } from 'styled-components'
 
+const visibility = keyframes`
+    0% {
+        opacity: 0;
+    }
+    33% {
+        opacity: 1;
+    }
+    66% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+`
+
 const AnimatedChevronUp = styled(ChevronUp)`
     position: absolute;
     left: 0;
     top: 0;
     opacity: 0;
     color: 	var(--link);
-    animation: opacityAnimation 1s linear infinite;
+    animation: ${visibility} 1s linear infinite;
 `
 const Wrapper = styled.div`
     position: relative;
