@@ -5,8 +5,16 @@
         "sourceMap": true,
         "module": "commonjs",
         "target": "es2020",
-        "jsx": "preserve",
-        "typeRoots": ["node_modules/@types", "node_modules/cypress/types", "./types", "node_modules/web-ext-types"]
+        "jsx": "react-jsx",
+        "typeRoots": ["node_modules/@types", "node_modules/cypress/types", "./types", "node_modules/web-ext-types/global"]
     },
-    "include": ["./src/**/*.jsx", "./src/**/*.js", "./src/**/*.tsx", "./src/**/*.ts", "./types", "node_modules/web-ext-types"]
+    "include": [
+        "./src/**/*.jsx",
+        "./src/**/*.js",
+        "./src/**/*.tsx",
+        "./src/**/*.ts",
+        "./types",
+        "node_modules/web-ext-types/global",
+        "cypress/component/ConfirmDialog.spec.tsx"
+    ]
 }

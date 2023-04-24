@@ -14,6 +14,7 @@ declare global {
             readItem<T = unknown>(key: IDBValidKey | IDBKeyRange): Chainable<T>
             updateItem(key: string, value: unknown): Chainable<IDBObjectStore>
             deleteItem(key: string): Chainable<IDBObjectStore>
+            mount(jsx: any): void
 
             fakeTimers(now: number)
             sendMessage(action: Action)

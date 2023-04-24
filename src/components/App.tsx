@@ -10,22 +10,8 @@ import { Header } from "./molecules/Header"
 import { OptionsView } from "./views/Options"
 import { StatisticsView } from "./views/Statistics"
 import { TrackerView } from "./views/Tracker"
-import { createGlobalStyle } from "styled-components"
 import { Themes } from "../constants/themes"
-
-const CssVariables = createGlobalStyle`
-    :root {
-        ${({theme}) => Object.keys(theme).reduce((styles, prop) => `${styles}\n${prop}: ${theme[prop]};`, '')}
-    }
-
-    html {
-        background-color: var(--background-off)
-    }
-
-    input, select {
-        color-scheme: var(--color-scheme)
-    }
-`
+import { CssVariables } from "./atoms/CssVariables"
 
 const Main = styled.main`
     display: flex;

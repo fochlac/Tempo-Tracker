@@ -9,7 +9,7 @@ interface Props {
     open: Boolean;
     onClose: () => void;
     text: JSX.Element|string;
-    buttons: JSX.Element;
+    buttons?: JSX.Element;
     title: string;
 }
 

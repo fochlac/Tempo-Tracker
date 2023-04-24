@@ -2,7 +2,8 @@
     "compilerOptions": {
         "target": "es5",
         "lib": ["es5", "dom"],
+        "jsx": "react-jsx",
         "types": ["cypress", "node"]
     },
-    "include": ["**/*.ts", "../types/**/*.d.ts"]
+    "include": ["**/*.ts", "**/*.tsx", "../types/**/*.d.ts"]
 }
