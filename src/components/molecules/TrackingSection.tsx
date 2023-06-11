@@ -129,7 +129,7 @@ export function TrackingSection({ hasError }) {
         <DropDownButtonDestructive
             list={[
                 { label: 'Split Tracking', onClick: () => showSplitTrackingDialog(true) },
-                { label: 'Cancel Tracking', onClick: () => actions.abort() }
+                { label: 'Discard Tracking', onClick: () => actions.abort() }
             ]}
             onClick={() => actions.stop()}
         >
