@@ -12,10 +12,10 @@ export function useTracking() {
     return {
         data: tracking,
         actions: {
-            async start(issue) {
+            async start(issue, start = Date.now()) {
                 const update = {
                     issue,
-                    start: Date.now()
+                    start
                 }
                 await updateTracking(update)
                 await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
@@ -39,13 +39,16 @@ export function useTracking() {
             updateComment(comment) {
                 return updateTracking((tracking) => ({ ...tracking, comment }))
             },
-            async stop() {
+            async stop(end = Date.now()) {
                 const { issue, start, comment = '' } = tracking
-                const end = Date.now()
                 const newLog: TemporaryWorklog = { issue, comment, start, end, synced: false, tempId: v4() }
                 if (end - start > 30000) {
                     await worklog.actions.queue(newLog)
                 }
+                await updateTracking({ issue: null, start: null })
+                await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
+            },
+            async abort() {
                 await updateTracking({ issue: null, start: null })
                 await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
             },

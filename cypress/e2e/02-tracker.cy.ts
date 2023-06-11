@@ -269,4 +269,86 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '08')
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
     })
+
+    
+    it('should handle forgotten tracking', () => {
+        cy.networkMocks()
+        cy.openWithOptions(undefined, true)
+        cy.window().then((win: any) => {
+            win.chrome.runtime.sendMessage = (message, callback) => {
+                win.messages = win.messages || []
+                win.messages.push(message)
+                callback({ payload: { success: true } })
+            }
+        })
+
+        cy.openIndexedDb(DATABASE_NAME)
+            .createObjectStore(CACHE_STORE)
+            .updateItem(DB_KEYS.TRACKING, {
+                issue: { alias: 'Test7', id: '123467', key: 'TE-17', name: 'testname 7' },
+                start: new Date('2020-10-08 08:00').getTime()
+            })
+
+        cy.startApp()
+        
+        cy.contains('form', 'Stop Tracking')
+            .should('be.visible')
+            .contains('button', 'Test7')
+            .should('have.css', 'background-color', 'rgb(15, 15, 15)')
+        
+        cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
+        cy.contains('div', 'Stop Tracking').contains('button', 'Split Tracking').should('be.visible').click()
+
+        cy.contains('dialog', 'Split Current Tracking').should('be.visible').contains('b', '08:00')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Issue').find('input').should('have.value', 'Test7')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(0).should('have.value', '08')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(0).type('13:00')
+        cy.contains('dialog', 'Split Current Tracking').contains('button', 'Split Worklog').click()
+
+        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
+            .should('contain.text', 'Test7')
+            .should('contain.text', '08.10.20')
+            .should('contain.text', '08:00 - 13:00')
+            .should('contain.text', '5h 00m')
+
+        cy.contains('form', 'Stop Tracking')
+                .should('be.visible')
+                .contains('button', 'Test7')
+                .should('have.css', 'background-color', 'rgb(15, 15, 15)')
+    
+        cy.contains('form', 'Stop Tracking').find('option:selected').should('have.text', 'Test7')
+        cy.contains('form', 'Stop Tracking').find('input[type="date"]').should('have.value', '2020-10-08')
+        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
+        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
+        cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '4h 00m')
+
+        cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
+        cy.contains('div', 'Stop Tracking').contains('button', 'Split Tracking').should('be.visible').click()
+        cy.contains('dialog', 'Split Current Tracking').should('be.visible').contains('b', '13:00')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Issue').find('input').should('have.value', 'Test7')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(0).should('have.value', '13')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
+        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', 'Split Current Tracking').contains('button', 'Cancel').click()
+    
+
+        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
+
+        cy.contains('form', 'Stop Tracking')
+                .should('be.visible')
+    
+        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
+        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
+        cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '4h 00m')
+
+
+        cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
+
+        cy.contains('div', 'Stop Tracking').contains('button', 'Cancel Tracking').should('be.visible').click()
+        cy.contains('form', 'Stop Tracking').should('not.exist')
+    })
 })

@@ -33,39 +33,6 @@ const IssueRow = styled.li`
     align-items: center;
     margin-bottom: 8px;
 `
-const SearchFieldWrapper = styled.div`
-    width: 100%;
-    padding: 8px 16px;
-`
-const SearchResultList = styled.ul`
-    width: 100%;
-    padding: 0 16px;
-    overflow: auto;
-    margin: 0;
-    list-style: none;
-`
-const SearchResultItem = styled.li`
-    display: flex;
-    align-items: flex-start;
-    padding: 3px 0 3px;
-    line-height: 20px;
-    border-bottom: solid 1px var(--contrast);
-    color: var(--font);
-    cursor: pointer;
-
-    &:hover {
-        background:  var(--background-off-strong);
-    }
-    &:last-child {
-        border-bottom: none;
-    }
-
-    > span:first-child {
-        flex-shrink: 0;
-        margin-right: 4px;
-    }
-`
-
 interface Props {
     disabled?: boolean;
     className?: string;

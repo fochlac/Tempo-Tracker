@@ -49,16 +49,16 @@ const ToggleButton = styled(Button) <{ first?: boolean; last?: boolean; selected
     border-left-color: var(--contrast) !important;
     border-right-color: var(--contrast) !important;
     border-top-color: var(--contrast) !important;
-    ${({ selected }) => selected ? `
+    ${(props) => props.selected ? `
         background: var(--background) !important;
         border-bottom: var(--font) solid 1px !important;
         font-weight: 700;
     ` : ''}
-    ${({ first, firstRow }) => first && firstRow ? 'border-top-left-radius: 3px;' : ''}
-    ${({ first, lastRow }) => first && lastRow ? 'border-bottom-left-radius: 3px;' : ''}
-    ${({ last, firstRow }) => last && firstRow ? 'border-top-right-radius: 3px;' : ''}
-    ${({ last, lastRow }) => last && lastRow ? 'border-bottom-right-radius: 3px;' : ''}
-    ${({ firstRow }) => !firstRow ? 'border-top: none;' : ''}
+    ${props => props.first && props.firstRow ? 'border-top-left-radius: 3px;' : ''}
+    ${props => props.first && props.lastRow ? 'border-bottom-left-radius: 3px;' : ''}
+    ${props => props.last && props.firstRow ? 'border-top-right-radius: 3px;' : ''}
+    ${props => props.last && props.lastRow ? 'border-bottom-right-radius: 3px;' : ''}
+    ${props => !props.firstRow ? 'border-top: none;' : ''}
 `
 const ButtonText = styled.span`
     overflow: hidden;

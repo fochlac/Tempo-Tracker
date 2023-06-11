@@ -14,24 +14,28 @@ const InputWrapper = styled.fieldset`
     align-items: center;
     padding-left: 1px;
     text-align: center;
+    font-size: 14px;
 `
 const TimeSegmentInput = styled.input`
     width: 18px;
     background: var(--background);
     color: var(--font);
     text-align: center;
+    ${(props) => props.readOnly ? 'color: var(--font-disabled);' : ''}
+    ${(props) => props.readOnly ? 'cursor: default;' : ''}
 `
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
     value: string;
     onChange: (value: Partial<InputEvent>) => void;
     duration?: boolean;
+    readOnly?: boolean;
     maxHours?: number;
 }
 const handleFocus = (e) => e.target.setSelectionRange(0, e.target.value.length)
 const createEvent = (value): Partial<InputEvent> => ({ target: { value } as any as EventTarget })
 
-export const TimeInput: React.FC<Props> = ({ value, onChange, duration, maxHours, ...props }) => {
+export const TimeInput: React.FC<Props> = ({ value, onChange, duration, maxHours, readOnly, ...props }) => {
     const hours = /^\d+:\d+$/.test(value?.trim()) ? `00${value.trim().split(':')[0]}`.slice(-2) : '00'
     const minutes = /^\d+:\d+$/.test(value?.trim()) ? `00${value.trim().split(':')[1]}`.slice(-2) : '00'
     const hoursInput = useRef<HTMLInputElement>()
@@ -133,9 +137,9 @@ export const TimeInput: React.FC<Props> = ({ value, onChange, duration, maxHours
 
     return (
         <InputWrapper {...props}>
-            <TimeSegmentInput onKeyDown={handleKeysHour} ref={hoursInput} onFocus={handleFocus} onChange={handleChangeHour} value={hours} />
+            <TimeSegmentInput readOnly={readOnly} onKeyDown={handleKeysHour} ref={hoursInput} onFocus={handleFocus} onChange={handleChangeHour} value={hours} />
             <span>:</span>
-            <TimeSegmentInput onKeyDown={handleKeysMinute} ref={minutesInput} onFocus={handleFocus} onChange={handleChangeMinutes} value={minutes} />
+            <TimeSegmentInput readOnly={readOnly} onKeyDown={handleKeysMinute} ref={minutesInput} onFocus={handleFocus} onChange={handleChangeMinutes} value={minutes} />
         </InputWrapper>
     )
 }

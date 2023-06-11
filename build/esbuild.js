@@ -6,7 +6,6 @@ const defaultOptions = {
     logLevel: 'info',
     outdir: 'dist/',
     bundle: true,
-    watch: true,
     sourcemap: true,
     target: 'chrome90'    
 }
@@ -27,18 +26,18 @@ async function build() {
     await fse.remove('./dist')
     await fse.remove('./dist_ff')
 
-    const build_jsx = esbuild.build({
+    const build_jsx = await esbuild.context({
         ...defaultOptions,
         ...jsxOptions,
         entryPoints: ['./src/popup.tsx'],
         inject: ['./build/helmet.js', './build/helmet_chrome.js']
     })
-    const build = esbuild.build({
+    const build = await esbuild.context({
         ...defaultOptions,
         inject: ['./build/helmet_chrome.js'],
         entryPoints: ['./src/content-script.ts', './src/sw.ts'],
     })
-    const build_jsx_ff = esbuild.build({
+    const build_jsx_ff = await esbuild.context({
         ...defaultOptions,
         ...jsxOptions,
         entryPoints: ['./src/popup.tsx'],
@@ -46,7 +45,7 @@ async function build() {
         inject: ['./build/helmet.js', './build/helmet_ff.js'],
         target: 'firefox90'
     })
-    const build_ff = esbuild.build({
+    const build_ff = await esbuild.context({
         ...defaultOptions,
         entryPoints: ['./src/content-script.ts', './src/sw.ts'],
         outdir: 'dist_ff/',
@@ -95,7 +94,7 @@ async function build() {
             })
     })
 
-    return Promise.all([copy, copy_ff, build, build_jsx, build_jsx_ff, build_ff, copy_ff_2]).catch(async (e) => {
+    return Promise.all([copy, copy_ff, build.watch(), build_jsx.watch(), build_jsx_ff.watch(), build_ff.watch(), copy_ff_2]).catch(async (e) => {
         console.error(e)
         await watcher.close()
         await watcher2.close()
