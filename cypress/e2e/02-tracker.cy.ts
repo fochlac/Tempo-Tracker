@@ -348,7 +348,7 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
 
-        cy.contains('div', 'Stop Tracking').contains('button', 'Cancel Tracking').should('be.visible').click()
+        cy.contains('div', 'Stop Tracking').contains('button', 'Discard Tracking').should('be.visible').click()
         cy.contains('form', 'Stop Tracking').should('not.exist')
     })
 })
