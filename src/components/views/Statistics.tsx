@@ -11,6 +11,7 @@ import { useSelf } from "../../hooks/useSelf"
 import { useOptions } from "../../hooks/useOptions"
 import { ErrorTooltip } from "../atoms/Tooltip"
 import { WifiOff } from "preact-feather"
+import { ActionLink } from "../atoms/ActionLink"
 
 const Body = styled.div`
     display: flex;
@@ -29,7 +30,8 @@ const Title = styled(H6)`
 export const StatisticsView: React.FC = () => {
     const {
         data: { stats, year, unsyncedStats },
-        actions: { setYear, getRequiredSeconds }
+        actions: { setYear, getRequiredSeconds, refresh }, 
+        loading
     } = useStatistics()
     const self = useSelf()
     
@@ -42,6 +44,13 @@ export const StatisticsView: React.FC = () => {
         <Body>
             <Title>
                 {`Weekly Hours`}
+                    <ActionLink
+                        disabled={loading || self.error}
+                        style={{ marginRight: 4, lineHeight: '16px', marginLeft: 'auto' }}
+                        onClick={() => refresh()}
+                    >
+                        Refresh
+                    </ActionLink>
                 {self.error && (
                     <ErrorTooltip style={{ paddingBottom: 2 }} right content="No connection to Jira instance - only cached statistics available">
                         <WifiOff size={14} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />

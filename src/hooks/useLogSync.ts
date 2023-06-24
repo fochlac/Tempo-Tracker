@@ -10,6 +10,7 @@ export function useLogSync(self, worklog) {
     const [hasError, setError] = useSafeState(false)
     const refreshQueueCache = useDatabasRefresh(DB_KEYS.UPDATE_QUEUE)
     const refreshWorklogCache = useDatabasRefresh(DB_KEYS.WORKLOG_CACHE)
+    const refreshStatsCache = useDatabasRefresh(DB_KEYS.STATS_CACHE)
     const options = useOptions()
 
     const startSync = async () => {
@@ -38,6 +39,7 @@ export function useLogSync(self, worklog) {
                 setError(false)
                 await refreshWorklogCache()
                 await refreshQueueCache()
+                await refreshStatsCache()
             } catch (err) {
                 setError(true)
             }

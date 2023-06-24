@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 import { CACHE } from "../constants/constants"
 import { dateString, getISOWeekNumber, getISOWeeks } from "../utils/datetime"
 import { createWorkMap, fetchWorkStatistics } from "../utils/api"
@@ -91,12 +91,22 @@ export function useStatistics () {
     }, [year, isCurrentYear])
 
     const getRequiredSeconds = useGetRequiredSettings(year)
+    const prevStats = useRef(false)
+    
+    useEffect(() => {
+        if (prevStats.current && isCurrentYear) {
+            currentStats.forceFetch()
+        }
+        prevStats.current = Object.keys(unsyncedLogStatistics).length > 0
+    }, [unsyncedLogStatistics])
 
     return {
         data: { stats, year, unsyncedStats: unsyncedLogStatistics?.[year] || createWorkMap() },
         actions: {
             setYear,
-            getRequiredSeconds
-        }
+            getRequiredSeconds,
+            refresh: currentStats.forceFetch
+        },
+        loading: currentStats.loading
     }
 }
