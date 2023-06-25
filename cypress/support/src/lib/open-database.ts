@@ -9,7 +9,6 @@
  * @returns Promise<IDBDatabase>
  * @throws {Error} If the connections fails to open.
  */
-import { noop } from 'rxjs';
 
 export function createDatabaseConnection(
   databaseName: string,
@@ -26,7 +25,7 @@ export function createDatabaseConnection(
     request.onsuccess = (e: Event) => {
       request.onerror = () => void 0;
       const db = (e.target as any).result as IDBDatabase;
-      db.onversionchange = noop;
+      db.onversionchange = Function.prototype as any;
       resolve(db);
     };
   });
