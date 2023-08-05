@@ -4,8 +4,9 @@ import { getISOWeekNumber } from "../utils/datetime"
 
 const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
     return {
-        defaultHours: Number(rawOptions.defaultHours),
-        exceptions: rawOptions.exceptions.map((e) => ({
+        defaultHours: Number(rawOptions.defaultHours ?? defaultStatisticsOptions.defaultHours),
+        lifetimeYear: Number(rawOptions.lifetimeYear ?? defaultStatisticsOptions.lifetimeYear),
+        exceptions: (rawOptions.exceptions ?? defaultStatisticsOptions.exceptions).map((e) => ({
             startYear: Number(e.startYear),
             startWeek: Number(e.startWeek),
             endYear: Number(e.endYear),
@@ -17,6 +18,7 @@ const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
 
 const defaultStatisticsOptions = {
     defaultHours: 40,
+    lifetimeYear: new Date().getFullYear(),
     exceptions: []
 }
 export function useStatisticsOptions() {

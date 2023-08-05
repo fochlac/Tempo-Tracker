@@ -22,7 +22,7 @@ interface PersistentFetchResult<K extends CACHE> extends FetchResult<DataBase[K]
 interface CacheHookResult<K extends CACHE> {
     setCache: (cache: any) => Promise<void>;
     cache: DataBase[K];
-    updateData: (fn: (data: DataBase[K]) => DataBase[K]) => Promise<void>;
+    updateData: (fn: (data: DataBase[K]['data']) => DataBase[K]['data']) => Promise<void>;
     resetCache: () => Promise<void>;
 }
 
@@ -51,7 +51,7 @@ type VIEWS = 'tracker' | 'options' | 'stats'
 
 type DB_KEYS = keyof DataBase;
 
-type CACHE = 'WORKLOG_CACHE' | 'STATS_CACHE' | 'ISSUE_CACHE'
+type CACHE = 'WORKLOG_CACHE' | 'STATS_CACHE' | 'ISSUE_CACHE' | 'LIFETIME_STATS_CACHE'
 
 interface LocalIssue extends Issue {
     alias: string;
@@ -92,14 +92,18 @@ interface Options {
 }
 
 interface StatsMap {
+    year: number;
     days: Record<string, number>;
     month: Record<string, number>;
     weeks: Record<string, number>;
     total: number;
 }
 
+type LifeTimeStatsMap = Record<string, StatsMap>
+
 interface StatisticsOptions {
     defaultHours: number;
+    lifetimeYear: number;
     exceptions: HourException[];
 }
 
@@ -112,6 +116,7 @@ interface HourException {
 }
 
 interface DataBase {
+    LIFETIME_STATS_CACHE: CacheObject<LifeTimeStatsMap>;
     STATS_CACHE: CacheObject<StatsMap>;
     WORKLOG_CACHE: CacheObject<Worklog[]>;
     ISSUE_CACHE: CacheObject<Issue[]>;

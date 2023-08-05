@@ -89,7 +89,8 @@ export async function deleteWorklog({ id }: Partial<Worklog>, opts?: Options): P
 }
 
 
-export const createWorkMap = () => ({
+export const createWorkMap = (year) => ({
+    year,
     days: {},
     weeks: {},
     month: {},
@@ -100,7 +101,7 @@ export async function fetchWorkStatistics(year: number = new Date().getFullYear(
     const [start, end] = getYearIsoWeeksPeriod(year)
 
     const worklogs = await fetchWorklogs(start.getTime(), end.getTime(), undefined, true)
-    const workMap = createWorkMap()
+    const workMap = createWorkMap(year)
     const firstSunday = new Date(new Date().setFullYear(year, 0, 1))
     firstSunday.setDate(1 - firstSunday.getDay())
     firstSunday.setHours(0, 0, 0, 0)

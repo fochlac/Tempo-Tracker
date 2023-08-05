@@ -4,30 +4,29 @@ import { Block, Column } from "../atoms/Layout"
 import { Label, Value } from "../atoms/Typography"
 
 interface Props {
-    stats: StatsMap;
-    unsyncedStats: StatsMap;
-    getRequiredSeconds: (week: number) => number;
+    total: number;
+    weeks: {week: number, year:number, workedSeconds: number}[];
+    getRequiredSeconds: (year: number, week: number) => number;
 }
 
-export const WorkTimeStats: React.FC<Props> = ({stats, getRequiredSeconds, unsyncedStats}) => {
-    const requiredSeconds = Object.keys(stats?.weeks || {}).reduce((requiredSeconds, week) => {
-        return requiredSeconds + getRequiredSeconds(Number(week))
+export const WorkTimeStats: React.FC<Props> = ({total, weeks, getRequiredSeconds}) => {
+    const requiredSeconds = weeks.reduce((requiredSeconds, {week, year}) => {
+        return requiredSeconds + getRequiredSeconds(year, week)
     }, 0)
-    const overseconds = stats ? stats.total + unsyncedStats.total / 1000 - requiredSeconds : 0
-    const sortedHours = Object.values(stats?.weeks || {'0': 0}).sort((a, b) => a - b)
-    const medianHours = sortedHours.length % 2 
-        ? sortedHours[sortedHours.length / 2 - 0.5] 
-        : (sortedHours[sortedHours.length / 2 - 1] + sortedHours[sortedHours.length / 2]) / 2 
+    const overseconds = total ? total - requiredSeconds : 0
+    const medianHours = weeks.length % 2 
+        ? weeks[weeks.length / 2 - 0.5]?.workedSeconds
+        : (weeks[weeks.length / 2 - 1]?.workedSeconds + weeks[weeks.length / 2]?.workedSeconds) / 2 
 
     return (
         <Block>
             <Column>
                 <Label>Total Hours</Label>
-                <Value>{stats ? formatDuration(stats.total * 1000 + unsyncedStats.total, true, true) : <>&mdash;</>}</Value>
+                <Value>{total ? formatDuration(total * 1000, true, true) : <>&mdash;</>}</Value>
             </Column>
             <Column>
                 <Label>Required Hours</Label>
-                <Value>{stats ? formatDuration(requiredSeconds * 1000, true, true) : <>&mdash;</>}</Value>
+                <Value>{total ? formatDuration(requiredSeconds * 1000, true, true) : <>&mdash;</>}</Value>
             </Column>
             <Column>
                 <Label>Overhours</Label>
@@ -38,7 +37,7 @@ export const WorkTimeStats: React.FC<Props> = ({stats, getRequiredSeconds, unsyn
             <Column>
                 <Label>Median Hours (Week)</Label>
                 <Value>
-                    {stats ? formatDuration(medianHours * 1000, true, true) : <>&mdash;</>}
+                    {total ? formatDuration(medianHours * 1000, true, true) : <>&mdash;</>}
                 </Value>
             </Column>
         </Block>
