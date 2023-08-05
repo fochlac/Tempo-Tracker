@@ -47,8 +47,8 @@ describe('Statistics View - Tracking Area', () => {
         cy.contains('div[style]', '40:00').should('exist')
             .find('span[style]').should('exist')
 
-        cy.get('@getWorklogs.all').should('have.length', 2)
-        cy.get('@getWorklogs.2').its('request.body').should('deep.equal', {
+        cy.get('@getWorklogs.all').should('have.length', 4)
+        cy.get('@getWorklogs.4').its('request.body').should('deep.equal', {
             from: '2019-12-29', to: '2020-12-28', worker: ['testid']
         })
 
@@ -57,8 +57,8 @@ describe('Statistics View - Tracking Area', () => {
             .should('have.css', 'color', 'rgb(88, 163, 253)')
             .click()
 
-        cy.get('@getWorklogs.all').should('have.length', 3)
-        cy.get('@getWorklogs.3').its('request.body').should('deep.equal', {
+        cy.get('@getWorklogs.all').should('have.length', 5)
+        cy.get('@getWorklogs.5').its('request.body').should('deep.equal', {
             from: '2019-12-29', to: '2020-12-28', worker: ['testid']
         })
 
@@ -84,13 +84,13 @@ describe('Statistics View - Tracking Area', () => {
         cy.contains('div', 'Overhours')
             .find('p').should('contain.text', '10h 00m')
 
-        cy.get('@getWorklogs.all').should('have.length', 4)
-        cy.get('@getWorklogs.4').its('request.body').should('deep.equal', {
+        cy.get('@getWorklogs.all').should('have.length', 6)
+        cy.get('@getWorklogs.6').its('request.body').should('deep.equal', {
             from: '2019-12-29', to: '2020-12-28', worker: ['testid']
         })
         cy.removeUnsyncedWorklog('123456789')
-        cy.get('@getWorklogs.all').should('have.length', 5)
-        cy.get('@getWorklogs.5').its('request.body').should('deep.equal', {
+        cy.get('@getWorklogs.all').should('have.length', 7)
+        cy.get('@getWorklogs.7').its('request.body').should('deep.equal', {
             from: '2019-12-29', to: '2020-12-28', worker: ['testid']
         })
     })

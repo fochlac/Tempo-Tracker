@@ -83,7 +83,7 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
 export function useGetRequiredSettings(year) {
     const getRequiredSeconds = useGetRequiredSecondsForPeriod(year, year)
 
-    return useCallback((week) => getRequiredSeconds(year, week), [year])
+    return useCallback((week) => getRequiredSeconds(year, week), [year, getRequiredSeconds])
 }
 
 export function useStatistics () {
@@ -150,7 +150,7 @@ export function useLifetimeStatistics ({ year, stats }: { year?:number, stats?:S
 
     useEffect(() => {
         if (year && stats?.year === year && stats.total > 0) {
-            updateData((cacheData) => {
+            updateData((cacheData = {}) => {
                 console.log(year, stats.total, stats, {
                     ...cacheData,
                     [year]: stats
