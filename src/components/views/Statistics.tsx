@@ -92,10 +92,6 @@ export const StatisticsView: React.FC = () => {
                         {lifeTimeMedianTop ? formatDuration(lifeTimeMedianTop * 1000, true, true) : <>&mdash;</>}
                     </Value>
                 </Column>
-                <Column>
-                </Column>
-                <Column>
-                </Column>
             </Block>
             <H6>Work-time Settings</H6>
             <Block>
