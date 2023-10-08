@@ -1,6 +1,5 @@
 ## Build
 
- 1) [Install pnpm](https://pnpm.io/cli/install)
- 2) `pnpm i`
- 3) `pnpm build` for prod build or `pnpm start` for dev build
+ 1) `npm i`
+ 2) `npm run build` for prod build or `npm run start` for dev build
 
