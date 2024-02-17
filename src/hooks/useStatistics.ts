@@ -69,9 +69,9 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
             return progress
         }, {workdays: 0, passedWorkdays: 0})
 
-        const modifier = (year:number, week: number) => year === currentYear && week === currentWeek ? passedWorkdays / workdays : 1
+        const modifier = (year:number, week: number, skipModifier?:boolean) => !skipModifier && year === currentYear && week === currentWeek ? passedWorkdays / workdays : 1
 
-        if (!exceptions.length) return (year:number, week: number) => modifier(year, week) * defaultHours * 60 * 60
+        if (!exceptions.length) return (year:number, week: number, skipModifier?:boolean) => modifier(year, week, skipModifier) * defaultHours * 60 * 60
 
         const years = Array.from({length: (endYear ?? new Date().getFullYear()) - startYear + 1}, (_v, idx) => startYear + idx)
 
@@ -92,7 +92,7 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
             return map
         }, {})
 
-        return (year:number, week: number) => modifier(year, week) * (yearWeekHourMap[year]?.[week] ?? defaultHours) * 60 * 60
+        return (year:number, week: number, skipModifier?:boolean) => modifier(year, week, skipModifier) * (yearWeekHourMap[year]?.[week] ?? defaultHours) * 60 * 60
     }, [startYear, endYear, exceptions, defaultHours])
 
     return getRequiredSeconds
@@ -101,7 +101,7 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
 export function useGetRequiredSettings(year) {
     const getRequiredSeconds = useGetRequiredSecondsForPeriod(year, year)
 
-    return useCallback((week) => getRequiredSeconds(year, week), [year, getRequiredSeconds])
+    return useCallback((week: number, skipModifier?:boolean) => getRequiredSeconds(year, week, skipModifier), [year, getRequiredSeconds])
 }
 
 export function useStatistics () {

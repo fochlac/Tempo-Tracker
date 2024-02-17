@@ -55,7 +55,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
         issue: Object.values(issues)?.[0],
         startDate: new Date().setHours(0, 0, 0, 0),
         endDate: new Date().setHours(24, 0, 0, 0),
-        defaultTimePerDay: getRequiredSeconds(week) / 5,
+        defaultTimePerDay: getRequiredSeconds(week, true) / 5,
         timePerDay: null
     })
 
@@ -69,10 +69,10 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }, [options, issues, setOptions])
 
     useEffect(() => {
-        if (getRequiredSeconds(week) / days.length !== options.defaultTimePerDay) {
+        if (getRequiredSeconds(week, true) / days.length !== options.defaultTimePerDay) {
             setOptions({
                 ...options,
-                defaultTimePerDay: getRequiredSeconds(week) / days.length
+                defaultTimePerDay: getRequiredSeconds(week, true) / days.length
             })
         }
     }, [getRequiredSeconds, week, options])
