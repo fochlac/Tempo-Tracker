@@ -96,22 +96,9 @@ describe('Tracking View - Header Actions', () => {
             .eq(1)
             .should('have.value', '00')
 
-        cy.contains('dialog', 'Log Time for Multiple Days')
-            .contains('div', 'Working Days')
-            .find('input')
-            .should('have.length', 7)
-            .filter(':checked')
-            .should('have.length', 5)
-
-        cy.contains('dialog', 'Log Time for Multiple Days')
-            .contains('div', 'Working Days')
-            .contains('div', 'Sat')
-            .find('input')
-            .click()
-
         cy.contains('dialog', 'Log Time for Multiple Days').contains('button', 'Create Worklogs').click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 3).as('newRows')
+        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 2).as('newRows')
             .each(row => {
                 cy.wrap(row)
                     .should('contain.text', '5h 00m')
@@ -119,7 +106,6 @@ describe('Tracking View - Header Actions', () => {
             })
         cy.get('@newRows').contains('08.10.20').should('have.length', 1)
         cy.get('@newRows').contains('09.10.20').should('have.length', 1)
-        cy.get('@newRows').contains('10.10.20').should('have.length', 1)
     })
 
     it('should synchronize if unsynced logs exist', () => {

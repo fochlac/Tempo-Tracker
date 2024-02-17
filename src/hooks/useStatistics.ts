@@ -6,6 +6,7 @@ import { usePersitentFetch } from "./usePersitedFetch"
 import { useSafeState } from "./useSafeState"
 import { useStatisticsOptions } from "./useStatisticsOptions"
 import { useWorklogUpdates } from "./useWorklogs"
+import { useOptions } from "./useOptions"
 
 const emptyStats = {
     days: {},
@@ -51,10 +52,27 @@ function useUnsyncedLogStatistics():Record<string, StatsMap> {
 
 export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: number) {
     const options = useStatisticsOptions()
+    const { data: { days } } = useOptions()
     const { exceptions, defaultHours } = options.data
 
     const getRequiredSeconds = useMemo(() => {
-        if (!exceptions.length) return () => defaultHours * 60 * 60
+        const currentWeek = getISOWeekNumber(Date.now())
+        const currentYear = new Date().getFullYear()
+        const currentDay = new Date().getDay()
+        const { workdays, passedWorkdays } = Array(7).fill(0).reduce((progress, _v, dayNo) => {
+            if (days.includes(dayNo)) {
+                progress.workdays++
+                if (dayNo <= currentDay) {
+                    progress.passedWorkdays++
+                }
+            }
+            return progress
+        }, {workdays: 0, passedWorkdays: 0})
+
+        const modifier = (year:number, week: number) => year === currentYear && week === currentWeek ? passedWorkdays / workdays : 1
+
+        if (!exceptions.length) return (year:number, week: number) => modifier(year, week) * defaultHours * 60 * 60
+
         const years = Array.from({length: (endYear ?? new Date().getFullYear()) - startYear + 1}, (_v, idx) => startYear + idx)
 
         const yearWeekHourMap = years.reduce((map, year) => {
@@ -74,7 +92,7 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
             return map
         }, {})
 
-        return (year:number, week: number) => (yearWeekHourMap[year]?.[week] ?? defaultHours) * 60 * 60
+        return (year:number, week: number) => modifier(year, week) * (yearWeekHourMap[year]?.[week] ?? defaultHours) * 60 * 60
     }, [startYear, endYear, exceptions, defaultHours])
 
     return getRequiredSeconds

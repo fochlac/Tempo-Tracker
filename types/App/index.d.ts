@@ -88,6 +88,7 @@ interface Options {
     token: string;
     ttToken: string;
     email: string;
+    days: number[];
     instance: 'cloud'|'datacenter';
 }
 

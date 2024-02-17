@@ -483,6 +483,19 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Custom JQL Query').contains('a', 'Test Query').click()
 
         cy.wait('@search').its('request.url').should('contain', 'jql=assignee+was+currentUser')
+
+        
+        cy.contains('div', 'Working Days')
+            .find('input')
+            .should('have.length', 7)
+            .filter(':checked')
+            .should('have.length', 5)
+
+        cy.contains('div', 'Working Days')
+            .contains('div', 'Sat')
+            .find('input')
+            .click()
+            cy.getOptions().its('days').should('include', 6)
     })
 
     it('should reset sensitive data when the domain is changed from datacenter to cloud', () => {

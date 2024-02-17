@@ -3,10 +3,22 @@
         "outDir": "dist",
         "allowJs": true,
         "sourceMap": true,
-        "module": "commonjs",
+        "module": "Node16",
         "target": "es2020",
         "jsx": "react-jsx",
-        "typeRoots": ["node_modules/@types", "node_modules/cypress/types", "./types", "node_modules/web-ext-types/global"]
+        "jsxImportSource": "preact",
+        "baseUrl": "./",
+        "skipLibCheck": true,
+        "paths": {
+            "react": ["./node_modules/preact/compat/"],
+            "react-dom": ["./node_modules/preact/compat/"]
+        },
+        "typeRoots": [
+            "node_modules/@types",
+            "node_modules/cypress/types",
+            "./types",
+            "node_modules/web-ext-types/global"
+        ]
     },
     "include": [
         "./src/**/*.jsx",

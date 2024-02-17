@@ -1,5 +1,5 @@
-import { THEMES, domainRegexp } from "../constants/constants"
-import { fetchIssueList } from "./api"
+import { THEMES, domainRegexp } from '../constants/constants'
+import { fetchIssueList } from './api'
 
 export function getOptions(options: Partial<Options>): Options {
     const {
@@ -16,7 +16,8 @@ export function getOptions(options: Partial<Options>): Options {
         theme,
         ttToken,
         email,
-        instance
+        instance,
+        days
     } = options || {}
 
     // migration from old domain format
@@ -29,9 +30,8 @@ export function getOptions(options: Partial<Options>): Options {
     }
 
     return {
-        issues: Array.isArray(issues)
-            ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {})
-            : issues ?? {},
+        issues: Array.isArray(issues) ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {}) : issues ?? {},
+        days: Array.isArray(days) ? days : [1, 2, 3, 4, 5],
         domain: updatedDomain ?? '',
         user: user ?? '',
         jqlQuery: jqlQuery ?? '',
@@ -44,17 +44,16 @@ export function getOptions(options: Partial<Options>): Options {
         theme: THEMES[theme] ? theme : THEMES.DEFAULT,
         ttToken: ttToken ?? '',
         email: email ?? '',
-        instance: instance ?? 'datacenter',
+        instance: instance ?? 'datacenter'
     }
 }
-
 
 let isChecking = false
 export const checkJql = () => {
     if (!isChecking) {
         isChecking = true
         fetchIssueList()
-            .then(list => alert(list.map(i => i.key).join(', ')))
+            .then((list) => alert(list.map((i) => i.key).join(', ')))
             .catch((e) => alert(e?.message || e))
             .finally(() => {
                 isChecking = false

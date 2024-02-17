@@ -38,16 +38,11 @@ const Line = styled(DefaultText)`
     margin-bottom: 8px;
     text-align: left;
 `
-const Checkbox = styled(Input)`
-    height: 15px;
-    width: 15px;
-    margin: 0 auto 2px;
-`
 
 const dayInMs = 24 * 60 * 60 * 1000
 export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const {
-        data: { issues }
+        data: { issues, days }
     } = useOptions()
     const [year, setYear] = useState(new Date().getFullYear())
     const [week, setWeek] = useState(getISOWeekNumber(Date.now()))
@@ -58,7 +53,6 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
     const [options, setOptions] = useState({
         issue: Object.values(issues)?.[0],
-        days: [1, 2, 3, 4, 5],
         startDate: new Date().setHours(0, 0, 0, 0),
         endDate: new Date().setHours(24, 0, 0, 0),
         defaultTimePerDay: getRequiredSeconds(week) / 5,
@@ -75,10 +69,10 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }, [options, issues, setOptions])
 
     useEffect(() => {
-        if (getRequiredSeconds(week) / options.days.length !== options.defaultTimePerDay) {
+        if (getRequiredSeconds(week) / days.length !== options.defaultTimePerDay) {
             setOptions({
                 ...options,
-                defaultTimePerDay: getRequiredSeconds(week) / options.days.length
+                defaultTimePerDay: getRequiredSeconds(week) / days.length
             })
         }
     }, [getRequiredSeconds, week, options])
@@ -119,17 +113,6 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
         }
     }
 
-    const updateDay = (day) => (e) => {
-        if (e.target.checked) {
-            setOptions({
-                ...options,
-                days: [day].concat(options.days)
-            })
-        } else {
-            setOptions({ ...options, days: options.days.filter((v) => v !== day) })
-        }
-    }
-
     const updateDurationPerDay = (e) => {
         const { value } = e.target
         const [h, m] = value.split(':')
@@ -143,13 +126,13 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
 
     const createWorklogs = async () => {
-        const days = (options.endDate - options.startDate) / dayInMs + 1
+        const selectedDays = (options.endDate - options.startDate) / dayInMs + 1
 
         const updates = []
-        for (let index = 0; index < days; index ++) {
+        for (let index = 0; index < selectedDays; index ++) {
             const date = options.startDate + index * dayInMs
 
-            if (!options.days.includes(new Date(date).getDay())) {
+            if (!days.includes(new Date(date).getDay())) {
                 continue
             }
             const duration = options.timePerDay || options.defaultTimePerDay * 1000
@@ -204,25 +187,6 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
                             value={durationString(options.timePerDay || options.defaultTimePerDay * 1000)}
                             onChange={updateDurationPerDay}
                         />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Label>Working Days</Label>
-                        <Row style={{ marginTop: 8 }}>
-                            {['Sun', 'Mo', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
-                                (day, idx: 0 | 1 | 2 | 3 | 4 | 5 | 6) => (
-                                    <Col key={day} style={{ width: 25, alignItems: 'center', marginRight: 0 }}>
-                                        <Checkbox
-                                            type="checkbox"
-                                            checked={options.days.includes(idx)}
-                                            onChange={updateDay(idx)}
-                                        />
-                                        <Label>{day}</Label>
-                                    </Col>
-                                )
-                            )}
-                        </Row>
                     </Col>
                 </Row>
             </div>

@@ -1,11 +1,11 @@
 import { defineConfig } from "cypress";
-import {createDevServer} from 'cypress-devserver-esbuild'
+import {createEsbuildDevServer} from 'cypress-devserver-esbuild'
 import * as alias from "esbuild-plugin-alias";
 
 export default defineConfig({
   e2e: {},
   component: {
-    devServer: createDevServer({
+    devServer: createEsbuildDevServer({
         logLevel: 'info',
         outdir: 'dist/',
         bundle: true,

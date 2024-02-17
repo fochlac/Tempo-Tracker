@@ -17,6 +17,7 @@ import { Alert, InfoBox } from '../atoms/Alert'
 import { MandatoryStar } from '../atoms/MandatoryStar'
 import { DomainEditor } from '../molecules/DomainEditor'
 import { useEffect } from 'react'
+import { WorkingDayOption } from '../molecules/WorkingDayOptions'
 
 const Body = styled.div`
     display: flex;
@@ -233,7 +234,8 @@ export const OptionsView: React.FC = () => {
             {showOtherOptions && (<>
                 <SectionHead>Issue Options</SectionHead>
                 <IssueOptions valid={valid} />
-
+                <SectionHead>Work Time Options</SectionHead>
+                <WorkingDayOption />
                 <SectionHead>App Options</SectionHead>
                 <AppOptionsSection />
             </>)}
