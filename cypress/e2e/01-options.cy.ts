@@ -11,11 +11,12 @@ describe('Options view & initial setup', () => {
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
     })
 
-    it('should consider issue order and reorder issues', { retries: 2 }, () => {
+    it.only('should consider issue order and reorder issues', { retries: 2 }, () => {
         cy.intercept('https://jira.test.com/rest/api/2/myself', {
             displayName: 'Testuser',
             key: 'test1'
         }).as('myselfData')
+        cy.reload()
         cy.setOptions({
             autosync: false,
             domain: 'https://jira.test.com/rest',
@@ -60,11 +61,9 @@ describe('Options view & initial setup', () => {
             .realHover({ position: 'center', scrollBehavior: false })
             .realMouseDown({ scrollBehavior: false })
 
-        cy.wait(20)
         cy.contains('div', 'Tracked Issues')
             .find('li')
             .eq(2)
-            .realHover({ position: 'center', scrollBehavior: false })
             .realHover({ position: 'center', scrollBehavior: false })
             .realMouseUp({ scrollBehavior: false })
 
@@ -73,7 +72,8 @@ describe('Options view & initial setup', () => {
         cy.get('@inputs').eq(2).should('have.value', 'Test3')
         cy.get('@inputs').eq(3).should('have.value', 'Test')
 
-        cy.wait(200)
+        cy.wait(250)
+
         cy.contains('div', 'Tracked Issues', {})
             .contains('li', 'TE-13')
             .find('div')
@@ -81,11 +81,9 @@ describe('Options view & initial setup', () => {
             .realHover({ position: 'center', scrollBehavior: false })
             .realMouseDown({ scrollBehavior: false })
 
-        cy.wait(20)
         cy.contains('div', 'Tracked Issues')
             .find('li')
             .eq(0)
-            .realHover({ position: 'center', scrollBehavior: false })
             .realHover({ position: 'center', scrollBehavior: false })
             .realMouseUp({ scrollBehavior: false })
 

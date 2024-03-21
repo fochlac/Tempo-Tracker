@@ -33,6 +33,7 @@ export function getOptions(options: Partial<Options>): Options {
     const cleanIssues = Array.isArray(issues)
         ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {})
         : issues ?? {}
+    const cleanIssueOrder = Array.isArray(issueOrder) ? issueOrder.filter(key => cleanIssues[key]) : []
 
     return {
         days: Array.isArray(days) ? days : [1, 2, 3, 4, 5],
@@ -42,7 +43,7 @@ export function getOptions(options: Partial<Options>): Options {
                 issueOrder.push(issueKey)
             }
             return issueOrder
-        }, Array.isArray(issueOrder) ? issueOrder.filter(key => options.issues[key]) : []),
+        }, cleanIssueOrder),
         domain: updatedDomain ?? '',
         user: user ?? '',
         jqlQuery: jqlQuery ?? '',
