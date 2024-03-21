@@ -30,7 +30,7 @@ export const IssueOptions: React.FC<{ valid: boolean; }> = ({ valid }) => {
             <Option>
                 <Label>Advanced Issue Selection</Label>
                 <InfoText>You can set up a custom JQL-query to automatically add to your manually created issue list. This will add issues up to a total of 15 issues.</InfoText>
-                <FlexRow justify="flex-start">
+                <FlexRow $justify="flex-start">
                     <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.useJqlQuery} onChange={(e) => actions.merge({ useJqlQuery: e.target.checked })} />
                     <Label>enabled</Label>
                 </FlexRow>
@@ -45,7 +45,7 @@ export const IssueOptions: React.FC<{ valid: boolean; }> = ({ valid }) => {
                         <ActionLink onClick={() => openTab({active: true, url: TMPL_LINK })}>template list</ActionLink>.
                     </InfoText>
                     <Textarea onChange={(e) => actions.merge({ jqlQuery: e.target.value })} value={options.jqlQuery} />
-                    <FlexRow justify="space-between">
+                    <FlexRow $justify="space-between">
                         <Select style={{marginTop: 4}} onChange={(e) => {
                             actions.merge({ jqlQuery: JQL_TEMPLATES[e.target.value]?.template })
                             e.target.value = ""

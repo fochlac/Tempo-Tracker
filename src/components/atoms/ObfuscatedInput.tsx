@@ -1,13 +1,14 @@
 import { useState } from "preact/hooks"
 import { Input } from "../atoms/Input"
 
-interface Props extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface Props extends Omit<React.HTMLAttributes<HTMLInputElement>, 'onChange'> {
     value: string;
     error?: boolean;
-    onChange: (value: string) => void;
+    onBlur?: (e) => void;
+    onChange?: (value: string) => void;
 }
 
-export const ObfuscatedInput: React.FC<Props> = ({ value, onChange, ...props }) => {
+export const ObfuscatedInput: React.FC<Props> = ({ value, onChange, error, ...props }) => {
     const [isFocused, setFocused] = useState(false)
     const [isDirty, setDirty] = useState(false)
     const [originalValue] = useState(value || '')
@@ -19,6 +20,7 @@ export const ObfuscatedInput: React.FC<Props> = ({ value, onChange, ...props }) 
     return (
         <Input
             {...props}
+            $error={error}
             value={isFocused ? (isDirty && value || '') : valueObfuscated}
             onFocus={() => setFocused(true)}
             onBlur={(e) => {

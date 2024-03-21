@@ -1,11 +1,11 @@
 
-interface FetchResult<D=any> {
+interface FetchResult<D = any> {
     loading: boolean;
     error?: Error;
     data: D;
 }
 
-interface TemporaryWorklog extends Omit<Worklog, 'id'|'comment'> {
+interface TemporaryWorklog extends Omit<Worklog, 'id' | 'comment'> {
     tempId?: string;
     id?: string;
     comment?: string;
@@ -76,6 +76,7 @@ interface THEMES {
 
 interface Options {
     issues: Record<string, LocalIssue>;
+    issueOrder: string[];
     domain: string;
     user: string;
     useJqlQuery: boolean;
@@ -89,7 +90,7 @@ interface Options {
     ttToken: string;
     email: string;
     days: number[];
-    instance: 'cloud'|'datacenter';
+    instance: 'cloud' | 'datacenter';
 }
 
 interface StatsMap {
@@ -143,10 +144,10 @@ interface EditIssue {
 
 interface DbHelper {
     getDb: () => Partial<DataBase>;
-    registerCallback: (key: DB_KEYS, cb:DbListener<DB_KEYS>) => string;
+    registerCallback: (key: DB_KEYS, cb: DbListener<DB_KEYS>) => string;
     unregisterCallback: (key: DB_KEYS, id: string) => void;
     checkUpdate: (key: DB_KEYS) => Promise<void>;
-    updateData: <K extends DB_KEYS>(key: K, value: DataBase[K]|((val: DataBase[K]) => DataBase[K])) => Promise<void>
+    updateData: <K extends DB_KEYS>(key: K, value: DataBase[K] | ((val: DataBase[K]) => DataBase[K])) => Promise<void>
 }
 
 type DbListener<K extends DB_KEYS> = (dataSlice: DataBase[K]) => void

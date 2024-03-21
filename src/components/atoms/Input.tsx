@@ -10,8 +10,8 @@ export const Input = styled.input<Props>`
     border-bottom: solid 1px;
     background: var(--background);
     color: var(--font);
-    ${(props) => props.error ? 'border-color: var(--destructive);' : ''}
-    ${(props) => props.error ? 'color: var(--destructive);' : ''}
+    ${(props) => props.$error ? 'border-color: var(--destructive);' : ''}
+    ${(props) => props.$error ? 'color: var(--destructive);' : ''}
     ${(props) => props.readOnly ? 'color: var(--font-disabled);' : ''}
     ${(props) => props.readOnly ? 'cursor: default;' : ''}
     outline: none;
@@ -26,8 +26,8 @@ export const Textarea = styled.textarea<Props>`
     border-bottom: solid 1px;
     background: var(--background);
     color: var(--font);
-    ${(props) => props.error ? 'border-color: var(--destructive);' : ''}
-    ${(props) => props.error ? 'color: var(--destructive);' : ''}
+    ${(props) => props.$error ? 'border-color: var(--destructive);' : ''}
+    ${(props) => props.$error ? 'color: var(--destructive);' : ''}
     ${(props) => props.readOnly ? 'color: var(--font-disabled);' : ''}
     ${(props) => props.readOnly ? 'cursor: default;' : ''}
     outline: none;

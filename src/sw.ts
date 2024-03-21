@@ -7,6 +7,7 @@ import { flushQueueRecursive } from './service-worker/service-worker-sync'
 import { updateBadgeTitle } from './service-worker/badge'
 import { heartbeat } from './service-worker/heartbeat'
 import { openAsTab } from './utils/browser'
+import { startTracking, stopTracking } from './service-worker/hotkeys'
 
 const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
 
@@ -88,6 +89,29 @@ async function getSetupInfo() {
     return getOptions(rawOptions)
 }
 
+const handleCommands = async (command) => {
+    const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
+
+    if (command === 'stop_tracking') {
+        await stopTracking()
+    }
+    if (command === 'start_tracking_1') {
+        await startTracking(options.issues[options.issueOrder[0]])
+    }
+    if (command === 'start_tracking_2') {
+        await startTracking(options.issues[options.issueOrder[1]])
+    }
+    if (command === 'start_tracking_3') {
+        await startTracking(options.issues[options.issueOrder[2]])
+    }
+}
+
+if (!isFirefox) {
+    chrome.commands.onCommand.addListener(handleCommands)
+} else {
+    browser.commands.onCommand.addListener(handleCommands)
+}
+
 controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
     const sendResponse = (response) => {
         sendResponseRaw(response)
@@ -118,10 +142,10 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
             getSetupInfo()
                 .then((options) => sendResponse(ACTIONS.PAGE_SETUP.response(true, options)))
                 .catch(() => sendResponse(ACTIONS.PAGE_SETUP.response(false)))
-    
+
             return true
         }
-    
+
         // firefox sync
         if (ACTIONS.SETUP_PAGE_QUEUE.type === request.type) {
             Promise.all([DB.get(DB_KEYS.UPDATE_QUEUE), DB.get(DB_KEYS.OPTIONS)])
@@ -136,7 +160,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
                     }
                 })
                 .catch((e) => sendResponse(ACTIONS.SETUP_PAGE_QUEUE.response(false)))
-    
+
             return true
         }
         if (ACTIONS.STORE_RECENT_WORKLOGS.type === request.type) {
@@ -147,7 +171,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
             })
                 .then(() => sendResponse(ACTIONS.STORE_RECENT_WORKLOGS.response(true)))
                 .catch(() => sendResponse(ACTIONS.STORE_RECENT_WORKLOGS.response(true)))
-    
+
             return true
         }
         if (ACTIONS.RESERVE_QUEUE_ITEM.type === request.type) {
@@ -155,7 +179,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
             reserveWorklog(log, sender.tab?.id)
                 .then(() => sendResponse(ACTIONS.RESERVE_QUEUE_ITEM.response(true)))
                 .catch(() => sendResponse(ACTIONS.RESERVE_QUEUE_ITEM.response(false)))
-    
+
             return true
         }
         if (ACTIONS.UNRESERVE_QUEUE_ITEM.type === request.type) {
@@ -163,7 +187,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
             unreserveWorklog(log, sender.tab?.id)
                 .then(() => sendResponse(ACTIONS.RESERVE_QUEUE_ITEM.response(true)))
                 .catch(() => sendResponse(ACTIONS.RESERVE_QUEUE_ITEM.response(true)))
-    
+
             return true
         }
         if (ACTIONS.QUEUE_ITEM_SYNCHRONIZED.type === request.type) {
@@ -171,7 +195,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
             markWorklogSynced(log, deleted)
                 .then(() => sendResponse(ACTIONS.QUEUE_ITEM_SYNCHRONIZED.response(true)))
                 .catch(() => sendResponse(ACTIONS.QUEUE_ITEM_SYNCHRONIZED.response(false)))
-    
+
             return true
         }
     }

@@ -27,17 +27,17 @@ const Bar = styled.div`
     width: 99.99%;
     min-height: 32px;
 `
-const Color = styled.div<{color?: string}>`
-    ${(props) => props.color ? `
+const Color = styled.div<{$color?: string}>`
+    ${(props) => props.$color ? `
     display: inline-block;
     width: 8px;
     height: 8px;
-    background: ${props.color};
+    background: ${props.$color};
     margin-right: 4px;
     ` : ''}
 `
 
-const ToggleButton = styled(Button) <{ first?: boolean; last?: boolean; selected?: boolean; firstRow: boolean; lastRow: boolean }>`
+const ToggleButton = styled(Button) <{ $first?: boolean; $last?: boolean; $selected?: boolean; $firstRow: boolean; $lastRow: boolean }>`
     border-radius: 0;
     font-size: 12px;
     flex-grow: 1;
@@ -49,16 +49,16 @@ const ToggleButton = styled(Button) <{ first?: boolean; last?: boolean; selected
     border-left-color: var(--contrast) !important;
     border-right-color: var(--contrast) !important;
     border-top-color: var(--contrast) !important;
-    ${(props) => props.selected ? `
+    ${(props) => props.$selected ? `
         background: var(--background) !important;
         border-bottom: var(--font) solid 1px !important;
         font-weight: 700;
     ` : ''}
-    ${props => props.first && props.firstRow ? 'border-top-left-radius: 3px;' : ''}
-    ${props => props.first && props.lastRow ? 'border-bottom-left-radius: 3px;' : ''}
-    ${props => props.last && props.firstRow ? 'border-top-right-radius: 3px;' : ''}
-    ${props => props.last && props.lastRow ? 'border-bottom-right-radius: 3px;' : ''}
-    ${props => !props.firstRow ? 'border-top: none;' : ''}
+    ${props => props.$first && props.$firstRow ? 'border-top-left-radius: 3px;' : ''}
+    ${props => props.$first && props.$lastRow ? 'border-bottom-left-radius: 3px;' : ''}
+    ${props => props.$last && props.$firstRow ? 'border-top-right-radius: 3px;' : ''}
+    ${props => props.$last && props.$lastRow ? 'border-bottom-right-radius: 3px;' : ''}
+    ${props => !props.$firstRow ? 'border-top: none;' : ''}
 `
 const ButtonText = styled.span`
     overflow: hidden;
@@ -99,15 +99,15 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
                         chunk.map(({ value, name, color, disabled, full, title }, index) => {
                             return (
                                 <ToggleButton
-                                    firstRow={chunkIndex === 0}
-                                    lastRow={chunkIndex === chunks.length - 1}
+                                    $firstRow={chunkIndex === 0}
+                                    $lastRow={chunkIndex === chunks.length - 1}
                                     style={{ marginLeft: (index === 0) ? 0 : -1, flexShrink: full ? 0 : 1 }}
                                     onClick={onClick(value, disabled)}
-                                    first={index === 0}
-                                    last={index === chunk.length - 1}
+                                    $first={index === 0}
+                                    $last={index === chunk.length - 1}
                                     disabled={disabled}
                                     title={title || name || value}
-                                    selected={value === selected}>
+                                    $selected={value === selected}>
                                     <Color color={color} />
                                     <ButtonText>
                                         {name || value}

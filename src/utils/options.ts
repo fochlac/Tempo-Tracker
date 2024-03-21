@@ -17,7 +17,8 @@ export function getOptions(options: Partial<Options>): Options {
         ttToken,
         email,
         instance,
-        days
+        days,
+        issueOrder
     } = options || {}
 
     // migration from old domain format
@@ -29,9 +30,19 @@ export function getOptions(options: Partial<Options>): Options {
         updatedDomain = `${protocol}${baseDomain}`
     }
 
+    const cleanIssues = Array.isArray(issues)
+        ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {})
+        : issues ?? {}
+
     return {
-        issues: Array.isArray(issues) ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {}) : issues ?? {},
         days: Array.isArray(days) ? days : [1, 2, 3, 4, 5],
+        issues: cleanIssues,
+        issueOrder: Object.keys(cleanIssues).reduce((issueOrder, issueKey) => {
+            if (!issueOrder.includes(issueKey)) {
+                issueOrder.push(issueKey)
+            }
+            return issueOrder
+        }, Array.isArray(issueOrder) ? issueOrder.filter(key => options.issues[key]) : []),
         domain: updatedDomain ?? '',
         user: user ?? '',
         jqlQuery: jqlQuery ?? '',

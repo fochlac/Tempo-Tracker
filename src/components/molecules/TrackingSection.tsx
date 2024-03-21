@@ -49,7 +49,7 @@ export function TrackingSection({ hasError }) {
     const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
     const [splitTrackingDialogVisible, showSplitTrackingDialog] = useState(false)
     const remoteIssues = useJqlQueryResults() as LocalIssue[]
-    const issues = Object.values(options.issues).concat(options.useJqlQuery ? remoteIssues : [])
+    const issues = options.issueOrder.map(key => options.issues[key]).concat(options.useJqlQuery ? remoteIssues : [])
 
     const optionList: ToggleBarOption[] = useMemo(() => {
         return issues
@@ -127,7 +127,7 @@ export function TrackingSection({ hasError }) {
     const showComment = options.showComments
     const stopButton = (
         <DropDownButtonDestructive
-            list={[
+            buttonList={[
                 { label: 'Split Tracking', onClick: () => showSplitTrackingDialog(true) },
                 { label: 'Discard Tracking', onClick: () => actions.abort() }
             ]}
@@ -155,7 +155,7 @@ export function TrackingSection({ hasError }) {
             <Tracker>
                 {!tracker.lastHeartbeat &&
                     (tracker.issue ? (
-                        <FlexColumn align="stretch" style={{ marginRight: showComment ? 4 : 0 }}>
+                        <FlexColumn $align="stretch" style={{ marginRight: showComment ? 4 : 0 }}>
                             <FlexRow style={{ marginBottom: 6 }}>
                                 <IssueSelector
                                     enableSearch

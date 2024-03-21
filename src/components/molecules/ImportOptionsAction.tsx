@@ -43,7 +43,7 @@ export function ImportOptionsAction() {
     return (
         <>
             <ActionLinkRaw as='label' for={fileSelectId}>Import</ActionLinkRaw>
-            <HiddenInput files={null} onChange={onImportOptions} type="file" accept="application/JSON" id={fileSelectId} />
+            <HiddenInput onChange={onImportOptions} type="file" accept="application/JSON" id={fileSelectId} />
             <ConfirmDialog
                 open={!!importData}
                 onClose={() => setImportData(null)}

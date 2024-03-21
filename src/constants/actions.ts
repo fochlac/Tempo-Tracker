@@ -2,7 +2,7 @@ export const ACTIONS = {
     FLUSH_UPDATES: {
         type: 'FLUSH_UPDATES',
         create() {
-            return {type: 'FLUSH_UPDATES'}
+            return { type: 'FLUSH_UPDATES' }
         },
         response(success: boolean, message = '') {
             return {
@@ -17,7 +17,7 @@ export const ACTIONS = {
     UPDATE_BADGE: {
         type: 'UPDATE_BADGE',
         create() {
-            return {type: 'UPDATE_BADGE'}
+            return { type: 'UPDATE_BADGE' }
         },
         response(success, message = '') {
             return {
@@ -32,7 +32,7 @@ export const ACTIONS = {
     PAGE_SETUP: {
         type: 'PAGE_SETUP',
         create() {
-            return {type: 'PAGE_SETUP'}
+            return { type: 'PAGE_SETUP' }
         },
         response(success: boolean, options?: Options) {
             return {
@@ -44,7 +44,7 @@ export const ACTIONS = {
     SETUP_PAGE_QUEUE: {
         type: 'SETUP_PAGE_QUEUE',
         create() {
-            return {type: 'SETUP_PAGE_QUEUE'}
+            return { type: 'SETUP_PAGE_QUEUE' }
         },
         response(success: boolean, queue?: TemporaryWorklog[], forceSync?: boolean, forceFetch?: boolean) {
             return {

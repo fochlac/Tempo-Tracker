@@ -90,7 +90,7 @@ export function DBProvider({ children }) {
         <Provider value={dbHelpers}>
              {children}
         </Provider>
-    ) : <FlexRow justify="center" style={{ height: '100%' }}>Loading Database...</FlexRow>
+    ) : <FlexRow $justify="center" style={{ height: '100%' }}>Loading Database...</FlexRow>
 }
 
 export function useDatabase<K extends DB_KEYS>(uuid: K) {

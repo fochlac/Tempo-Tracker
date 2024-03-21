@@ -31,6 +31,7 @@ const ButtonWrapper = styled.div<{open?: boolean}>`
 `
 
 const MainButton = styled(DestructiveButton)`
+    white-space: nowrap;
     margin-right: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -78,16 +79,18 @@ const ListButton = styled(DestructiveButton)`
     border-left: none;
     border-right: none;
     border-bottom: none;
+    white-space: nowrap;
 `
 
-interface ListButton extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    label: string
+interface ListButton extends Omit<React.HTMLAttributes<HTMLButtonElement>, 'onClick'> {
+    label: string;
+    onClick: (e) => void;
 }
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    list?: ListButton[]
+interface Props extends React.HTMLAttributes<HTMLButtonElement> {
+    buttonList?: ListButton[]
 }
 
-export const DropDownButtonDestructive: React.FC<Props> = ({ children, list, style, ...props }) => {
+export const DropDownButtonDestructive: React.FC<Props> = ({ children, buttonList, style, ...props }) => {
     const [open, setOpen] = useState(false)
 
     const iconStyles = {
@@ -111,17 +114,20 @@ export const DropDownButtonDestructive: React.FC<Props> = ({ children, list, sty
     return (
         <ButtonWrapper open={open}>
             <MainButton {...props}>{children}</MainButton>
-            <MenuButton ariaLabel="Open Button List" onClick={handleClick(open)}>
+            <MenuButton aria-label="Open Button List" onClick={handleClick(open)}>
                 {open ? <ChevronUp size={18} style={iconStyles} /> : <ChevronDown size={18} style={iconStyles} />}
             </MenuButton>
             {open && (
                 <MenuList>
-                    {list.map(({ label, onClick, ...props }) => (
+                    {buttonList.map(({ label, onClick, ...props }) => (
                         <ListItem>
-                            <ListButton onClick={(e) => {
-                                onClick(e); 
-                                handleClick(true)(e)
-                                }} {...props}>
+                            <ListButton 
+                                onClick={(e) => {
+                                    onClick(e);
+                                    handleClick(true)(e)
+                                }}
+                                {...props}
+                            >
                                 {label}
                             </ListButton>
                         </ListItem>

@@ -33,13 +33,13 @@ const List = styled.ul`
     height: 100%;
     min-height: 350px;
 `
-const ProgressWrapper = styled.div<{ visible: boolean }>`
+const ProgressWrapper = styled.div<{ $visible: boolean }>`
     margin-top: -3px;
     margin-bottom: 5px;
     padding: 0 10px;
     width: 100%;
     height: 4px;
-    visibility: ${({ visible }) => (visible ? 'visible' : 'hidden')};
+    visibility: ${({ $visible }) => ($visible ? 'visible' : 'hidden')};
 `
 
 export const TrackerView: React.FC = () => {
@@ -107,7 +107,7 @@ export const TrackerView: React.FC = () => {
                     </ErrorTooltipTop>
                 )}
             </H6>
-            <ProgressWrapper visible={worklog.loading}>
+            <ProgressWrapper $visible={worklog.loading}>
                 <ProgressIndeterminate />
             </ProgressWrapper>
             <List>

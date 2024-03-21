@@ -167,7 +167,7 @@ export const OptionsView: React.FC = () => {
                         <InfoText>The email address you used for your Atlassian account.</InfoText>
                         <Input
                             style={{ marginBottom: 4 }}
-                            error={showError || (error === 'TOKEN' && !ignoreError)}
+                            $error={showError || (error === 'TOKEN' && !ignoreError)}
                             value={email}
                             onChange={(e) => actions.merge({ email: e.target.value })}
                         />

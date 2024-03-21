@@ -21,6 +21,33 @@
         ],
         "persistent": true
     },
+    "commands": {
+        "stop_tracking": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+0"
+            },
+            "description": "Stop Tracking",
+            "global": true
+        },
+        "start_tracking_1": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+1"
+            },
+            "description": "Start Tracking for Issue 1"
+        },
+        "start_tracking_2": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+2"
+            },
+            "description": "Start Tracking for Issue 2"
+        },
+        "start_tracking_3": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+3"
+            },
+            "description": "Start Tracking for Issue 3"
+        }
+    },
     "permissions": [
         "alarms",
         "<all_urls>",
