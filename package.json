@@ -1,12 +1,12 @@
 {
     "name": "jira-log-time",
-    "version": "2.5.1",
+    "version": "2.6.0",
     "description": "Code repo for [Jira Log Time](https://chrome.google.com/webstore/detail/jira-log-time/peboekgeiffcaddndeonkmkledekeegl) chrome plugin.",
     "main": "jira-api.js",
     "scripts": {
         "start": "node build/esbuild.js",
         "build": "node build/esbuild.prod.js && node build/zip-files.js",
-        "release": "node build/release.js && npm run build",
+        "minor": "node build/release.js && npm run build",
         "publish": "node build/publish.mjs",
         "patch": "node build/release.js patch && npm run build",
         "major": "node build/release.js major && npm run build",
