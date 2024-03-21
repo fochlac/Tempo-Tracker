@@ -1,6 +1,8 @@
 import { THEMES } from '../../src/constants/constants'
 import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
 
+import 'cypress-real-events'
+
 describe('Options view & initial setup', () => {
     beforeEach(() => {
         cy.intercept('https://jira.test.com/**/*', (req) => req.reply(404))
@@ -271,8 +273,9 @@ describe('Options view & initial setup', () => {
         cy.contains('dialog', 'Change Server Url')
             .find('input')
             .type(serverUrl, { delay: 50 })
-            .invoke('attr', 'error')
-            .should('be.undefined')
+            .closest('div')
+            .contains('Unable to find the JIRA-Api with the provided Domain.')
+            .should('not.exist')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
@@ -484,7 +487,7 @@ describe('Options view & initial setup', () => {
 
         cy.wait('@search').its('request.url').should('contain', 'jql=assignee+was+currentUser')
 
-        
+
         cy.contains('div', 'Working Days')
             .find('input')
             .should('have.length', 7)
@@ -495,7 +498,7 @@ describe('Options view & initial setup', () => {
             .contains('div', 'Sat')
             .find('input')
             .click()
-            cy.getOptions().its('days').should('include', 6)
+        cy.getOptions().its('days').should('include', 6)
     })
 
     it('should reset sensitive data when the domain is changed from datacenter to cloud', () => {
@@ -545,21 +548,23 @@ describe('Options view & initial setup', () => {
         cy.contains('dialog', 'Change Server Url')
             .find('input')
             .should('be.visible')
-            .invoke('attr', 'error')
-            .should('equal', 'true')
+            .closest('div')
+            .contains('Unable to find the JIRA-Api with the provided Domain.')
+            .should('exist')
 
         cy.contains('dialog', 'Change Server Url')
             .find('input')
             .clear()
             .type(serverUrl, { delay: 50 })
-            .invoke('attr', 'error')
-            .should('be.undefined')
+            .closest('div')
+            .contains('Unable to find the JIRA-Api with the provided Domain.')
+            .should('not.exist')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
         cy.contains('dialog', 'Change Server Url')
             .should('not.exist')
-        
+
         cy.getOptions().its('user').should('equal', '')
         cy.getOptions().its('token').should('equal', '')
         cy.getOptions().its('instance').should('equal', 'cloud')
@@ -612,14 +617,15 @@ describe('Options view & initial setup', () => {
             .find('input')
             .clear()
             .type(serverUrl, { delay: 50 })
-            .invoke('attr', 'error')
-            .should('be.undefined')
+            .closest('div')
+            .contains('Unable to find the JIRA-Api with the provided Domain.')
+            .should('not.exist')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
         cy.contains('dialog', 'Change Server Url')
             .should('not.exist')
-        
+
         cy.getOptions().its('user').should('equal', '')
         cy.getOptions().its('token').should('equal', '')
         cy.getOptions().its('instance').should('equal', 'datacenter')
@@ -671,5 +677,79 @@ describe('Options view & initial setup', () => {
         cy.reload()
         cy.startApp()
         cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(15, 15, 15)')
+    })
+
+    it.only('should consider issue order and reorder issues', () => {
+        cy.intercept('https://jira.test.com/rest/api/2/myself', {
+            displayName: 'Testuser',
+            key: 'test1'
+        }).as('myselfData')
+        cy.setOptions({
+            autosync: false,
+            domain: 'https://jira.test.com/rest',
+            forceFetch: false,
+            forceSync: false,
+            ttToken: 'sometoken123',
+            issues: {
+                'TE': { alias: 'Test4', id: '12346', key: 'TE', name: 'Illness' },
+                'TE-2': { alias: 'Test3', id: '12346', key: 'TE-2', name: 'Plaque' },
+                'TE-12': { alias: 'Test', id: '12346', key: 'TE-12', name: 'Sickness' },
+                'TE-13': { alias: 'Test1', id: '12346', key: 'TE-13', name: 'Other' }
+            },
+            issueOrder: ['TE-2', 'TE', 'TE-13', 'TE-12'],
+            theme: THEMES.DARK,
+            token: 'testtoken',
+            user: 'riedel'
+        })
+        cy.reload()
+        cy.startApp()
+        cy.contains('main', 'Tempo-Tracker').should('be.visible')
+
+        cy.contains('form', 'Please select an issue to start tracking.')
+            .find('button').as('trackingButtons')
+
+        cy.get('@trackingButtons').eq(0).should('contain.text', 'Test3')
+        cy.get('@trackingButtons').eq(1).should('contain.text', 'Test4')
+        cy.get('@trackingButtons').eq(2).should('contain.text', 'Test1')
+        cy.get('@trackingButtons').eq(3).should('contain.text', 'Test')
+
+        cy.contains('a', 'Options').click()
+
+        cy.contains('div', 'Tracked Issues').find('input:not([type="color"])').as('inputs').should('have.length', 4)
+        cy.get('@inputs').eq(0).should('have.value', 'Test3')
+        cy.get('@inputs').eq(1).should('have.value', 'Test4')
+        cy.get('@inputs').eq(2).should('have.value', 'Test1')
+        cy.get('@inputs').eq(3).should('have.value', 'Test')
+
+        cy.contains('div', 'Tracked Issues').contains('li', 'TE-2').find('div').first().realHover({ position: 'center', scrollBehavior: false })
+            .realMouseDown({ scrollBehavior: false })
+
+        cy.contains('div', 'Tracked Issues').find('li').eq(2).realHover({ position: 'center', scrollBehavior: false })
+            .realMouseUp({ scrollBehavior: false })
+
+        cy.get('@inputs').eq(0).should('have.value', 'Test4')
+        cy.get('@inputs').eq(1).should('have.value', 'Test1')
+        cy.get('@inputs').eq(2).should('have.value', 'Test3')
+        cy.get('@inputs').eq(3).should('have.value', 'Test')
+
+
+        cy.contains('div', 'Tracked Issues').contains('li', 'TE-13').find('div').first().realHover({ position: 'center', scrollBehavior: false })
+            .realMouseDown({ scrollBehavior: false })
+
+        cy.contains('div', 'Tracked Issues').find('li').eq(0).realHover({ position: 'center', scrollBehavior: false })
+            .realMouseUp({ scrollBehavior: false })
+
+        cy.get('@inputs').eq(0).should('have.value', 'Test1')
+        cy.get('@inputs').eq(1).should('have.value', 'Test4')
+        cy.get('@inputs').eq(2).should('have.value', 'Test3')
+        cy.get('@inputs').eq(3).should('have.value', 'Test')
+
+
+        cy.contains('a', 'Tracker').click()
+
+        cy.get('@trackingButtons').eq(0).should('contain.text', 'Test1')
+        cy.get('@trackingButtons').eq(1).should('contain.text', 'Test4')
+        cy.get('@trackingButtons').eq(2).should('contain.text', 'Test3')
+        cy.get('@trackingButtons').eq(3).should('contain.text', 'Test')
     })
 })

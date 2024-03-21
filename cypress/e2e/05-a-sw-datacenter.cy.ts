@@ -486,7 +486,7 @@ describe('Service Worker - Datacenter API', () => {
             }
         })
         cy.startSw()
-        
+
         cy.window().its('chrome.badge.backgroundColor').should('equal', '#028A0F')
 
         cy.setTracking({
@@ -513,5 +513,42 @@ describe('Service Worker - Datacenter API', () => {
             .should('have.length', 1)
             .its('0.message')
             .should('deep.equal', ACTIONS.UPDATE_BADGE.response(true))
+    })
+
+    it.only('should listen to hotkeys', () => {
+        cy.networkMocks()
+        cy.openWithOptions(undefined, true)
+        cy.startSw()
+
+        cy.setTracking({
+            issue: { key: 'Test-1', id: 'id', name: 'Name', alias: 'Alias', color: 'testcolor' },
+            start: new Date('2020-10-08T14:00:00.000Z').getTime()
+        })
+
+        cy.window()
+            .its('chrome.commandListeners')
+            .as('hotkeyListeners')
+            .should('have.length', 1)
+
+
+        cy.window()
+            .its('chrome.commandListeners').invoke(0, 'stop_tracking')
+
+        cy.getTracking().should('deep.equal', { issue: null, start: null })
+
+        cy.window()
+            .its('chrome.commandListeners').invoke(0, 'start_tracking_1')
+
+        cy.getTracking().its('issue.alias').should('equal', 'Test2')
+
+
+        cy.window()
+            .its('chrome.commandListeners').invoke(0, 'start_tracking_2')
+        cy.getTracking().its('issue.alias').should('equal', 'TE3: a very long testname 3')
+
+
+        cy.window()
+            .its('chrome.commandListeners').invoke(0, 'start_tracking_3')
+        cy.getTracking().its('issue.alias').should('equal', 'Test4')
     })
 })

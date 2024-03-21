@@ -14,6 +14,7 @@ const chromeApiMock = `
         menuListeners: [],
         messageListeners: [],
         installListeners: [],
+        commandListeners: [],
         alarms: {
           create: (name, settings) => chrome.alarmList.push({name, settings}),
           onAlarm: {
@@ -23,6 +24,11 @@ const chromeApiMock = `
             chrome.alarmList = []
             typeof cb === 'function' && cb()
           }
+        },
+        commands: {
+            onCommand: {
+                addListener: (commandCb) => chrome.commandListeners.push(commandCb)
+            }
         },
         tabs: {
             create: (options) => chrome.tabsList.push(options)

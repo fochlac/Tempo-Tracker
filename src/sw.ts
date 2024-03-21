@@ -7,7 +7,7 @@ import { flushQueueRecursive } from './service-worker/service-worker-sync'
 import { updateBadgeTitle } from './service-worker/badge'
 import { heartbeat } from './service-worker/heartbeat'
 import { openAsTab } from './utils/browser'
-import { startTracking, stopTracking } from './service-worker/hotkeys'
+import { handleHotKey } from './service-worker/hotkeys'
 
 const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
 
@@ -89,27 +89,10 @@ async function getSetupInfo() {
     return getOptions(rawOptions)
 }
 
-const handleCommands = async (command) => {
-    const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
-
-    if (command === 'stop_tracking') {
-        await stopTracking()
-    }
-    if (command === 'start_tracking_1') {
-        await startTracking(options.issues[options.issueOrder[0]])
-    }
-    if (command === 'start_tracking_2') {
-        await startTracking(options.issues[options.issueOrder[1]])
-    }
-    if (command === 'start_tracking_3') {
-        await startTracking(options.issues[options.issueOrder[2]])
-    }
-}
-
 if (!isFirefox) {
-    chrome.commands.onCommand.addListener(handleCommands)
+    chrome.commands.onCommand.addListener(handleHotKey)
 } else {
-    browser.commands.onCommand.addListener(handleCommands)
+    browser.commands.onCommand.addListener(handleHotKey)
 }
 
 controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
