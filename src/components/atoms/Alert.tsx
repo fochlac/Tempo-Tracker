@@ -33,9 +33,9 @@ const StyledInfo = styled(Info)`
     width: 28px;
 `
 
-export const Alert: React.FC<{ text: string; }> = ({ text }) => {
+export const Alert: React.FC<{ text: string; style? }> = ({ text, style }) => {
     return (
-        <ErrorBox>
+        <ErrorBox style={style}>
             <StyledAlertOctagon />
             <span>{text}</span>
         </ErrorBox>

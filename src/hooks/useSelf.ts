@@ -1,5 +1,5 @@
 import { useEffect } from "preact/hooks"
-import { fetchSelf } from "../utils/api"
+import { fetchSelf, hasPermissions } from "../utils/api"
 import { useSafeState } from "./useSafeState"
 import { useOptions } from "./useOptions"
 
@@ -21,9 +21,13 @@ export function useSelf() {
             const id = `${localDomain}${localToken}`
             if (cacheInfo.id === id && cacheInfo.time > Date.now() && !(override && Object.values(override).length)) {
                 setName(cacheInfo.name)
-                return 
-            } 
+                return
+            }
             cacheInfo.id = id
+            const hasPermission = await hasPermissions()
+            if (!hasPermission) {
+                return setError('PERMISSION')
+            }
             try {
                 const res = await fetchSelf({ token: localToken, domain: localDomain })
                 if (cacheInfo.id === id && res.user) {
@@ -36,7 +40,7 @@ export function useSelf() {
                     }
                     return
                 }
-                setError(true)
+                setError('DEFAULT')
             }
             catch (e) {
                 if (cacheInfo.id !== id) return
@@ -44,12 +48,12 @@ export function useSelf() {
                     setError('TOKEN')
                 }
                 else {
-                    setError(true)
+                    setError('DEFAULT')
                 }
             }
         }
         else {
-            setError(true)
+            setError('DEFAULT')
         }
     }
 

@@ -19,6 +19,8 @@ import { WorklogHeader } from '../molecules/WorklogHeader'
 import { LogPeriodDialog } from '../molecules/LogPeriodDialog'
 import { CommentDialog } from '../molecules/CommentDialog'
 import { editCommentDuck } from '../../store/ducks/edit-comment'
+import { requestPermission } from 'src/utils/api'
+import { useOptions } from 'src/hooks/useOptions'
 
 const Body = styled.section`
     display: flex;
@@ -42,9 +44,16 @@ const ProgressWrapper = styled.div<{ $visible: boolean }>`
     visibility: ${({ $visible }) => ($visible ? 'visible' : 'hidden')};
 `
 
+const errorTooltips = {
+    TOKEN: 'Invalid token. Please provide a correct token in the options.',
+    PERMISSION: 'No permission to access Jira Instance. Click this icon to grant access.',
+    DEFAULT: 'No connection to Jira instance - syncing and refresh not available.'
+}
+
 export const TrackerView: React.FC = () => {
     const worklog = useFetchJiraWorklog()
     const self = useSelf()
+    const { data: options } = useOptions()
     const editIssue = useSelector(editIssueDuck.selector)
     const { issue: commentId } = useSelector(editCommentDuck.selector)
     const worklogs = useMemo(() => worklog.data.sort((a, b) => b.start - a.start), [worklog.data])
@@ -53,9 +62,7 @@ export const TrackerView: React.FC = () => {
     const { newWorklog, createNewWorklog } = useInsertWorklog()
     const [showPeriodDialog, setShowPeriodDialog] = useState(false)
 
-    const offlineTooltip = self.error === 'TOKEN' 
-        ? 'Invalid token. Please provide a correct token in the options.' 
-        : 'No connection to Jira instance - syncing and refresh not available.'
+    const offlineTooltip = errorTooltips[self.error] || errorTooltips.DEFAULT
 
     const commentLog = commentId && worklogs.find((log) => log.id === commentId || log.tempId === commentId)
 
@@ -103,7 +110,18 @@ export const TrackerView: React.FC = () => {
                 )}
                 {self.error && (
                     <ErrorTooltipTop content={offlineTooltip}>
-                        <WifiOff size={16} style={{ color: 'var(--destructive)', marginTop: -2, marginBottom: -3 }} />
+                        <WifiOff
+                            onClick={() =>
+                                self.error === 'PERMISSION' && requestPermission(options).then(() => self.refetch())
+                            }
+                            size={16}
+                            style={{
+                                color: 'var(--destructive)',
+                                marginTop: -2,
+                                marginBottom: -3,
+                                cursor: self.error === 'PERMISSION' ? 'pointer' : 'default'
+                            }}
+                        />
                     </ErrorTooltipTop>
                 )}
             </H6>

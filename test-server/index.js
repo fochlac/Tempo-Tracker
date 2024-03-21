@@ -15,6 +15,15 @@ const chromeApiMock = `
         messageListeners: [],
         installListeners: [],
         commandListeners: [],
+        origins: [],
+        permissions: {
+            getAll: () => ({ origins: chrome.origins }),
+            request: ({ origins }) => {
+                chrome.origins.push(...origins)
+                return Promise.resolve(true)
+            },
+            contains: (options, cb) => cb(true)
+        },
         alarms: {
           create: (name, settings) => chrome.alarmList.push({name, settings}),
           onAlarm: {

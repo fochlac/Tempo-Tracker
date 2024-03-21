@@ -62,6 +62,16 @@ const getUrl = (options: Options, url: URLS, query?: URLSearchParams) => {
     return `${options.domain}${pathInfo.url}${queryString}`
 }
 
+export const getDomains = (options: Partial<Options>) => [`${options.domain}/*`]
+
+export const checkPermissions = async (options: Partial<Options>) => {
+    if (isFirefox) return true
+    const permissions = (isFirefox ? browser : chrome)?.permissions
+    if (!permissions) return Promise.reject('Unable to access permission api.')
+
+    return new Promise((resolve, reject) => permissions.contains({ origins: getDomains(options) }, (hasPermission) => hasPermission ? resolve(true) : reject('No permission to access the api.')))
+}
+
 const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklog | Worklog>): WorklogPayload => {
     const { end, start, issue, id, comment } = worklog
     const seconds = Math.round((end - start) / 1000)
@@ -92,6 +102,7 @@ function toLocalWorklog(remoteWorklog: WorklogRemote): Worklog {
 }
 
 export async function fetchIssues(options, jql, limit?: number): Promise<Issue[]> {
+    await checkPermissions(options)
     const query = new URLSearchParams()
     query.append('jql', jql)
     if (limit) {
@@ -104,6 +115,7 @@ export async function fetchIssues(options, jql, limit?: number): Promise<Issue[]
 }
 
 export async function fetchSelf(options?: Options, useCredentials?: boolean): Promise<Self> {
+    await checkPermissions(options)
     const result = await fetch(getUrl(options, URLS.SELF), {
         headers: useCredentials ? jsonHeaders : headers(options),
         credentials: useCredentials ? 'include' : 'omit',
@@ -117,6 +129,7 @@ export async function fetchSelf(options?: Options, useCredentials?: boolean): Pr
 }
 
 export async function searchIssues(options: Options, searchString: string): Promise<string[]> {
+    await checkPermissions(options)
     const query = new URLSearchParams()
     query.append('query', searchString)
     query.append('currentJQL', 'created >= "1900/01/01"')
@@ -130,6 +143,7 @@ export async function searchIssues(options: Options, searchString: string): Prom
 }
 
 export async function fetchWorklogs(startDate: number, endDate: number, options: Options): Promise<Worklog[]> {
+    await checkPermissions(options)
     const payload = {
         from: dateString(startDate),
         to: dateString(endDate),
@@ -146,6 +160,7 @@ export async function fetchWorklogs(startDate: number, endDate: number, options:
 }
 
 export async function writeWorklog(worklog: Partial<Worklog>, options?: Options): Promise<Worklog> {
+    await checkPermissions(options)
     const payload = createWorklogPayload(options, worklog)
 
     return fetchJson(getUrl(options, URLS.CREATE_WORKLOG), {
@@ -157,6 +172,7 @@ export async function writeWorklog(worklog: Partial<Worklog>, options?: Options)
 }
 
 export async function updateWorklog(worklog: Partial<Worklog>, options?: Options): Promise<Worklog> {
+    await checkPermissions(options)
     const payload = createWorklogPayload(options, worklog)
 
     const updatedLog = await fetchJson(`${getUrl(options, URLS.CREATE_WORKLOG)}/${payload.originId}`, {
@@ -181,6 +197,7 @@ export async function updateWorklog(worklog: Partial<Worklog>, options?: Options
 }
 
 export async function deleteWorklog(id: string, options: Options): Promise<void> {
+    await checkPermissions(options)
     return fetch(`${getUrl(options, URLS.CREATE_WORKLOG)}/${id}`, {
         headers: headers(options),
         method: 'DELETE',

@@ -26,8 +26,7 @@
             "suggested_key": {
                 "default": "Ctrl+Shift+0"
             },
-            "description": "Stop Tracking",
-            "global": true
+            "description": "Stop Tracking"
         },
         "start_tracking_1": {
             "suggested_key": {

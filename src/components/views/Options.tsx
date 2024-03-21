@@ -18,6 +18,7 @@ import { MandatoryStar } from '../atoms/MandatoryStar'
 import { DomainEditor } from '../molecules/DomainEditor'
 import { useEffect } from 'react'
 import { WorkingDayOption } from '../molecules/WorkingDayOptions'
+import { requestPermission } from 'src/utils/api'
 
 const Body = styled.div`
     display: flex;
@@ -96,7 +97,7 @@ export const OptionsView: React.FC = () => {
         }, 1500)
     }
 
-    const showError = Boolean(error && !ignoreError && error !== 'TOKEN' && domain.length && storedToken.length)
+    const showError = Boolean(error && !ignoreError && error === 'DEFAULT' && domain.length && storedToken.length)
 
     const showOtherOptions = Boolean(
         domain.length && instance === 'datacenter'
@@ -115,9 +116,19 @@ export const OptionsView: React.FC = () => {
                     <Alert text="Error connecting to the Jira-API: Please check the server url and the personal access token." />
                 </Option>
             )}
+            {error === 'PERMISSION' && (
+                <Option onClick={() => requestPermission(options).then(() => refetch())}>
+                    <Alert style={{ cursor: 'pointer' }} text="No permission to access the Jira-API: Click this message to grant access." />
+                </Option>
+            )}
             {instance === 'cloud' && (
                 <Option>
                     <InfoBox text="Support for Jira Cloud is experimental. Please report an issues you may find." />
+                </Option>
+            )}
+            {isFirefox && (
+                <Option>
+                    <InfoBox text="Due to technical limitations Firefox is only partially supported." />
                 </Option>
             )}
             <DomainEditor />

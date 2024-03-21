@@ -68,14 +68,21 @@ const IssueRow = ({ issue, setDelIssue, index }) => {
         id: issue.key,
         data: { index }
     })
+
+    if (!issue?.key || !options.issues[issue.key]) return null
+    
     const handleAliasChange = (issueKey) => (e) => {
-        const newIssues = { ...options.issues }
-        newIssues[issueKey].alias = e.target.value
+        const newIssues = { 
+            ...options.issues, 
+            [issueKey]: { ...options.issues[issueKey], alias: e.target.value }
+        }
         actions.merge({ issues: newIssues })
     }
     const handleColorChange = (issueKey) => (e) => {
-        const newIssues = { ...options.issues }
-        newIssues[issueKey].color = e.target.value
+        const newIssues = { 
+            ...options.issues, 
+            [issueKey]: { ...options.issues[issueKey], color: e.target.value }
+        }
         actions.merge({ issues: newIssues })
     }
 
