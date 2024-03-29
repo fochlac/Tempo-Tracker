@@ -8,6 +8,7 @@ import { updateBadgeTitle } from './service-worker/badge'
 import { heartbeat } from './service-worker/heartbeat'
 import { openAsTab } from './utils/browser'
 import { handleHotKey } from './service-worker/hotkeys'
+import { Workday } from './utils/workday'
 
 const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
 
@@ -62,13 +63,17 @@ controller.alarms.create('flushQueue', { periodInMinutes: 1 })
 controller.alarms.onAlarm.addListener(async (alarm) => {
     console.info('alarm', alarm)
     if (alarm.name === 'flushQueue') {
+        let options
         try {
-            const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
+            options = getOptions(await DB.get(DB_KEYS.OPTIONS))
             if (options.autosync) {
                 await flushQueueRecursive()
             }
         } catch (e) {
             console.log(e)
+        }
+        if (options?.workdaySync) {
+            await Workday.registerScript()
         }
         try {
             await updateBadgeTitle()
@@ -185,4 +190,16 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
 })
 
 updateBadgeTitle()
-heartbeat()
+heartbeat();
+
+(async function () {
+    try {
+        let options = getOptions(await DB.get(DB_KEYS.OPTIONS))
+        if (options?.workdaySync) {
+            await Workday.registerScript()
+        }
+    } catch (e) {
+        console.log(e)
+    }
+})()
+

@@ -50,12 +50,13 @@ interface TooltipProps {
     content: string;
     className?: string;
     right?: boolean;
+    onClick?: () => void;
     style?: React.CSSProperties;
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, className, right }) => {
+export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, className, right, onClick }) => {
     if (!content) return <>{children}</>
-    return <Wrapper className={className} data-content={content} style={style} $right={right}>
+    return <Wrapper onClick={onClick} className={className} data-content={content} style={style} $right={right}>
         {children}
     </Wrapper>
 }

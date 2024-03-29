@@ -108,7 +108,7 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
                                     disabled={disabled}
                                     title={title || name || value}
                                     $selected={value === selected}>
-                                    <Color color={color} />
+                                    <Color $color={color} />
                                     <ButtonText>
                                         {name || value}
                                     </ButtonText>

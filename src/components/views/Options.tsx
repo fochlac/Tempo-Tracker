@@ -1,10 +1,10 @@
-import { AlertCircle, } from 'preact-feather'
+import { AlertCircle } from 'preact-feather'
 import { useRef } from 'preact/hooks'
 import styled from 'styled-components'
 import { useOptions } from '../../hooks/useOptions'
 import { useSafeState } from '../../hooks/useSafeState'
 import { useSelf } from '../../hooks/useSelf'
-import { openTab } from '../../utils/browser'
+import { getPermission, openTab } from '../../utils/browser'
 import { ActionLink } from '../atoms/ActionLink'
 import { Input } from '../atoms/Input'
 import { ErrorInfoText, H6, InfoText, Label } from '../atoms/Typography'
@@ -19,6 +19,8 @@ import { DomainEditor } from '../molecules/DomainEditor'
 import { useEffect } from 'react'
 import { WorkingDayOption } from '../molecules/WorkingDayOptions'
 import { requestPermission } from 'src/utils/api'
+import { FlexRow } from '../atoms/Layout'
+import { Workday } from 'src/utils/workday'
 
 const Body = styled.div`
     display: flex;
@@ -73,6 +75,16 @@ export const OptionsView: React.FC = () => {
         return () => setToken('')
     }, [domain])
 
+    useEffect(() => {
+        if (options.workdaySync) {
+            Workday.hasPermission().then((hasPermission) => {
+                if (!hasPermission) {
+                    actions.merge({ workdaySync: false })
+                }
+            })
+        }
+    }, [])
+
     const timeout = useRef<NodeJS.Timeout>()
     const tokenBlur = async (e) => {
         const newToken = e?.newToken || token
@@ -105,6 +117,20 @@ export const OptionsView: React.FC = () => {
             : storedToken.length && email.length && ttToken.length
     )
 
+    const onChangeWorkdaySync = async (event) => {
+        const checked = event?.target?.checked
+        let granted = false
+        if (checked) {
+            granted = await Workday.requestPermission()
+            if (granted) {
+                await Workday.registerScript()
+            }
+        }
+        actions.merge({
+            workdaySync: Boolean(checked && granted)
+        })
+    }
+
     return (
         <Body>
             <JiraHead>
@@ -118,7 +144,10 @@ export const OptionsView: React.FC = () => {
             )}
             {error === 'PERMISSION' && (
                 <Option onClick={() => requestPermission(options).then(() => refetch())}>
-                    <Alert style={{ cursor: 'pointer' }} text="No permission to access the Jira-API: Click this message to grant access." />
+                    <Alert
+                        style={{ cursor: 'pointer' }}
+                        text="No permission to access the Jira-API: Click this message to grant access."
+                    />
                 </Option>
             )}
             {instance === 'cloud' && (
@@ -152,7 +181,9 @@ export const OptionsView: React.FC = () => {
                             />
                             {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
                         </InputWrapper>
-                        {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token is invalid.</ErrorInfoText>}
+                        {error === 'TOKEN' && !ignoreError && (
+                            <ErrorInfoText>The provided token is invalid.</ErrorInfoText>
+                        )}
                         {Boolean((domain?.length && !options.token?.length) || (error === 'TOKEN' && !ignoreError)) && (
                             <ActionLink
                                 style={{ height: 6, marginTop: -2, marginLeft: 0 }}
@@ -182,7 +213,9 @@ export const OptionsView: React.FC = () => {
                             value={email}
                             onChange={(e) => actions.merge({ email: e.target.value })}
                         />
-                        {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>}
+                        {error === 'TOKEN' && !ignoreError && (
+                            <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>
+                        )}
                     </Option>
                     <Option style={{ marginBottom: 12 }}>
                         <Label>
@@ -201,7 +234,9 @@ export const OptionsView: React.FC = () => {
                             />
                             {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
                         </InputWrapper>
-                        {error === 'TOKEN' && !ignoreError && <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>}
+                        {error === 'TOKEN' && !ignoreError && (
+                            <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>
+                        )}
                         {Boolean(!options.token?.length || (error === 'TOKEN' && !ignoreError)) && (
                             <ActionLink
                                 style={{ height: 6, marginTop: -2, marginLeft: 0 }}
@@ -211,13 +246,16 @@ export const OptionsView: React.FC = () => {
                             </ActionLink>
                         )}
                     </Option>
-                    
+
                     <Option style={{ marginBottom: 12 }}>
                         <Label>
                             Tempo API Token
                             <MandatoryStar />
                         </Label>
-                        <InfoText>To access the Tempo REST API an access token with the right to manage and view worklogs is needed.</InfoText>
+                        <InfoText>
+                            To access the Tempo REST API an access token with the right to manage and view worklogs is
+                            needed.
+                        </InfoText>
                         <ObfuscatedInput
                             key={options.domain}
                             style={{ marginBottom: 4 }}
@@ -242,14 +280,30 @@ export const OptionsView: React.FC = () => {
                 </Option>
             )}
 
-            {showOtherOptions && (<>
-                <SectionHead>Issue Options</SectionHead>
-                <IssueOptions valid={valid} />
-                <SectionHead>Work Time Options</SectionHead>
-                <WorkingDayOption />
-                <SectionHead>App Options</SectionHead>
-                <AppOptionsSection />
-            </>)}
+            {showOtherOptions && (
+                <>
+                    <SectionHead>Issue Options</SectionHead>
+                    <IssueOptions valid={valid} />
+                    <SectionHead>Work Time Options</SectionHead>
+                    <WorkingDayOption />
+                    <SectionHead>App Options</SectionHead>
+                    {domain.includes('ttt-sp.com') && (
+                        <Option>
+                            <Label>Workday Time Tracking Support</Label>
+                            <FlexRow $justify="flex-start">
+                                <Input
+                                    style={{ margin: '0 6px' }}
+                                    type="checkbox"
+                                    checked={options.workdaySync}
+                                    onChange={onChangeWorkdaySync}
+                                />
+                                <Label>enabled</Label>
+                            </FlexRow>
+                        </Option>
+                    )}
+                    <AppOptionsSection />
+                </>
+            )}
         </Body>
     )
 }

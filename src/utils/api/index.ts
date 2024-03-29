@@ -1,3 +1,4 @@
+import { getPermission } from '../browser';
 import { DB } from '../data-layer';
 import { dateString, getISOWeekNumber, getYearIsoWeeksPeriod } from '../datetime';
 import { getOptions } from '../options';
@@ -25,10 +26,7 @@ export async function hasPermissions() {
 
 export async function requestPermission(options) {
     const api = options.instance === 'cloud' ? cloudApi : datacenterApi
-    const permissions = (isFirefox ? browser : chrome)?.permissions
-    if (!permissions) return Promise.reject('Unable to access permission api.')
-
-    return permissions.request({ origins: api.getDomains(options) })
+    return getPermission({ origins: api.getDomains(options) })
 }
 
 export async function fetchSelf(customOptions?: Partial<Options>, useCredentials?: boolean) {

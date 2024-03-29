@@ -1,7 +1,10 @@
 import { useEffect, useState } from "preact/hooks"
 import { formatDuration } from "../../utils/datetime"
-
-export function Timer({ start, noSeconds, ...spanProps }) {
+interface Props extends React.HTMLAttributes<HTMLTimeElement> {
+    start?: number;
+    noSeconds?: boolean;
+}
+export const Timer:React.FC<Props> = ({ start, noSeconds, ...spanProps }) =>  {
     const [render, setRender] = useState(0)
     useEffect(() => {
         const interval = setInterval(() => setRender((v) => v + 1), noSeconds ? 1000 : 50)

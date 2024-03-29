@@ -1,6 +1,6 @@
 {
     "name": "Tempo-Tracker",
-    "version": "2.6.0",
+    "version": "3.0.0",
     "manifest_version": 3,
     "description": "Timetracker with synchronization to the Jira Tempo-Plugin.",
     "icons": {
@@ -14,7 +14,8 @@
     },
     "permissions": [
         "alarms",
-        "contextMenus"
+        "contextMenus",
+        "scripting"
     ],
     "commands": {
         "stop_tracking": {

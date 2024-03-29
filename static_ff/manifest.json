@@ -50,7 +50,8 @@
     "permissions": [
         "alarms",
         "<all_urls>",
-        "menus"
+        "menus",
+        "scripting"
     ],
     "content_scripts": [
         {

@@ -10,6 +10,7 @@ import { ActionLink } from "../atoms/ActionLink"
 import { isPopped } from "../../utils/url"
 import { ExternalLink } from "preact-feather"
 import { openAsTab } from "../../utils/browser"
+import { WorkdayLink } from "./WorkdayLink"
 
 const AppBar = styled.header`
     display: flex;
@@ -58,6 +59,7 @@ export const Header: React.FC = () => {
                     </InternalLink>
                 )
             )}
+            <WorkdayLink />
             {!isPopped() && (
                 <ActionLink title="Open in Tab" onClick={() => openAsTab(view)}>
                     <ExpandIcon size={16} />

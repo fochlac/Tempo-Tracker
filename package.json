@@ -31,7 +31,8 @@
         "@dnd-kit/sortable": "^8.0.0",
         "@dnd-kit/utilities": "^3.2.2",
         "@sinonjs/fake-timers": "^10.0.2",
-        "@types/chrome": "^0.0.179",
+        "@types/chrome": "^0.0.263",
+        "@types/firefox-webext-browser": "120.0.3",
         "@types/sinonjs__fake-timers": "^8.1.2",
         "@types/styled-components": "^5.1.23",
         "chokidar": "^3.5.3",
@@ -59,7 +60,6 @@
         "tiny-atom": "^4.2.2",
         "typescript": "5.3.3",
         "uuid": "^8.3.2",
-        "web-ext-types": "^3.2.1",
         "zip-a-folder": "^1.1.3"
     }
 }

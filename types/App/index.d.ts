@@ -87,6 +87,7 @@ interface Options {
     forceFetch: boolean;
     theme: keyof THEMES;
     token: string;
+    workdaySync: boolean;
     ttToken: string;
     email: string;
     days: number[];
