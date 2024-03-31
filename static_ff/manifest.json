@@ -10,18 +10,6 @@
         "48": "icon48.png",
         "128": "icon128.png"
     },
-    "web_accessible_resources": [
-        {
-            "resources": [
-                "icon16.png",
-                "icon32.png",
-                "icon128.png"
-            ],
-            "matches": [
-                "https://wd5.myworkday.com/*"
-            ]
-        }
-    ],
     "browser_specific_settings": {
         "gecko": {
             "id": "tempo-tracker@fochlac.com"
@@ -72,6 +60,14 @@
             ],
             "js": [
                 "content-script.js"
+            ]
+        },
+        {
+            "matches": [
+                "https://wd5.myworkday.com/bridgestone/d/*"
+            ],
+            "js": [
+                "workday-script.js"
             ]
         }
     ],

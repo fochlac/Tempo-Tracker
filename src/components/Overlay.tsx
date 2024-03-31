@@ -10,6 +10,9 @@ import { Input } from './atoms/Input'
 import { ButtonBar } from './atoms/ButtonBar'
 import { Button } from './atoms/Button'
 import { ChevronsDown, ChevronsUp } from 'preact-feather'
+import { Tooltip } from './atoms/Tooltip'
+import { Logo } from './atoms/Logo'
+import { InfoBox } from './atoms/Alert'
 
 const Main = styled.aside<{ $collapsed?: boolean }>`
     position: absolute;
@@ -60,8 +63,9 @@ const DateHeader = styled(ListRow)`
     border-bottom: solid 1px #dce0e6;
     font-weight: 600;
 `
-const Row = styled(ListRow)`
+const Row = styled(ListRow)<{$error: boolean}>`
     padding: 4px 8px 0 8px;
+    ${props => props['$error'] ? 'border-left: solid 2px var(--destructive);' : ''}
 `
 const Issue = styled.span`
     flex: 1 1;
@@ -73,7 +77,7 @@ const Issue = styled.span`
 const Time = styled.span`
     flex-shrink: 0;
 `
-const Img = styled.img`
+const Img = styled(Logo)`
     margin-right: 8px;
     margin-bottom: -5px;
     width: 24px;
@@ -127,15 +131,11 @@ const CollapseIndicator = styled.span`
     }
 `
 
-const getUrl = () => {
-    const controller = isFirefox ? browser : chrome
-    if (!controller) return undefined
-    return controller.runtime.getURL('icon32.png')
-}
-
 export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: number) => Promise<void>; workTimes: WorkTimeInfo[] }> = ({ insertWorkTime, workTimes }) => {
-    const [selected, setSelected] = useState(new Set())
+    const [selected, setSelected] = useState<Set<string>>(new Set())
     const [collapsed, setCollapsed] = useState(false)
+    const [isLoading, setLoading] = useState(false)
+    const [errors, setErrors] = useState({})
 
     const sortedWorkTimes = useMemo(
         () =>
@@ -152,11 +152,36 @@ export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: nu
         [workTimes]
     )
 
+    const onSubmit = async () => {
+        setLoading(true)
+        const errors = {}
+        for (const workTimeId of selected) {
+            const workTime = workTimes.find(workTime => workTime.id === workTimeId)
+            let result
+            try {
+                result = await insertWorkTime(workTime.start, workTime.end)
+                if (result?.widget === 'changeSummary' && result.unassociatedErrorNodes?.length) {
+                    errors[workTime?.id] = result.unassociatedErrorNodes[0].message || 'Unknown Error.'
+                }
+            }
+            catch(e) {
+                errors[workTime?.id] = e?.message || 'Unknown Error.'
+                console.error(e)
+            }
+        }
+        if (!Object.keys(errors).length) {
+            location.reload()
+        }
+        setLoading(false)
+        setSelected(new Set(Object.keys(errors)))
+        setErrors(errors)
+    }
+
     return (
         <Main $collapsed={collapsed}>
             <CssVariables theme={Themes.DEFAULT} />
             <Header onClick={() => setCollapsed(!collapsed)}>
-                <Img src={getUrl()} />
+                <Img />
                 <span>Tempo Tracker Times</span>
                 <CollapseIndicator>
                     {collapsed ? <ChevronsDown /> : <ChevronsUp />}
@@ -164,6 +189,7 @@ export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: nu
             </Header>
             {!collapsed && (
                 <>
+                    <InfoBox text="Support for Workday Upload is experimental. Please report any issues you may find." />
                     <List>
                         {Object.keys(sortedWorkTimes).map((date) => {
                             const allSelected = sortedWorkTimes[date].every((workTime) => selected.has(workTime.id))
@@ -171,6 +197,7 @@ export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: nu
                                 (workTimes = []) =>
                                 (e) => {
                                     e.stopPropagation()
+                                    if (isLoading) return
                                     const newSet = new Set(selected)
                                     if (workTimes.every((workTime) => selected.has(workTime.id))) {
                                         workTimes.forEach((workTime) => newSet.delete(workTime.id))
@@ -186,22 +213,24 @@ export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: nu
                                     <DateHeader onClick={onChange(sortedWorkTimes[date])}>
                                         <span>{dateHumanized(sortedWorkTimes[date][0].start)}</span>
                                         {sortedWorkTimes[date].length > 1 && (
-                                            <Checkbox type="checkbox" checked={allSelected} />
+                                            <Checkbox type="checkbox" disabled={isLoading} checked={allSelected} />
                                         )}
                                     </DateHeader>
                                     {sortedWorkTimes[date].map((workTime) => (
-                                        <Row onClick={onChange([workTime])} key={workTime.id}>
-                                            <Time>{`${timeString(workTime.start)} - ${timeString(workTime.end)}`}</Time>
-                                            <Issue>{workTime.name}</Issue>
-                                            <Checkbox type="checkbox" checked={selected.has(workTime.id)} />
-                                        </Row>
+                                        <Tooltip key={workTime.id} content={errors[workTime.id]}>
+                                            <Row onClick={onChange([workTime])} key={workTime.id} $error={errors[workTime.id]}>
+                                                <Time>{`${timeString(workTime.start)} - ${timeString(workTime.end)}`}</Time>
+                                                <Issue>{workTime.name}</Issue>
+                                                <Checkbox type="checkbox" disabled={isLoading} checked={selected.has(workTime.id)} />
+                                            </Row>
+                                        </Tooltip>
                                     ))}
                                 </Fragment>
                             )
                         })}
                     </List>
                     <UploadBar>
-                        <UploadButton disabled={!selected.size}>Upload</UploadButton>
+                        <UploadButton onClick={onSubmit} disabled={!selected.size || isLoading}>Upload</UploadButton>
                     </UploadBar>
                 </>
             )}

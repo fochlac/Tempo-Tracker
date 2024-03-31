@@ -94,7 +94,7 @@ const getActiveWeek = async () => {
                 body: body_out,
                 headers: { 'session-secure-token': sessionSecureToken }
             })
-            await fetchJsonForm(`https://wd5.myworkday.com${requestUri}.htmld`, {
+            return fetchJsonForm(`https://wd5.myworkday.com${requestUri}.htmld`, {
                 body: {
                     _flowExecutionKey,
                     _eventId_submit,

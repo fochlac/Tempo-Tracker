@@ -5,7 +5,13 @@ const workdayUrl = 'https://wd5.myworkday.com/bridgestone/d/*'
 const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
 
 function hasPermission() {
-    return controller.permissions.contains({ origins: [workdayUrl] })
+    if (isFirefox) {
+        return new Promise((resolve) => {
+            controller.permissions.contains({ origins: [workdayUrl] }, (hasPermission) => resolve(hasPermission))
+        })
+    }
+
+    return chrome.permissions.contains({ origins: [workdayUrl] })
 }
 
 function requestPermission() {
