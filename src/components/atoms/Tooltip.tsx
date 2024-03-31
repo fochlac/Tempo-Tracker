@@ -50,7 +50,7 @@ interface TooltipProps {
     content: string;
     className?: string;
     right?: boolean;
-    onClick?: () => void;
+    onClick?: (e: any) => void;
     style?: React.CSSProperties;
 }
 

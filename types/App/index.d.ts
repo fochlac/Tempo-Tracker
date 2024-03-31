@@ -143,6 +143,13 @@ interface EditIssue {
     issue: string;
 }
 
+interface WorkTimeInfo {
+    id: string;
+    start: number;
+    end: number;
+    name: string;
+}
+
 interface DbHelper {
     getDb: () => Partial<DataBase>;
     registerCallback: (key: DB_KEYS, cb: DbListener<DB_KEYS>) => string;

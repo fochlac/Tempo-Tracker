@@ -1,14 +1,15 @@
 import { getPermission } from "./browser"
 
 const timeTrackingPage = 'https://wd5.myworkday.com/bridgestone/d/task/2997$4767.htmld'
+const workdayUrl = 'https://wd5.myworkday.com/bridgestone/d/*'
 const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
 
 function hasPermission() {
-    return controller.permissions.contains({ origins: [timeTrackingPage] })
+    return controller.permissions.contains({ origins: [workdayUrl] })
 }
 
 function requestPermission() {
-    return getPermission({ origins: [timeTrackingPage] })
+    return getPermission({ origins: [workdayUrl] })
 }
 
 async function registerScript() {
@@ -21,7 +22,7 @@ async function registerScript() {
                     id: "workday-script",
                     js: ["workday-script.js"],
                     persistAcrossSessions: true,
-                    matches: [timeTrackingPage],
+                    matches: [workdayUrl],
                     runAt: "document_start",
                     allFrames: true
                 }])

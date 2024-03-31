@@ -9,6 +9,18 @@
         "48": "icon48.png",
         "128": "icon128.png"
     },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "icon16.png",
+                "icon32.png",
+                "icon128.png"
+            ],
+            "matches": [
+                "https://wd5.myworkday.com/*"
+            ]
+        }
+    ],
     "background": {
         "service_worker": "./sw.js"
     },

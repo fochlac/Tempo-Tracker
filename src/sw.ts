@@ -9,6 +9,7 @@ import { heartbeat } from './service-worker/heartbeat'
 import { openAsTab } from './utils/browser'
 import { handleHotKey } from './service-worker/hotkeys'
 import { Workday } from './utils/workday'
+import { getTrackedTimes } from './service-worker/workday'
 
 const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
 
@@ -120,6 +121,13 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
         updateBadgeTitle()
             .then(() => sendResponse(ACTIONS.UPDATE_BADGE.response(true)))
             .catch((e) => sendResponse(ACTIONS.UPDATE_BADGE.response(false, e.message)))
+
+        return true
+    }
+    if (ACTIONS.WORKDAY_SETUP.type === request.type) {
+        getTrackedTimes(request.payload.startTime, request.payload.endTime)
+            .then((workTimeInfo) => sendResponse(ACTIONS.WORKDAY_SETUP.response(true, workTimeInfo)))
+            .catch((e) => sendResponse(ACTIONS.WORKDAY_SETUP.response(false, e.message)))
 
         return true
     }

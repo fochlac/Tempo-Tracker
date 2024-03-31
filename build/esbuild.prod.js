@@ -27,25 +27,25 @@ async function build() {
     const build_jsx = esbuild.build({
         ...defaultOptions,
         ...jsxOptions,
-        entryPoints: ['./src/popup.tsx'],
+        entryPoints: ['./src/popup.tsx', './src/workday-script.tsx'],
         inject: ['./build/helmet.js', './build/helmet_chrome.js'],
     })
     const build = esbuild.build({
       ...defaultOptions,
-        entryPoints: ['./src/content-script.ts', './src/workday-script.ts', './src/sw.ts'],
+        entryPoints: ['./src/content-script.ts', './src/sw.ts'],
         inject: ['./build/helmet_chrome.js']
     })
     const build_jsx_ff = esbuild.build({
       ...defaultOptions,
       ...jsxOptions,
-        entryPoints: ['./src/popup.tsx', './src/content-script.ts', './src/workday-script.ts', './src/sw.ts'],
+        entryPoints: ['./src/popup.tsx', './src/workday-script.tsx'],
         outdir: 'dist_ff/',
         inject: ['./build/helmet.js', './build/helmet_ff.js'],
         target: 'firefox90'
     })
     const build_ff = esbuild.build({
       ...defaultOptions,
-        entryPoints: ['./src/content-script.ts', './src/workday-script.ts', './src/sw.ts'],
+        entryPoints: ['./src/content-script.ts', './src/sw.ts'],
         outdir: 'dist_ff/',
         inject: ['./build/helmet_ff.js'],
         target: 'firefox90'

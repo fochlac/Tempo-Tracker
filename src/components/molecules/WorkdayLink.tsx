@@ -39,7 +39,10 @@ export const WorkdayLink: React.FC = () => {
         openTab({ url: Workday.timeTrackingPage, active: true })
     }
 
-    const onGrantPermissions = async () => {
+    const onGrantPermissions = async (e) => {
+        e.stopPropagation()
+        e.preventDefault()
+
         let granted = hasPermission
         if (!hasPermission) {
             granted = await Workday.requestPermission()     

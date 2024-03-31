@@ -29,25 +29,25 @@ async function build() {
     const build_jsx = await esbuild.context({
         ...defaultOptions,
         ...jsxOptions,
-        entryPoints: ['./src/popup.tsx'],
+        entryPoints: ['./src/popup.tsx', './src/workday-script.tsx'],
         inject: ['./build/helmet.js', './build/helmet_chrome.js']
     })
     const build = await esbuild.context({
         ...defaultOptions,
         inject: ['./build/helmet_chrome.js'],
-        entryPoints: ['./src/content-script.ts', './src/workday-script.ts', './src/sw.ts'],
+        entryPoints: ['./src/content-script.ts', './src/sw.ts'],
     })
     const build_jsx_ff = await esbuild.context({
         ...defaultOptions,
         ...jsxOptions,
-        entryPoints: ['./src/popup.tsx'],
+        entryPoints: ['./src/popup.tsx', './src/workday-script.tsx'],
         outdir: 'dist_ff/',
         inject: ['./build/helmet.js', './build/helmet_ff.js'],
         target: 'firefox90'
     })
     const build_ff = await esbuild.context({
         ...defaultOptions,
-        entryPoints: ['./src/content-script.ts', './src/workday-script.ts', './src/sw.ts'],
+        entryPoints: ['./src/content-script.ts', './src/sw.ts'],
         outdir: 'dist_ff/',
         inject: ['./build/helmet_ff.js'],
         target: 'firefox90'

@@ -29,6 +29,21 @@ export const ACTIONS = {
             }
         }
     },
+    WORKDAY_SETUP: {
+        type: 'WORKDAY_SETUP',
+        create(startTime: number, endTime: number) {
+            return { type: 'WORKDAY_SETUP', payload: { startTime, endTime } }
+        },
+        response(success, workTimeInfo: { workTimes: WorkTimeInfo[], options: Options }) {
+            return {
+                type: 'WORKDAY_SETUP',
+                payload: {
+                    success,
+                    workTimeInfo
+                }
+            }
+        }
+    },
     PAGE_SETUP: {
         type: 'PAGE_SETUP',
         create() {
