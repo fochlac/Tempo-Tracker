@@ -57,22 +57,21 @@ export const WorkdayLink: React.FC = () => {
     }
 
     return (
-            <ErrorTooltip
-                onClick={onGrantPermissions}
-                right
-                content={
-                    !hasPermission
-                        ? 'Permissions to access Workday are missing. Click the lock-icon to grant permissions.'
-                        : undefined
-                    }
-                    >
-        <FlexRow>
-            <ActionLink style={{ marginBottom: -1 }} error={!hasPermission} onClick={onClick}>
-                Workday
-            </ActionLink>
-
-                <LockIcon onClick={onGrantPermissions} />
-        </FlexRow>
-            </ErrorTooltip>
+        <ErrorTooltip
+            onClick={onGrantPermissions}
+            right
+            content={
+                !hasPermission
+                    ? 'Permissions to access Workday are missing. Click the lock-icon to grant permissions.'
+                    : undefined
+            }
+        >
+            <FlexRow>
+                <ActionLink style={{ marginBottom: -1 }} error={!hasPermission} onClick={onClick}>
+                    Workday
+                </ActionLink>
+                {!hasPermission ? <LockIcon onClick={onGrantPermissions} /> : null}
+            </FlexRow>
+        </ErrorTooltip>
     )
 }
