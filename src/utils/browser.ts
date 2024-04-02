@@ -1,8 +1,9 @@
+const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
 export function openTab(options: Parameters<typeof browser.tabs.create>[0]) {
     if (isFirefox) {
-        return browser.tabs.create(options)
+        return controller.tabs.create(options)
     }
-    return chrome.tabs.create(options)
+    return controller.tabs.create(options)
 }
 
 export const openAsTab = (view) => {
@@ -13,7 +14,7 @@ export const openAsTab = (view) => {
 }
 
 export const getPermission = (permission: browser.permissions.Permissions) => {
-    const permissions = (isFirefox ? browser : chrome)?.permissions
+    const permissions = controller?.permissions
     if (!permissions) return Promise.reject('Unable to access permission api.')
     return permissions.request(permission)
 }

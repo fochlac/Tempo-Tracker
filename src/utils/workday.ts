@@ -11,7 +11,7 @@ function hasPermission() {
         })
     }
 
-    return chrome.permissions.contains({ origins: [workdayUrl] })
+    return controller.permissions.contains({ origins: [workdayUrl] })
 }
 
 function requestPermission() {

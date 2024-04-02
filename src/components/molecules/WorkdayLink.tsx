@@ -1,15 +1,14 @@
-import styled from "styled-components"
-import { VIEWS } from "../../constants/constants"
-import { useOptions } from "../../hooks/useOptions"
+import styled from 'styled-components'
+import { useOptions } from '../../hooks/useOptions'
 
-import { ActionLink } from "../atoms/ActionLink"
-import { openTab } from "../../utils/browser"
-import { Workday } from "src/utils/workday"
-import { useSafeState } from "src/hooks/useSafeState"
-import { useEffect } from "preact/hooks"
-import { Unlock } from "preact-feather"
-import { ErrorTooltip } from "../atoms/Tooltip"
-import { FlexRow } from "../atoms/Layout"
+import { ActionLink } from '../atoms/ActionLink'
+import { openTab } from '../../utils/browser'
+import { Workday } from 'src/utils/workday'
+import { useSafeState } from 'src/hooks/useSafeState'
+import { useEffect } from 'preact/hooks'
+import { Unlock } from 'preact-feather'
+import { ErrorTooltip } from '../atoms/Tooltip'
+import { FlexRow } from '../atoms/Layout'
 
 const LockIcon = styled(Unlock)`
     width: 16px;
@@ -24,7 +23,7 @@ const LockIcon = styled(Unlock)`
 export const WorkdayLink: React.FC = () => {
     const { data: options, actions } = useOptions()
     const [hasPermission, setHasPermission] = useSafeState(true)
-    
+
     useEffect(() => {
         if (options.domain.includes('ttt-sp.com')) {
             Workday.hasPermission().then(setHasPermission)
@@ -45,11 +44,11 @@ export const WorkdayLink: React.FC = () => {
 
         let granted = hasPermission
         if (!hasPermission) {
-            granted = await Workday.requestPermission()     
+            granted = await Workday.requestPermission()
             await Workday.registerScript()
             if (granted) {
                 setHasPermission(true)
-            }  
+            }
         }
         if (!options.workdaySync && granted) {
             actions.merge({ workdaySync: true })
@@ -58,15 +57,22 @@ export const WorkdayLink: React.FC = () => {
     }
 
     return (
+            <ErrorTooltip
+                onClick={onGrantPermissions}
+                right
+                content={
+                    !hasPermission
+                        ? 'Permissions to access Workday are missing. Click the lock-icon to grant permissions.'
+                        : undefined
+                    }
+                    >
         <FlexRow>
-            <ActionLink onClick={onClick}>
+            <ActionLink style={{ marginBottom: -1 }} error={!hasPermission} onClick={onClick}>
                 Workday
             </ActionLink>
-            {!hasPermission ? (
-                <ErrorTooltip onClick={ onGrantPermissions} right content="Permissions to access Workday are missing. Click here to grant permissions.">
-                    <LockIcon onClick={ onGrantPermissions} />
-                </ErrorTooltip>
-            ) : null}
+
+                <LockIcon onClick={onGrantPermissions} />
         </FlexRow>
+            </ErrorTooltip>
     )
 }
