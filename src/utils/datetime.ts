@@ -1,4 +1,3 @@
-
 const hourInMs = 1000 * 60 * 60
 const dayInMs = hourInMs * 24
 const weekInMs = dayInMs * 7
@@ -11,14 +10,10 @@ export function formatDuration(ms: number, noSecond?: boolean, noDays?: boolean)
 
     if (d > 0 && !noDays) {
         return `${d}d ${h % 24}h ${pad(m % 60)}m`
-    }
-    else if (h > 0) {
+    } else if (h > 0) {
         return `${h}h ${pad(m % 60)}m`
-    }
-    else {
-        return noSecond
-            ? `0h ${m % 60}m`
-            : `${m % 60}m ${pad(s % 60)}s`
+    } else {
+        return noSecond ? `0h ${m % 60}m` : `${m % 60}m ${pad(s % 60)}s`
     }
 }
 
@@ -38,8 +33,7 @@ export function dateHumanized(unixStamp: number) {
     return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${String(date.getFullYear()).slice(-2)}`
 }
 export function roundTimeMinutes(unixStamp: number, ceil: boolean = false) {
-    const date = new Date(unixStamp + (ceil ? 60000 : 0))
-    return new Date(`${date.toISOString().split('T')[0]}T${pad(date.getHours())}:${pad(date.getMinutes())}:00.000Z`).getTime()
+    return new Date(unixStamp + (ceil ? 60000 : 0)).setSeconds(0, 0)
 }
 
 export function timeString(unixStamp: number) {
@@ -74,16 +68,16 @@ export function daysAgo(unixStamp: number) {
 }
 
 export function getISOWeeks(y) {
-    const d = new Date(y, 0, 1);
-    const isLeap = new Date(y, 1, 29).getMonth() === 1;
+    const d = new Date(y, 0, 1)
+    const isLeap = new Date(y, 1, 29).getMonth() === 1
 
-    //check for a Jan 1 that's a Thursday or a leap year that has a 
+    //check for a Jan 1 that's a Thursday or a leap year that has a
     //Wednesday jan 1. Otherwise it's 52
-    return d.getDay() === 4 || isLeap && d.getDay() === 3 ? 53 : 52
+    return d.getDay() === 4 || (isLeap && d.getDay() === 3) ? 53 : 52
 }
 
 export function getISOWeekNumber(unixStamp: number) {
-    const date = new Date(unixStamp);
+    const date = new Date(unixStamp)
     const week1 = new Date(date.getFullYear(), 0, 4)
     const day = week1.getDay()
 
@@ -104,7 +98,8 @@ export function getIsoWeekPeriod(y, n) {
 export function getIsoWeekPeriods(y) {
     const weekNumber = getISOWeeks(y)
 
-    return Array(weekNumber).fill(0)
+    return Array(weekNumber)
+        .fill(0)
         .map((_v, index) => ({ week: index + 1, period: getIsoWeekPeriod(y, index + 1) }))
 }
 
@@ -116,7 +111,12 @@ export function getYearIsoWeeksPeriod(y) {
     const week1NextYear = new Date(y + 1, 0, 4)
     const dayNextYear = week1.getDay()
 
-    const startOfWeek1NextYear = new Date(week1NextYear.setHours(0, 0, 0, 0) - dayNextYear * dayInMs).setHours(0, 0, 0, 0)
+    const startOfWeek1NextYear = new Date(week1NextYear.setHours(0, 0, 0, 0) - dayNextYear * dayInMs).setHours(
+        0,
+        0,
+        0,
+        0
+    )
 
     return [new Date(startOfWeek1), new Date(startOfWeek1NextYear - 1)]
 }

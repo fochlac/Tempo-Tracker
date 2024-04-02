@@ -17,8 +17,8 @@ const fetchJsonForm = (url: RequestInfo | URL, options: FormOptions = {}) =>
         body: new URLSearchParams(Object.entries(options.body ?? {})).toString()
     })
 
-const changeSummary =
-    '<wml:Change_Summary xmlns:wml="http://www.workday.com/ns/model/1.0" xmlns:wd="urn:com.workday/bsvc" xmlns:nyw="urn:com.netyourwork/aod"><wd:OK Ref="1085/wd:OK" Replaced=""><V>1</V></wd:OK></wml:Change_Summary>'
+const changeSummary = (id) =>
+    `<wml:Change_Summary xmlns:wml="http://www.workday.com/ns/model/1.0" xmlns:wd="urn:com.workday/bsvc" xmlns:nyw="urn:com.netyourwork/aod"><wd:OK Ref="${id}" Replaced=""><V>1</V></wd:OK></wml:Change_Summary>`
 
 const getActiveWeek = async () => {
     try {
@@ -64,6 +64,9 @@ const getActiveWeek = async () => {
                 .filter((child) => child.widget === 'fieldSet')
                 .flatMap((widget) => widget.children)
                 .find((child) => child.propertyName === 'wd:Out_Time').id
+            const okButtonId = children
+                .find((child) => child.widget === 'mutexButtonBar')
+                .children?.[0]?.mutex?.id
 
             const body_in = {
                 _flowExecutionKey,
@@ -98,7 +101,7 @@ const getActiveWeek = async () => {
                 body: {
                     _flowExecutionKey,
                     _eventId_submit,
-                    'change-summary': changeSummary
+                    'change-summary': changeSummary(okButtonId)
                 },
                 headers: { 'session-secure-token': sessionSecureToken }
             })
