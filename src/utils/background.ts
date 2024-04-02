@@ -4,7 +4,7 @@ const controller = chrome || browser
 
 export const triggerBackgroundAction = <R extends ActionDefinition>(actionDefinition: R, ...params: Parameters<R['create']>): Promise<ReturnType<R['response']>['payload']> => {
     return new Promise((resolve, reject) => {
-        const action = actionDefinition.create(...params as [])
+        const action = actionDefinition.create(...params as any[])
         if (controller?.runtime?.sendMessage) {
             const errTimer = setTimeout(() => {
                 reject(ACTIONS[action.type].response(false, 'Action timed out after 60 seconds.'))
