@@ -1,6 +1,6 @@
-import { AlertOctagon, Info } from "preact-feather"
-import styled from "styled-components"
-import { ErrorText, InfoText } from "./Typography"
+import { AlertOctagon, Info } from 'preact-feather'
+import styled from 'styled-components'
+import { ErrorText, InfoText } from './Typography'
 
 const ErrorBox = styled(ErrorText)`
     padding: 4px 8px 4px 4px;
@@ -42,9 +42,13 @@ export const Alert: React.FC<{ text: string; style? }> = ({ text, style }) => {
     )
 }
 
-export const InfoBox: React.FC<{ text: string; }> = ({ text }) => {
+export const InfoBox: React.FC<{ text: string; className?: string; onClick?: () => void }> = ({
+    text,
+    onClick,
+    className
+}) => {
     return (
-        <InfoBoxWrapper>
+        <InfoBoxWrapper onClick={onClick} className={className}>
             <StyledInfo />
             <span>{text}</span>
         </InfoBoxWrapper>

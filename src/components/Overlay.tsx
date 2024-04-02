@@ -13,12 +13,13 @@ import { ChevronsDown, ChevronsUp } from 'preact-feather'
 import { Tooltip } from './atoms/Tooltip'
 import { Logo } from './atoms/Logo'
 import { InfoBox } from './atoms/Alert'
+import { openTab } from 'src/utils/browser'
 
 const Main = styled.aside<{ $collapsed?: boolean }>`
     position: absolute;
     top: 64px;
-    bottom: ${({ $collapsed }) => ($collapsed ? 'unset' : '73px')};
-    min-height: 55px;
+    max-height: ${({ $collapsed }) => ($collapsed ? '65px' : 'calc(100vh - 137px)')};
+    min-height: 65px;
     right: 0;
     display: flex;
     flex-direction: column;
@@ -63,9 +64,9 @@ const DateHeader = styled(ListRow)`
     border-bottom: solid 1px #dce0e6;
     font-weight: 600;
 `
-const Row = styled(ListRow)<{$error: boolean}>`
+const Row = styled(ListRow)<{ $error: boolean }>`
     padding: 4px 8px 0 8px;
-    ${props => props['$error'] ? 'border-left: solid 2px var(--destructive);' : ''}
+    ${(props) => (props['$error'] ? 'border-left: solid 2px var(--destructive);' : '')}
 `
 const Issue = styled.span`
     flex: 1 1;
@@ -114,6 +115,13 @@ const UploadButton = styled(Button)`
         background: var(--default-button-hover);
     }
 `
+const BetaBox = styled(InfoBox)`
+    margin: 4px;
+    cursor: pointer;
+    background: #35abed;
+    color: white;
+    border: none;
+`
 const CollapseIndicator = styled.span`
     position: absolute;
     height: 16px;
@@ -130,8 +138,11 @@ const CollapseIndicator = styled.span`
         width: 16px;
     }
 `
-
-export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: number) => Promise<void>; workTimes: WorkTimeInfo[] }> = ({ insertWorkTime, workTimes }) => {
+const githubUrl = 'https://github.com/fochlac/Tempo-Tracker/issues'
+export const Overlay: React.FC<{
+    insertWorkTime: (startTime: number, endTime: number) => Promise<void>
+    workTimes: WorkTimeInfo[]
+}> = ({ insertWorkTime, workTimes }) => {
     const [selected, setSelected] = useState<Set<string>>(new Set())
     const [collapsed, setCollapsed] = useState(false)
     const [isLoading, setLoading] = useState(false)
@@ -156,15 +167,14 @@ export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: nu
         setLoading(true)
         const errors = {}
         for (const workTimeId of selected) {
-            const workTime = workTimes.find(workTime => workTime.id === workTimeId)
+            const workTime = workTimes.find((workTime) => workTime.id === workTimeId)
             let result
             try {
                 result = await insertWorkTime(workTime.start, workTime.end)
                 if (result?.widget === 'changeSummary' && result.unassociatedErrorNodes?.length) {
                     errors[workTime?.id] = result.unassociatedErrorNodes[0].message || 'Unknown Error.'
                 }
-            }
-            catch(e) {
+            } catch (e) {
                 errors[workTime?.id] = e?.message || 'Unknown Error.'
                 console.error(e)
             }
@@ -183,13 +193,14 @@ export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: nu
             <Header onClick={() => setCollapsed(!collapsed)}>
                 <Img />
                 <span>Tempo Tracker Times</span>
-                <CollapseIndicator>
-                    {collapsed ? <ChevronsDown /> : <ChevronsUp />}
-                </CollapseIndicator>
+                <CollapseIndicator>{collapsed ? <ChevronsDown /> : <ChevronsUp />}</CollapseIndicator>
             </Header>
             {!collapsed && (
                 <>
-                    <InfoBox text="Support for Workday Upload is experimental. Please report any issues you may find." />
+                    <BetaBox
+                        onClick={() => window.open(githubUrl, 'blank')}
+                        text="Workday Upload is experimental. Click here to report any issues you find."
+                    />
                     <List>
                         {Object.keys(sortedWorkTimes).map((date) => {
                             const allSelected = sortedWorkTimes[date].every((workTime) => selected.has(workTime.id))
@@ -218,10 +229,20 @@ export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: nu
                                     </DateHeader>
                                     {sortedWorkTimes[date].map((workTime) => (
                                         <Tooltip key={workTime.id} content={errors[workTime.id]}>
-                                            <Row onClick={onChange([workTime])} key={workTime.id} $error={errors[workTime.id]}>
-                                                <Time>{`${timeString(workTime.start)} - ${timeString(workTime.end)}`}</Time>
+                                            <Row
+                                                onClick={onChange([workTime])}
+                                                key={workTime.id}
+                                                $error={errors[workTime.id]}
+                                            >
+                                                <Time>{`${timeString(workTime.start)} - ${timeString(
+                                                    workTime.end
+                                                )}`}</Time>
                                                 <Issue>{workTime.name}</Issue>
-                                                <Checkbox type="checkbox" disabled={isLoading} checked={selected.has(workTime.id)} />
+                                                <Checkbox
+                                                    type="checkbox"
+                                                    disabled={isLoading}
+                                                    checked={selected.has(workTime.id)}
+                                                />
                                             </Row>
                                         </Tooltip>
                                     ))}
@@ -230,7 +251,9 @@ export const Overlay: React.FC<{ insertWorkTime: (startTime: number, endTime: nu
                         })}
                     </List>
                     <UploadBar>
-                        <UploadButton onClick={onSubmit} disabled={!selected.size || isLoading}>Upload</UploadButton>
+                        <UploadButton onClick={onSubmit} disabled={!selected.size || isLoading}>
+                            Upload
+                        </UploadButton>
                     </UploadBar>
                 </>
             )}
