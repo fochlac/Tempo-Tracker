@@ -67,6 +67,7 @@ const DateHeader = styled(ListRow)`
 const Row = styled(ListRow)<{ $error: boolean }>`
     padding: 4px 8px 0 8px;
     ${(props) => (props['$error'] ? 'border-left: solid 2px var(--destructive);' : '')}
+    ${(props) => (props['$error'] ? 'background-color: var(--destructive-lightest);' : '')}
 `
 const Issue = styled.span`
     flex: 1 1;

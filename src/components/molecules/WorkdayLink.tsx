@@ -67,7 +67,7 @@ export const WorkdayLink: React.FC = () => {
             }
         >
             <FlexRow>
-                <ActionLink style={{ marginBottom: !hasPermission ? -1 : 0 }} error={!hasPermission} onClick={onClick}>
+                <ActionLink error={!hasPermission} onClick={onClick}>
                     Workday
                 </ActionLink>
                 {!hasPermission ? <LockIcon onClick={onGrantPermissions} /> : null}
