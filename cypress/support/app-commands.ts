@@ -3,9 +3,9 @@ import { baseDate, defaultOptions } from "./defaults"
 
 Cypress.Commands.add('open', (clearStorage = true) => {
     cy.visit('http://localhost:3000', {
-        onBeforeLoad(win) {
+        async onBeforeLoad(win) {
             if (clearStorage) {
-                return win.indexedDB.deleteDatabase(DATABASE_NAME)
+                await win.indexedDB.deleteDatabase(DATABASE_NAME)
             }
         }
     })
@@ -13,6 +13,7 @@ Cypress.Commands.add('open', (clearStorage = true) => {
 
 Cypress.Commands.add('openWithOptions', (options = defaultOptions, skipStartApp = false) => {
     cy.open()
+    cy.wait(100)
     cy.fakeTimers(baseDate.getTime())
     cy.setOptions(options)
     if (!skipStartApp) {

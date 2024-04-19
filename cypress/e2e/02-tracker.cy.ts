@@ -101,7 +101,7 @@ describe('Tracking View - Tracking Area', () => {
             .should('be.visible')
 
         cy.contains('form', 'Stop Tracking').find('textarea[placeholder="Comment"]').should('have.value', '')
-            .type('Some Comment', {delay: 80})
+            .type('Some Comment', { delay: 80 })
 
         cy.get('@clock').invoke('tick', 300000)
 
@@ -193,6 +193,7 @@ describe('Tracking View - Tracking Area', () => {
             }
         })
 
+        cy.wait(100)
         cy.openIndexedDb(DATABASE_NAME)
             .createObjectStore(CACHE_STORE)
             .updateItem(DB_KEYS.TRACKING, {
@@ -215,7 +216,7 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', '12:30')
             .should('contain.text', '13:50')
             .contains('button', 'Create Worklog').click()
-        
+
         cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
             .should('contain.text', 'Test7')
             .should('contain.text', '08.10.20')
@@ -261,7 +262,7 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', '12:30')
             .should('contain.text', '13:50')
             .contains('button', 'Ignore Gap').click()
-        
+
         cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 0)
 
         cy.contains('form', 'Stop Tracking').find('option:selected').should('have.text', 'Test7')
@@ -270,7 +271,7 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
     })
 
-    
+
     it('should handle forgotten tracking', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
@@ -290,12 +291,12 @@ describe('Tracking View - Tracking Area', () => {
             })
 
         cy.startApp()
-        
+
         cy.contains('form', 'Stop Tracking')
             .should('be.visible')
             .contains('button', 'Test7')
             .should('have.css', 'background-color', 'rgb(15, 15, 15)')
-        
+
         cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
         cy.contains('div', 'Stop Tracking').contains('button', 'Split Tracking').should('be.visible').click()
 
@@ -315,10 +316,10 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', '5h 00m')
 
         cy.contains('form', 'Stop Tracking')
-                .should('be.visible')
-                .contains('button', 'Test7')
-                .should('have.css', 'background-color', 'rgb(15, 15, 15)')
-    
+            .should('be.visible')
+            .contains('button', 'Test7')
+            .should('have.css', 'background-color', 'rgb(15, 15, 15)')
+
         cy.contains('form', 'Stop Tracking').find('option:selected').should('have.text', 'Test7')
         cy.contains('form', 'Stop Tracking').find('input[type="date"]').should('have.value', '2020-10-08')
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
@@ -334,13 +335,13 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
         cy.contains('dialog', 'Split Current Tracking').contains('button', 'Cancel').click()
-    
+
 
         cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
 
         cy.contains('form', 'Stop Tracking')
-                .should('be.visible')
-    
+            .should('be.visible')
+
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
         cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '4h 00m')
