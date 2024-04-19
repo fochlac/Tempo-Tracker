@@ -44,6 +44,12 @@ const getActiveWeek = async () => {
         }, new Map())
         if (!calendar || !dayInfos?.size) return null
 
+        const entries = calendar.consolidatedList?.children.filter(entry => entry.widget === 'calendarEntry' && entry.timedEvent === true).map((entry) => entry && ({
+            start: entry.startMoment?.value,
+            end: entry.endMoment?.value,
+            editHref: entry.editButton?.children?.find(({ widget = '' } = {}) => widget === 'commandButton')?.uri
+        }))
+
         async function insertWorkTime(startTime: number, endTime: number) {
             const startDate = new Date(startTime)
             const endDate = new Date(endTime)
@@ -107,7 +113,7 @@ const getActiveWeek = async () => {
             })
         }
 
-        return { insertWorkTime, view, days: dayInfos, calendar }
+        return { insertWorkTime, view, days: dayInfos, calendar, entries }
     } catch (e) {
         console.log(e)
         return null

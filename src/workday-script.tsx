@@ -26,7 +26,7 @@ async function workday() {
         new Date(`${startValue.Y}-${startValue.M}-${startValue.D}T00:00:00.000Z`).getTime() + offset * 60000
     const endTime = new Date(`${endValue.Y}-${endValue.M}-${endValue.D}T00:00:00.000Z`).getTime() + offset * 60000
     const {
-        workTimeInfo: { options, workTimes }
+        workTimeInfo: { workTimes }
     } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
 
     createApp(workTimes, result.insertWorkTime)
