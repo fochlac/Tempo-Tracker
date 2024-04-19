@@ -43,7 +43,7 @@ export const Header: React.FC = () => {
             {view !== VIEWS.TRACKER && (
                 mandatoryOptions
                     ? trackerLink
-                    : <Tooltip right content="Please fill all mandatory options.">{trackerLink}</Tooltip>
+                    : <Tooltip content="Please fill all mandatory options.">{trackerLink}</Tooltip>
             )}
             {!isFirefox && mandatoryOptions && view !== VIEWS.STATS && (
                 <InternalLink style={{ marginRight: view !== VIEWS.OPTIONS ? 4 : 0 }} to={VIEWS.STATS}>Statistics</InternalLink>

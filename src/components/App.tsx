@@ -1,6 +1,6 @@
-import { useEffect } from "preact/hooks"
+import { useEffect, useMemo } from "preact/hooks"
 import styled from "styled-components"
-import { VIEWS } from "../constants/constants"
+import { THEMES, VIEWS } from "../constants/constants"
 import { useOptions } from "../hooks/useOptions"
 import { viewDuck } from "../store/ducks/view"
 import { useDispatch, useSelector } from "../utils/atom"
@@ -12,6 +12,7 @@ import { StatisticsView } from "./views/Statistics"
 import { TrackerView } from "./views/Tracker"
 import { Themes } from "../constants/themes"
 import { CssVariables } from "./atoms/CssVariables"
+import { createTheme } from "src/utils/theme"
 
 const Main = styled.main`
     display: flex;
@@ -45,9 +46,19 @@ export const App: React.FC = () => {
     }, [])
 
     document.querySelector('body').style.height = '100%'
+
+    const themeObject = THEMES.CUSTOM === options.theme ? options.customTheme : Themes[options.theme]
+    const theme = useMemo(() => {
+        try {
+            return createTheme(themeObject)
+        }
+        catch(e) {}
+        return createTheme(Themes.DEFAULT)
+    }, [...Object.values(themeObject)])
+
     return (
         <Main>
-            <CssVariables theme={Themes[options.theme]} />
+            <CssVariables theme={theme} />
             <Header />
             <ForgottenTrackingDialog />
             {view === VIEWS.TRACKER && <TrackerView />}

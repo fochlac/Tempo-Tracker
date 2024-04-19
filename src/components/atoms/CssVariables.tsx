@@ -6,10 +6,11 @@ export const CssVariables = createGlobalStyle`
     }
 
     html {
-        background-color: var(--background-off)
+        background-color: var(--background-off);
     }
 
     input, select {
-        color-scheme: var(--color-scheme)
+        color-scheme: var(--color-scheme);
+        background-color: var(--background)
     }
 `

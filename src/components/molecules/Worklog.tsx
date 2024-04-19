@@ -43,11 +43,16 @@ const Comment = styled.span`
     margin-left: 3px;
 `
 const IssueKey = styled.div`
-    width: 135px;
+    max-width: 135px;
     margin: 2px 8px 0;
     cursor: default;
     overflow: hidden;
     text-overflow: ellipsis;
+`
+const IssueSpacer = styled.div`
+    width: 135px;
+    display: flex;
+    justify-content: flex-start;
 `
 const Datum = styled.span`
     width: 100px;
@@ -78,23 +83,6 @@ export const WorklogAtoms = {
     Duration
 }
 
-const RightTooltip = styled(Tooltip)`
-    cursor: default;
-
-    &:before {
-        top: -4px;
-        left: calc(100% + 5px);
-    }
-
-    &:after {
-        top: calc(50% - 4px);
-        left: calc(100% - 4px);
-        border-top: 4px solid transparent;
-        border-bottom: 4px solid transparent;
-        border-right: 6px solid grey;
-    }
-`
-
 export function Worklog({ log, disableButtons, onDelete }) {
     const { data: options } = useOptions()
     const dispatch = useDispatch()
@@ -112,11 +100,13 @@ export function Worklog({ log, disableButtons, onDelete }) {
             <WorklogBody>
                 <Datum>
                     {dateHumanized(log.start)}
-                    {(!log.synced || log.syncTabId) && <RightTooltip content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></RightTooltip>}
+                    {(!log.synced || log.syncTabId) && <Tooltip right content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></Tooltip>}
                 </Datum>
-                <Tooltip content={`${log.issue.key}: ${log.issue.name}`}>
-                    <IssueKey>{alias}</IssueKey>
-                </Tooltip>
+                <IssueSpacer>
+                    <Tooltip right content={`${log.issue.key}: ${log.issue.name}`}>
+                        <IssueKey>{alias}</IssueKey>
+                    </Tooltip>
+                </IssueSpacer>
                 <TimeRange>
                     <Time>{timeString(log.start)}</Time>
                     {' - '}

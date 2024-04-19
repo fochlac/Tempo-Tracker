@@ -229,7 +229,7 @@ export const Overlay: React.FC<{
                                         )}
                                     </DateHeader>
                                     {sortedWorkTimes[date].map((workTime) => (
-                                        <Tooltip key={workTime.id} content={errors[workTime.id]}>
+                                        <Tooltip right key={workTime.id} content={errors[workTime.id]}>
                                             <Row
                                                 onClick={onChange([workTime])}
                                                 key={workTime.id}

@@ -80,11 +80,8 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
             setSelected(null)
         }
     }
-    let chunkSize = 4
-    if (options.length % 3 === 0 || options.length % 4 !== 0 && options.length % 3 > options.length % 4) {
-        chunkSize = 3
-    }
-
+    
+    const chunkSize = options.length % 4 < options.length % 5 ? 4 : 5
     const chunkNumber = Math.ceil(options.length / chunkSize)
     const chunks = []
     for (let currentChunk = 0; currentChunk < chunkNumber; currentChunk++) {

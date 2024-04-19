@@ -59,7 +59,6 @@ export const WorkdayLink: React.FC = () => {
     return (
         <ErrorTooltip
             onClick={onGrantPermissions}
-            right
             content={
                 !hasPermission
                     ? 'Permissions to access Workday are missing. Click the lock-icon to grant permissions.'

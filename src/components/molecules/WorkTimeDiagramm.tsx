@@ -120,7 +120,8 @@ const OverHours = styled.span`
 `
 const MissingHours = styled.span`
     width: 100%;
-    border: dashed 1px var(--destructive);
+    border: dashed 1px var(--diagramm);
+    background: repeating-linear-gradient(-45deg, transparent, transparent 5px, var(--diagramm) 5px, var(--diagramm) 6px);
     border-bottom: none;
     z-index: 2;
     display: flex;
@@ -185,7 +186,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                 </TimeBar>
                 {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).slice(Math.max(weekOffset - columns, 0), weekOffset).map(({ week, period }, index) => {
                     const columnCount = Math.min(weekOffset, columns)
-                    const right = index > columnCount / 2
+                    const right = index < columnCount / 2
 
                     console.log(index, columnCount, right)
 

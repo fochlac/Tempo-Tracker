@@ -4,6 +4,10 @@ import { Input } from "../atoms/Input"
 import { FlexRow } from "../atoms/Layout"
 import { InfoText, Label } from "../atoms/Typography"
 import { Option } from "../atoms/Option"
+import { THEMES } from "src/constants/constants"
+import { Conditional } from "../atoms/Conditional"
+import { SectionHead } from "../views/Options"
+import { CustomThemeCssInput } from "../atoms/CustomThemeCssInput"
 
 const Select = styled.select`
     width: 200px;
@@ -18,6 +22,11 @@ const Cell = styled.td`
 const HeadCell = styled.th`
     text-align: center;
     padding-bottom: 4px;
+`
+const Grid = styled.div`
+    display: grid;
+    grid-template-columns: 32% 32% 32%;
+    justify-content: space-between;
 `
 
 export const AppOptionsSection: React.FC = () => {
@@ -64,10 +73,23 @@ export const AppOptionsSection: React.FC = () => {
             <Option>
                 <Label>Theme</Label>
                 <Select onChange={(e) => actions.merge({ theme: e.target.value })}>
-                    <option selected={options.theme === "DEFAULT"} value="DEFAULT">Light Theme (default)</option>
-                    <option selected={options.theme === "DARK"} value="DARK">Dark Theme</option>
+                    <option selected={options.theme === THEMES.DEFAULT} value={THEMES.DEFAULT}>Light Theme (default)</option>
+                    <option selected={options.theme === THEMES.DARK} value={THEMES.DARK}>Dark Theme</option>
+                    <option selected={options.theme === THEMES.CUSTOM} value={THEMES.CUSTOM}>Custom Theme</option>
                 </Select>
             </Option>
+            <Conditional enable={options.theme === THEMES.CUSTOM}>
+                <SectionHead>Custom Theme</SectionHead>
+                <Grid>
+
+                    <CustomThemeCssInput label="Background" field="background" />
+                    <CustomThemeCssInput label="Font Color" field="font" />
+                    <CustomThemeCssInput label="Link Color" field="link" />
+                    <CustomThemeCssInput label="Negative Color" field="destructive" />
+                    <CustomThemeCssInput label="Diagramm Bar Color" field="diagramm" />
+                    <CustomThemeCssInput label="Diagram Overhour Color" field="diagrammGreen" />
+                </Grid>
+            </Conditional>
         </>
     )
 }

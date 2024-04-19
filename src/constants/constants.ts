@@ -28,5 +28,6 @@ export const domainRegexp = /(https?:\/\/|^)(([\w-]+\.)*([\w-]+\.)?\w+)(\/|$)/
 
 export const THEMES: THEMES = {
     DEFAULT: 'DEFAULT',
-    DARK: 'DARK'
+    DARK: 'DARK',
+    CUSTOM: 'CUSTOM',
 }

@@ -72,6 +72,7 @@ interface ActionDefinition {
 interface THEMES {
     DEFAULT: 'DEFAULT';
     DARK: 'DARK';
+    CUSTOM: 'CUSTOM';
 }
 
 interface Options {
@@ -86,6 +87,14 @@ interface Options {
     forceSync: boolean;
     forceFetch: boolean;
     theme: keyof THEMES;
+    customTheme: {
+        background: string;
+        font: string;
+        link: string;
+        destructive: string;
+        diagramm: string;
+        diagrammGreen: string;
+    };
     token: string;
     workdaySync: boolean;
     ttToken: string;

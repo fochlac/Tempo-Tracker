@@ -1,3 +1,4 @@
+import { Themes } from 'src/constants/themes'
 import { THEMES, domainRegexp } from '../constants/constants'
 import { fetchIssueList } from './api'
 
@@ -14,6 +15,7 @@ export function getOptions(options: Partial<Options>): Options {
         useJqlQuery,
         token,
         theme,
+        customTheme,
         ttToken,
         email,
         instance,
@@ -35,6 +37,7 @@ export function getOptions(options: Partial<Options>): Options {
         ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {})
         : issues ?? {}
     const cleanIssueOrder = Array.isArray(issueOrder) ? issueOrder.filter(key => cleanIssues[key]) : []
+    const selectedTheme = THEMES[theme] ? theme : THEMES.DEFAULT
 
     return {
         days: Array.isArray(days) ? days : [1, 2, 3, 4, 5],
@@ -54,7 +57,8 @@ export function getOptions(options: Partial<Options>): Options {
         forceSync: forceSync ?? false,
         forceFetch: forceFetch ?? false,
         token: token ?? '',
-        theme: THEMES[theme] ? theme : THEMES.DEFAULT,
+        theme: selectedTheme,
+        customTheme: selectedTheme === THEMES.CUSTOM ? { ...Themes.DEFAULT, ...(customTheme ?? {}) } : Themes[selectedTheme],
         ttToken: ttToken ?? '',
         email: email ?? '',
         instance: instance ?? 'datacenter',

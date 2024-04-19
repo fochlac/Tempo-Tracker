@@ -26,8 +26,9 @@ const Body = styled.div`
     display: flex;
     flex-direction: column;
     overflow: auto;
+    padding-bottom: 16px
 `
-const SectionHead = styled(H6)`
+export const SectionHead = styled(H6)`
     font-size: 1rem;
     padding: 16px 0 4px 8px;
     margin: 0;

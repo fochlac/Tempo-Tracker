@@ -18,7 +18,7 @@ export const ActionLinkRaw = styled.a<ActionLinkRawProps>`
         if (props.$disabled) {
             return 'var(--contrast)'
         } 
-        return props.$error ? 'var(--destructive)' : 'var(--link)'
+        return props.$error ? 'var(--destructive) !important' : 'var(--link)'
     }};
     pointer-events: ${(props) => (props.$disabled ? 'none' : 'all')};
     margin-left: 4px;

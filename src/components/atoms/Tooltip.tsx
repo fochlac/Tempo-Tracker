@@ -20,7 +20,7 @@ const Wrapper = styled.div<{$right: boolean;}>`
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        ${({$right}) => $right ? 'right: 0;' : 'left: 0;'}
+        ${({$right}) => !$right ? 'right: 0;' : 'left: 0;'}
     }
 
     &:hover:before {

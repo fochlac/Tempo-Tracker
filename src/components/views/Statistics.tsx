@@ -56,7 +56,6 @@ export const StatisticsView: React.FC = () => {
                 {self.error && (
                     <ErrorTooltip
                         style={{ paddingBottom: 2 }}
-                        right
                         content="No connection to Jira instance - only cached statistics available"
                     >
                         <WifiOff size={14} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />

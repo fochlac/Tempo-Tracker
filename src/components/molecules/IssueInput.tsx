@@ -95,7 +95,7 @@ const IssueRow = ({ issue, setDelIssue, index }) => {
             <DragWrapper {...listeners} ref={setActivatorNodeRef}>
                 <DragHandle />
             </DragWrapper>
-            <Tooltip content={!active ? `${issue.key}: ${issue.name}` : null}>
+            <Tooltip right content={!active ? `${issue.key}: ${issue.name}` : null}>
                 <IssueKey>{issue.key}:</IssueKey>
             </Tooltip>
             <Input
