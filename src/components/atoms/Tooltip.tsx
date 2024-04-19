@@ -20,7 +20,7 @@ const Wrapper = styled.div<{$right: boolean;}>`
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        ${({$right}) => $right ? 'right: 0;' : ''}
+        ${({$right}) => $right ? 'right: 0;' : 'left: 0;'}
     }
 
     &:hover:before {
@@ -37,7 +37,7 @@ const Wrapper = styled.div<{$right: boolean;}>`
         height: 0; 
         border-left: 4px solid transparent;
         border-right: 4px solid transparent;
-        border-bottom: 6px solid grey;
+        border-bottom: 6px solid var(--contrast);
     }
 
     &:hover:after {
@@ -61,6 +61,23 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, clas
     </Wrapper>
 }
 
+export const TooltipTop = styled(Tooltip)`
+    &:before {
+        bottom: calc(100% + 7px);
+        right: 0;
+        top: unset;
+    }
+
+    &:after {
+        top: unset;
+        bottom: calc(100%);
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 6px solid var(--contrast);
+        border-bottom: transparent solid;
+    }
+`
+
 
 export const ErrorTooltip = styled(Tooltip)`
     &:before {
@@ -73,22 +90,13 @@ export const ErrorTooltip = styled(Tooltip)`
         z-index: 1000
     }
 `
-export const ErrorTooltipTop = styled(Tooltip)`
+export const ErrorTooltipTop = styled(TooltipTop)`
     &:before {
-        bottom: calc(100% + 7px);
-        right: 0;
-        top: unset;
         color: var(--destructive-dark);
         background: var(--destructive-lightest);
         border-color: var(--destructive-dark);
     }
-
     &:after {
-        top: unset;
-        bottom: calc(100%);
-        border-left: 4px solid transparent;
-        border-right: 4px solid transparent;
         border-top: 6px solid var(--destructive-dark);
-        border-bottom: transparent solid;
     }
 `

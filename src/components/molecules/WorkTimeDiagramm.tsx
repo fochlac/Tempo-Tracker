@@ -2,11 +2,11 @@
 import { ChevronLeft, ChevronRight } from "preact-feather"
 import { useEffect, useState } from "preact/hooks"
 import styled from "styled-components"
-import { dateHumanized, durationString, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from "../../utils/datetime"
+import { dateHumanized, durationString, formatDuration, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from "../../utils/datetime"
 import { IconButton } from "../atoms/IconButton"
 import { Input } from "../atoms/Input"
 import { Block, Column } from "../atoms/Layout"
-import { Tooltip } from "../atoms/Tooltip"
+import { Tooltip, TooltipTop } from "../atoms/Tooltip"
 import { Label } from "../atoms/Typography"
 
 const Diagramm = styled.div`
@@ -110,12 +110,26 @@ const OverHours = styled.span`
     border: solid 1px var(--diagramm-green);
     border-bottom: none;
     background: var(--diagramm-green);
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+
+    > div {
+        flex-grow: 1;
+    }
 `
 const MissingHours = styled.span`
     width: 100%;
     border: dashed 1px var(--destructive);
     border-bottom: none;
     z-index: 2;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+
+    > div {
+        flex-grow: 1;
+    }
 `
 const WeekTooltip = styled(Tooltip)`
     &:before {
@@ -169,7 +183,12 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                         <Time style={{bottom: `calc(${hours * 60 * 60 / maxSeconds * 100}% - 10px)`}}>{hours}</Time>
                     ))}
                 </TimeBar>
-                {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).map(({ week, period }, index) => {
+                {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).slice(Math.max(weekOffset - columns, 0), weekOffset).map(({ week, period }, index) => {
+                    const columnCount = Math.min(weekOffset, columns)
+                    const right = index > columnCount / 2
+
+                    console.log(index, columnCount, right)
+
                     const hours = getRequiredSeconds(week)
                     const seconds = ((stats.weeks[week] || 0) + (unsyncedStats.weeks[week] || 0) / 1000)
                     const hasData = !!stats.weeks[week]
@@ -177,26 +196,26 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                     return (
                         <WeekWrapper>
                             {showOver && seconds < hours && (
-                                <MissingHours style={{
-                                    height: `${(hours - seconds) / maxSeconds * 100}%`
-                                }} />
+                                <MissingHours style={{ height: `${(hours - seconds) / maxSeconds * 100}%` }}>
+                                    <TooltipTop right={right} content={'-' + formatDuration((hours - seconds) * 1000, true, true)}></TooltipTop>
+                                </MissingHours>
                             )}
                             <Week key={week} style={{ height: `${seconds / maxSeconds * 100}%` }}>
                                 {showOver && seconds > hours && (
-                                    <OverHours style={{
-                                        height: `${(seconds - hours) / seconds * 100}%`
-                                    }} />
+                                    <OverHours style={{ height: `${(seconds - hours) / seconds * 100}%` }}>
+                                        <TooltipTop right={right} content={formatDuration((seconds - hours) * 1000, true, true)}></TooltipTop>
+                                    </OverHours>
                                 )}
                                 <Duration>{`${durationString(seconds * 1000)}`}</Duration>
                                 <WeekNumber>
-                                    <WeekTooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`} right={weeknumber / 2 < index}>
+                                    <WeekTooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`} right={right}>
                                         {`00${week}`.slice(-2)}
                                     </WeekTooltip>
                                 </WeekNumber>
                             </Week>
                         </WeekWrapper>
                     )
-                }).slice(Math.max(weekOffset - columns, 0), weekOffset)}
+                })}
             </Diagramm>
         </>
     )
