@@ -159,6 +159,12 @@ interface WorkTimeInfo {
     name: string;
 }
 
+interface WorkdayEntry {
+    start: number;
+    end: number;
+    editUri: string;
+}
+
 interface DbHelper {
     getDb: () => Partial<DataBase>;
     registerCallback: (key: DB_KEYS, cb: DbListener<DB_KEYS>) => string;

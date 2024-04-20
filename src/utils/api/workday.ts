@@ -20,6 +20,15 @@ const fetchJsonForm = (url: RequestInfo | URL, options: FormOptions = {}) =>
 const changeSummary = (id) =>
     `<wml:Change_Summary xmlns:wml="http://www.workday.com/ns/model/1.0" xmlns:wd="urn:com.workday/bsvc" xmlns:nyw="urn:com.netyourwork/aod"><wd:OK Ref="${id}" Replaced=""><V>1</V></wd:OK></wml:Change_Summary>`
 
+const unixTimeFromValue = (value) => {
+    if (value && value.Y && value.M && value.D && value.H && value.m) {
+        const date = new Date()
+        date.setFullYear(value.Y, value.M - 1, value.D)
+        date.setHours(value.H, value.m, 0, 0)
+        return date.getTime()
+    }
+}
+
 const getActiveWeek = async () => {
     try {
         const view = await fetchJson(location.href.replace('/d/', '/'))
@@ -44,11 +53,14 @@ const getActiveWeek = async () => {
         }, new Map())
         if (!calendar || !dayInfos?.size) return null
 
-        const entries = calendar.consolidatedList?.children.filter(entry => entry.widget === 'calendarEntry' && entry.timedEvent === true).map((entry) => entry && ({
-            start: entry.startMoment?.value,
-            end: entry.endMoment?.value,
-            editHref: entry.editButton?.children?.find(({ widget = '' } = {}) => widget === 'commandButton')?.uri
-        }))
+        const entries: WorkdayEntry[] = calendar.consolidatedList?.children
+            .filter(entry => entry?.widget === 'calendarEntry' && entry.timedEvent === true)
+            .map((entry) => ({
+                start: unixTimeFromValue(entry.startMoment?.value),
+                end: unixTimeFromValue(entry.endMoment?.value),
+                editUri: entry.editButton?.children?.find(({ widget = '' } = {}) => widget === 'commandButton')?.uri
+            }) as WorkdayEntry)
+            .filter(entry => entry.start && entry.end)
 
         async function insertWorkTime(startTime: number, endTime: number) {
             const startDate = new Date(startTime)
@@ -77,6 +89,7 @@ const getActiveWeek = async () => {
             const body_in = {
                 _flowExecutionKey,
                 sessionSecureToken,
+                [`${inTime}_s`]: `00${startDate.getSeconds()}`.slice(-2),
                 [`${inTime}_m`]: `00${startDate.getMinutes()}`.slice(-2),
                 [`${inTime}_H`]: `00${startDate.getHours()}`.slice(-2),
                 [`${inTime}_D`]: `00${startDate.getDate()}`.slice(-2),
@@ -87,6 +100,7 @@ const getActiveWeek = async () => {
             const body_out = {
                 _flowExecutionKey,
                 sessionSecureToken,
+                [`${outTime}_s`]: `00${endDate.getSeconds()}`.slice(-2),
                 [`${outTime}_m`]: `00${endDate.getMinutes()}`.slice(-2),
                 [`${outTime}_H`]: `00${endDate.getHours()}`.slice(-2),
                 [`${outTime}_D`]: `00${endDate.getDate()}`.slice(-2),

@@ -32,8 +32,8 @@ export function dateHumanized(unixStamp: number) {
 
     return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${String(date.getFullYear()).slice(-2)}`
 }
-export function roundTimeMinutes(unixStamp: number, ceil: boolean = false) {
-    return new Date(unixStamp + (ceil ? 60000 : 0)).setSeconds(0, 0)
+export function roundTimeSeconds(unixStamp: number, ceil: boolean = false) {
+    return new Date(unixStamp + (ceil ? 1000 : 0)).setMilliseconds(0)
 }
 
 export function timeString(unixStamp: number) {

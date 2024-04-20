@@ -1,19 +1,18 @@
 import styled from 'styled-components'
-import { Footer } from './molecules/Footer'
 import { Themes } from '../constants/themes'
 import { CssVariables } from './atoms/CssVariables'
-import { FlexRow } from './atoms/Layout'
 import { dateHumanized, dateString, timeString } from 'src/utils/datetime'
 import { useMemo, useState } from 'preact/hooks'
 import { Fragment } from 'preact/jsx-runtime'
 import { Input } from './atoms/Input'
 import { ButtonBar } from './atoms/ButtonBar'
 import { Button } from './atoms/Button'
-import { ChevronsDown, ChevronsUp } from 'preact-feather'
+import { AlertOctagon, ChevronsDown, ChevronsUp, Repeat } from 'preact-feather'
 import { Tooltip } from './atoms/Tooltip'
 import { Logo } from './atoms/Logo'
 import { InfoBox } from './atoms/Alert'
-import { openTab } from 'src/utils/browser'
+import { Conditional } from './atoms/Conditional'
+import { createTheme } from 'src/utils/theme'
 
 const Main = styled.aside<{ $collapsed?: boolean }>`
     position: absolute;
@@ -68,6 +67,10 @@ const Row = styled(ListRow)<{ $error: boolean }>`
     padding: 4px 8px 0 8px;
     ${(props) => (props['$error'] ? 'border-left: solid 2px var(--destructive);' : '')}
     ${(props) => (props['$error'] ? 'background-color: var(--destructive-lightest);' : '')}
+    ${(props) => (props['$synced'] ? 'background-color: #eef7f1;' : '')}
+    ${(props) => (props['$synced'] ? 'cursor: default;' : '')}
+    ${(props) => (props['$conflict'] ? 'background-color: var(--destructive-lightest);' : '')}
+    ${(props) => (props['$conflict'] ? 'cursor: default;' : '')}
 `
 const Issue = styled.span`
     flex: 1 1;
@@ -103,10 +106,13 @@ const UploadBar = styled(ButtonBar)`
     flex-shrink: 1;
     box-sizing: border-box;
     border-top: solid 1px #dce0e6;
+    background-color: #fff;
+    margin-top: 8px;
 `
 const UploadButton = styled(Button)`
     background-color: #ffffff;
     border-radius: 3px;
+    border: solid 1px;
 
     &:hover {
         background: #f7f7f7;
@@ -139,30 +145,59 @@ const CollapseIndicator = styled.span`
         width: 16px;
     }
 `
+const RepeatIcon = styled(Repeat)`
+    width: 14px;
+    height: 14px;
+    color: #3dc269;
+`
+const ErrorIcon = styled(AlertOctagon)`
+    width: 14px;
+    height: 14px;
+    color: var(--destructive);
+`
+
 const githubUrl = 'https://github.com/fochlac/Tempo-Tracker/issues'
+
+const isSynced = (workTime, conflicts): boolean => {
+    if (conflicts.length === 1) {
+        const {start, end} = conflicts[0]
+        return Math.abs(start - workTime.start) + Math.abs(end - workTime.end) < 120000
+    }
+    return false
+}
+
 export const Overlay: React.FC<{
     insertWorkTime: (startTime: number, endTime: number) => Promise<void>
-    workTimes: WorkTimeInfo[]
-}> = ({ insertWorkTime, workTimes }) => {
-    const [selected, setSelected] = useState<Set<string>>(new Set())
-    const [collapsed, setCollapsed] = useState(false)
-    const [isLoading, setLoading] = useState(false)
-    const [errors, setErrors] = useState({})
-
-    const sortedWorkTimes = useMemo(
+    workTimes: WorkTimeInfo[],
+    workdayEntries: WorkdayEntry[]
+}> = ({ insertWorkTime, workTimes, workdayEntries }) => {
+    const sortedWorkTimes = useMemo<Record<string, {conflicts: WorkdayEntry[], workTime: WorkTimeInfo}[]>>(
         () =>
-            workTimes.reduce((map, work) => {
-                const date = dateString(work.start)
+            workTimes.reduce((map, workTime) => {
+                const date = dateString(workTime.start)
                 if (!map[date]) {
                     map[date] = []
                 }
-                map[date].push(work)
+                const end = Math.floor(workTime.end / 60000) * 60000
+                const conflicts = workdayEntries.filter((entry) => entry.start < end && entry.end >= workTime.start)
+
+                map[date].push({ workTime, conflicts })
                 map[date].sort((a, b) => a.start - b.start)
 
                 return map
             }, {}),
         [workTimes]
     )
+
+    const [selected, setSelected] = useState<Set<string>>(() => new Set(
+        Object.values(sortedWorkTimes)
+            .flat()
+            .filter(entry => !entry.conflicts.length)
+            .map(entry => entry.workTime.id)
+    ))
+    const [collapsed, setCollapsed] = useState(false)
+    const [isLoading, setLoading] = useState(false)
+    const [errors, setErrors] = useState({})
 
     const onSubmit = async () => {
         setLoading(true)
@@ -190,7 +225,7 @@ export const Overlay: React.FC<{
 
     return (
         <Main $collapsed={collapsed}>
-            <CssVariables theme={Themes.DEFAULT} />
+            <CssVariables theme={createTheme(Themes.DEFAULT)} />
             <Header onClick={() => setCollapsed(!collapsed)}>
                 <Img />
                 <span>Tempo Tracker Times</span>
@@ -204,46 +239,60 @@ export const Overlay: React.FC<{
                     />
                     <List>
                         {Object.keys(sortedWorkTimes).map((date) => {
-                            const allSelected = sortedWorkTimes[date].every((workTime) => selected.has(workTime.id))
+                            const filteredTimes = sortedWorkTimes[date]
+                                .filter(({conflicts}) => !conflicts.length)
+                            const allSelected = filteredTimes
+                                .every(({ workTime }) => selected.has(workTime.id))
                             const onChange =
                                 (workTimes = []) =>
                                 (e) => {
                                     e.stopPropagation()
                                     if (isLoading) return
                                     const newSet = new Set(selected)
-                                    if (workTimes.every((workTime) => selected.has(workTime.id))) {
-                                        workTimes.forEach((workTime) => newSet.delete(workTime.id))
+                                    if (workTimes.every(({ workTime }) => selected.has(workTime.id))) {
+                                        workTimes.forEach(({ workTime }) => newSet.delete(workTime.id))
                                     } else {
-                                        workTimes.forEach((workTime) => newSet.add(workTime.id))
+                                        workTimes.forEach(({ workTime }) => newSet.add(workTime.id))
                                     }
 
                                     setSelected(newSet)
                                 }
-
                             return (
                                 <Fragment key={date}>
-                                    <DateHeader onClick={onChange(sortedWorkTimes[date])}>
-                                        <span>{dateHumanized(sortedWorkTimes[date][0].start)}</span>
-                                        {sortedWorkTimes[date].length > 1 && (
+                                    <DateHeader onClick={onChange(filteredTimes)}>
+                                        <span>{dateHumanized(sortedWorkTimes[date][0].workTime.start)}</span>
+                                        <Conditional enable={filteredTimes.length > 0}>
                                             <Checkbox type="checkbox" disabled={isLoading} checked={allSelected} />
-                                        )}
+                                        </Conditional>
                                     </DateHeader>
-                                    {sortedWorkTimes[date].map((workTime) => (
+                                    {sortedWorkTimes[date].map(({workTime, conflicts}) => (
                                         <Tooltip right key={workTime.id} content={errors[workTime.id]}>
                                             <Row
-                                                onClick={onChange([workTime])}
+                                                onClick={onChange([{workTime, conflicts}])}
                                                 key={workTime.id}
                                                 $error={errors[workTime.id]}
+                                                $synced={isSynced(workTime, conflicts)}
+                                                $conflict={!isSynced(workTime, conflicts) && conflicts.length > 0}
                                             >
                                                 <Time>{`${timeString(workTime.start)} - ${timeString(
                                                     workTime.end
                                                 )}`}</Time>
                                                 <Issue>{workTime.name}</Issue>
-                                                <Checkbox
-                                                    type="checkbox"
-                                                    disabled={isLoading}
-                                                    checked={selected.has(workTime.id)}
-                                                />
+                                                <Conditional enable={!conflicts.length} >
+                                                    <Checkbox
+                                                        type="checkbox"
+                                                        disabled={isLoading}
+                                                        checked={selected.has(workTime.id)}
+                                                    />
+                                                </Conditional>
+                                                <Conditional enable={isSynced(workTime, conflicts)} >
+                                                    <RepeatIcon />
+                                                </Conditional>
+                                                <Conditional enable={Boolean(!isSynced(workTime, conflicts) && conflicts.length)} >
+                                                    <Tooltip content="Conflicting worklog detected.">
+                                                        <ErrorIcon />
+                                                    </Tooltip>
+                                                </Conditional>
                                             </Row>
                                         </Tooltip>
                                     ))}

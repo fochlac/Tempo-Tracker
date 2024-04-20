@@ -5,14 +5,14 @@ import { triggerBackgroundAction } from './utils/background'
 import { Overlay } from './components/Overlay'
 
 let entry
-function createApp(workTimes: WorkTimeInfo[], insertWorkTime: (startTime: number, endTime: number) => Promise<void>) {
+function createApp(workTimes: WorkTimeInfo[], insertWorkTime: (startTime: number, endTime: number) => Promise<void>, workdayEntries: WorkdayEntry[]) {
     if (!entry) {
         entry = document.createElement('div')
         document.body.appendChild(entry)
     }
     unmountComponentAtNode(entry)
 
-    render(<Overlay {...{ workTimes, insertWorkTime }} />, entry)
+    render(<Overlay {...{ workTimes, insertWorkTime, workdayEntries }} />, entry)
 }
 
 async function workday() {
@@ -29,7 +29,7 @@ async function workday() {
         workTimeInfo: { workTimes }
     } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
 
-    createApp(workTimes, result.insertWorkTime)
+    createApp(workTimes, result.insertWorkTime, result.entries)
 }
 
 let currentLocation = location.href
