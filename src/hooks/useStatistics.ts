@@ -127,7 +127,8 @@ export function useStatistics() {
             currentStats.forceFetch()
         }
         prevStats.current = Object.keys(unsyncedLogStatistics).length > 0
-    }, [currentStats, isCurrentYear, unsyncedLogStatistics])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [unsyncedLogStatistics])
 
     const yearWeeks = useMemo(() => {
         return Object.keys(stats?.weeks || {}).map((week) => ({
