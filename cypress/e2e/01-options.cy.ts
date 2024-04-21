@@ -375,7 +375,7 @@ describe('Options view & initial setup', () => {
         cy.getOptions().its('domain').should('equal', serverDomain)
         cy.getOptions().its('email').should('equal', 'test@test.com')
 
-        cy.contains('div', 'Support for Jira Cloud is experimental. Please report an issues you may find.').should(
+        cy.contains('div', 'Support for Jira Cloud is experimental. Please report any issues you may find.').should(
             'be.visible'
         )
 
