@@ -23,6 +23,7 @@ workflows:
     jobs:
       - cypress/install:
           name: Install
+          executor: custom
           post-steps:
             - run:
                 name: Build
@@ -51,6 +52,7 @@ workflows:
             tags:
               only: /release.*/
       - release:
+          executor: custom
           requires:
             - "Component Tests"
             - "E2E Tests"
