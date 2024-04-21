@@ -52,7 +52,6 @@ workflows:
             tags:
               only: /release.*/
       - release:
-          executor: custom
           requires:
             - "Component Tests"
             - "E2E Tests"
