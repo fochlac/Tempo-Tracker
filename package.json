@@ -12,6 +12,7 @@
         "major": "node build/release.js major && npm run build",
         "lint": "eslint src cypress",
         "test": "concurrently --kill-others \"npm run test:server\" \"cypress run\"",
+        "test:component": "cypress run --component",
         "test:open": "concurrently --kill-others \"npm run test:server\" \"cypress open\"",
         "cypress:open": "cypress open",
         "test:server": "node ./test-server/index.js"

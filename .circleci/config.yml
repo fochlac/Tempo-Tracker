@@ -21,18 +21,35 @@ jobs:
 workflows:
   build:
     jobs:
+      - cypress/install:
+          name: Install
+          post-steps:
+            - run:
+                name: Build
+                command: npm run build
+            - run:
+                name: Lint code
+                command: npm run lint
       - cypress/run:
+          name: E2E Tests
+          requires:
+            - Install
           executor: custom
-          build: "npm run build"
           start: "npm run test:server"
           store_artifacts: true
           filters:
             tags:
               only: /release.*/
-          post-steps:
-            - run:
-                name: Lint code
-                command: npm run lint
+      - cypress/run:
+          name: Component Tests
+          requires:
+            - Install
+          executor: custom
+          component: true
+          store_artifacts: true
+          filters:
+            tags:
+              only: /release.*/
       - release:
           requires:
             - cypress/run
