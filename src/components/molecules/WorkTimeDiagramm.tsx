@@ -1,13 +1,12 @@
-
-import { ChevronLeft, ChevronRight } from "preact-feather"
-import { useEffect, useState } from "preact/hooks"
-import styled from "styled-components"
-import { dateHumanized, durationString, formatDuration, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from "../../utils/datetime"
-import { IconButton } from "../atoms/IconButton"
-import { Input } from "../atoms/Input"
-import { Block, Column } from "../atoms/Layout"
-import { Tooltip, TooltipTop } from "../atoms/Tooltip"
-import { Label } from "../atoms/Typography"
+import { ChevronLeft, ChevronRight } from 'preact-feather'
+import { useEffect, useState } from 'preact/hooks'
+import styled from 'styled-components'
+import { dateHumanized, durationString, formatDuration, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from '../../utils/datetime'
+import { IconButton } from '../atoms/IconButton'
+import { Input } from '../atoms/Input'
+import { Block, Column } from '../atoms/Layout'
+import { Tooltip, TooltipTop } from '../atoms/Tooltip'
+import { Label } from '../atoms/Typography'
 
 const Diagramm = styled.div`
     display: flex;
@@ -59,14 +58,14 @@ const WeekNumber = styled.legend`
     cursor: default;
 
     &:before {
-    content: '';
-    position: absolute;
-    width: 2px;
-    height: 4px;
-    background:  var(--contrast);
-    top: -4px;
-    left: calc(50% - 1px);
-}
+        content: '';
+        position: absolute;
+        width: 2px;
+        height: 4px;
+        background: var(--contrast);
+        top: -4px;
+        left: calc(50% - 1px);
+    }
 `
 const Duration = styled.legend`
     position: absolute;
@@ -140,20 +139,23 @@ const WeekTooltip = styled(Tooltip)`
 
 const columns = 13
 interface Props {
-    stats: StatsMap;
-    year: number;
-    error: boolean;
-    options: StatisticsOptions;
-    unsyncedStats: StatsMap;
-    getRequiredSeconds: (week: number) => number;
-    setYear: (year: number) => void;
+    stats: StatsMap
+    year: number
+    error: boolean
+    options: StatisticsOptions
+    unsyncedStats: StatsMap
+    getRequiredSeconds: (week: number) => number
+    setYear: (year: number) => void
 }
 export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getRequiredSeconds, options, unsyncedStats, error }) => {
     const currentYear = new Date().getFullYear()
     const [weekOffset, setWeekOffset] = useState(getISOWeeks(currentYear))
     const isCurrentYear = year === currentYear
 
-    const maxSeconds = Math.max(stats ? (Math.ceil(Object.values(stats.weeks).reduce((highest, current) => current > highest ? current : highest, 0) / 60 / 60) + 1) * 60 * 60 : 0, (options.defaultHours + 1) * 60 * 60)
+    const maxSeconds = Math.max(
+        stats ? (Math.ceil(Object.values(stats.weeks).reduce((highest, current) => (current > highest ? current : highest), 0) / 60 / 60) + 1) * 60 * 60 : 0,
+        (options.defaultHours + 1) * 60 * 60
+    )
     const weeknumber = stats && isCurrentYear ? getISOWeekNumber(Date.now()) : getISOWeeks(year)
 
     useEffect(() => {
@@ -170,7 +172,16 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                 </Column>
                 <Column style={{ alignItems: 'center' }}>
                     <Label style={{ width: 65 }}>Year</Label>
-                    <Input disabled={error} type="number" style={{ width: 65 }} min={2000} value={year} max={currentYear} step={1} onChange={(e) => setYear(Number(e.target.value))} />
+                    <Input
+                        disabled={error}
+                        type="number"
+                        style={{ width: 65 }}
+                        min={2000}
+                        value={year}
+                        max={currentYear}
+                        step={1}
+                        onChange={(e) => setYear(Number(e.target.value))}
+                    />
                 </Column>
                 <Column style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
                     <IconButton disabled={weekOffset === weeknumber} onClick={() => setWeekOffset(Math.min(weeknumber, weekOffset + columns))}>
@@ -180,43 +191,49 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
             </Block>
             <Diagramm>
                 <TimeBar>
-                    {[options.defaultHours, Math.floor(options.defaultHours / 2)].map((hours) => (
-                        <Time style={{bottom: `calc(${hours * 60 * 60 / maxSeconds * 100}% - 10px)`}}>{hours}</Time>
+                    {[options.defaultHours, Math.floor(options.defaultHours / 2)].map((hour) => (
+                        <Time key={hour} style={{ bottom: `calc(${((hour * 60 * 60) / maxSeconds) * 100}% - 10px)` }}>
+                            {hour}
+                        </Time>
                     ))}
                 </TimeBar>
-                {!!stats && getIsoWeekPeriods(year).slice(0, weeknumber + 1).slice(Math.max(weekOffset - columns, 0), weekOffset).map(({ week, period }, index) => {
-                    const columnCount = Math.min(weekOffset, columns)
-                    const right = index < columnCount / 2
+                {!!stats &&
+                    getIsoWeekPeriods(year)
+                        .slice(0, weeknumber + 1)
+                        .slice(Math.max(weekOffset - columns, 0), weekOffset)
+                        .map(({ week, period }, index) => {
+                            const columnCount = Math.min(weekOffset, columns)
+                            const right = index < columnCount / 2
 
-                    console.log(index, columnCount, right)
+                            console.log(index, columnCount, right)
 
-                    const hours = getRequiredSeconds(week)
-                    const seconds = ((stats.weeks[week] || 0) + (unsyncedStats.weeks[week] || 0) / 1000)
-                    const hasData = !!stats.weeks[week]
-                    const showOver = hasData && Math.abs(seconds - hours) > 15 * 60
-                    return (
-                        <WeekWrapper>
-                            {showOver && seconds < hours && (
-                                <MissingHours style={{ height: `${(hours - seconds) / maxSeconds * 100}%` }}>
-                                    <TooltipTop right={right} content={'-' + formatDuration((hours - seconds) * 1000, true, true)}></TooltipTop>
-                                </MissingHours>
-                            )}
-                            <Week key={week} style={{ height: `${seconds / maxSeconds * 100}%` }}>
-                                {showOver && seconds > hours && (
-                                    <OverHours style={{ height: `${(seconds - hours) / seconds * 100}%` }}>
-                                        <TooltipTop right={right} content={formatDuration((seconds - hours) * 1000, true, true)}></TooltipTop>
-                                    </OverHours>
-                                )}
-                                <Duration>{`${durationString(seconds * 1000)}`}</Duration>
-                                <WeekNumber>
-                                    <WeekTooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`} right={right}>
-                                        {`00${week}`.slice(-2)}
-                                    </WeekTooltip>
-                                </WeekNumber>
-                            </Week>
-                        </WeekWrapper>
-                    )
-                })}
+                            const hours = getRequiredSeconds(week)
+                            const seconds = (stats.weeks[week] || 0) + (unsyncedStats.weeks[week] || 0) / 1000
+                            const hasData = !!stats.weeks[week]
+                            const showOver = hasData && Math.abs(seconds - hours) > 15 * 60
+                            return (
+                                <WeekWrapper key={index}>
+                                    {showOver && seconds < hours && (
+                                        <MissingHours style={{ height: `${((hours - seconds) / maxSeconds) * 100}%` }}>
+                                            <TooltipTop right={right} content={`-${formatDuration((hours - seconds) * 1000, true, true)}`} />
+                                        </MissingHours>
+                                    )}
+                                    <Week key={week} style={{ height: `${(seconds / maxSeconds) * 100}%` }}>
+                                        {showOver && seconds > hours && (
+                                            <OverHours style={{ height: `${((seconds - hours) / seconds) * 100}%` }}>
+                                                <TooltipTop right={right} content={formatDuration((seconds - hours) * 1000, true, true)} />
+                                            </OverHours>
+                                        )}
+                                        <Duration>{`${durationString(seconds * 1000)}`}</Duration>
+                                        <WeekNumber>
+                                            <WeekTooltip content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`} right={right}>
+                                                {`00${week}`.slice(-2)}
+                                            </WeekTooltip>
+                                        </WeekNumber>
+                                    </Week>
+                                </WeekWrapper>
+                            )
+                        })}
             </Diagramm>
         </>
     )

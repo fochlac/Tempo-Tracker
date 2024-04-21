@@ -1,4 +1,4 @@
-import { darken, getLuminance, lighten, mix } from "polished";
+import { darken, getLuminance, lighten, mix } from 'polished'
 
 export const createTheme = ({
     link,
@@ -37,6 +37,6 @@ export const createTheme = ({
         '--destructive-button-active': darken(0.025, destructive),
         '--destructive-button-hover': lighten(0.025, destructive),
         '--destructive-dark': darken(0.2, destructive),
-        '--destructive-darker': darken(0.3, destructive),
-}
+        '--destructive-darker': darken(0.3, destructive)
+    }
 }

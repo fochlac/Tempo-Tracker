@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "preact/hooks"
+import { useEffect, useRef } from 'preact/hooks'
 
-export function useKeyBinding (key: string, callback: () => void) {
+export function useKeyBinding(key: string, callback: () => void) {
     const cb = useRef(callback)
     cb.current = callback
     useEffect(() => {
@@ -8,7 +8,9 @@ export function useKeyBinding (key: string, callback: () => void) {
             if (e.key === key) {
                 e.stopPropagation()
                 e.preventDefault()
-                typeof cb.current === 'function' && cb.current()
+                if (typeof cb.current === 'function') {
+                    cb.current()
+                }
             }
         }
         document.addEventListener('keydown', handler)

@@ -1,5 +1,5 @@
 import { CACHE_STORE, DATABASE_NAME, DB_KEYS } from '../../src/constants/constants'
-import { baseDate, defaultOptions } from "./defaults"
+import { baseDate, defaultOptions } from './defaults'
 
 Cypress.Commands.add('open', (clearStorage = true) => {
     cy.visit('http://localhost:3000', {
@@ -22,23 +22,23 @@ Cypress.Commands.add('openWithOptions', (options = defaultOptions, skipStartApp 
 })
 
 Cypress.Commands.add('startApp', () => {
-    cy.window().then(win => {
+    cy.window().then((win) => {
         const script = win.document.createElement('script')
-        script.src = './popup.js';
+        script.src = './popup.js'
         win.document.querySelector('head').appendChild(script)
     })
 })
 
 Cypress.Commands.add('startSw', () => {
-    cy.window().then(win => {
+    cy.window().then((win) => {
         const script = win.document.createElement('script')
-        script.src = './sw.js';
+        script.src = './sw.js'
         win.document.querySelector('head').appendChild(script)
     })
 })
 
 Cypress.Commands.add('sendMessage', (message) => {
-    cy.window().then((win: any) => {
+    cy.window().then((win) => {
         win.chrome.messageListeners.forEach((listener) => {
             if (typeof listener === 'function') {
                 listener(message, { tab: { id: 'tabId' } }, win.chrome.runtime.sendMessage)
@@ -71,7 +71,6 @@ Cypress.Commands.add('injectUnsyncedWorklog', (worklog) => {
             return cy.getStore('@Store')
                 .updateItem(DB_KEYS.UPDATE_QUEUE, newQueue)
         })
-
 })
 Cypress.Commands.add('removeUnsyncedWorklog', (worklogId) => {
     cy.openIndexedDb(DATABASE_NAME)
@@ -80,11 +79,10 @@ Cypress.Commands.add('removeUnsyncedWorklog', (worklogId) => {
     cy.getStore('@Store')
         .readItem(DB_KEYS.UPDATE_QUEUE)
         .then((queue: TemporaryWorklog[]) => {
-            const newQueue = (queue || []).filter(worklog => worklog.tempId !== worklogId && worklog.id !== worklogId)
+            const newQueue = (queue || []).filter((worklog) => worklog.tempId !== worklogId && worklog.id !== worklogId)
             return cy.getStore('@Store')
                 .updateItem(DB_KEYS.UPDATE_QUEUE, newQueue)
         })
-
 })
 
 Cypress.Commands.add('getWorklogCache', () => {

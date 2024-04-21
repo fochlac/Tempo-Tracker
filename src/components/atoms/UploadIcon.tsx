@@ -1,4 +1,4 @@
-import { ChevronUp } from "preact-feather";
+import { ChevronUp } from 'preact-feather'
 import styled, { keyframes } from 'styled-components'
 
 const visibility = keyframes`
@@ -33,10 +33,10 @@ const Wrapper = styled.div`
     margin-bottom: -3px;
 `
 
-export function UploadIcon({style}) {
+export function UploadIcon ({style}) {
     return <Wrapper style={style}>
         <AnimatedChevronUp size={18} style={{ top: -6, animationDelay: '0.2s' }} />
-        <AnimatedChevronUp size={18}  style={{ animationDelay: '0.1s' }} />
-        <AnimatedChevronUp size={18} style={{ top: 6 }}  />
+        <AnimatedChevronUp size={18} style={{ animationDelay: '0.1s' }} />
+        <AnimatedChevronUp size={18} style={{ top: 6 }} />
     </Wrapper>
 }

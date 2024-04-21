@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-types */
 
-interface FetchResult<D = any> {
+interface FetchResult<D = unknown> {
     loading: boolean;
     error?: Error;
     data: D;
@@ -20,7 +21,7 @@ interface PersistentFetchResult<K extends CACHE> extends FetchResult<DataBase[K]
 }
 
 interface CacheHookResult<K extends CACHE> {
-    setCache: (cache: any) => Promise<void>;
+    setCache: (cache: unknown) => Promise<void>;
     cache: DataBase[K];
     updateData: (fn: (data: DataBase[K]['data']) => DataBase[K]['data']) => Promise<void>;
     resetCache: () => Promise<void>;
@@ -60,13 +61,13 @@ interface LocalIssue extends Issue {
 
 interface Action {
     type: string;
-    payload?: Record<string, any>
+    payload?: Record<string, unknown>
 }
 
 interface ActionDefinition {
     type: string;
-    create(...params: any): Action;
-    response(success: boolean, ...params: any): Action;
+    create(...params: unknown): Action;
+    response(success: boolean, ...params: unknown): Action;
 }
 
 interface THEMES {
@@ -191,5 +192,5 @@ interface Window {
     }
 }
 
-declare var isFirefox: boolean;
-declare var content: any;
+declare let isFirefox: boolean
+declare let content: unknown

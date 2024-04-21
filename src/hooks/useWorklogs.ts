@@ -1,17 +1,18 @@
-import { usePersitentFetch } from "./usePersitedFetch"
+/* eslint-disable react-hooks/rules-of-hooks */
+import { usePersitentFetch } from './usePersitedFetch'
 
-import { fetchAllWorklogs, fetchSelf } from "../utils/api"
-import { useEffect, useMemo } from "preact/hooks"
-import { CACHE } from "../constants/constants"
-import { useCache } from "./useCache"
-import { useDatabase, useDatabaseUpdate } from "../utils/database"
-import { useOptions } from "./useOptions"
-import { checkTabExistence } from "../utils/background"
-
+import { fetchAllWorklogs, fetchSelf } from '../utils/api'
+import { useEffect, useMemo } from 'preact/hooks'
+import { CACHE } from '../constants/constants'
+import { useCache } from './useCache'
+import { useDatabase, useDatabaseUpdate } from '../utils/database'
+import { useOptions } from './useOptions'
+import { checkTabExistence } from '../utils/background'
+const EMPTY_ARRAY = []
 export function useWorklogUpdates() {
     const cache = useCache<'WORKLOG_CACHE'>('WORKLOG_CACHE', [])
-    const queue = useDatabase<'updates'>('updates') || []
-    const logs = cache?.cache?.data || []
+    const queue = useDatabase<'updates'>('updates') || EMPTY_ARRAY
+    const logs = cache?.cache?.data || EMPTY_ARRAY
 
     const originals = useMemo(() => {
         const updateMap = queue?.reduce((updateMap, log) => {
@@ -37,10 +38,10 @@ export function useWorklogUpdates() {
 
 export function useJiraWorklog() {
     const cache = useCache<'WORKLOG_CACHE'>('WORKLOG_CACHE', [])
-    const queue = useDatabase<'updates'>('updates') || []
+    const queue = useDatabase<'updates'>('updates') || EMPTY_ARRAY
     const updateQueue = useDatabaseUpdate('updates')
-    const logs = cache?.cache?.data || []
-    
+    const logs = cache?.cache?.data || EMPTY_ARRAY
+
     const data = useMemo(() => {
         const updateMap = {}
         queue?.forEach((log) => log.id && (updateMap[log.id] = true))
@@ -59,18 +60,17 @@ export function useJiraWorklog() {
                     await updateQueue(queue.filter((log) => log.id !== worklog.id))
                 }
                 else if (worklog.id) {
-                    await updateQueue(queue.filter((log) => log.id !== worklog.id).concat([{...worklog, synced: false, delete: true}]))
+                    await updateQueue(queue.filter((log) => log.id !== worklog.id).concat([{ ...worklog, synced: false, delete: true }]))
                 }
             },
-            async queue(worklog:TemporaryWorklog|TemporaryWorklog[]) {
+            async queue(worklog: TemporaryWorklog | TemporaryWorklog[]) {
                 const worklogs = Array.isArray(worklog) ? worklog : [worklog]
                 const cleanQueue = queue.filter((log) => {
                     if (log.id) {
-                        return !worklogs.some(newLog => newLog.id === log.id)
+                        return !worklogs.some((newLog) => newLog.id === log.id)
                     }
-                    else {
-                        return !worklogs.some(newLog => newLog.tempId === log.tempId)
-                    }
+
+                    return !worklogs.some((newLog) => newLog.tempId === log.tempId)
                 })
                 await updateQueue(cleanQueue.concat(worklogs))
             }
@@ -105,7 +105,7 @@ export function useFetchJiraWorklog() {
                     const url = options.data.domain.split('/rest')[0]
                     tab = await browser?.tabs?.create({ url: `${url}/secure/Dashboard.jspa?__tt-close=true`, active: false })
                     while (await checkTabExistence(tab.id)) {
-                        await new Promise(resolve => setTimeout(() => resolve(null), 1000))
+                        await new Promise((resolve) => setTimeout(() => resolve(null), 1000))
                     }
                     tab = null
                 })
@@ -113,9 +113,10 @@ export function useFetchJiraWorklog() {
 
         useEffect(() => {
             fetchLogsFF()
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [])
 
-        worklogResult = { 
+        worklogResult = {
             loading: false,
             forceFetch: () => fetchLogsFF(true)
         }
@@ -126,7 +127,7 @@ export function useFetchJiraWorklog() {
 
     return {
         ...worklogResult,
-        data, 
+        data,
         actions
     }
 }

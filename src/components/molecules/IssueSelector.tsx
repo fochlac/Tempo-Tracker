@@ -1,11 +1,11 @@
-import { useState } from "preact/hooks";
-import { useOptions } from "../../hooks/useOptions"
-import { IssueSearchDialog } from "./IssueSearchDialog";
-import { useJqlQueryResults } from "../../hooks/useJqlQueryResult";
-import { useSelf } from "../../hooks/useSelf";
+import { useState } from 'preact/hooks'
+import { useOptions } from '../../hooks/useOptions'
+import { IssueSearchDialog } from './IssueSearchDialog'
+import { useJqlQueryResults } from '../../hooks/useJqlQueryResult'
+import { useSelf } from '../../hooks/useSelf'
 
 interface Props {
-    onChange: (issue: LocalIssue) => void; 
+    onChange: (issue: LocalIssue) => void;
     additionalIssues?: LocalIssue[];
     enableSearch?: boolean;
     value: string;
@@ -19,7 +19,7 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
     const self = useSelf()
 
     const remoteIssues = useJqlQueryResults() as LocalIssue[]
-    
+
     const issueMap: Record<string, LocalIssue> = (additionalIssues || []).concat(options.useJqlQuery ? remoteIssues : [], localIssues).reduce((map, issue) => {
         map[issue.key] = {
             ...(map[issue.key] || {}),
@@ -55,16 +55,16 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
                 )}
             </select>
             {searchActive && (
-                <IssueSearchDialog title="Search Issue for Tracking" 
-                onCancel={() => {
-                    onChange(issueMap[value])
-                    setSearchActive(false)
-                }} 
-                onSelect={(issue) => {
-                    onChange(issue as LocalIssue)
-                    setLocalIssues((issues) => [...issues, issue])
-                    setSearchActive(false)
-                }} />
+                <IssueSearchDialog title="Search Issue for Tracking"
+                    onCancel={() => {
+                        onChange(issueMap[value])
+                        setSearchActive(false)
+                    }}
+                    onSelect={(issue) => {
+                        onChange(issue as LocalIssue)
+                        setLocalIssues((issues) => [...issues, issue])
+                        setSearchActive(false)
+                    }} />
             )}
         </>
     )

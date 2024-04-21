@@ -17,7 +17,7 @@ export const ActionLinkRaw = styled.a<ActionLinkRawProps>`
     color: ${(props) => {
         if (props.$disabled) {
             return 'var(--contrast)'
-        } 
+        }
         return props.$error ? 'var(--destructive) !important' : 'var(--link)'
     }};
     pointer-events: ${(props) => (props.$disabled ? 'none' : 'all')};
@@ -32,13 +32,14 @@ export const ActionLinkRaw = styled.a<ActionLinkRawProps>`
 `
 
 export const ActionLink: React.FC<{
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onClick: (e: Event) => void
     disabled?: boolean
     small?: boolean
     error?: boolean
     title?: string;
     style?: React.CSSProperties
-    as?: string | React.ComponentType<any>;
+    as?: string | React.ComponentType<unknown>;
     for?: string;
 }> = ({ onClick, disabled, as, small, error, ...props }) => {
     return (

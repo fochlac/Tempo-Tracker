@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'preact/hooks'
 import styled from 'styled-components'
-import { useTracking } from '../../hooks/useTracking'
 import { dateString, getISOWeekNumber, durationString } from '../../utils/datetime'
 import { Button } from '../atoms/Button'
 import { ButtonBar } from '../atoms/ButtonBar'
@@ -75,7 +74,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 defaultTimePerDay: getRequiredSeconds(week, true) / days.length
             })
         }
-    }, [getRequiredSeconds, week, options])
+    }, [getRequiredSeconds, week, options, days.length])
 
     const onChangeStart = (e) => {
         const { value } = e.target
@@ -129,7 +128,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
         const selectedDays = (options.endDate - options.startDate) / dayInMs + 1
 
         const updates = []
-        for (let index = 0; index < selectedDays; index ++) {
+        for (let index = 0; index < selectedDays; index++) {
             const date = options.startDate + index * dayInMs
 
             if (!days.includes(new Date(date).getDay())) {

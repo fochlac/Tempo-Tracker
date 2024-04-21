@@ -1,5 +1,5 @@
-const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
-export function openTab(options: Parameters<typeof browser.tabs.create>[0]) {
+const controller = typeof chrome !== 'undefined' && chrome || typeof browser !== 'undefined' && browser
+export function openTab (options: Parameters<typeof browser.tabs.create>[0]) {
     if (isFirefox) {
         return controller.tabs.create(options)
     }

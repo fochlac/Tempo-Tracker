@@ -141,7 +141,8 @@ export const TrackerView: React.FC = () => {
                             const id = log?.id || log?.tempId
                             if (editIssue?.issue === id) {
                                 acc.list.push(<WorklogEditor log={log} key={id} />)
-                            } else {
+                            }
+                            else {
                                 acc.list.push(
                                     <Worklog
                                         onDelete={worklog.actions.delete}

@@ -1,18 +1,18 @@
-import { useEffect, useMemo } from "preact/hooks"
-import styled from "styled-components"
-import { THEMES, VIEWS } from "../constants/constants"
-import { useOptions } from "../hooks/useOptions"
-import { viewDuck } from "../store/ducks/view"
-import { useDispatch, useSelector } from "../utils/atom"
-import { Footer } from "./molecules/Footer"
-import { ForgottenTrackingDialog } from "./molecules/ForgottenTrackingDialog"
-import { Header } from "./molecules/Header"
-import { OptionsView } from "./views/Options"
-import { StatisticsView } from "./views/Statistics"
-import { TrackerView } from "./views/Tracker"
-import { Themes } from "../constants/themes"
-import { CssVariables } from "./atoms/CssVariables"
-import { createTheme } from "src/utils/theme"
+import { useEffect, useMemo } from 'preact/hooks'
+import styled from 'styled-components'
+import { THEMES, VIEWS } from '../constants/constants'
+import { useOptions } from '../hooks/useOptions'
+import { viewDuck } from '../store/ducks/view'
+import { useDispatch, useSelector } from '../utils/atom'
+import { Footer } from './molecules/Footer'
+import { ForgottenTrackingDialog } from './molecules/ForgottenTrackingDialog'
+import { Header } from './molecules/Header'
+import { OptionsView } from './views/Options'
+import { StatisticsView } from './views/Statistics'
+import { TrackerView } from './views/Tracker'
+import { Themes } from '../constants/themes'
+import { CssVariables } from './atoms/CssVariables'
+import { createTheme } from 'src/utils/theme'
 
 const Main = styled.main`
     display: flex;
@@ -43,6 +43,7 @@ export const App: React.FC = () => {
         if (!options.user?.length || !options.token?.length || !options.domain?.length) {
             dispatch('setView', VIEWS.OPTIONS)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     document.querySelector('body').style.height = '100%'
@@ -52,8 +53,9 @@ export const App: React.FC = () => {
         try {
             return createTheme(themeObject)
         }
-        catch(e) {}
+        catch (e) {}
         return createTheme(Themes.DEFAULT)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [...Object.values(themeObject)])
 
     return (

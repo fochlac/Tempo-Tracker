@@ -1,5 +1,5 @@
-import { useState } from "preact/hooks"
-import { Input } from "../atoms/Input"
+import { useState } from 'preact/hooks'
+import { Input } from '../atoms/Input'
 
 interface Props extends Omit<React.HTMLAttributes<HTMLInputElement>, 'onChange'> {
     value: string;
@@ -12,10 +12,9 @@ export const ObfuscatedInput: React.FC<Props> = ({ value, onChange, error, ...pr
     const [isFocused, setFocused] = useState(false)
     const [isDirty, setDirty] = useState(false)
     const [originalValue] = useState(value || '')
-    
+
     const stars = value.length ? Array(Math.min(Math.max(value.length - 8, 12), 32)).fill('*').join('') : ''
     const valueObfuscated = `${value.slice(0, 4)}${stars}${value.slice(-4)}`
-
 
     return (
         <Input

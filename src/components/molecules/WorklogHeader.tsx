@@ -1,10 +1,10 @@
-import { useMemo } from "preact/hooks";
-import styled from "styled-components";
-import { useTracking } from "../../hooks/useTracking";
-import { useJiraWorklog } from "../../hooks/useWorklogs";
-import { dateHumanized, formatDuration } from "../../utils/datetime";
-import { Timer } from "../atoms/Timer";
-import { WorklogAtoms } from "./Worklog";
+import { useMemo } from 'preact/hooks'
+import styled from 'styled-components'
+import { useTracking } from '../../hooks/useTracking'
+import { useJiraWorklog } from '../../hooks/useWorklogs'
+import { dateHumanized, formatDuration } from '../../utils/datetime'
+import { Timer } from '../atoms/Timer'
+import { WorklogAtoms } from './Worklog'
 
 const { Datum } = WorklogAtoms
 
@@ -45,7 +45,7 @@ export const WorklogHeader: React.FC<{ date: string; }> = ({ date }) => {
 
     return (
         <ListRow>
-            <Datum style={{ color: "var(--font)", whiteSpace: 'nowrap' }}>{date}{isToday ? ' (Today)' : ''}</Datum>
+            <Datum style={{ color: 'var(--font)', whiteSpace: 'nowrap' }}>{date}{isToday ? ' (Today)' : ''}</Datum>
             {tracker.start && dateHumanized(tracker.start) === date ? (
                 <DurationTimer start={tracker.start - duration} />
             ) : (

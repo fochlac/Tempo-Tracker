@@ -1,11 +1,11 @@
-import { useEffect, useState } from "preact/hooks"
-import { editIssueDuck } from "../store/ducks/edit-issue"
-import { useDispatch, useSelector } from "../utils/atom"
-import { useOptions } from "./useOptions"
+import { useEffect, useState } from 'preact/hooks'
+import { editIssueDuck } from '../store/ducks/edit-issue'
+import { useDispatch, useSelector } from '../utils/atom'
+import { useOptions } from './useOptions'
 import { v4 } from 'uuid'
-import { usePrevious } from "./usePrevious"
+import { usePrevious } from './usePrevious'
 
-export function useInsertWorklog() {
+export function useInsertWorklog () {
     const dispatch = useDispatch()
     const editIssue = useSelector(editIssueDuck.selector)
     const {data: options} = useOptions()

@@ -1,16 +1,16 @@
-import { Check, X } from "preact-feather"
-import { useState } from "preact/hooks"
-import styled from "styled-components"
-import { useJiraWorklog } from "../../hooks/useWorklogs"
-import { useDispatch } from "../../utils/atom"
-import { dateString, durationString, formatDuration, timeString } from "../../utils/datetime"
-import { compareValues } from "../../utils/helper"
-import { IconButton } from "../atoms/IconButton"
-import { Input } from "../atoms/Input"
-import { TimeInput } from "../atoms/TimeInput"
-import { WorklogAtoms } from "./Worklog"
-import { IssueSelector } from "./IssueSelector"
-import { useKeyBinding } from "../../hooks/useKeyBinding"
+import { Check, X } from 'preact-feather'
+import { useState } from 'preact/hooks'
+import styled from 'styled-components'
+import { useJiraWorklog } from '../../hooks/useWorklogs'
+import { useDispatch } from '../../utils/atom'
+import { dateString, durationString, formatDuration, timeString } from '../../utils/datetime'
+import { compareValues } from '../../utils/helper'
+import { IconButton } from '../atoms/IconButton'
+import { Input } from '../atoms/Input'
+import { TimeInput } from '../atoms/TimeInput'
+import { WorklogAtoms } from './Worklog'
+import { IssueSelector } from './IssueSelector'
+import { useKeyBinding } from '../../hooks/useKeyBinding'
 
 const DateInput = styled(Input)`
     flex-shrink: 0;
@@ -21,20 +21,15 @@ const DateInput = styled(Input)`
     }
 `
 
-const { 
-    WorklogEntry,
-    WorklogBody,
-    TimeRange,
-    Duration
-} = WorklogAtoms
+const { WorklogEntry, WorklogBody, TimeRange, Duration } = WorklogAtoms
 
 const compareLog = compareValues(['start', 'end', 'issue.key'])
 
 export function WorklogEditor({ log: pureLog }) {
-    const [log, setEdit] = useState({...pureLog, synced: false})
+    const [log, setEdit] = useState({ ...pureLog, synced: false })
     const [isDirty, setDirty] = useState(false)
     const dispatch = useDispatch()
-    const {actions} = useJiraWorklog()
+    const { actions } = useJiraWorklog()
     useKeyBinding('Escape', () => {
         dispatch('resetEditIssue')
     })
@@ -85,18 +80,24 @@ export function WorklogEditor({ log: pureLog }) {
         if (isDirty && compareLog(pureLog, log)) {
             await actions.queue(log)
         }
-        
+
         dispatch('resetEditIssue')
     }
 
     return (
         <WorklogEntry>
-            <WorklogBody as='form' onSubmit={(e) => e.preventDefault()}>
+            <WorklogBody as="form" onSubmit={(e) => e.preventDefault()}>
                 <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
-                <IssueSelector enableSearch value={log.issue.key} additionalIssues={[pureLog.issue]} style={{ margin: '2px 8px 0', maxWidth: 150, height: 20 }} onChange={(issue) => {
-                    setDirty(true)
-                    setEdit({ ...log, issue })
-                }} />
+                <IssueSelector
+                    enableSearch
+                    value={log.issue.key}
+                    additionalIssues={[pureLog.issue]}
+                    style={{ margin: '2px 8px 0', maxWidth: 150, height: 20 }}
+                    onChange={(issue) => {
+                        setDirty(true)
+                        setEdit({ ...log, issue })
+                    }}
+                />
                 <TimeRange>
                     <TimeInput onChange={onChange('start')} value={timeString(log.start)} />
                     {' - '}
@@ -105,11 +106,11 @@ export function WorklogEditor({ log: pureLog }) {
                 <Duration>
                     <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
                 </Duration>
-                <div style={{marginLeft: 'auto'}}>
+                <div style={{ marginLeft: 'auto' }}>
                     <IconButton title="Save" onClick={onSubmit} style={{ marginLeft: 16 }}>
                         <Check />
                     </IconButton>
-                    <IconButton title="Cancel" onClick={() => dispatch('resetEditIssue')}  style={{ marginLeft: 4 }}>
+                    <IconButton title="Cancel" onClick={() => dispatch('resetEditIssue')} style={{ marginLeft: 4 }}>
                         <X />
                     </IconButton>
                 </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import './src/index'
 import './defaults'
 import './commands.ts'
@@ -14,7 +15,7 @@ declare global {
             readItem<T = unknown>(key: IDBValidKey | IDBKeyRange): Chainable<T>
             updateItem(key: string, value: unknown): Chainable<IDBObjectStore>
             deleteItem(key: string): Chainable<IDBObjectStore>
-            mount(jsx: any): void
+            mount(jsx: unknown): void
 
             fakeTimers(now: number)
             sendMessage(action: Action)
@@ -32,6 +33,15 @@ declare global {
             removeUnsyncedWorklog(worklogId: string)
             getUnsyncedWorklogs(): Chainable<TemporaryWorklog>
             getWorklogCache(): Chainable<CacheObject<Worklog>>
+        }
+
+        interface ApplicationWindow {
+            chrome: {
+                runtime: { sendMessage?: (message: unknown, callback: (status: unknown) => void) => void },
+                // eslint-disable-next-line @typescript-eslint/ban-types
+                messageListeners: Function[]
+            },
+            messages: unknown[]
         }
     }
 }

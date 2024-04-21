@@ -1,16 +1,16 @@
-import styled from "styled-components"
-import { VIEWS } from "../../constants/constants"
-import { useOptions } from "../../hooks/useOptions"
-import { viewDuck } from "../../store/ducks/view"
-import { useSelector } from "../../utils/atom"
-import { InternalLink } from "../atoms/InternalLink"
-import { Logo } from "../atoms/Logo"
-import { Tooltip } from "../atoms/Tooltip"
-import { ActionLink } from "../atoms/ActionLink"
-import { isPopped } from "../../utils/url"
-import { ExternalLink } from "preact-feather"
-import { openAsTab } from "../../utils/browser"
-import { WorkdayLink } from "./WorkdayLink"
+import styled from 'styled-components'
+import { VIEWS } from '../../constants/constants'
+import { useOptions } from '../../hooks/useOptions'
+import { viewDuck } from '../../store/ducks/view'
+import { useSelector } from '../../utils/atom'
+import { InternalLink } from '../atoms/InternalLink'
+import { Logo } from '../atoms/Logo'
+import { Tooltip } from '../atoms/Tooltip'
+import { ActionLink } from '../atoms/ActionLink'
+import { isPopped } from '../../utils/url'
+import { ExternalLink } from 'preact-feather'
+import { openAsTab } from '../../utils/browser'
+import { WorkdayLink } from './WorkdayLink'
 
 const AppBar = styled.header`
     display: flex;

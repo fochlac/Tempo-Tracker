@@ -1,14 +1,14 @@
-import styled from "styled-components"
-import { useOptions } from "../../hooks/useOptions"
-import { openTab } from "../../utils/browser"
-import { ActionLink } from "../atoms/ActionLink"
-import { Input, Textarea } from "../atoms/Input"
-import { FlexRow } from "../atoms/Layout"
-import { InfoText, Label } from "../atoms/Typography"
-import { IssueInput } from "../molecules/IssueInput"
-import { JQL_TEMPLATES } from "../../constants/jql-templates"
-import { checkJql } from "../../utils/options"
-import { Option } from "../atoms/Option"
+import styled from 'styled-components'
+import { useOptions } from '../../hooks/useOptions'
+import { openTab } from '../../utils/browser'
+import { ActionLink } from '../atoms/ActionLink'
+import { Input, Textarea } from '../atoms/Input'
+import { FlexRow } from '../atoms/Layout'
+import { InfoText, Label } from '../atoms/Typography'
+import { IssueInput } from '../molecules/IssueInput'
+import { JQL_TEMPLATES } from '../../constants/jql-templates'
+import { checkJql } from '../../utils/options'
+import { Option } from '../atoms/Option'
 
 const Select = styled.select`
     width: 200px;
@@ -39,20 +39,20 @@ export const IssueOptions: React.FC<{ valid: boolean; }> = ({ valid }) => {
                 <Option>
                     <Label>Custom JQL Query</Label>
                     <InfoText>
-                        Automatically select issues based on a 
+                        Automatically select issues based on a
                         <ActionLink onClick={() => openTab({active: true, url: JQL_LINK })}>custom JQL-query</ActionLink>.
-                        Feel free to extend the 
+                        Feel free to extend the
                         <ActionLink onClick={() => openTab({active: true, url: TMPL_LINK })}>template list</ActionLink>.
                     </InfoText>
                     <Textarea onChange={(e) => actions.merge({ jqlQuery: e.target.value })} value={options.jqlQuery} />
                     <FlexRow $justify="space-between">
                         <Select style={{marginTop: 4}} onChange={(e) => {
                             actions.merge({ jqlQuery: JQL_TEMPLATES[e.target.value]?.template })
-                            e.target.value = ""
+                            e.target.value = ''
                         }}>
                             <option value="" disabled selected hidden>JQL Templates</option>
                             {Object.values(JQL_TEMPLATES).map((template) => (
-                                <option value={template.id}>{template.name}</option>
+                                <option key={template.id} value={template.id}>{template.name}</option>
                             ))}
                         </Select>
                         <ActionLink onClick={checkJql}>

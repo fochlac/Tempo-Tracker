@@ -45,7 +45,7 @@ export const StatisticsView: React.FC = () => {
     return (
         <Body>
             <Title>
-                {`Weekly Hours`}
+                {'Weekly Hours'}
                 <ActionLink
                     disabled={loading || self.error}
                     style={{ marginRight: 4, lineHeight: '16px', marginLeft: 'auto' }}
@@ -118,8 +118,8 @@ export const StatisticsView: React.FC = () => {
                         onChange={updateOptionKey('lifetimeYear')}
                     />
                 </Column>
-                <Column></Column>
-                <Column></Column>
+                <Column />
+                <Column />
             </Block>
             <WorkTimeExceptions />
         </Body>

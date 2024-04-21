@@ -2,7 +2,7 @@ import { Themes } from 'src/constants/themes'
 import { THEMES, domainRegexp } from '../constants/constants'
 import { fetchIssueList } from './api'
 
-export function getOptions(options: Partial<Options>): Options {
+export function getOptions (options: Partial<Options>): Options {
     const {
         issues,
         domain,
@@ -36,7 +36,7 @@ export function getOptions(options: Partial<Options>): Options {
     const cleanIssues = Array.isArray(issues)
         ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {})
         : issues ?? {}
-    const cleanIssueOrder = Array.isArray(issueOrder) ? issueOrder.filter(key => cleanIssues[key]) : []
+    const cleanIssueOrder = Array.isArray(issueOrder) ? issueOrder.filter((key) => cleanIssues[key]) : []
     const selectedTheme = THEMES[theme] ? theme : THEMES.DEFAULT
 
     return {

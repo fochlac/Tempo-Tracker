@@ -8,10 +8,9 @@ import { Button, DestructiveButton } from '../atoms/Button'
 import { ConfirmDialog } from './ConfirmDialog'
 import { Tooltip } from '../atoms/Tooltip'
 import { IssueSearchDialog } from './IssueSearchDialog'
-import { verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
+import { verticalListSortingStrategy, useSortable, SortableContext } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext } from '@dnd-kit/core'
-import { SortableContext } from '@dnd-kit/sortable'
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers'
 
 const InputList = styled.ul`
@@ -70,17 +69,17 @@ const IssueRow = ({ issue, setDelIssue, index }) => {
     })
 
     if (!issue?.key || !options.issues[issue.key]) return null
-    
+
     const handleAliasChange = (issueKey) => (e) => {
-        const newIssues = { 
-            ...options.issues, 
+        const newIssues = {
+            ...options.issues,
             [issueKey]: { ...options.issues[issueKey], alias: e.target.value }
         }
         actions.merge({ issues: newIssues })
     }
     const handleColorChange = (issueKey) => (e) => {
-        const newIssues = { 
-            ...options.issues, 
+        const newIssues = {
+            ...options.issues,
             [issueKey]: { ...options.issues[issueKey], color: e.target.value }
         }
         actions.merge({ issues: newIssues })

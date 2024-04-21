@@ -1,10 +1,10 @@
-import { useOptions } from "src/hooks/useOptions";
-import { Input } from "./Input"
-import { Label } from "./Typography"
-import { Option } from "./Option";
-import { useRef, useState } from "preact/hooks";
-import { parseToRgb } from "polished";
-import styled from "styled-components";
+import { useOptions } from 'src/hooks/useOptions'
+import { Input } from './Input'
+import { Label } from './Typography'
+import { Option } from './Option'
+import { useRef, useState } from 'preact/hooks'
+import { parseToRgb } from 'polished'
+import styled from 'styled-components'
 
 const InputGrid = styled.div`
     display: grid;
@@ -26,13 +26,12 @@ export const CustomThemeCssInput: React.FC<{ label: string; field: keyof Options
 
         try {
             const color = parseToRgb(e.target.value)
-            if (color)  {
-                actions.merge({ customTheme: { ...options.customTheme, [field]:e.target.value } })
+            if (color) {
+                actions.merge({ customTheme: { ...options.customTheme, [field]: e.target.value } })
             }
         }
-        catch(e) {}
+        catch (e) {}
     }
-
 
     return (
         <Option>

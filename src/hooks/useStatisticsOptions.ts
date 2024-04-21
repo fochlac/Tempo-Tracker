@@ -1,6 +1,6 @@
-import { DB_KEYS } from "../constants/constants"
-import { useDatabase, useDatabaseUpdate } from "../utils/database"
-import { getISOWeekNumber } from "../utils/datetime"
+import { DB_KEYS } from '../constants/constants'
+import { useDatabase, useDatabaseUpdate } from '../utils/database'
+import { getISOWeekNumber } from '../utils/datetime'
 
 const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
     return {
@@ -21,14 +21,14 @@ const defaultStatisticsOptions = {
     lifetimeYear: new Date().getFullYear(),
     exceptions: []
 }
-export function useStatisticsOptions() {
+export function useStatisticsOptions () {
     const options: StatisticsOptions = useDatabase<'statsOptions'>('statsOptions') || defaultStatisticsOptions
     const updateOptions = useDatabaseUpdate(DB_KEYS.STATS_OPTIONS)
-    
+
     return {
         data: normalizeStatisticsOptions(options),
         actions: {
-            async addException() {
+            async addException () {
                 const year = new Date().getFullYear()
                 const week = getISOWeekNumber(Date.now())
                 const update = {
@@ -46,7 +46,7 @@ export function useStatisticsOptions() {
                 }
                 await updateOptions(update)
             },
-            async deleteException(index) {
+            async deleteException (index) {
                 const update = {
                     ...options,
                     exceptions: [
@@ -56,7 +56,7 @@ export function useStatisticsOptions() {
                 }
                 await updateOptions(update)
             },
-            async mergeException(index, merge) {
+            async mergeException (index, merge) {
                 const update = {
                     ...options,
                     exceptions: [
@@ -67,10 +67,10 @@ export function useStatisticsOptions() {
                 }
                 await updateOptions(update)
             },
-            async set(newOptions) {
+            async set (newOptions) {
                 await updateOptions(newOptions)
             },
-            async merge(newOptions: Partial<Options>) {
+            async merge (newOptions: Partial<Options>) {
                 const update = {
                     ...options,
                     ...newOptions

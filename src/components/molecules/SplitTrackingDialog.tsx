@@ -1,13 +1,13 @@
-import { useState } from "preact/hooks";
-import styled from "styled-components";
-import { useTracking } from "../../hooks/useTracking";
-import { timeString } from "../../utils/datetime"
-import { Button } from "../atoms/Button";
-import { ButtonBar } from "../atoms/ButtonBar";
-import { Modal } from "../atoms/Modal";
-import { TimeInput } from "../atoms/TimeInput";
-import { DefaultText, H5, InfoText, Label } from "../atoms/Typography";
-import { Input } from "../atoms/Input";
+import { useState } from 'preact/hooks'
+import styled from 'styled-components'
+import { useTracking } from '../../hooks/useTracking'
+import { timeString } from '../../utils/datetime'
+import { Button } from '../atoms/Button'
+import { ButtonBar } from '../atoms/ButtonBar'
+import { Modal } from '../atoms/Modal'
+import { TimeInput } from '../atoms/TimeInput'
+import { DefaultText, H5, Label } from '../atoms/Typography'
+import { Input } from '../atoms/Input'
 
 const Row = styled.div`
     display: flex;
@@ -39,13 +39,12 @@ export const SplitTrackingDialog: React.FC<{onClose: () => void}> = ({onClose}) 
 
     const label = data?.issue ? data.issue.alias || `${data.issue.key}: ${data.issue.name}` : ''
 
-
     return (
         <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>
             <H5>Split Current Tracking</H5>
             <div style={{ padding: '0 8px', marginBottom: 8 }}>
                 <Line>
-                    You are tracking work on {label} since <b>{timeString(data?.start)}</b>. 
+                    You are tracking work on {label} since <b>{timeString(data?.start)}</b>.
                 </Line>
                 <Row>
                     <Col>

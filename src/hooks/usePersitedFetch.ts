@@ -1,6 +1,6 @@
-import { useCache } from "./useCache";
-import { useFetchData } from "./useFetchData";
-import { useSafeState } from "./useSafeState";
+import { useCache } from './useCache'
+import { useFetchData } from './useFetchData'
+import { useSafeState } from './useSafeState'
 
 export function usePersitentFetch<K extends CACHE> (fetchFunction: () => Promise<DataBase[K]['data']>, uuid: CACHE, initialData, cacheDuration = 1):PersistentFetchResult<K> {
     const { cache, setCache, updateData } = useCache(uuid, initialData)

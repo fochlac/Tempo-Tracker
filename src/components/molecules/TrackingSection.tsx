@@ -43,13 +43,13 @@ const Duration = styled(Timer)`
 
 const CUSTOM_ISSUE = 'CUSTOM_ISSUE'
 
-export function TrackingSection({ hasError }) {
+export function TrackingSection ({ hasError }) {
     const { data: tracker, actions } = useTracking()
     const { data: options } = useOptions()
     const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
     const [splitTrackingDialogVisible, showSplitTrackingDialog] = useState(false)
     const remoteIssues = useJqlQueryResults() as LocalIssue[]
-    const issues = options.issueOrder.map(key => options.issues[key]).concat(options.useJqlQuery ? remoteIssues : [])
+    const issues = options.issueOrder.map((key) => options.issues[key]).concat(options.useJqlQuery ? remoteIssues : [])
 
     const optionList: ToggleBarOption[] = useMemo(() => {
         return issues
@@ -88,7 +88,8 @@ export function TrackingSection({ hasError }) {
             newDay.setFullYear(y, m - 1, d)
             if (newDay.getTime() < Date.now()) {
                 actions.updateStart(newDay.getTime())
-            } else {
+            }
+            else {
                 const newDay = new Date(tracker.start)
                 newDay.setFullYear(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
                 actions.updateStart(newDay.getTime())
@@ -103,15 +104,17 @@ export function TrackingSection({ hasError }) {
             const [oldH] = oldValue.split(':')
 
             let newDay = new Date(tracker.start)
-            if (oldH === '00' && h == '23') {
+            if (oldH === '00' && h === '23') {
                 newDay = new Date(newDay.getTime() - 24 * 60 * 60 * 1000)
-            } else if (h === '00' && oldH === '23') {
+            }
+            else if (h === '00' && oldH === '23') {
                 newDay = new Date(newDay.getTime() + 24 * 60 * 60 * 1000)
             }
             newDay.setHours(h, m)
             if (newDay.getTime() < Date.now()) {
                 actions.updateStart(newDay.getTime())
-            } else {
+            }
+            else {
                 actions.updateStart(Date.now())
             }
         }
@@ -119,7 +122,8 @@ export function TrackingSection({ hasError }) {
     const onChangeTracking = (issueId) => {
         if (issueId === CUSTOM_ISSUE) {
             showCustomIssueDialog(true)
-        } else {
+        }
+        else {
             actions.swap(issueMap[issueId])
         }
     }

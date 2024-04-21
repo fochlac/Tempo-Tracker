@@ -1,13 +1,13 @@
-import styled from "styled-components"
-import { useOptions } from "../../hooks/useOptions"
-import { Input } from "../atoms/Input"
-import { FlexRow } from "../atoms/Layout"
-import { InfoText, Label } from "../atoms/Typography"
-import { Option } from "../atoms/Option"
-import { THEMES } from "src/constants/constants"
-import { Conditional } from "../atoms/Conditional"
-import { SectionHead } from "../views/Options"
-import { CustomThemeCssInput } from "../atoms/CustomThemeCssInput"
+import styled from 'styled-components'
+import { useOptions } from '../../hooks/useOptions'
+import { Input } from '../atoms/Input'
+import { FlexRow } from '../atoms/Layout'
+import { InfoText, Label } from '../atoms/Typography'
+import { Option } from '../atoms/Option'
+import { THEMES } from 'src/constants/constants'
+import { Conditional } from '../atoms/Conditional'
+import { SectionHead } from '../views/Options'
+import { CustomThemeCssInput } from '../atoms/CustomThemeCssInput'
 
 const Select = styled.select`
     width: 200px;
@@ -65,23 +65,38 @@ export const AppOptionsSection: React.FC = () => {
             <Option>
                 <Label>Automatic Synchronization</Label>
                 <FlexRow $justify="flex-start">
-                    <Input style={{ margin: '0 6px' }} type="checkbox" disabled={isFirefox} checked={isFirefox ? false : options.autosync} onChange={(e) => actions.merge({ autosync: e.target.checked })} />
+                    <Input
+                        style={{ margin: '0 6px' }}
+                        type="checkbox"
+                        disabled={isFirefox}
+                        checked={isFirefox ? false : options.autosync}
+                        onChange={(e) => actions.merge({ autosync: e.target.checked })}
+                    />
                     <Label>enabled</Label>
                 </FlexRow>
-                {isFirefox && <InfoText>For Firefox this setting is always inactive. Due to browser restrictions it is neccesary to open jira in a new tab and use that tab for synchronization.</InfoText>}
+                {isFirefox && (
+                    <InfoText>
+                        For Firefox this setting is always inactive. Due to browser restrictions it is neccesary to open jira in a new tab and use that tab for synchronization.
+                    </InfoText>
+                )}
             </Option>
             <Option>
                 <Label>Theme</Label>
                 <Select onChange={(e) => actions.merge({ theme: e.target.value })}>
-                    <option selected={options.theme === THEMES.DEFAULT} value={THEMES.DEFAULT}>Light Theme (default)</option>
-                    <option selected={options.theme === THEMES.DARK} value={THEMES.DARK}>Dark Theme</option>
-                    <option selected={options.theme === THEMES.CUSTOM} value={THEMES.CUSTOM}>Custom Theme</option>
+                    <option selected={options.theme === THEMES.DEFAULT} value={THEMES.DEFAULT}>
+                        Light Theme (default)
+                    </option>
+                    <option selected={options.theme === THEMES.DARK} value={THEMES.DARK}>
+                        Dark Theme
+                    </option>
+                    <option selected={options.theme === THEMES.CUSTOM} value={THEMES.CUSTOM}>
+                        Custom Theme
+                    </option>
                 </Select>
             </Option>
             <Conditional enable={options.theme === THEMES.CUSTOM}>
                 <SectionHead>Custom Theme</SectionHead>
                 <Grid>
-
                     <CustomThemeCssInput label="Background" field="background" />
                     <CustomThemeCssInput label="Font Color" field="font" />
                     <CustomThemeCssInput label="Link Color" field="link" />

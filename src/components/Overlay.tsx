@@ -186,14 +186,14 @@ export const Overlay: React.FC<{
 
                 return map
             }, {}),
-        [workTimes]
+        [workTimes, workdayEntries]
     )
 
     const [selected, setSelected] = useState<Set<string>>(() => new Set(
         Object.values(sortedWorkTimes)
             .flat()
-            .filter(entry => !entry.conflicts.length)
-            .map(entry => entry.workTime.id)
+            .filter((entry) => !entry.conflicts.length)
+            .map((entry) => entry.workTime.id)
     ))
     const [collapsed, setCollapsed] = useState(false)
     const [isLoading, setLoading] = useState(false)
@@ -210,7 +210,8 @@ export const Overlay: React.FC<{
                 if (result?.widget === 'changeSummary' && result.unassociatedErrorNodes?.length) {
                     errors[workTime?.id] = result.unassociatedErrorNodes[0].message || 'Unknown Error.'
                 }
-            } catch (e) {
+            }
+            catch (e) {
                 errors[workTime?.id] = e?.message || 'Unknown Error.'
                 console.error(e)
             }
@@ -245,18 +246,19 @@ export const Overlay: React.FC<{
                                 .every(({ workTime }) => selected.has(workTime.id))
                             const onChange =
                                 (workTimes = []) =>
-                                (e) => {
-                                    e.stopPropagation()
-                                    if (isLoading) return
-                                    const newSet = new Set(selected)
-                                    if (workTimes.every(({ workTime }) => selected.has(workTime.id))) {
-                                        workTimes.forEach(({ workTime }) => newSet.delete(workTime.id))
-                                    } else {
-                                        workTimes.forEach(({ workTime }) => newSet.add(workTime.id))
-                                    }
+                                    (e) => {
+                                        e.stopPropagation()
+                                        if (isLoading) return
+                                        const newSet = new Set(selected)
+                                        if (workTimes.every(({ workTime }) => selected.has(workTime.id))) {
+                                            workTimes.forEach(({ workTime }) => newSet.delete(workTime.id))
+                                        }
+                                        else {
+                                            workTimes.forEach(({ workTime }) => newSet.add(workTime.id))
+                                        }
 
-                                    setSelected(newSet)
-                                }
+                                        setSelected(newSet)
+                                    }
                             return (
                                 <Fragment key={date}>
                                     <DateHeader onClick={onChange(filteredTimes)}>

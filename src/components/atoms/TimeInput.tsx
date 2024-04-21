@@ -1,5 +1,5 @@
-import { useRef } from "preact/hooks"
-import styled from "styled-components";
+import { useRef } from 'preact/hooks'
+import styled from 'styled-components'
 
 const InputWrapper = styled.fieldset`
     display: inline-flex;
@@ -33,7 +33,14 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
     maxHours?: number;
 }
 const handleFocus = (e) => e.target.setSelectionRange(0, e.target.value.length)
-const createEvent = (value): Partial<InputEvent> => ({ target: { value } as any as EventTarget })
+const createEvent = (value: string):FakeEvent => ({ target: { value } as FakeTarget })
+
+interface FakeTarget extends EventTarget {
+    value: string;
+}
+interface FakeEvent extends Partial<InputEvent> {
+    target: FakeTarget
+}
 
 export const TimeInput: React.FC<Props> = ({ value, onChange, duration, maxHours, readOnly, ...props }) => {
     const hours = /^\d+:\d+$/.test(value?.trim()) ? `00${value.trim().split(':')[0]}`.slice(-2) : '00'
@@ -77,61 +84,61 @@ export const TimeInput: React.FC<Props> = ({ value, onChange, duration, maxHours
     }
     const handleKeysHour = (e) => {
         switch (e.key) {
-            case 'ArrowUp': {
-                e.preventDefault()
-                const divisor = duration ? Infinity : 24
-                const value = `00${(Number(hours) + 1) % divisor}`.slice(-2)
+        case 'ArrowUp': {
+            e.preventDefault()
+            const divisor = duration ? Infinity : 24
+            const value = `00${(Number(hours) + 1) % divisor}`.slice(-2)
+            onChange(createEvent(`${value}:${minutes}`))
+        }
+            break
+        case 'ArrowDown': {
+            e.preventDefault()
+            const divisor = duration ? Infinity : 24
+            const addend = duration ? -1 : 23
+            const value = `00${(Number(hours) + addend) % divisor}`.slice(-2)
+            if (Number(value) >= 0) {
                 onChange(createEvent(`${value}:${minutes}`))
             }
-                break
-            case 'ArrowDown': {
-                e.preventDefault()
-                const divisor = duration ? Infinity : 24
-                const addend = duration ? -1 : 23
-                const value = `00${(Number(hours) + addend) % divisor}`.slice(-2)
-                if (Number(value) >= 0) {
-                    onChange(createEvent(`${value}:${minutes}`))
-                }
-            }
-                break
-            case 'ArrowRight':
-                e.preventDefault()
-                minutesInput.current?.focus()
-                break
+        }
+            break
+        case 'ArrowRight':
+            e.preventDefault()
+            minutesInput.current?.focus()
+            break
         }
     }
     const handleKeysMinute = (e) => {
         switch (e.key) {
-            case 'ArrowUp': {
-                e.preventDefault()
-                const valueMinutes = `00${(Number(minutes) + 1) % 60}`.slice(-2)
-                let valueHours = hours
-                if (Number(minutes) === 59) {
-                    const divisor = duration ? Infinity : 24
-                    valueHours = `00${(Number(hours) + 1) % divisor}`.slice(-2)
-                }
-                onChange(createEvent(`${valueHours}:${valueMinutes}`))
+        case 'ArrowUp': {
+            e.preventDefault()
+            const valueMinutes = `00${(Number(minutes) + 1) % 60}`.slice(-2)
+            let valueHours = hours
+            if (Number(minutes) === 59) {
+                const divisor = duration ? Infinity : 24
+                valueHours = `00${(Number(hours) + 1) % divisor}`.slice(-2)
             }
-                break
-            case 'ArrowDown': {
-                e.preventDefault()
-                const valueMinutes = `00${(Number(minutes) + 59) % 60}`.slice(-2)
-                let valueHours = hours
-                if (Number(minutes) === 0) {
-                    const divisor = duration ? Infinity : 24
-                    const addend = duration ? -1 : 23
-                    valueHours = `00${(Number(hours) + addend) % divisor}`.slice(-2)
-                    if (Number(valueHours) < 0) {
-                        valueHours = hours
-                    }
+            onChange(createEvent(`${valueHours}:${valueMinutes}`))
+        }
+            break
+        case 'ArrowDown': {
+            e.preventDefault()
+            const valueMinutes = `00${(Number(minutes) + 59) % 60}`.slice(-2)
+            let valueHours = hours
+            if (Number(minutes) === 0) {
+                const divisor = duration ? Infinity : 24
+                const addend = duration ? -1 : 23
+                valueHours = `00${(Number(hours) + addend) % divisor}`.slice(-2)
+                if (Number(valueHours) < 0) {
+                    valueHours = hours
                 }
-                onChange(createEvent(`${valueHours}:${valueMinutes}`))
             }
-                break
-            case 'ArrowLeft':
-                e.preventDefault()
-                hoursInput.current?.focus()
-                break
+            onChange(createEvent(`${valueHours}:${valueMinutes}`))
+        }
+            break
+        case 'ArrowLeft':
+            e.preventDefault()
+            hoursInput.current?.focus()
+            break
         }
     }
 

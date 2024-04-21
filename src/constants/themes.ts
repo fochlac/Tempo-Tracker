@@ -1,4 +1,4 @@
-import { THEMES } from "./constants";
+import { THEMES } from './constants'
 
 export const Themes = {
     [THEMES.DEFAULT]: {

@@ -18,7 +18,7 @@ const issues = {
 
 export const defaultOptions: Options = {
     autosync: false,
-    days: [1,2,3,4,5],
+    days: [1, 2, 3, 4, 5],
     domain: 'https://jira.test.com',
     forceFetch: false,
     forceSync: false,
@@ -162,7 +162,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
         'TE-16': issues['123466'],
         'TE-17': issues['123467']
     }
-    cy.intercept({url: /^https/}, req => req.reply(404))
+    cy.intercept({url: /^https/}, (req) => req.reply(404))
 
     cy.intercept('GET', 'https://*.atlassian.org/rest/api/2/myself', {
         displayName: 'Testuser',
@@ -176,7 +176,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
         req.reply(issue)
     }).as('getIssue')
 
-    cy.intercept('GET', `https://*.atlassian.org/rest/api/3/issue/picker*`, (req) => {
+    cy.intercept('GET', 'https://*.atlassian.org/rest/api/3/issue/picker*', (req) => {
         const search = String(req.query.query)
         const matches = Object.keys(issueIdKeyMap)
             .filter((key) => key.includes(search))
@@ -192,7 +192,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
         })
     }).as('issuePicker')
 
-    cy.intercept('GET', `https://*.atlassian.org/rest/api/2/search*`, (req) => {
+    cy.intercept('GET', 'https://*.atlassian.org/rest/api/2/search*', (req) => {
         const search = String(req.query.jql)
         const matches = Object.keys(issueIdKeyMap)
             .filter((key) => search.includes(key))
@@ -201,8 +201,8 @@ Cypress.Commands.add('networkMocksCloud', () => {
         req.reply({ issues: matches })
     }).as('search')
 
-    cy.intercept('POST', `https://api.tempo.io/4/worklogs/search*`, { results: worklogsCloud }).as('getWorklogs')
-    cy.intercept('POST', `https://api.tempo.io/4/worklogs`, (req) => {
+    cy.intercept('POST', 'https://api.tempo.io/4/worklogs/search*', { results: worklogsCloud }).as('getWorklogs')
+    cy.intercept('POST', 'https://api.tempo.io/4/worklogs', (req) => {
         const { startTime, startDate, timeSpentSeconds, issueId, authorAccountId } = req.body
 
         if (!authorAccountId || !startDate || !startTime) {
@@ -219,7 +219,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
             }
         })
     }).as('insertWorklog')
-    cy.intercept('PUT', `https://api.tempo.io/4/worklogs/*`, (req) => {
+    cy.intercept('PUT', 'https://api.tempo.io/4/worklogs/*', (req) => {
         const { startTime, startDate, timeSpentSeconds, issueId, authorAccountId } = req.body
 
         if (!authorAccountId || !startDate || !startTime) {
@@ -236,5 +236,5 @@ Cypress.Commands.add('networkMocksCloud', () => {
             }
         })
     }).as('updateWorklog')
-    cy.intercept('DELETE', `https://api.tempo.io/4/worklogs/*`, {}).as('deleteWorklog')
+    cy.intercept('DELETE', 'https://api.tempo.io/4/worklogs/*', {}).as('deleteWorklog')
 })

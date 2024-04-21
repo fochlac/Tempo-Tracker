@@ -1,4 +1,5 @@
-import { CACHE_STORE, DATABASE_NAME } from "../constants/constants"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { CACHE_STORE, DATABASE_NAME } from '../constants/constants'
 
 const stores = [CACHE_STORE]
 
@@ -7,11 +8,11 @@ const ACCESS_MODES = {
     READ_WRITE: 'readwrite'
 }
 
-const indexedDb:IDBFactory = self.indexedDB || (self as any).mozIndexedDB || (self as any).webkitIndexedDB
+const indexedDb: IDBFactory = self.indexedDB || (self as any).mozIndexedDB || (self as any).webkitIndexedDB
 
 const request = indexedDb.open(DATABASE_NAME)
 
-const db:Promise<IDBDatabase> = new Promise((resolve, reject) => {
+const db: Promise<IDBDatabase> = new Promise((resolve, reject) => {
     request.onsuccess = (e: any) => resolve(e.target.result)
     request.onerror = (e) => reject(e)
     request.onblocked = (e) => reject(e)
@@ -30,9 +31,9 @@ const createTransaction = async (name, mode) => {
     const database = await db
     const transaction = database.transaction([name], mode)
     let fail, succeed
-    
+
     const result = new Promise((resolve, reject) => {
-        fail = reject,
+        fail = reject
         succeed = resolve
     })
 

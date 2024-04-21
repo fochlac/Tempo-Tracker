@@ -1,6 +1,6 @@
-import { useRef, useState } from "preact/hooks";
-import styled from "styled-components";
-import { Button } from "../atoms/Button";
+import { useRef, useState } from 'preact/hooks'
+import styled from 'styled-components'
+import { Button } from '../atoms/Button'
 declare global {
     interface ToggleBarOption {
         value: string;
@@ -54,11 +54,11 @@ const ToggleButton = styled(Button) <{ $first?: boolean; $last?: boolean; $selec
         border-bottom: var(--font) solid 1px !important;
         font-weight: 700;
     ` : ''}
-    ${props => props.$first && props.$firstRow ? 'border-top-left-radius: 3px;' : ''}
-    ${props => props.$first && props.$lastRow ? 'border-bottom-left-radius: 3px;' : ''}
-    ${props => props.$last && props.$firstRow ? 'border-top-right-radius: 3px;' : ''}
-    ${props => props.$last && props.$lastRow ? 'border-bottom-right-radius: 3px;' : ''}
-    ${props => !props.$firstRow ? 'border-top: none;' : ''}
+    ${(props) => props.$first && props.$firstRow ? 'border-top-left-radius: 3px;' : ''}
+    ${(props) => props.$first && props.$lastRow ? 'border-bottom-left-radius: 3px;' : ''}
+    ${(props) => props.$last && props.$firstRow ? 'border-top-right-radius: 3px;' : ''}
+    ${(props) => props.$last && props.$lastRow ? 'border-bottom-right-radius: 3px;' : ''}
+    ${(props) => !props.$firstRow ? 'border-top: none;' : ''}
 `
 const ButtonText = styled.span`
     overflow: hidden;
@@ -80,7 +80,7 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
             setSelected(null)
         }
     }
-    
+
     const chunkSize = options.length % 4 < options.length % 5 ? 4 : 5
     const chunkNumber = Math.ceil(options.length / chunkSize)
     const chunks = []
@@ -96,6 +96,7 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
                         chunk.map(({ value, name, color, disabled, full, title }, index) => {
                             return (
                                 <ToggleButton
+                                    key={index}
                                     $firstRow={chunkIndex === 0}
                                     $lastRow={chunkIndex === chunks.length - 1}
                                     style={{ marginLeft: (index === 0) ? 0 : -1, flexShrink: full ? 0 : 1 }}

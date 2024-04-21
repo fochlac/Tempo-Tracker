@@ -23,7 +23,6 @@ export const FlexColumn = styled.div<{$justify?: string, $align?: string; $flip?
     }
 `
 
-
 export const Block = styled.div`
     display: flex;
     padding: 8px;

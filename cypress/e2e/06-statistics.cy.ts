@@ -1,4 +1,3 @@
-import { daysAgo } from '../../src/utils/datetime'
 import { baseDate, defaultOptions } from '../support/defaults'
 
 describe('Statistics View - Tracking Area', () => {
@@ -8,7 +7,7 @@ describe('Statistics View - Tracking Area', () => {
         cy.fakeTimers(baseDate.getTime() + dayInMs)
         cy.setOptions(defaultOptions)
         cy.startApp()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -110,7 +109,7 @@ describe('Statistics View - Tracking Area', () => {
         cy.setOptions(defaultOptions)
         cy.startApp()
 
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)

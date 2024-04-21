@@ -28,6 +28,10 @@ workflows:
           filters:
             tags:
               only: /release.*/
+          post-steps:
+            - run:
+                name: Lint code
+                command: npm run lint
       - release:
           requires:
             - cypress/run

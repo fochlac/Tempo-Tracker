@@ -1,7 +1,7 @@
-import { ACTIONS } from "./constants/actions"
-import { checkWorklogQueue } from "./content-script/synchronize"
-import { triggerBackgroundAction } from "./utils/background"
-import { runOnce } from "./utils/function"
+import { ACTIONS } from './constants/actions'
+import { checkWorklogQueue } from './content-script/synchronize'
+import { triggerBackgroundAction } from './utils/background'
+import { runOnce } from './utils/function'
 
 const startup = runOnce(async () => {
     const { options } = await triggerBackgroundAction(ACTIONS.PAGE_SETUP)

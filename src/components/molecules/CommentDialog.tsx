@@ -1,16 +1,16 @@
 
-import { DefaultText, H5, Label } from "../atoms/Typography"
-import { Modal } from "../atoms/Modal"
-import { Button } from "../atoms/Button"
-import { ButtonBar } from "../atoms/ButtonBar"
-import { useKeyBinding } from "../../hooks/useKeyBinding"
-import { useOptions } from "../../hooks/useOptions"
-import { useDispatch } from "../../utils/atom"
-import { timeString } from "../../utils/datetime"
-import { useState } from "preact/hooks"
-import { useJiraWorklog } from "../../hooks/useWorklogs"
-import { Textarea } from "../atoms/Input"
-import styled from "styled-components"
+import { H5, Label } from '../atoms/Typography'
+import { Modal } from '../atoms/Modal'
+import { Button } from '../atoms/Button'
+import { ButtonBar } from '../atoms/ButtonBar'
+import { useKeyBinding } from '../../hooks/useKeyBinding'
+import { useOptions } from '../../hooks/useOptions'
+import { useDispatch } from '../../utils/atom'
+import { timeString } from '../../utils/datetime'
+import { useState } from 'preact/hooks'
+import { useJiraWorklog } from '../../hooks/useWorklogs'
+import { Textarea } from '../atoms/Input'
+import styled from 'styled-components'
 
 interface Props {
     log: TemporaryWorklog|Worklog;
@@ -30,7 +30,7 @@ export const CommentDialog: React.FC<Props> = ({ log }) => {
     const {actions} = useJiraWorklog()
     const title = `Comment for ${options.issues[log.issue.key]?.alias || log.issue.name}, ${timeString(log.start)} till ${timeString(log.end)} `
     const [comment, setComment] = useState(log.comment)
-    
+
     const hasChanges = log.comment !== comment
 
     useKeyBinding('Escape', () => hasChanges && dispatch('resetEditComment'))
@@ -39,7 +39,7 @@ export const CommentDialog: React.FC<Props> = ({ log }) => {
         if (hasChanges) {
             actions.queue({
                 ...log,
-                comment, 
+                comment,
                 synced: false
             })
         }

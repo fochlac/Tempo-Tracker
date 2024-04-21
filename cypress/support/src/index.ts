@@ -1,2 +1,2 @@
-import './lib/namespace';
-export * from './lib/cypress-indexeddb';
+import './lib/namespace'
+export * from './lib/cypress-indexeddb'

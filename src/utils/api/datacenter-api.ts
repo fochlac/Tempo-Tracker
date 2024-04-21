@@ -1,7 +1,8 @@
 import { dateString, timeStringFull } from '../datetime'
 import { jsonHeaders } from './constants'
 
-const fetch = (isFirefox && typeof content !== 'undefined' && content?.fetch) || self.fetch
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fetch = (isFirefox && typeof content !== 'undefined' && (content as any)?.fetch) || self.fetch
 const fetchJson = (...args) => fetch(...args).then((r) => (r.status >= 300 ? Promise.reject(r.text()) : r.json()))
 
 interface WorklogRemote {
@@ -69,7 +70,10 @@ export const checkPermissions = async (options: Partial<Options>) => {
     const permissions = (isFirefox ? browser : chrome)?.permissions
     if (!permissions) return Promise.reject('Unable to access permission api.')
 
-    return new Promise((resolve, reject) => permissions.contains({ origins: getDomains(options) }, (hasPermission) => hasPermission ? resolve(true) : reject('No permission to access the api.')))
+    return new Promise((resolve, reject) => permissions.contains(
+        { origins: getDomains(options) },
+        (hasPermission) => hasPermission ? resolve(true) : reject('No permission to access the api.')
+    ))
 }
 
 const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklog | Worklog>): WorklogPayload => {

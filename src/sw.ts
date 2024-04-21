@@ -11,7 +11,7 @@ import { handleHotKey } from './service-worker/hotkeys'
 import { Workday } from './utils/workday'
 import { getTrackedTimes } from './service-worker/workday'
 
-const controller = typeof chrome !== undefined && chrome || typeof browser !== undefined && browser
+const controller = typeof chrome !== 'undefined' && chrome || typeof browser !== 'undefined' && browser
 
 function contextClick(info) {
     const { menuItemId } = info
@@ -36,7 +36,6 @@ if (!isFirefox) {
             title: 'Options',
             contexts: ['action']
         })
-
     })
     chrome.contextMenus.onClicked.addListener(contextClick)
 }
@@ -52,7 +51,6 @@ else {
             title: 'Options',
             contexts: ['browser_action']
         })
-
     })
     browser.menus.onClicked.addListener(contextClick)
 }
@@ -70,7 +68,8 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
             if (options.autosync) {
                 await flushQueueRecursive()
             }
-        } catch (e) {
+        }
+        catch (e) {
             console.log(e)
         }
         if (options?.workdaySync) {
@@ -78,12 +77,14 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
         }
         try {
             await updateBadgeTitle()
-        } catch (e) {
+        }
+        catch (e) {
             console.log(e)
         }
         try {
             await heartbeat()
-        } catch (e) {
+        }
+        catch (e) {
             console.log(e)
         }
     }
@@ -97,7 +98,8 @@ async function getSetupInfo() {
 
 if (!isFirefox) {
     chrome.commands.onCommand.addListener(handleHotKey)
-} else {
+}
+else {
     browser.commands.onCommand.addListener(handleHotKey)
 }
 
@@ -155,7 +157,7 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
                         }))
                     }
                 })
-                .catch((e) => sendResponse(ACTIONS.SETUP_PAGE_QUEUE.response(false)))
+                .catch(() => sendResponse(ACTIONS.SETUP_PAGE_QUEUE.response(false)))
 
             return true
         }
@@ -202,11 +204,12 @@ heartbeat();
 
 (async function () {
     try {
-        let options = getOptions(await DB.get(DB_KEYS.OPTIONS))
+        const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
         if (options?.workdaySync) {
             await Workday.registerScript()
         }
-    } catch (e) {
+    }
+    catch (e) {
         console.log(e)
     }
 })()

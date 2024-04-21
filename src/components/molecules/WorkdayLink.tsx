@@ -28,7 +28,7 @@ export const WorkdayLink: React.FC = () => {
         if (options.domain.includes('ttt-sp.com')) {
             Workday.hasPermission().then(setHasPermission)
         }
-    }, [options.domain])
+    }, [options.domain, setHasPermission])
 
     if (!options.domain.includes('ttt-sp.com')) {
         return null

@@ -14,7 +14,7 @@ const ButtonWrapper = styled.div<{open?: boolean}>`
     border-bottom-right-radius: ${(props) => props.open ? 0 : 3}px;
     border-width: 1px;
 
-    ${props => props.open ? `
+    ${(props) => props.open ? `
     &:before {
         content: '';
         position: fixed;
@@ -82,15 +82,15 @@ const ListButton = styled(DestructiveButton)`
     white-space: nowrap;
 `
 
-interface ListButton extends Omit<React.HTMLAttributes<HTMLButtonElement>, 'onClick'> {
+interface ListButtonType extends Omit<React.HTMLAttributes<HTMLButtonElement>, 'onClick'> {
     label: string;
     onClick: (e) => void;
 }
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
-    buttonList?: ListButton[]
+    buttonList?: ListButtonType[]
 }
 
-export const DropDownButtonDestructive: React.FC<Props> = ({ children, buttonList, style, ...props }) => {
+export const DropDownButtonDestructive: React.FC<Props> = ({ children, buttonList, ...props }) => {
     const [open, setOpen] = useState(false)
 
     const iconStyles = {
@@ -120,10 +120,10 @@ export const DropDownButtonDestructive: React.FC<Props> = ({ children, buttonLis
             {open && (
                 <MenuList>
                     {buttonList.map(({ label, onClick, ...props }) => (
-                        <ListItem>
-                            <ListButton 
+                        <ListItem key={label}>
+                            <ListButton
                                 onClick={(e) => {
-                                    onClick(e);
+                                    onClick(e)
                                     handleClick(true)(e)
                                 }}
                                 {...props}

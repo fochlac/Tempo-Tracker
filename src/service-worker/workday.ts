@@ -4,7 +4,7 @@ import { DB } from '../utils/data-layer'
 import { getOptions } from 'src/utils/options'
 import { roundTimeSeconds } from 'src/utils/datetime'
 
-export async function getTrackedTimes(startDate: number, endDate: number): Promise<{ workTimes: WorkTimeInfo[], options: Options }> {
+export async function getTrackedTimes (startDate: number, endDate: number): Promise<{ workTimes: WorkTimeInfo[], options: Options }> {
     const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
     let logs
     if (isFirefox) {

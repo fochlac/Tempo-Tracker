@@ -12,6 +12,6 @@ export const atom = createAtom(
     {
         ...editCommentDuck.actions,
         ...editIssueDuck.actions,
-        ...viewDuck.actions,
+        ...viewDuck.actions
     }
 )

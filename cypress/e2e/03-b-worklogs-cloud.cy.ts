@@ -1,14 +1,6 @@
 import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
 import { defaultOptions } from '../support/defaults'
 
-function validateWorklogTimeInput(row, index, value1, value2) {
-    row.find('fieldset').eq(index).as('timeInput')
-
-    cy.get('@timeInput').find('input').eq(0).should('have.value', value1)
-
-    cy.get('@timeInput').find('input').eq(1).should('have.value', value2)
-}
-
 describe('Tracking View - Worklog Entries - Cloud Api', () => {
     beforeEach(() => {
         cy.networkMocksCloud()
@@ -17,7 +9,7 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
             instance: 'cloud',
             domain: 'https://jira.atlassian.org'
         })
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)

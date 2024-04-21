@@ -1,4 +1,4 @@
-import { Layers, ArrowUp } from "preact-feather";
+import { Layers, ArrowUp } from 'preact-feather'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
@@ -36,10 +36,10 @@ const White = styled.div`
     margin: 0 5px;
 `
 
-export function QueueIcon({ style }) {
+export function QueueIcon ({ style }) {
     return <Wrapper style={style}>
         <Arrow size={14} />
-        <White></White>
+        <White />
         <Box size={16} />
     </Wrapper>
 }

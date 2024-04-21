@@ -1,11 +1,11 @@
-import { useId, useState } from "preact/hooks"
-import styled from "styled-components"
-import { useOptions } from "../../hooks/useOptions"
-import { readFile } from "../../utils/file"
-import { getOptions } from "../../utils/options"
-import { ActionLinkRaw } from "../atoms/ActionLink"
-import { DestructiveButton } from "../atoms/Button"
-import { ConfirmDialog } from "./ConfirmDialog"
+import { useId, useState } from 'preact/hooks'
+import styled from 'styled-components'
+import { useOptions } from '../../hooks/useOptions'
+import { readFile } from '../../utils/file'
+import { getOptions } from '../../utils/options'
+import { ActionLinkRaw } from '../atoms/ActionLink'
+import { DestructiveButton } from '../atoms/Button'
+import { ConfirmDialog } from './ConfirmDialog'
 
 const HiddenInput = styled.input`
     visibility: 'hidden';
@@ -15,7 +15,7 @@ const HiddenInput = styled.input`
     pointer-events: none;
 `
 
-export function ImportOptionsAction() {
+export function ImportOptionsAction () {
     const { data: options, actions } = useOptions()
     const fileSelectId = useId()
     const [importData, setImportData] = useState()

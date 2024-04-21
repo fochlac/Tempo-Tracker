@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { useOptions } from '../../hooks/useOptions'
 import { useSafeState } from '../../hooks/useSafeState'
 import { useSelf } from '../../hooks/useSelf'
-import { getPermission, openTab } from '../../utils/browser'
+import { openTab } from '../../utils/browser'
 import { ActionLink } from '../atoms/ActionLink'
 import { Input } from '../atoms/Input'
 import { ErrorInfoText, H6, InfoText, Label } from '../atoms/Typography'
@@ -74,7 +74,7 @@ export const OptionsView: React.FC = () => {
 
     useEffect(() => {
         return () => setToken('')
-    }, [domain])
+    }, [domain, setToken])
 
     useEffect(() => {
         if (options.workdaySync) {
@@ -84,6 +84,7 @@ export const OptionsView: React.FC = () => {
                 }
             })
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const timeout = useRef<NodeJS.Timeout>()
@@ -189,7 +190,7 @@ export const OptionsView: React.FC = () => {
                             <ActionLink
                                 style={{ height: 6, marginTop: -2, marginLeft: 0 }}
                                 onClick={() => {
-                                    const url = `${options.domain.match(/^https?\:\/\/[^/]+/)?.[0]}${JIRA_LINK}`
+                                    const url = `${options.domain.match(/^https?:\/\/[^/]+/)?.[0]}${JIRA_LINK}`
                                     openTab({ url, active: true })
                                 }}
                             >

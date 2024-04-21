@@ -1,12 +1,12 @@
 
-import { DefaultText, H5 } from "../atoms/Typography"
-import { Modal } from "../atoms/Modal"
-import { Button } from "../atoms/Button"
-import { ButtonBar } from "../atoms/ButtonBar"
-import { useKeyBinding } from "../../hooks/useKeyBinding"
+import { DefaultText, H5 } from '../atoms/Typography'
+import { Modal } from '../atoms/Modal'
+import { Button } from '../atoms/Button'
+import { ButtonBar } from '../atoms/ButtonBar'
+import { useKeyBinding } from '../../hooks/useKeyBinding'
 
 interface Props {
-    open: Boolean;
+    open: boolean;
     onClose: () => void;
     text: JSX.Element|string;
     buttons?: JSX.Element;
@@ -14,9 +14,9 @@ interface Props {
 }
 
 export const ConfirmDialog: React.FC<Props> = ({ open, onClose, text, buttons, title }) => {
-    if (!open) return null
-
     useKeyBinding('Escape', onClose)
+
+    if (!open) return null
 
     return (
         <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>

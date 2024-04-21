@@ -425,7 +425,7 @@ describe('Options view & initial setup', () => {
 
         cy.get('@myself.2')
             .its('request.headers')
-            .should('have.property', 'authorization', `Basic dGVzdEB0ZXN0LmNvbTp0ZXN0dG9rZW4xMjM=`)
+            .should('have.property', 'authorization', 'Basic dGVzdEB0ZXN0LmNvbTp0ZXN0dG9rZW4xMjM=')
 
         cy.contains('div', 'User').click().find('input').should('have.value', 'Testuser (test1)')
 

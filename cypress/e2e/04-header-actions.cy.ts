@@ -2,7 +2,7 @@ describe('Tracking View - Header Actions', () => {
     it('should be possible to refresh', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -25,7 +25,7 @@ describe('Tracking View - Header Actions', () => {
     it('should be possible to create a new log', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -59,7 +59,7 @@ describe('Tracking View - Header Actions', () => {
     it('should be possible to bulk create logs', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -99,7 +99,7 @@ describe('Tracking View - Header Actions', () => {
         cy.contains('dialog', 'Log Time for Multiple Days').contains('button', 'Create Worklogs').click()
 
         cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 2).as('newRows')
-            .each(row => {
+            .each((row) => {
                 cy.wrap(row)
                     .should('contain.text', '5h 00m')
                     .should('contain.text', 'Test4')
@@ -111,12 +111,12 @@ describe('Tracking View - Header Actions', () => {
     it('should synchronize if unsynced logs exist', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        let callbacks = []
-        cy.window().then((win: any) => {
+        const callbacks = []
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
-                let index = callbacks.length
+                const index = callbacks.length
                 callbacks.push(() => {
                     callback({ payload: { success: true } })
                     callbacks[index] = undefined
@@ -143,7 +143,7 @@ describe('Tracking View - Header Actions', () => {
         cy.window().its('messages').should('not.exist')
 
         cy.contains('h6', 'Tracking History').contains('a', 'Synchronize').should('be.visible').click()
-        
+
         cy.window().its('messages').should('have.length', 1)
         cy.window().its('messages.0').should('have.a.property', 'type', 'FLUSH_UPDATES')
     })

@@ -1,9 +1,9 @@
-import { useEffect } from "preact/hooks"
-import { fetchSelf, hasPermissions } from "../utils/api"
-import { useSafeState } from "./useSafeState"
-import { useOptions } from "./useOptions"
+import { useEffect } from 'preact/hooks'
+import { fetchSelf, hasPermissions } from '../utils/api'
+import { useSafeState } from './useSafeState'
+import { useOptions } from './useOptions'
 
-let cacheInfo = {
+const cacheInfo = {
     id: null,
     time: 0,
     name: null
@@ -59,6 +59,7 @@ export function useSelf() {
 
     useEffect(() => {
         checkDomainToken()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return { name, error, refetch: (options?: Partial<Options>) => checkDomainToken(options) }

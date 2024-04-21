@@ -5,7 +5,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should register menus and listener, trigger no heartbeat and update badge', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -45,7 +45,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should trigger heartbeat and update badge on init if tracking exists', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -75,7 +75,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should create gap if heartbeat exists and has gap of more than 30 min', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -107,7 +107,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should register alarm', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -126,7 +126,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should react to an alarm when having an active tracking', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -187,7 +187,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -244,7 +244,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -309,7 +309,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -391,7 +391,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -436,7 +436,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -478,7 +478,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should update badge on UPDATE_BADGE message', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -530,7 +530,6 @@ describe('Service Worker - Datacenter API', () => {
             .as('hotkeyListeners')
             .should('have.length', 1)
 
-
         cy.window()
             .its('chrome.commandListeners').invoke(0, 'stop_tracking')
 
@@ -541,11 +540,9 @@ describe('Service Worker - Datacenter API', () => {
 
         cy.getTracking().its('issue.alias').should('equal', 'Test2')
 
-
         cy.window()
             .its('chrome.commandListeners').invoke(0, 'start_tracking_2')
         cy.getTracking().its('issue.alias').should('equal', 'TE3: a very long testname 3')
-
 
         cy.window()
             .its('chrome.commandListeners').invoke(0, 'start_tracking_3')

@@ -6,7 +6,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should show all entries', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -27,7 +27,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should start and stop tracking', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -88,7 +88,7 @@ describe('Tracking View - Tracking Area', () => {
             ...defaultOptions,
             showComments: true
         })
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -126,7 +126,7 @@ describe('Tracking View - Tracking Area', () => {
             token: defaultOptions.token,
             user: 'testid'
         })
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -147,7 +147,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should open search issue dialog when clicking search issue button', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -185,7 +185,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should handle forgotten tracking', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -201,7 +201,7 @@ describe('Tracking View - Tracking Area', () => {
                 start: new Date('2020-10-08 08:00').getTime(),
                 heartbeat: new Date('2020-10-08 14:00').getTime(),
                 lastHeartbeat: new Date('2020-10-08 12:30').getTime(),
-                firstHeartbeat: new Date('2020-10-08 13:50').getTime(),
+                firstHeartbeat: new Date('2020-10-08 13:50').getTime()
             })
 
         cy.startApp()
@@ -232,7 +232,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should discard gap when selected', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -247,7 +247,7 @@ describe('Tracking View - Tracking Area', () => {
                 start: new Date('2020-10-08 08:00').getTime(),
                 heartbeat: new Date('2020-10-08 14:00').getTime(),
                 lastHeartbeat: new Date('2020-10-08 12:30').getTime(),
-                firstHeartbeat: new Date('2020-10-08 13:50').getTime(),
+                firstHeartbeat: new Date('2020-10-08 13:50').getTime()
             })
 
         cy.startApp()
@@ -271,11 +271,10 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
     })
 
-
-    it('should handle forgotten tracking', () => {
+    it('should be possible to split trackings', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -336,7 +335,6 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
         cy.contains('dialog', 'Split Current Tracking').contains('button', 'Cancel').click()
 
-
         cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
 
         cy.contains('form', 'Stop Tracking')
@@ -345,7 +343,6 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
         cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '4h 00m')
-
 
         cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
 

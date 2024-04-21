@@ -1,11 +1,11 @@
-import { useEffect } from "preact/hooks"
-import { useSafeState } from "./useSafeState"
+import { useEffect } from 'preact/hooks'
+import { useSafeState } from './useSafeState'
 
-export function useFetchData<D> (fetchFunction: () => Promise<D>, initialData?: D):FetchResult<D> {
+export function useFetchData<D>(fetchFunction: () => Promise<D>, initialData?: D): FetchResult<D> {
     const [data, setData] = useSafeState(initialData)
     const [error, setError] = useSafeState(null)
     const [loading, setLoading] = useSafeState(true)
-    
+
     useEffect(() => {
         let isMounted = true
         setLoading(true)
@@ -16,7 +16,7 @@ export function useFetchData<D> (fetchFunction: () => Promise<D>, initialData?: 
                     setData(data)
                 }
             })
-            .catch(e => {
+            .catch((e) => {
                 setLoading(false)
                 setError(e)
                 setData(initialData)
@@ -25,6 +25,7 @@ export function useFetchData<D> (fetchFunction: () => Promise<D>, initialData?: 
         return () => {
             isMounted = false
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return {

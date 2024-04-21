@@ -5,7 +5,7 @@ import { triggerBackgroundAction } from './utils/background'
 import { Overlay } from './components/Overlay'
 
 let entry
-function createApp(workTimes: WorkTimeInfo[], insertWorkTime: (startTime: number, endTime: number) => Promise<void>, workdayEntries: WorkdayEntry[]) {
+function createApp (workTimes: WorkTimeInfo[], insertWorkTime: (startTime: number, endTime: number) => Promise<void>, workdayEntries: WorkdayEntry[]) {
     if (!entry) {
         entry = document.createElement('div')
         document.body.appendChild(entry)
@@ -15,7 +15,7 @@ function createApp(workTimes: WorkTimeInfo[], insertWorkTime: (startTime: number
     render(<Overlay {...{ workTimes, insertWorkTime, workdayEntries }} />, entry)
 }
 
-async function workday() {
+async function workday () {
     const result = await WorkdayApi.getActiveWeek()
     if (!result || result.days.size === 0) return
 

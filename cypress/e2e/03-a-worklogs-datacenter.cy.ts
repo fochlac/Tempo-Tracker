@@ -12,7 +12,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api', () => {
     it('should be possible to delete logs and to cancel deletion for unsynced logs', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -81,7 +81,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api', () => {
     it('should be possible to edit comments for worklogs', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -158,7 +158,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api', () => {
     it('should be possible to start edit worklogs and cancel without persisted changes', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -203,7 +203,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api', () => {
     it('should be possible to edit worklogs', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -288,7 +288,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api', () => {
     it('should be possible to search for worklog during edit', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)

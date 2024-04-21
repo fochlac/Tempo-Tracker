@@ -1,15 +1,19 @@
-export function preventDefault (fn) {
+export function preventDefault(fn) {
     return (e) => {
         e.preventDefault()
         e.stopPropagation()
-        typeof fn === 'function' && fn(e)
+        if (typeof fn === 'function') {
+            fn(e)
+        }
     }
 }
 
-export function stopPropagation (fn?: (e) => void) {
+export function stopPropagation(fn?: (e) => void) {
     return (e) => {
         e.stopPropagation()
-        typeof fn === 'function' && fn(e)
+        if (typeof fn === 'function') {
+            fn(e)
+        }
     }
 }
 

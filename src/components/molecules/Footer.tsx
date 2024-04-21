@@ -1,5 +1,5 @@
 import { ActionLink } from '../atoms/ActionLink'
-import { H5, H6, SmallerText } from '../atoms/Typography'
+import { H5, H6 } from '../atoms/Typography'
 import styled from 'styled-components'
 import { useState } from 'preact/hooks'
 import { Modal } from '../atoms/Modal'
@@ -20,7 +20,7 @@ const Text = styled.p`
     margin-left: 4px;
 `
 const githubUrl = 'https://github.com/fochlac/Tempo-Tracker'
-export function Footer() {
+export function Footer () {
     const [show, setShow] = useState(false)
 
     useKeyBinding(show ? 'Escape' : 'Off', () => setShow(false))

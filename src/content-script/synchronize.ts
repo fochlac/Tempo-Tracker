@@ -3,21 +3,21 @@ import { triggerBackgroundAction } from '../utils/background'
 import { deleteWorklog, fetchAllWorklogs, updateWorklog, writeWorklog } from '../utils/api'
 import { syncTemplate } from './sync-template'
 
-function renderOverlay(queue: TemporaryWorklog[]) {
+function renderOverlay (queue: TemporaryWorklog[]) {
     const div = document.createElement('div')
     div.classList.add('tempo_tracker_sync-overlay')
     div.innerHTML = syncTemplate
     const bar: HTMLProgressElement = div.querySelector('.tempo_tracker_sync-bar')
     const progress: HTMLElement = div.querySelector('.tempo_tracker_sync-progress')
-    progress.innerHTML = `Fetching worklogs...`
+    progress.innerHTML = 'Fetching worklogs...'
     document.documentElement.append(div)
 
     return {
-        setProgress(index: number) {
+        setProgress (index: number) {
             progress.innerHTML = `${index} of ${queue.length} completed`
             bar.value = Math.round((index) / queue.length * 100)
         },
-        removeOverlay() {
+        removeOverlay () {
             div.remove()
         }
     }
@@ -26,7 +26,7 @@ function renderOverlay(queue: TemporaryWorklog[]) {
 let isSyncing = false
 async function synchronize (queue: TemporaryWorklog[], setProgress, options) {
     isSyncing = true
-    let stack = [...queue]
+    const stack = [...queue]
     setProgress(0)
     while (stack.length) {
         const log = stack.shift()
@@ -52,7 +52,7 @@ async function synchronize (queue: TemporaryWorklog[], setProgress, options) {
                 await triggerBackgroundAction(ACTIONS.QUEUE_ITEM_SYNCHRONIZED, result, deleted)
             }
         }
-        catch(e) {
+        catch (e) {
             console.info(`Error while synchronizing log item: ${JSON.stringify(log)}`)
             await triggerBackgroundAction(ACTIONS.UNRESERVE_QUEUE_ITEM, log)
             console.log(e)
@@ -62,20 +62,20 @@ async function synchronize (queue: TemporaryWorklog[], setProgress, options) {
     isSyncing = false
 }
 
-async function fetchWorklogs(options) {
+async function fetchWorklogs (options) {
     isSyncing = true
     const worklogs = await fetchAllWorklogs(options)
     await triggerBackgroundAction(ACTIONS.STORE_RECENT_WORKLOGS, worklogs)
     isSyncing = false
 }
 
-export async function checkWorklogQueue(options) {
+export async function checkWorklogQueue (options) {
     const shouldClose = new URLSearchParams(location.search).get('__tt-close') === 'true'
     if (isSyncing) {
         return
     }
     const { success, queue, forceSync, forceFetch } = await triggerBackgroundAction(ACTIONS.SETUP_PAGE_QUEUE)
-    if (success && (forceSync || forceFetch)){
+    if (success && (forceSync || forceFetch)) {
         const { setProgress, removeOverlay } = renderOverlay(queue)
         try {
             if (forceSync && queue.length) {

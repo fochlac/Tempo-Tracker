@@ -1,14 +1,14 @@
-import { useEffect, useState } from "preact/hooks";
-import styled from "styled-components";
+import { useEffect, useState } from 'preact/hooks'
+import styled from 'styled-components'
 import { v4 } from 'uuid'
-import { useTracking } from "../../hooks/useTracking";
-import { dateString, daysAgo, timeString } from "../../utils/datetime"
-import { Button } from "../atoms/Button";
-import { ButtonBar } from "../atoms/ButtonBar";
-import { Input } from "../atoms/Input";
-import { Modal } from "../atoms/Modal";
-import { TimeInput } from "../atoms/TimeInput";
-import { DefaultText, H5, Label } from "../atoms/Typography";
+import { useTracking } from '../../hooks/useTracking'
+import { dateString, daysAgo, timeString } from '../../utils/datetime'
+import { Button } from '../atoms/Button'
+import { ButtonBar } from '../atoms/ButtonBar'
+import { Input } from '../atoms/Input'
+import { Modal } from '../atoms/Modal'
+import { TimeInput } from '../atoms/TimeInput'
+import { DefaultText, H5, Label } from '../atoms/Typography'
 
 const Row = styled.div`
     display: flex;
@@ -43,6 +43,7 @@ export const ForgottenTrackingDialog: React.FC = () => {
             const { issue, start } = data
             setNewWorklog({ issue, start, end: data.lastHeartbeat, synced: false, tempId: v4() })
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data.issue?.id, data.lastHeartbeat])
 
     if (!data.issue || !data.lastHeartbeat || !newWorklog) return null
@@ -69,7 +70,6 @@ export const ForgottenTrackingDialog: React.FC = () => {
             })
         }
     }
-
 
     return (
         <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>

@@ -1,5 +1,5 @@
-import { createPortal } from 'preact/compat';
-import styled from 'styled-components';
+import { createPortal } from 'preact/compat'
+import styled from 'styled-components'
 
 const Dialog = styled.dialog`
     width: 100%;

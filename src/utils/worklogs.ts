@@ -1,4 +1,4 @@
-export function checkSameWorklog(logA:TemporaryWorklog) {
+export function checkSameWorklog (logA:TemporaryWorklog) {
     return (logB: TemporaryWorklog) => {
         if (logA.id) {
             return logA.id === logB.id

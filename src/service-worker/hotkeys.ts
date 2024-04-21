@@ -1,10 +1,10 @@
-import { DB_KEYS } from "../constants/constants"
-import { DB } from "../utils/data-layer"
+import { DB_KEYS } from '../constants/constants'
+import { DB } from '../utils/data-layer'
 import { v4 } from 'uuid'
-import { updateBadgeTitle } from "./badge"
-import { getOptions } from "src/utils/options"
+import { updateBadgeTitle } from './badge'
+import { getOptions } from 'src/utils/options'
 
-async function stopTracking() {
+async function stopTracking () {
     const [
         { issue, start },
         queue = []
@@ -23,13 +23,11 @@ async function stopTracking() {
     await DB.set(DB_KEYS.TRACKING, { issue: null, start: null })
 }
 
-async function startTracking(issue: LocalIssue) {
+async function startTracking (issue: LocalIssue) {
     await stopTracking()
     await DB.set(DB_KEYS.TRACKING, { issue, start: Date.now() })
     await updateBadgeTitle()
 }
-
-
 
 export const handleHotKey = async (command) => {
     const options = getOptions(await DB.get(DB_KEYS.OPTIONS))

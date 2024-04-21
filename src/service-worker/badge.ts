@@ -1,9 +1,9 @@
-import { DB_KEYS } from "../constants/constants"
-import { DB } from "../utils/data-layer"
+import { DB_KEYS } from '../constants/constants'
+import { DB } from '../utils/data-layer'
 
 const action = chrome?.action || browser?.browserAction
 
-export async function updateBadgeTitle() {
+export async function updateBadgeTitle () {
     const tracking = await DB.get(DB_KEYS.TRACKING) as Tracking
     if (tracking?.issue && tracking.start) {
         const color = tracking.issue.color || '#028A0F'

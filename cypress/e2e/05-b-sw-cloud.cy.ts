@@ -12,7 +12,7 @@ describe('Service Worker - Cloud API', () => {
             },
             true
         )
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -67,7 +67,7 @@ describe('Service Worker - Cloud API', () => {
             },
             true
         )
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -95,11 +95,11 @@ describe('Service Worker - Cloud API', () => {
 
         cy.wait('@updateWorklog')
         cy.get('@updateWorklog.1').its('request.body').should('deep.equal', {
-            authorAccountId: "testid",
+            authorAccountId: 'testid',
             tempoWorklogId: 123456789,
-            description: "comment",
-            startDate: "2020-10-07",
-            startTime: "08:00:00",
+            description: 'comment',
+            startDate: '2020-10-07',
+            startTime: '08:00:00',
             timeSpentSeconds: 14400,
             issueId: 123462
         })
@@ -123,7 +123,7 @@ describe('Service Worker - Cloud API', () => {
             },
             true
         )
-        cy.window().then((win: any) => {
+        cy.window().then((win) => {
             win.chrome.runtime.sendMessage = (message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
@@ -163,5 +163,4 @@ describe('Service Worker - Cloud API', () => {
             .its('0.message')
             .should('deep.equal', ACTIONS.FLUSH_UPDATES.response(true))
     })
-
 })

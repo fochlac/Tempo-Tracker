@@ -1,7 +1,7 @@
 
-import {  formatDuration } from "../../utils/datetime"
-import { Block, Column } from "../atoms/Layout"
-import { Label, Value } from "../atoms/Typography"
+import { formatDuration } from '../../utils/datetime'
+import { Block, Column } from '../atoms/Layout'
+import { Label, Value } from '../atoms/Typography'
 
 interface Props {
     total: number;
@@ -14,9 +14,9 @@ export const WorkTimeStats: React.FC<Props> = ({total, weeks, getRequiredSeconds
         return requiredSeconds + getRequiredSeconds(year, week)
     }, 0)
     const overseconds = total ? total - requiredSeconds : 0
-    const medianHours = weeks.length % 2 
+    const medianHours = weeks.length % 2
         ? weeks[weeks.length / 2 - 0.5]?.workedSeconds
-        : (weeks[weeks.length / 2 - 1]?.workedSeconds + weeks[weeks.length / 2]?.workedSeconds) / 2 
+        : (weeks[weeks.length / 2 - 1]?.workedSeconds + weeks[weeks.length / 2]?.workedSeconds) / 2
 
     return (
         <Block>

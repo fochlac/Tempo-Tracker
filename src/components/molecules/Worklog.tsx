@@ -1,24 +1,24 @@
-import styled from "styled-components"
-import { useDispatch, } from "../../utils/atom"
-import { dateHumanized, formatDuration, timeString } from "../../utils/datetime"
-import { IconButton } from "../atoms/IconButton"
-import { Edit3, MessageSquare, Trash2, X } from 'preact-feather';
-import { Tooltip } from "../atoms/Tooltip";
-import { QueueIcon } from "../atoms/QueueIcon";
-import { useState } from "preact/hooks";
-import { DeleteWorklogDialog } from "./DeleteWorklogDialog";
-import { UploadIcon } from "../atoms/UploadIcon";
-import { useOptions } from "../../hooks/useOptions";
-import { InfoText } from "../atoms/Typography";
+import styled from 'styled-components'
+import { useDispatch } from '../../utils/atom'
+import { dateHumanized, formatDuration, timeString } from '../../utils/datetime'
+import { IconButton } from '../atoms/IconButton'
+import { Edit3, MessageSquare, Trash2, X } from 'preact-feather'
+import { Tooltip } from '../atoms/Tooltip'
+import { QueueIcon } from '../atoms/QueueIcon'
+import { useState } from 'preact/hooks'
+import { DeleteWorklogDialog } from './DeleteWorklogDialog'
+import { UploadIcon } from '../atoms/UploadIcon'
+import { useOptions } from '../../hooks/useOptions'
+import { InfoText } from '../atoms/Typography'
 
-const WorklogEntry = styled.li<{delete?: Boolean}>`
+const WorklogEntry = styled.li<{ delete?: boolean }>`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: stretch;
     margin-bottom: 5px;
     border-bottom: solid 1px var(--contrast-light);
-    text-decoration: ${props => props.delete ? 'line-through' : 'none'};
+    text-decoration: ${(props) => (props.delete ? 'line-through' : 'none')};
     padding-bottom: 6px;
 `
 const WorklogBody = styled.div`
@@ -94,13 +94,17 @@ export function Worklog({ log, disableButtons, onDelete }) {
     }
     const alias = options.issues[log.issue.key]?.alias || `${log.issue.key}: ${log.issue.name}`
     const showComment = options.showComments
-    
+
     return (
         <WorklogEntry delete={log.delete && !log.synced}>
             <WorklogBody>
                 <Datum>
                     {dateHumanized(log.start)}
-                    {(!log.synced || log.syncTabId) && <Tooltip right content="Queued for synchronization."><Icon style={{ marginLeft: 8 }} /></Tooltip>}
+                    {(!log.synced || log.syncTabId) && (
+                        <Tooltip right content="Queued for synchronization.">
+                            <Icon style={{ marginLeft: 8 }} />
+                        </Tooltip>
+                    )}
                 </Datum>
                 <IssueSpacer>
                     <Tooltip right content={`${log.issue.key}: ${log.issue.name}`}>
@@ -115,23 +119,40 @@ export function Worklog({ log, disableButtons, onDelete }) {
                 <Duration>
                     <Time>{formatDuration(log.end - log.start, true)}</Time>
                 </Duration>
-                <div style={{marginLeft: 'auto'}}>
-                    <IconButton title="Edit Worklog" disabled={(options.autosync && !log.id) || disableButtons} onClick={() => dispatch('setEditIssue', { issue: log.id || log.tempId })} style={{ marginLeft: 16 }}>
+                <div style={{ marginLeft: 'auto' }}>
+                    <IconButton
+                        title="Edit Worklog"
+                        disabled={(options.autosync && !log.id) || disableButtons}
+                        onClick={() => dispatch('setEditIssue', { issue: log.id || log.tempId })}
+                        style={{ marginLeft: 16 }}
+                    >
                         <Edit3 />
                     </IconButton>
-                    <IconButton title={log.comment ? `Edit Comment: ${log.comment}` : 'Edit Comment'} disabled={(options.autosync && !log.id) || disableButtons} onClick={() => dispatch('setEditComment', { issue: log.id || log.tempId })} style={{ marginLeft: 4 }}>
+                    <IconButton
+                        title={log.comment ? `Edit Comment: ${log.comment}` : 'Edit Comment'}
+                        disabled={(options.autosync && !log.id) || disableButtons}
+                        onClick={() => dispatch('setEditComment', { issue: log.id || log.tempId })}
+                        style={{ marginLeft: 4 }}
+                    >
                         <MessageSquare />
                     </IconButton>
-                    <IconButton title={log.id && log.synced ? "Delete Worklog" : 'Discard Changes'} disabled={disableButtons} onClick={() => setStartDelete(true)} style={{ marginLeft: 4 }}>
+                    <IconButton
+                        title={log.id && log.synced ? 'Delete Worklog' : 'Discard Changes'}
+                        disabled={disableButtons}
+                        onClick={() => setStartDelete(true)}
+                        style={{ marginLeft: 4 }}
+                    >
                         {log.id && log.synced ? <Trash2 /> : <X />}
                     </IconButton>
                 </div>
                 <DeleteWorklogDialog open={startDelete} log={log} onClose={() => setStartDelete(false)} onDelete={(updateOnly) => onDelete(log, updateOnly)} />
             </WorklogBody>
-            {showComment && log.comment ? (<WorklogComment>
-                <span>Comment:</span>
-                <Comment title={log.comment}>{log.comment?.trim()?.replace(/[\n\r]+/g, ' – ')}</Comment>
-            </WorklogComment>) : null}
+            {showComment && log.comment ? (
+                <WorklogComment>
+                    <span>Comment:</span>
+                    <Comment title={log.comment}>{log.comment?.trim()?.replace(/[\n\r]+/g, ' – ')}</Comment>
+                </WorklogComment>
+            ) : null}
         </WorklogEntry>
     )
 }

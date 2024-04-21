@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from 'styled-components'
 
 const Wrapper = styled.div<{$right: boolean;}>`
     position: relative;
@@ -50,7 +50,7 @@ interface TooltipProps {
     content: string;
     className?: string;
     right?: boolean;
-    onClick?: (e: any) => void;
+    onClick?: (e: unknown) => void;
     style?: React.CSSProperties;
 }
 
@@ -77,7 +77,6 @@ export const TooltipTop = styled(Tooltip)`
         border-bottom: transparent solid;
     }
 `
-
 
 export const ErrorTooltip = styled(Tooltip)`
     &:before {

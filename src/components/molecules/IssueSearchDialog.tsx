@@ -111,7 +111,7 @@ export const IssueSearchDialog: React.FC<Props> = ({ onSelect, onCancel, title }
                 {!result?.isLoading &&
                     !!result?.data?.length &&
                     result.data.map((issue) => (
-                        <SearchResultItem onClick={() => submit(issue)}>
+                        <SearchResultItem key={issue.key} onClick={() => submit(issue)}>
                             <span>{`${issue.key}:`}</span>
                             <span>{issue.name}</span>
                         </SearchResultItem>
