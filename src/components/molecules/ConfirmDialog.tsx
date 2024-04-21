@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const ConfirmDialog: React.FC<Props> = ({ open, onClose, text, buttons, title }) => {
-    useKeyBinding('Escape', onClose)
+    useKeyBinding('Escape', onClose, !open)
 
     if (!open) return null
 

@@ -1,5 +1,5 @@
 import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
-import { defaultOptions } from '../support/defaults'
+import { defaultOptions } from '../support/data'
 
 describe('Tracking View - Worklog Entries - Cloud Api', () => {
     beforeEach(() => {

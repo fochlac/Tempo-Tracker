@@ -1,5 +1,5 @@
 import { CACHE_STORE, DATABASE_NAME, DB_KEYS } from '../../src/constants/constants'
-import { baseDate, defaultOptions } from './defaults'
+import { baseDate, defaultOptions } from './data'
 
 Cypress.Commands.add('open', (clearStorage = true) => {
     cy.visit('http://localhost:3000', {

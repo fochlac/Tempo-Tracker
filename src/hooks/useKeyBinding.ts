@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks'
 
-export function useKeyBinding(key: string, callback: () => void) {
+export function useKeyBinding(key: string, callback: () => void, disabled?: boolean) {
     const cb = useRef(callback)
     cb.current = callback
     useEffect(() => {
@@ -13,9 +13,11 @@ export function useKeyBinding(key: string, callback: () => void) {
                 }
             }
         }
-        document.addEventListener('keydown', handler)
+        if (!disabled) {
+            document.addEventListener('keydown', handler)
+        }
         return () => {
             document.removeEventListener('keydown', handler)
         }
-    }, [key])
+    }, [key, disabled])
 }

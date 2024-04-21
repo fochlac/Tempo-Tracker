@@ -23,7 +23,7 @@ const githubUrl = 'https://github.com/fochlac/Tempo-Tracker'
 export function Footer () {
     const [show, setShow] = useState(false)
 
-    useKeyBinding(show ? 'Escape' : 'Off', () => setShow(false))
+    useKeyBinding('Escape', () => setShow(false), !show)
 
     return (
         <FooterBar>

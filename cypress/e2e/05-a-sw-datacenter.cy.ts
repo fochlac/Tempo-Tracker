@@ -1,4 +1,4 @@
-import { defaultOptions } from '../support/defaults'
+import { defaultOptions } from '../support/data'
 import { ACTIONS } from '../../src/constants/actions'
 
 describe('Service Worker - Datacenter API', () => {

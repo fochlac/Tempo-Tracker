@@ -1,4 +1,4 @@
-import { baseDate, defaultOptions } from '../support/defaults'
+import { baseDate, defaultOptions } from '../support/data'
 
 describe('Statistics View - Tracking Area', () => {
     it('should show all entries', () => {

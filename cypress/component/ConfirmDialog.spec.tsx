@@ -1,7 +1,7 @@
 import { ConfirmDialog } from '../../src/components/molecules/ConfirmDialog'
 
-describe('test', () => {
-    it('test', () => {
+describe('ConfirmDialog', () => {
+    it('should render', () => {
         const onClose = cy.spy()
         cy.mount(<ConfirmDialog buttons={null} open onClose={onClose} title="title" text="text" />)
         cy.contains('h5', 'title').should('be.visible')

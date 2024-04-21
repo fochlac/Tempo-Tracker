@@ -1,74 +1,5 @@
-import { THEMES } from '../../src/constants/constants'
-import { timeStringSeconds } from '../../src/utils/datetime'
 
-const issues = {
-    '123462': { alias: 'Test2', id: '123462', key: 'TE-12', fields: { summary: 'testname 2' }, name: 'testname 2' },
-    '123463': {
-        alias: 'TE3: a very long testname 3',
-        id: '123463',
-        key: 'TE-13',
-        fields: { summary: 'a very long testname 3' },
-        name: 'a very long testname 3'
-    },
-    '123464': { alias: 'Test4', id: '123464', key: 'TE-14', fields: { summary: 'testname 4' }, name: 'testname 4' },
-    '123465': { alias: 'Test5', id: '123465', key: 'TE-15', fields: { summary: 'testname 5' }, name: 'testname 5' },
-    '123466': { alias: 'Test6', id: '123466', key: 'TE-16', fields: { summary: 'testname 6' }, name: 'testname 6' },
-    '123467': { alias: 'Test7', id: '123467', key: 'TE-17', fields: { summary: 'testname 7' }, name: 'testname 7' }
-}
-
-export const defaultOptions: Options = {
-    autosync: false,
-    days: [1, 2, 3, 4, 5],
-    domain: 'https://jira.test.com',
-    forceFetch: false,
-    forceSync: false,
-    theme: THEMES.DARK,
-    token: 'testtoken',
-    instance: 'datacenter',
-    email: '',
-    ttToken: '',
-    useJqlQuery: false,
-    showComments: false,
-    jqlQuery: '',
-    user: 'testid',
-    issues: {
-        'TE-12': issues['123462'],
-        'TE-13': issues['123463'],
-        'TE-14': issues['123464'],
-        'TE-15': issues['123465'],
-        'TE-16': issues['123466'],
-        'TE-17': issues['123467']
-    }
-}
-export const baseDate = new Date('2020-10-08T15:00:00.000Z')
-
-let id = 13241
-const createWorklog = (started, issue, hours) => {
-    return {
-        tempoWorklogId: id++,
-        timeSpentSeconds: Math.round(hours * 60 * 60),
-        started,
-        issue: {
-            summary: issue.name,
-            key: issue.key,
-            id: issue.id
-        }
-    }
-}
-
-const worklogs = [
-    createWorklog(new Date(baseDate).setHours(24 + 8), defaultOptions.issues['TE-12'], 8),
-    createWorklog(new Date(baseDate).setHours(8), defaultOptions.issues['TE-12'], 8),
-    createWorklog(new Date(baseDate).setHours(-24 + 10), defaultOptions.issues['TE-13'], 6.5),
-    createWorklog(new Date(baseDate).setHours(-24 + 8.5), defaultOptions.issues['TE-15'], 1.5),
-    createWorklog(new Date(baseDate).setHours(-2 * 24 + 14), defaultOptions.issues['TE-14'], 3),
-    createWorklog(new Date(baseDate).setHours(-2 * 24 + 11), defaultOptions.issues['TE-15'], 1.5),
-    createWorklog(new Date(baseDate).setHours(-2 * 24 + 9), defaultOptions.issues['TE-17'], 2),
-    createWorklog(new Date(baseDate).setHours(-2 * 24 + 8.5), defaultOptions.issues['TE-15'], 0.5),
-    createWorklog(new Date(baseDate).setHours(-3 * 24 + 14), defaultOptions.issues['TE-16'], 4),
-    createWorklog(new Date(baseDate).setHours(-3 * 24 + 11.5), defaultOptions.issues['TE-15'], 1.5),
-    createWorklog(new Date(baseDate).setHours(-3 * 24 + 8), defaultOptions.issues['TE-16'], 3.5)
-]
+import { defaultOptions, getNextCloudWorklogId, getNextWorklogId, issues, worklogs, worklogsCloud } from './data'
 
 Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {
     cy.intercept(`${domain}/**/*`, (req) => req.reply(404))
@@ -84,7 +15,7 @@ Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {
             started,
             timeSpentSeconds,
             originTaskId,
-            tempoWorklogId: id++,
+            tempoWorklogId: getNextWorklogId(),
             issue: {
                 summary: issue.name,
                 key: issue.key,
@@ -123,35 +54,6 @@ Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {
     cy.intercept('DELETE', `${domain}/rest/tempo-timesheets/4/worklogs/*`, {}).as('deleteWorklog')
 })
 
-let idCloud = 13241
-
-const createWorklogCloud = (started, issue, hours) => {
-    const [startDate] = new Date(started).toISOString().split('T')
-
-    return {
-        tempoWorklogId: idCloud++,
-        timeSpentSeconds: Math.round(hours * 60 * 60),
-        startTime: timeStringSeconds(started),
-        startDate,
-        issue: {
-            id: issue.id
-        }
-    }
-}
-const worklogsCloud = [
-    createWorklogCloud(new Date(baseDate).setHours(24 + 8), defaultOptions.issues['TE-12'], 8),
-    createWorklogCloud(new Date(baseDate).setHours(8), defaultOptions.issues['TE-12'], 8),
-    createWorklogCloud(new Date(baseDate).setHours(-24 + 10), defaultOptions.issues['TE-13'], 6.5),
-    createWorklogCloud(new Date(baseDate).setHours(-24 + 8.5), defaultOptions.issues['TE-15'], 1.5),
-    createWorklogCloud(new Date(baseDate).setHours(-2 * 24 + 14), defaultOptions.issues['TE-14'], 3),
-    createWorklogCloud(new Date(baseDate).setHours(-2 * 24 + 11), defaultOptions.issues['TE-15'], 1.5),
-    createWorklogCloud(new Date(baseDate).setHours(-2 * 24 + 9), defaultOptions.issues['TE-17'], 2),
-    createWorklogCloud(new Date(baseDate).setHours(-2 * 24 + 8.5), defaultOptions.issues['TE-15'], 0.5),
-    createWorklogCloud(new Date(baseDate).setHours(-3 * 24 + 14), defaultOptions.issues['TE-16'], 4),
-    createWorklogCloud(new Date(baseDate).setHours(-3 * 24 + 11.5), defaultOptions.issues['TE-15'], 1.5),
-    createWorklogCloud(new Date(baseDate).setHours(-3 * 24 + 8), defaultOptions.issues['TE-16'], 3.5)
-]
-
 Cypress.Commands.add('networkMocksCloud', () => {
     const issueIdKeyMap = {
         ...issues,
@@ -162,7 +64,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
         'TE-16': issues['123466'],
         'TE-17': issues['123467']
     }
-    cy.intercept({url: /^https/}, (req) => req.reply(404))
+    cy.intercept({ url: /^https/ }, (req) => req.reply(404))
 
     cy.intercept('GET', 'https://*.atlassian.org/rest/api/2/myself', {
         displayName: 'Testuser',
@@ -170,7 +72,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
         accountId: 'test1'
     }).as('myself')
 
-    cy.intercept({method: 'GET', pathname: '/rest/api/3/issue/*'}, (req) => {
+    cy.intercept({ method: 'GET', pathname: '/rest/api/3/issue/*' }, (req) => {
         const id = req.url.split('/').slice(-1)[0]
         const issue = issueIdKeyMap[id]
         req.reply(issue)
@@ -213,14 +115,14 @@ Cypress.Commands.add('networkMocksCloud', () => {
             startTime,
             startDate,
             timeSpentSeconds,
-            tempoWorklogId: id++,
+            tempoWorklogId: getNextCloudWorklogId(),
             issue: {
                 id: issueId
             }
         })
     }).as('insertWorklog')
     cy.intercept('PUT', 'https://api.tempo.io/4/worklogs/*', (req) => {
-        const { startTime, startDate, timeSpentSeconds, issueId, authorAccountId } = req.body
+        const { startTime, startDate, timeSpentSeconds, issueId, authorAccountId, tempoWorklogId } = req.body
 
         if (!authorAccountId || !startDate || !startTime) {
             return req.reply(400)
@@ -230,7 +132,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
             startTime,
             startDate,
             timeSpentSeconds,
-            tempoWorklogId: id++,
+            tempoWorklogId,
             issue: {
                 id: issueId
             }
