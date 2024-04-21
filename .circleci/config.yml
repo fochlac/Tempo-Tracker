@@ -31,7 +31,7 @@ workflows:
                 name: Lint code
                 command: npm run lint
       - cypress/run:
-          name: E2E Tests
+          name: "E2E Tests"
           requires:
             - Install
           executor: custom
@@ -41,7 +41,7 @@ workflows:
             tags:
               only: /release.*/
       - cypress/run:
-          name: Component Tests
+          name: "Component Tests"
           requires:
             - Install
           executor: custom
@@ -52,7 +52,8 @@ workflows:
               only: /release.*/
       - release:
           requires:
-            - cypress/run
+            - "Component Tests"
+            - "E2E Tests"
           filters:
             branches:
               ignore: /.*/
