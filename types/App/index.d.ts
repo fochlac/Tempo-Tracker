@@ -33,6 +33,29 @@ interface Issue {
     name: string;
 }
 
+interface DatacenterWorklogRemote {
+    issue: {
+        key: string
+        id: string
+        summary: string
+    }
+    originId: number
+    timeSpentSeconds: number
+    started: string
+    comment: string
+    timeSpent: string
+    tempoWorklogId: string
+}
+
+interface DatacenterWorklogPayload {
+    originId: number
+    worker: string
+    comment?: string
+    started: string
+    timeSpentSeconds: number
+    originTaskId: number
+}
+
 interface Worklog {
     issue: Issue;
     comment: string;

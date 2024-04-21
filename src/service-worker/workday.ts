@@ -4,7 +4,15 @@ import { DB } from '../utils/data-layer'
 import { getOptions } from 'src/utils/options'
 import { roundTimeSeconds } from 'src/utils/datetime'
 
-export async function getTrackedTimes (startDate: number, endDate: number): Promise<{ workTimes: WorkTimeInfo[], options: Options }> {
+export function toWorktimeInfo(options: Options): (log: TemporaryWorklog) => WorkTimeInfo {
+    return (log) => ({
+        start: roundTimeSeconds(log.start, true),
+        end: roundTimeSeconds(log.end),
+        id: `${log.id || log.tempId}`,
+        name: options.issues[log.issue.key]?.alias || `${log.issue.key}: ${log.issue.name}`
+    })
+}
+export async function getTrackedTimes(startDate: number, endDate: number): Promise<{ workTimes: WorkTimeInfo[], options: Options }> {
     const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
     let logs
     if (isFirefox) {
@@ -19,12 +27,7 @@ export async function getTrackedTimes (startDate: number, endDate: number): Prom
         workTimes: queue
             .concat(logs)
             .filter((log) => log.start < endDate && log.end > startDate)
-            .map((log) => ({
-                start: roundTimeSeconds(log.start, true),
-                end: roundTimeSeconds(log.end),
-                id: `${log.id || log.tempId}`,
-                name: options.issues[log.issue.key]?.alias || `${log.issue.key}: ${log.issue.name}`
-            })),
+            .map(toWorktimeInfo(options)),
         options
     }
 }

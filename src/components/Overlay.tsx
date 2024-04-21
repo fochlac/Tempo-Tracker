@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import styled from 'styled-components'
 import { Themes } from '../constants/themes'
 import { CssVariables } from './atoms/CssVariables'
@@ -13,6 +14,7 @@ import { Logo } from './atoms/Logo'
 import { InfoBox } from './atoms/Alert'
 import { Conditional } from './atoms/Conditional'
 import { createTheme } from 'src/utils/theme'
+import { Location } from 'src/utils/browser'
 
 const Main = styled.aside<{ $collapsed?: boolean }>`
     position: absolute;
@@ -129,7 +131,7 @@ const BetaBox = styled(InfoBox)`
     color: white;
     border: none;
 `
-const CollapseIndicator = styled.span`
+const CollapseIndicator = styled.button`
     position: absolute;
     height: 16px;
     width: 16px;
@@ -139,6 +141,10 @@ const CollapseIndicator = styled.span`
     background: #eef1f2;
     color: black;
     display: flex;
+    border: unset;
+    padding: 0;
+    cursor: pointer;
+    outline: unset;
 
     > * {
         height: 16px;
@@ -167,7 +173,7 @@ const isSynced = (workTime, conflicts): boolean => {
 }
 
 export const Overlay: React.FC<{
-    insertWorkTime: (startTime: number, endTime: number) => Promise<void>
+    insertWorkTime: (startTime: number, endTime: number) => Promise<void|{error: string}>
     workTimes: WorkTimeInfo[],
     workdayEntries: WorkdayEntry[]
 }> = ({ insertWorkTime, workTimes, workdayEntries }) => {
@@ -204,20 +210,15 @@ export const Overlay: React.FC<{
         const errors = {}
         for (const workTimeId of selected) {
             const workTime = workTimes.find((workTime) => workTime.id === workTimeId)
-            let result
-            try {
-                result = await insertWorkTime(workTime.start, workTime.end)
-                if (result?.widget === 'changeSummary' && result.unassociatedErrorNodes?.length) {
-                    errors[workTime?.id] = result.unassociatedErrorNodes[0].message || 'Unknown Error.'
+            if (workTime) {
+                const result = await insertWorkTime(workTime.start, workTime.end)
+                if (result && result.error) {
+                    errors[workTime?.id] = result.error
                 }
-            }
-            catch (e) {
-                errors[workTime?.id] = e?.message || 'Unknown Error.'
-                console.error(e)
             }
         }
         if (!Object.keys(errors).length) {
-            location.reload()
+            Location.reload()
         }
         setLoading(false)
         setSelected(new Set(Object.keys(errors)))

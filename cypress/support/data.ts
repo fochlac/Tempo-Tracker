@@ -1,5 +1,5 @@
 import { THEMES } from '../../src/constants/constants'
-import { timeStringSeconds } from '../../src/utils/datetime'
+import { formatDuration, timeStringSeconds } from '../../src/utils/datetime'
 
 export const issues = {
     '123462': { alias: 'Test2', id: '123462', key: 'TE-12', fields: { summary: 'testname 2' }, name: 'testname 2' },
@@ -53,12 +53,15 @@ export const defaultOptions: Options = {
 export const baseDate = new Date('2020-10-08T15:00:00.000Z')
 
 let id = 13241
-export const getNextWorklogId = () => id++
-export const createWorklog = (started, issue, hours) => {
+export const getNextWorklogId = () => String(id++)
+export const createWorklog = (started, issue, hours): DatacenterWorklogRemote => {
     return {
         tempoWorklogId: getNextWorklogId(),
         timeSpentSeconds: Math.round(hours * 60 * 60),
+        timeSpent: formatDuration(Math.round(hours * 60 * 60 * 1000)),
         started,
+        comment: '',
+        originId: issue.id,
         issue: {
             summary: issue.name,
             key: issue.key,
@@ -71,7 +74,7 @@ export const worklogs = [
     createWorklog(new Date(baseDate).setHours(24 + 8), defaultOptions.issues['TE-12'], 8),
     createWorklog(new Date(baseDate).setHours(8), defaultOptions.issues['TE-12'], 8),
     createWorklog(new Date(baseDate).setHours(-24 + 10), defaultOptions.issues['TE-13'], 6.5),
-    createWorklog(new Date(baseDate).setHours(-24 + 8.5), defaultOptions.issues['TE-15'], 1.5),
+    createWorklog(new Date(baseDate).setHours(-24 + 8, 30), defaultOptions.issues['TE-15'], 1.5),
     createWorklog(new Date(baseDate).setHours(-2 * 24 + 14), defaultOptions.issues['TE-14'], 3),
     createWorklog(new Date(baseDate).setHours(-2 * 24 + 11), defaultOptions.issues['TE-15'], 1.5),
     createWorklog(new Date(baseDate).setHours(-2 * 24 + 9), defaultOptions.issues['TE-17'], 2),

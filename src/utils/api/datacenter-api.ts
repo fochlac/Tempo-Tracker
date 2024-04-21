@@ -5,28 +5,6 @@ import { jsonHeaders } from './constants'
 const fetch = (isFirefox && typeof content !== 'undefined' && (content as any)?.fetch) || self.fetch
 const fetchJson = (...args) => fetch(...args).then((r) => (r.status >= 300 ? Promise.reject(r.text()) : r.json()))
 
-interface WorklogRemote {
-    issue: {
-        key: string
-        id: string
-        summary: string
-    }
-    tempoWorklogId: string
-    timeSpentSeconds: number
-    started: string
-    comment: string
-    timeSpent: string
-}
-
-interface WorklogPayload {
-    originId: number
-    worker: string
-    comment?: string
-    started: string
-    timeSpentSeconds: number
-    originTaskId: number
-}
-
 enum URLS {
     QUICKSEARCH,
     SEARCH,
@@ -76,7 +54,7 @@ export const checkPermissions = async (options: Partial<Options>) => {
     ))
 }
 
-const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklog | Worklog>): WorklogPayload => {
+const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklog | Worklog>): DatacenterWorklogPayload => {
     const { end, start, issue, id, comment } = worklog
     const seconds = Math.round((end - start) / 1000)
     return {
@@ -89,7 +67,7 @@ const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklo
     }
 }
 
-function toLocalWorklog(remoteWorklog: WorklogRemote): Worklog {
+export function toLocalWorklog(remoteWorklog: DatacenterWorklogRemote): Worklog {
     const log = Array.isArray(remoteWorklog) ? remoteWorklog[0] : remoteWorklog
     return {
         issue: {

@@ -30,67 +30,77 @@ const unixTimeFromValue = (value) => {
 }
 
 async function insertWorkTime(startTime: number, endTime: number, sessionSecureToken: string, dayInsertActionUri: string) {
-    const startDate = new Date(startTime)
-    const endDate = new Date(endTime)
-    const task = await fetchJsonForm(`https://wd5.myworkday.com${dayInsertActionUri}.htmld`, {
-        headers: { 'session-secure-token': sessionSecureToken }
-    })
-    const {
-        requestUri,
-        flowExecutionKey: _flowExecutionKey,
-        body: { id: _eventId_submit, children }
-    } = task
-    const inTime = children
-        .filter((child) => child.widget === 'fieldSet')
-        .flatMap((widget) => widget.children)
-        .find((child) => child.propertyName === 'wd:In_Time').id
-    const outTime = children
-        .filter((child) => child.widget === 'fieldSet')
-        .flatMap((widget) => widget.children)
-        .find((child) => child.propertyName === 'wd:Out_Time').id
-    const okButtonId = children
-        .find((child) => child.widget === 'mutexButtonBar')
-        .children?.[0]?.mutex?.id
+    try {
+        const startDate = new Date(startTime)
+        const endDate = new Date(endTime)
+        const task = await fetchJsonForm(`https://wd5.myworkday.com${dayInsertActionUri}.htmld`, {
+            headers: { 'session-secure-token': sessionSecureToken }
+        })
+        const {
+            requestUri,
+            flowExecutionKey: _flowExecutionKey,
+            body: { id: _eventId_submit, children }
+        } = task
+        const inTime = children
+            .filter((child) => child.widget === 'fieldSet')
+            .flatMap((widget) => widget.children)
+            .find((child) => child.propertyName === 'wd:In_Time').id
+        const outTime = children
+            .filter((child) => child.widget === 'fieldSet')
+            .flatMap((widget) => widget.children)
+            .find((child) => child.propertyName === 'wd:Out_Time').id
+        const okButtonId = children
+            .find((child) => child.widget === 'mutexButtonBar')
+            .children?.[0]?.mutex?.id
 
-    const body_in = {
-        _flowExecutionKey,
-        sessionSecureToken,
-        [`${inTime}_s`]: `00${startDate.getSeconds()}`.slice(-2),
-        [`${inTime}_m`]: `00${startDate.getMinutes()}`.slice(-2),
-        [`${inTime}_H`]: `00${startDate.getHours()}`.slice(-2),
-        [`${inTime}_D`]: `00${startDate.getDate()}`.slice(-2),
-        [`${inTime}_M`]: `00${startDate.getMinutes()}`.slice(-2),
-        [`${inTime}_Y`]: `${startDate.getFullYear()}`,
-        _eventId_validate: inTime
-    }
-    const body_out = {
-        _flowExecutionKey,
-        sessionSecureToken,
-        [`${outTime}_s`]: `00${endDate.getSeconds()}`.slice(-2),
-        [`${outTime}_m`]: `00${endDate.getMinutes()}`.slice(-2),
-        [`${outTime}_H`]: `00${endDate.getHours()}`.slice(-2),
-        [`${outTime}_D`]: `00${endDate.getDate()}`.slice(-2),
-        [`${outTime}_M`]: `00${endDate.getMinutes()}`.slice(-2),
-        [`${outTime}_Y`]: `${endDate.getFullYear()}`,
-        _eventId_validate: outTime
-    }
-
-    await fetchJsonForm(`https://wd5.myworkday.com${requestUri}.htmld`, {
-        body: body_in,
-        headers: { 'session-secure-token': sessionSecureToken }
-    })
-    await fetchJsonForm(`https://wd5.myworkday.com${requestUri}.htmld`, {
-        body: body_out,
-        headers: { 'session-secure-token': sessionSecureToken }
-    })
-    return fetchJsonForm(`https://wd5.myworkday.com${requestUri}.htmld`, {
-        body: {
+        const body_in = {
             _flowExecutionKey,
-            _eventId_submit,
-            'change-summary': changeSummary(okButtonId)
-        },
-        headers: { 'session-secure-token': sessionSecureToken }
-    })
+            sessionSecureToken,
+            [`${inTime}_s`]: `00${startDate.getSeconds()}`.slice(-2),
+            [`${inTime}_m`]: `00${startDate.getMinutes()}`.slice(-2),
+            [`${inTime}_H`]: `00${startDate.getHours()}`.slice(-2),
+            [`${inTime}_D`]: `00${startDate.getDate()}`.slice(-2),
+            [`${inTime}_M`]: `00${startDate.getMinutes()}`.slice(-2),
+            [`${inTime}_Y`]: `${startDate.getFullYear()}`,
+            _eventId_validate: inTime
+        }
+        const body_out = {
+            _flowExecutionKey,
+            sessionSecureToken,
+            [`${outTime}_s`]: `00${endDate.getSeconds()}`.slice(-2),
+            [`${outTime}_m`]: `00${endDate.getMinutes()}`.slice(-2),
+            [`${outTime}_H`]: `00${endDate.getHours()}`.slice(-2),
+            [`${outTime}_D`]: `00${endDate.getDate()}`.slice(-2),
+            [`${outTime}_M`]: `00${endDate.getMinutes()}`.slice(-2),
+            [`${outTime}_Y`]: `${endDate.getFullYear()}`,
+            _eventId_validate: outTime
+        }
+
+        await fetchJsonForm(`https://wd5.myworkday.com${requestUri}.htmld`, {
+            body: body_in,
+            headers: { 'session-secure-token': sessionSecureToken }
+        })
+        await fetchJsonForm(`https://wd5.myworkday.com${requestUri}.htmld`, {
+            body: body_out,
+            headers: { 'session-secure-token': sessionSecureToken }
+        })
+        const result = await fetchJsonForm(`https://wd5.myworkday.com${requestUri}.htmld`, {
+            body: {
+                _flowExecutionKey,
+                _eventId_submit,
+                'change-summary': changeSummary(okButtonId)
+            },
+            headers: { 'session-secure-token': sessionSecureToken }
+        })
+
+        if (result?.widget === 'changeSummary' && result.unassociatedErrorNodes?.length) {
+            return { error: result.unassociatedErrorNodes[0].message || 'Unknown Error.' }
+        }
+    }
+    catch (e) {
+        console.error(e)
+    }
+    return { error: 'Unknown Error.' }
 }
 
 const getActiveWeek = async () => {
