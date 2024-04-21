@@ -126,7 +126,7 @@ describe('Options view & initial setup', () => {
         const serverDomain = 'https://jira.test.com'
         cy.contains('dialog', 'Change Server Url')
             .find('input')
-            .type(serverUrl, { delay: 50 })
+            .type(serverUrl, { delay: 100 })
             .invoke('attr', 'error')
             .should('be.undefined')
 
@@ -155,7 +155,7 @@ describe('Options view & initial setup', () => {
         const testtoken = 'testtoken123'
         cy.contains('div', 'Personal Access Token')
             .find('input')
-            .type(testtoken, { delay: 50 })
+            .type(testtoken, { delay: 100 })
             .should('have.value', testtoken)
 
         cy.get('@clock').invoke('tick', 2000)
@@ -215,7 +215,7 @@ describe('Options view & initial setup', () => {
             .should('be.visible')
             .contains('div', 'Issue Key')
             .find('input')
-            .type('TE-1', { delay: 50 })
+            .type('TE-1', { delay: 100 })
 
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible')
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible')
@@ -234,7 +234,7 @@ describe('Options view & initial setup', () => {
             .first()
             .should('have.value', 'TE-12: Sickness')
             .clear()
-            .type('Illness', { delay: 50 })
+            .type('Illness', { delay: 100 })
 
         cy.getOptions().its('issues.TE-12.alias').should('equal', 'Illness')
         cy.getOptions().its('issues.TE-12.name').should('equal', 'Sickness')
@@ -245,7 +245,7 @@ describe('Options view & initial setup', () => {
             .should('be.visible')
             .contains('div', 'Issue Key')
             .find('input')
-            .type('TE-1', { delay: 50 })
+            .type('TE-1', { delay: 100 })
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
 
         cy.getOptions().its('issues.ARCHTE-6.alias').should('equal', 'ARCHTE-6: Unpaid leave')
@@ -284,7 +284,7 @@ describe('Options view & initial setup', () => {
 
         cy.getOptions().its('useJqlQuery').should('equal', true)
 
-        cy.contains('div', 'Custom JQL Query').should('be.visible').find('textarea').type('test123', { delay: 50 })
+        cy.contains('div', 'Custom JQL Query').should('be.visible').find('textarea').type('test123', { delay: 100 })
 
         cy.intercept('https://jira.test.com/rest/api/2/search?*', []).as('search')
 
@@ -362,7 +362,7 @@ describe('Options view & initial setup', () => {
         const serverDomain = 'https://jira.atlassian.com'
         cy.contains('dialog', 'Change Server Url')
             .find('input')
-            .type(serverUrl, { delay: 50 })
+            .type(serverUrl, { delay: 100 })
             .closest('div')
             .contains('Unable to find the JIRA-Api with the provided Domain.')
             .should('not.exist')
@@ -416,7 +416,7 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'API Token')
             .first()
             .find('input')
-            .type(testtoken, { delay: 50 })
+            .type(testtoken, { delay: 100 })
             .should('have.value', testtoken)
 
         cy.get('@clock').invoke('tick', 2000)
@@ -434,7 +434,7 @@ describe('Options view & initial setup', () => {
         const testTTtoken = 'testTT123'
         cy.contains('div', 'Tempo API Token')
             .find('input')
-            .type(testTTtoken, { delay: 50 })
+            .type(testTTtoken, { delay: 100 })
             .should('have.value', testTTtoken)
 
         cy.getOptions().its('ttToken').should('equal', testTTtoken)
@@ -486,7 +486,7 @@ describe('Options view & initial setup', () => {
             .should('be.visible')
             .contains('div', 'Issue Key')
             .find('input')
-            .type('TE-1', { delay: 50 })
+            .type('TE-1', { delay: 100 })
 
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible')
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible')
@@ -505,7 +505,7 @@ describe('Options view & initial setup', () => {
             .first()
             .should('have.value', 'TE-12: Sickness')
             .clear()
-            .type('Illness', { delay: 50 })
+            .type('Illness', { delay: 100 })
 
         cy.getOptions().its('issues.TE-12.alias').should('equal', 'Illness')
         cy.getOptions().its('issues.TE-12.name').should('equal', 'Sickness')
@@ -516,7 +516,7 @@ describe('Options view & initial setup', () => {
             .should('be.visible')
             .contains('div', 'Issue Key')
             .find('input')
-            .type('TE-1', { delay: 50 })
+            .type('TE-1', { delay: 100 })
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
 
         cy.getOptions().its('issues.ARCHTE-6.alias').should('equal', 'ARCHTE-6: Unpaid leave')
@@ -555,7 +555,7 @@ describe('Options view & initial setup', () => {
 
         cy.getOptions().its('useJqlQuery').should('equal', true)
 
-        cy.contains('div', 'Custom JQL Query').should('be.visible').find('textarea').type('test123', { delay: 50 })
+        cy.contains('div', 'Custom JQL Query').should('be.visible').find('textarea').type('test123', { delay: 100 })
 
         cy.intercept('https://jira.atlassian.com/rest/api/2/search?*', []).as('search')
 
@@ -625,7 +625,7 @@ describe('Options view & initial setup', () => {
         const badServerUrl = 'https://jira.nonexistent.com/rest'
         const serverUrl = 'https://jira.atlassian.com/rest'
         const serverDomain = 'https://jira.atlassian.com'
-        cy.contains('dialog', 'Change Server Url').find('input').clear().type(badServerUrl, { delay: 50 })
+        cy.contains('dialog', 'Change Server Url').find('input').clear().type(badServerUrl, { delay: 100 })
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
@@ -641,7 +641,7 @@ describe('Options view & initial setup', () => {
         cy.contains('dialog', 'Change Server Url')
             .find('input')
             .clear()
-            .type(serverUrl, { delay: 50 })
+            .type(serverUrl, { delay: 100 })
             .closest('div')
             .contains('Unable to find the JIRA-Api with the provided Domain.')
             .should('not.exist')
@@ -701,7 +701,7 @@ describe('Options view & initial setup', () => {
         cy.contains('dialog', 'Change Server Url')
             .find('input')
             .clear()
-            .type(serverUrl, { delay: 50 })
+            .type(serverUrl, { delay: 100 })
             .closest('div')
             .contains('Unable to find the JIRA-Api with the provided Domain.')
             .should('not.exist')
