@@ -7,7 +7,7 @@ orbs:
 executors:
   custom:
     docker:
-      - image: "cypress/base:16.18.1"
+      - image: "cypress/base:18.14.1"
     environment:
       TZ: "Europe/Berlin"
 jobs:
