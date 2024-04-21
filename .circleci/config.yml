@@ -25,6 +25,7 @@ workflows:
           executor: custom
           build: "npm run build"
           start: "npm run test:server"
+          store_artifacts: true
           filters:
             tags:
               only: /release.*/
