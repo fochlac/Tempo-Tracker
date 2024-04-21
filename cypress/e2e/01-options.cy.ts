@@ -11,7 +11,7 @@ describe('Options view & initial setup', () => {
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
     })
 
-    it.only('should consider issue order and reorder issues', { retries: 2 }, () => {
+    it('should consider issue order and reorder issues', { retries: 2 }, () => {
         cy.intercept('https://jira.test.com/rest/api/2/myself', {
             displayName: 'Testuser',
             key: 'test1'

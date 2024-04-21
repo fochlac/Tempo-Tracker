@@ -515,7 +515,7 @@ describe('Service Worker - Datacenter API', () => {
             .should('deep.equal', ACTIONS.UPDATE_BADGE.response(true))
     })
 
-    it.only('should listen to hotkeys', () => {
+    it('should listen to hotkeys', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
         cy.startSw()
