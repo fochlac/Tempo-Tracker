@@ -5,31 +5,29 @@ import { triggerBackgroundAction } from './utils/background'
 import { Overlay } from './components/Overlay'
 
 let entry
-function createApp (workTimes: WorkTimeInfo[], insertWorkTime: (startTime: number, endTime: number) => Promise<void>, workdayEntries: WorkdayEntry[]) {
+function createApp (
+    workTimes: WorkTimeInfo[],
+    insertWorkTime: (startTime: number, endTime: number) => Promise<void|{ error: string; }>,
+    workdayEntries: WorkdayEntry[],
+    isInitializing = false
+) {
     if (!entry) {
         entry = document.createElement('div')
         document.body.appendChild(entry)
     }
     unmountComponentAtNode(entry)
 
-    render(<Overlay {...{ workTimes, insertWorkTime, workdayEntries }} />, entry)
+    const refresh = () => workday()
+    render(<Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh, isInitializing }} />, entry)
 }
 
 async function workday () {
     const result = await WorkdayApi.getActiveWeek()
-    if (!result || result.days.size === 0) return
+    if (!result) return
+    const {startTime, endTime, entries, insertWorkTime} = result
+    const { workTimeInfo: { workTimes } } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
 
-    const offset = new Date().getTimezoneOffset()
-    const startValue = result.calendar.startDate.value
-    const endValue = result.calendar.endDate.value
-    const startTime =
-        new Date(`${startValue.Y}-${startValue.M}-${startValue.D}T00:00:00.000Z`).getTime() + offset * 60000
-    const endTime = new Date(`${endValue.Y}-${endValue.M}-${endValue.D}T00:00:00.000Z`).getTime() + offset * 60000
-    const {
-        workTimeInfo: { workTimes }
-    } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
-
-    createApp(workTimes, result.insertWorkTime, result.entries)
+    createApp(workTimes, insertWorkTime, entries)
 }
 
 let currentLocation = location.href
@@ -37,6 +35,8 @@ workday()
 setInterval(() => {
     if (currentLocation !== location.href) {
         currentLocation = location.href
+        createApp([], () => Promise.resolve(), [], true)
+
         workday()
     }
 }, 100)

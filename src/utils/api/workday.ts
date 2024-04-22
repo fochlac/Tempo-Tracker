@@ -1,3 +1,5 @@
+import { dateString, fromWorkdayMoment } from '../datetime'
+
 const fetchJson = (input: RequestInfo | URL, init?: RequestInit) =>
     fetch(input, init).then((res) => (res.status < 300 ? res.json() : Promise.reject(res.json())))
 
@@ -20,13 +22,57 @@ const fetchJsonForm = (url: RequestInfo | URL, options: FormOptions = {}) =>
 const changeSummary = (id) =>
     `<wml:Change_Summary xmlns:wml="http://www.workday.com/ns/model/1.0" xmlns:wd="urn:com.workday/bsvc" xmlns:nyw="urn:com.netyourwork/aod"><wd:OK Ref="${id}" Replaced=""><V>1</V></wd:OK></wml:Change_Summary>`
 
-const unixTimeFromValue = (value) => {
-    if (value && value.Y && value.M && value.D && value.H && value.m) {
-        const date = new Date()
-        date.setFullYear(value.Y, value.M - 1, value.D)
-        date.setHours(value.H, value.m, 0, 0)
-        return date.getTime()
+function extractActionButton(day) {
+    const children = day && day.widget === 'calendarEntryDayInfo' && day.children
+    const commandButtons = children && children.find((child) => child.widget === 'commandButtonList')?.children
+    return commandButtons && commandButtons.find(
+        (child) => child.widget === 'commandButton' && child.propertyName === 'nyw:Calendar_Entry_Day_Info'
+    ) || null
+}
+const dateKey = (value) => dateString(fromWorkdayMoment(value))
+
+interface Moment {
+    value?: {
+        Y: string;
+        M: string;
+        D: string;
+        H: string;
+        m: string;
+        s: string;
+        f: string;
+    };
+    dateTimePrecision: string;
+}
+interface CalendarEntry {
+    widget: string;
+    timedEvent: boolean;
+    editButton: {
+        children: {
+            widget: string;
+            uri: string;
+            propertyName: string;
+        }[];
+    };
+    endMoment: Moment;
+    startMoment: Moment;
+    propertyName: string;
+}
+
+function extractWorkTimeInfos(entryListWidgets?: CalendarEntry[]): WorkdayEntry[] {
+    if (!Array.isArray(entryListWidgets) || !entryListWidgets.length) {
+        return []
     }
+    return entryListWidgets.reduce((workTimeInfos, entry) => {
+        if (entry?.widget === 'calendarEntry' && entry.timedEvent === true) {
+            const start = fromWorkdayMoment(entry.startMoment?.value)
+            const end = fromWorkdayMoment(entry.endMoment?.value)
+            const editUri = entry.editButton?.children?.find((button) => button.widget === 'commandButton')?.uri || start
+            if (start && end) {
+                workTimeInfos.push({ start, end, editUri })
+            }
+        }
+        return workTimeInfos
+    }, [])
 }
 
 async function insertWorkTime(startTime: number, endTime: number, sessionSecureToken: string, dayInsertActionUri: string) {
@@ -99,51 +145,40 @@ async function insertWorkTime(startTime: number, endTime: number, sessionSecureT
     }
     catch (e) {
         console.error(e)
+        return { error: 'Unknown Error.' }
     }
-    return { error: 'Unknown Error.' }
 }
 
 const getActiveWeek = async () => {
     try {
         const view = await fetchJson(location.href.replace('/d/', '/'))
         const { body, sessionSecureToken } = view
-
-        const calendar = body?.children?.find((widget) => widget.widget === 'calendar')
-        const dayInfos = calendar?.dayInfo?.reduce((map, day) => {
-            if (day?.widget !== 'calendarEntryDayInfo' || !day.children) {
-                return map
-            }
-            const commandButtonList = day.children.find((child) => child.widget === 'commandButtonList')
-            if (!commandButtonList?.children) {
-                return map
-            }
-            const button = commandButtonList.children.find(
-                (child) => child.widget === 'commandButton' && child.propertyName === 'nyw:Calendar_Entry_Day_Info'
-            )
+        if (!body?.children) return null
+        const calendar = body.children.find((widget) => widget.widget === 'calendar')
+        if (!calendar || !calendar.dayInfo) return null
+        const dayInfos = calendar.dayInfo.reduce((map, day) => {
+            const button = extractActionButton(day)
             if (button) {
-                map.set(`${day.date.value.Y}-${day.date.value.M}-${day.date.value.D}`, button.uri)
+                map.set(dateKey(day.date.value), button.uri)
             }
             return map
         }, new Map())
-        if (!calendar || !dayInfos?.size) return null
+        if (!dayInfos.size) return null
 
-        const entries: WorkdayEntry[] = calendar.consolidatedList?.children
-            .filter((entry) => entry?.widget === 'calendarEntry' && entry.timedEvent === true)
-            .map((entry) => ({
-                start: unixTimeFromValue(entry.startMoment?.value),
-                end: unixTimeFromValue(entry.endMoment?.value),
-                editUri: entry.editButton?.children?.find(({ widget = '' } = {}) => widget === 'commandButton')?.uri
-            }) as WorkdayEntry)
-            .filter((entry) => entry.start && entry.end)
+        const entries = extractWorkTimeInfos(calendar.consolidatedList?.children)
+
+        const startTime = fromWorkdayMoment(calendar.startDate.value, { startOf: true })
+        const endTime = fromWorkdayMoment(calendar.endDate.value, { endOf: true })
 
         return {
             insertWorkTime: (startTime: number, endTime: number) => {
-                const dayInsertActionUri = dayInfos.get(new Date(startTime).toISOString().split('T')[0])
+                const dayInsertActionUri = dayInfos.get(dateString(startTime))
                 return insertWorkTime(startTime, endTime, sessionSecureToken, dayInsertActionUri)
             },
             view,
             days: dayInfos,
-            calendar,
+            startTime,
+            endTime,
             entries
         }
     }

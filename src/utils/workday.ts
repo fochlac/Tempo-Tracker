@@ -4,7 +4,7 @@ const timeTrackingPage = 'https://wd5.myworkday.com/bridgestone/d/task/2997$4767
 const workdayUrl = 'https://wd5.myworkday.com/bridgestone/d/*'
 const controller = typeof chrome !== 'undefined' && chrome || typeof browser !== 'undefined' && browser
 
-function hasPermission () {
+function hasPermission() {
     if (isFirefox) {
         return new Promise((resolve) => {
             controller.permissions.contains({ origins: [workdayUrl] }, (hasPermission) => resolve(hasPermission))
@@ -14,11 +14,11 @@ function hasPermission () {
     return controller.permissions.contains({ origins: [workdayUrl] })
 }
 
-function requestPermission () {
+function requestPermission() {
     return getPermission({ origins: [workdayUrl] })
 }
 
-async function registerScript () {
+async function registerScript() {
     try {
         const scripts = await controller.scripting.getRegisteredContentScripts()
 
@@ -37,6 +37,14 @@ async function registerScript () {
     catch (e) {
         console.error(e)
     }
+}
+
+export const isSynced = (workTime, conflicts): boolean => {
+    if (conflicts.length === 1) {
+        const { start, end } = conflicts[0]
+        return Math.abs(start - workTime.start) + Math.abs(end - workTime.end) < 120000
+    }
+    return false
 }
 
 export const Workday = {
