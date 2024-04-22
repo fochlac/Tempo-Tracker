@@ -101,7 +101,7 @@ export const AppOptionsSection: React.FC = () => {
                     <CustomThemeCssInput label="Font Color" field="font" />
                     <CustomThemeCssInput label="Link Color" field="link" />
                     <CustomThemeCssInput label="Negative Color" field="destructive" />
-                    <CustomThemeCssInput label="Diagramm Bar Color" field="diagramm" />
+                    <CustomThemeCssInput label="Diagram Bar Color" field="diagramm" />
                     <CustomThemeCssInput label="Diagram Overhour Color" field="diagrammGreen" />
                 </Grid>
             </Conditional>

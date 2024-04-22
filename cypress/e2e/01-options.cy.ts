@@ -1,4 +1,5 @@
 import { THEMES } from '../../src/constants/constants'
+import { Themes } from '../../src/constants/themes'
 import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
 
 import 'cypress-real-events'
@@ -761,5 +762,75 @@ describe('Options view & initial setup', () => {
         cy.reload()
         cy.startApp()
         cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(15, 15, 15)')
+    })
+
+    it('should work with custom theme', () => {
+        cy.intercept('https://jira.test.com/rest/api/2/myself', {
+            displayName: 'Testuser',
+            key: 'test1'
+        }).as('myself')
+        cy.setOptions({
+            autosync: false,
+            domain: 'https://jira.test.com/rest',
+            forceFetch: false,
+            forceSync: false,
+            issues: { 'TE-12': { alias: 'Test', id: '12346', key: 'TE-12', name: 'Sickness' } },
+            theme: THEMES.DEFAULT,
+            token: 'testtoken',
+            user: 'riedel'
+        })
+        cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(247, 248, 251)')
+        cy.reload()
+        cy.startApp()
+        cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(247, 248, 251)')
+        cy.get('header').contains('a', 'Options').click()
+
+        cy.contains('h6', 'Custom Theme').should('not.exist')
+        cy.contains('div', 'Theme').find('select').should('have.value', 'DEFAULT').select('Custom Theme')
+        cy.contains('h6', 'Custom Theme').scrollIntoView().should('be.visible')
+
+        cy.contains('div', 'Background').find('input').first().should('have.value', Themes.DEFAULT.background)
+        cy.contains('div', 'Font Color').find('input').first().should('have.value', Themes.DEFAULT.font)
+        cy.contains('div', 'Link Color').find('input').first().should('have.value', Themes.DEFAULT.link)
+        cy.contains('div', 'Negative Color').find('input').first().should('have.value', Themes.DEFAULT.destructive)
+        cy.contains('div', 'Diagram Bar Color').find('input').first().should('have.value', Themes.DEFAULT.diagramm)
+        cy.contains('div', 'Diagram Overhour Color').find('input').first().should('have.value', Themes.DEFAULT.diagrammGreen)
+
+        cy.contains('div', 'Background').find('input').first().clear().type('gree')
+        cy.contains('div', 'Background').find('input').first().should('have.value', 'gree')
+        cy.contains('div', 'Background').find('input').eq(1).should('have.value', '#f7f8fb')
+        cy.get('main').should('have.css', 'background-color', 'rgb(247, 248, 251)')
+        cy.contains('div', 'Background').find('input').first().type('n')
+        cy.get('main').should('have.css', 'background-color', 'rgb(0, 128, 0)')
+        cy.contains('div', 'Background').find('input').eq(1).should('have.value', '#008000')
+
+        cy.contains('div', 'Font Color').find('input').first().clear().type('#ff')
+        cy.contains('div', 'Font Color').find('input').first().should('have.value', '#ff')
+        cy.contains('div', 'Font Color').find('input').eq(1).should('have.value', '#1b1928')
+        cy.get('main').should('have.css', 'color', 'rgb(27, 25, 40)')
+        cy.contains('div', 'Font Color').find('input').first().type('0')
+        cy.contains('div', 'Font Color').find('input').eq(1).should('have.value', '#ffff00')
+        cy.get('main').should('have.css', 'color', 'rgb(255, 255, 0)')
+
+        cy.contains('div', 'Link Color').find('input').first().clear().type('#f')
+        cy.contains('div', 'Link Color').find('input').first().should('have.value', '#f')
+        cy.contains('div', 'Link Color').find('input').eq(1).should('have.value', '#1e6bf7')
+        cy.get('a').should('have.css', 'color', 'rgb(30, 107, 247)')
+        cy.contains('div', 'Link Color').find('input').first().type('00')
+        cy.get('a').should('have.css', 'color', 'rgb(255, 0, 0)')
+        cy.contains('div', 'Link Color').find('input').eq(1).should('have.value', '#ff0000')
+
+        cy.contains('div', 'Negative Color').find('input').first().clear().type('#fafa00')
+        cy.contains('div', 'Diagram Bar Color').find('input').first().clear().type('#fa0000')
+        cy.contains('div', 'Diagram Overhour Color').find('input').first().clear().type('#fa00fa')
+
+        cy.getOptions().its('customTheme').should('deep.equal', {
+            'background': '#008000',
+            'font': '#ff0',
+            'link': '#f00',
+            'destructive': '#fafa00',
+            'diagramm': '#fa0000',
+            'diagrammGreen': '#fa00fa'
+        })
     })
 })
