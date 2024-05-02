@@ -203,8 +203,12 @@ export async function searchIssues(options: Options, searchString: string): Prom
         credentials: 'omit'
     })
 
-    const currentSearch = body?.sections?.find((result) => result.id === 'cs')
-    return (currentSearch?.issues || []).map(({ key }) => key)
+    const issueKeys = body?.sections?.map(section => section?.issues ?? [])?.flat()?.map(({ key }) => key) ?? []
+    const [result] = searchString.match(/\w+-\d+/) ?? []
+    if (result && ! issueKeys.some(key => key === result)) {
+        issueKeys.push(result)
+    }
+    return issueKeys
 }
 
 export async function fetchWorklogs(

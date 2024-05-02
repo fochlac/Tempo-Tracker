@@ -116,7 +116,7 @@ export const OptionsView: React.FC = () => {
     const showOtherOptions = Boolean(
         domain.length && instance === 'datacenter'
             ? storedToken.length
-            : storedToken.length && email.length && ttToken.length
+            : storedToken.length && email.length
     )
 
     const onChangeWorkdaySync = async (event) => {
@@ -252,11 +252,10 @@ export const OptionsView: React.FC = () => {
                     <Option style={{ marginBottom: 12 }}>
                         <Label>
                             Tempo API Token
-                            <MandatoryStar />
                         </Label>
                         <InfoText>
                             To access the Tempo REST API an access token with the right to manage and view worklogs is
-                            needed.
+                            needed. Without token synchronization will be disabled.
                         </InfoText>
                         <ObfuscatedInput
                             key={options.domain}
