@@ -48,7 +48,7 @@ workflows:
       - cypress/run:
           name: "Component Tests"
           requires:
-            - Install
+            - "E2E Tests"
           executor: custom
           component: true
           store_artifacts: true
@@ -58,7 +58,6 @@ workflows:
       - release:
           requires:
             - "Component Tests"
-            - "E2E Tests"
           filters:
             branches:
               ignore: /.*/
