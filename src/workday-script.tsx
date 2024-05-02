@@ -21,9 +21,15 @@ function createApp (
     render(<Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh, isInitializing }} />, entry)
 }
 
+let isVisible = false
 async function workday () {
     const result = await WorkdayApi.getActiveWeek()
-    if (!result) return
+    if (!result) {
+        unmountComponentAtNode(entry)
+        isVisible = false
+        return
+    }
+    isVisible = true
     const {startTime, endTime, entries, insertWorkTime} = result
     const { workTimeInfo: { workTimes } } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
 
@@ -35,7 +41,9 @@ workday()
 setInterval(() => {
     if (currentLocation !== location.href) {
         currentLocation = location.href
-        createApp([], () => Promise.resolve(), [], true)
+        if (isVisible) {
+            createApp([], () => Promise.resolve(), [], true)
+        }
 
         workday()
     }
