@@ -5,6 +5,9 @@ import { toLocalWorklog } from '../../src/utils/api/datacenter-api'
 import { Location } from '../../src/utils/browser'
 import { defaultOptions, worklogs } from '../support/data'
 
+const ERROR_COLOR = 'rgb(255, 220, 223)'
+const SUCCESS_COLOR = 'rgb(238, 247, 241)'
+
 const dayInMs = 24 * 60 * 60 * 1000
 describe('Workday-Overlay', () => {
     function setup(options?: {insertWorkTime?: () => Promise<void>, workdayEntries?: WorkdayEntry[]}) {
@@ -25,7 +28,8 @@ describe('Workday-Overlay', () => {
         cy.contains('p', 'Workday Upload is experimental').should('be.visible')
         cy.get('li').filter(':contains(".10.20")').should('have.length', 5)
         cy.get('li').filter(':contains(":00 - ")').should('have.length', 10)
-        cy.get('li input').filter(':checked').should('have.length', 16)
+        cy.get('li input').filter(':checked').should('have.length', 15)
+        cy.contains('li', '09:00 - 09:30' + 'Test5').should('have.css', 'background-color', ERROR_COLOR)
 
         cy.contains('li', '07.10.20').find('input').should('be.checked')
         cy.contains('li', '08:30 - 10:00' + 'Test5').should('be.visible')
@@ -113,8 +117,8 @@ describe('Workday-Overlay', () => {
         cy.contains('li', '08:30 - 10:00' + 'Test5').find('input').should('be.checked')
         cy.contains('li', '10:00 - 16:30' + 'TE3').find('input').should('be.checked')
         cy.contains('button', 'Upload').should('not.be.disabled')
-        cy.contains('li', '08:30 - 10:00' + 'Test5').should('have.css', 'background-color', 'rgb(255, 220, 223)')
-        cy.contains('li', '10:00 - 16:30' + 'TE3').should('have.css', 'background-color', 'rgb(255, 220, 223)')
+        cy.contains('li', '08:30 - 10:00' + 'Test5').should('have.css', 'background-color', ERROR_COLOR)
+        cy.contains('li', '10:00 - 16:30' + 'TE3').should('have.css', 'background-color', ERROR_COLOR)
     })
 
     it('should show success & conflics', () => {
@@ -126,17 +130,17 @@ describe('Workday-Overlay', () => {
             {start: 1602057601000 - dayInMs, end: 1602081000000 - dayInMs, editUri: '1231231e'}
         ]
         setup({workdayEntries})
-        cy.get('li input').filter(':checked').should('have.length', 6)
-        cy.contains('li', '08:30 - 10:00' + 'Test5').should('have.css', 'background-color', 'rgb(238, 247, 241)')
-        cy.contains('li', '10:00 - 16:30' + 'TE3').should('have.css', 'background-color', 'rgb(238, 247, 241)')
-        cy.contains('li', '08:00 - 16:00' + 'Test2').should('have.css', 'background-color', 'rgb(238, 247, 241)')
+        cy.get('li input').filter(':checked').should('have.length', 4)
+        cy.contains('li', '08:30 - 10:00' + 'Test5').should('have.css', 'background-color', SUCCESS_COLOR)
+        cy.contains('li', '10:00 - 16:30' + 'TE3').should('have.css', 'background-color', SUCCESS_COLOR)
+        cy.contains('li', '08:00 - 16:00' + 'Test2').should('have.css', 'background-color', SUCCESS_COLOR)
 
-        cy.contains('li', '14:00 - 17:00' + 'Test4').should('have.css', 'background-color', 'rgb(255, 220, 223)')
-        cy.contains('li', '11:00 - 12:30' + 'Test5').should('have.css', 'background-color', 'rgb(255, 220, 223)')
-        cy.contains('li', '09:00 - 11:00' + 'Test7').should('have.css', 'background-color', 'rgb(255, 220, 223)')
+        cy.contains('li', '14:00 - 17:00' + 'Test4').should('have.css', 'background-color', ERROR_COLOR)
+        cy.contains('li', '11:00 - 12:30' + 'Test5').should('have.css', 'background-color', ERROR_COLOR)
+        cy.contains('li', '09:00 - 11:00' + 'Test7').should('have.css', 'background-color', ERROR_COLOR)
+        cy.contains('li', '09:00 - 09:30' + 'Test5').should('have.css', 'background-color', ERROR_COLOR)
 
         cy.contains('button', 'Upload').should('be.visible').should('not.be.disabled').click()
-        cy.get('@insertSpy').should('have.been.calledWith', 1601967601000, 1601969400000)
         cy.get('@insertSpy').should('have.been.calledWith', 1601899201000, 1601913600000)
         cy.get('@insertSpy').should('have.been.calledWith', 1601892001000, 1601897400000)
         cy.get('@insertSpy').should('have.been.calledWith', 1601877601000, 1601890200000)
