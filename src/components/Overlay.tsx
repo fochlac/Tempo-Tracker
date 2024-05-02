@@ -146,20 +146,41 @@ export const Overlay: React.FC<{
     isInitializing?: boolean
 }> = ({ insertWorkTime, workTimes, workdayEntries, refresh, isInitializing }) => {
     const sortedWorkTimes = useMemo<Record<string, {conflicts: WorkdayEntry[], workTime: WorkTimeInfo}[]>>(
-        () =>
-            workTimes.reduce((map, workTime) => {
+        () => {
+            const workTimeMap = workTimes.reduce((map, workTime) => {
                 const date = dateString(workTime.start)
                 if (!map[date]) {
                     map[date] = []
                 }
-                const end = Math.floor(workTime.end / 60000) * 60000
-                const conflicts = workdayEntries.filter((entry) => entry.start < end && entry.end >= workTime.start)
 
-                map[date].push({ workTime, conflicts })
-                map[date].sort((a, b) => a.start - b.start)
+                map[date].push(workTime)
 
                 return map
-            }, {}),
+            }, {})
+
+            return Object.keys(workTimeMap).sort((a, b) => a.localeCompare(b)).reduce((map, date) => {
+                map[date] = [...workTimeMap[date]].sort((a, b) => a.start - b.start).map((ttWorktime, index, workTimeList) => {
+                    const workTime = { ...ttWorktime }
+                    const conflicts = []
+                    if (index > 0) {
+                        const previousEnd = workTimeList[index - 1].end
+                        const diff = previousEnd - workTime.start
+                        if (diff > 0 && diff <= 60000) {
+                            workTime.start = previousEnd + 1000
+                        }
+                        else if (diff > 60000) {
+                            conflicts.push(workTimeList[index - 1])
+                        }
+                    }
+
+                    const end = Math.floor(workTime.end / 60000) * 60000
+                    conflicts.push(...workdayEntries.filter((entry) => entry.start < end && entry.end >= workTime.start))
+
+                    return { workTime, conflicts }
+                })
+                return map
+            }, {})
+        },
         [workTimes, workdayEntries]
     )
 
@@ -178,8 +199,12 @@ export const Overlay: React.FC<{
         setLoading(true)
         setProgress(0)
         const errors = {}
+        const workTimes:Record<string, WorkTimeInfo> = Object.values(sortedWorkTimes)
+            .flat()
+            .reduce((map, {workTime}) => ({...map, [workTime.id]: workTime}), {})
+
         for (const workTimeId of selected) {
-            const workTime = workTimes.find((workTime) => workTime.id === workTimeId)
+            const workTime = workTimes[workTimeId]
             if (workTime) {
                 const result = await insertWorkTime(workTime.start, workTime.end)
                 if (result && result.error) {
@@ -241,7 +266,7 @@ export const Overlay: React.FC<{
                             </Conditional>
                         </Progress>
                         <List>
-                            {Object.keys(sortedWorkTimes).map((date) => {
+                            {Object.keys(sortedWorkTimes).map((date, index, array) => {
                                 return (
                                     <Fragment key={date}>
                                         <OverlayHeaderRow {...{onChange, selected }}
@@ -249,15 +274,18 @@ export const Overlay: React.FC<{
                                             sortedWorkTimes={sortedWorkTimes[date]}
                                             date={sortedWorkTimes[date][0].workTime.start}
                                         />
-                                        {sortedWorkTimes[date].map(({workTime, conflicts}) => (
-                                            <OverlayRow
-                                                onClick={onChange([{workTime, conflicts}])}
-                                                key={workTime.id}
-                                                error={errors[workTime.id]}
-                                                {...{workTime, conflicts}}
-                                                disabled={isLoading}
-                                                checked={selected.has(workTime.id)} />
-                                        ))}
+                                        {sortedWorkTimes[date]
+
+                                            .map(({workTime, conflicts}) => (
+                                                <OverlayRow
+                                                    top={index > array.length / 2}
+                                                    onClick={onChange([{workTime, conflicts}])}
+                                                    key={workTime.id}
+                                                    error={errors[workTime.id]}
+                                                    {...{workTime, conflicts}}
+                                                    disabled={isLoading}
+                                                    checked={selected.has(workTime.id)} />
+                                            ))}
                                     </Fragment>
                                 )
                             })}

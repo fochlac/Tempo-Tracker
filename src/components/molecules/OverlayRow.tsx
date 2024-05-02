@@ -1,5 +1,5 @@
 import { dateHumanized, timeString } from 'src/utils/datetime'
-import { Tooltip } from '../atoms/Tooltip'
+import { Tooltip, TooltipTop } from '../atoms/Tooltip'
 import { Conditional } from '../atoms/Conditional'
 import styled from 'styled-components'
 import { AlertOctagon, Repeat } from 'preact-feather'
@@ -67,13 +67,16 @@ interface OverlayWorkLog {
 interface Props extends OverlayWorkLog {
     disabled: boolean
     checked: boolean
+    top?: boolean
     error: string
     onClick: (e: Event) => void
 }
 
-export const OverlayRow: React.FC<Props> = ({workTime, conflicts, error, onClick, checked, disabled}) => {
+export const OverlayRow: React.FC<Props> = ({workTime, conflicts, error, onClick, checked, disabled, top}) => {
+    const TooltipComponent = top ? TooltipTop : Tooltip
+
     return (
-        <Tooltip right key={workTime.id} content={error}>
+        <TooltipComponent right key={workTime.id} content={error}>
             <Row
                 onClick={onClick}
                 $error={!!error}
@@ -93,12 +96,12 @@ export const OverlayRow: React.FC<Props> = ({workTime, conflicts, error, onClick
                     <RepeatIcon />
                 </Conditional>
                 <Conditional enable={Boolean(!isSynced(workTime, conflicts) && conflicts.length)} >
-                    <Tooltip content="Conflicting worklog detected.">
+                    <TooltipComponent content="Conflicting worklog detected.">
                         <ErrorIcon />
-                    </Tooltip>
+                    </TooltipComponent>
                 </Conditional>
             </Row>
-        </Tooltip>
+        </TooltipComponent>
     )
 }
 interface HeaderProps {
