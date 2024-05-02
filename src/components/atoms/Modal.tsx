@@ -11,6 +11,14 @@ const Dialog = styled.dialog`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    
+    ::-webkit-scrollbar-thumb {
+        background: var(--contrast-light);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--contrast);
+    }
 `
 const Overlay = styled.div`
     z-index: 10;

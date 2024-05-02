@@ -13,10 +13,10 @@ const SearchFieldWrapper = styled.div`
     padding: 8px 16px;
 `
 const SearchResultList = styled.ul`
-    width: 100%;
-    padding: 0 16px;
+    width: calc(100% - 16px);
+    padding: 0px 8px;
     overflow: auto;
-    margin: 0;
+    margin: 0px 8px 8px;
     list-style: none;
 `
 const SearchResultItem = styled.li`
@@ -110,7 +110,15 @@ export const IssueSearchDialog: React.FC<Props> = ({ onSelect, onCancel, title }
             <SearchResultList>
                 {!result?.isLoading &&
                     !!result?.data?.length &&
-                    result.data.map((issue) => (
+                    result.data.sort((i1, i2) => {
+                        if (search.toLowerCase().includes(i1.key.toLowerCase())) {
+                            return -1
+                        }
+                        if (search.toLowerCase().includes(i2.key.toLowerCase())) {
+                            return 1
+                        }
+                        return 0
+                    }).map((issue) => (
                         <SearchResultItem key={issue.key} onClick={() => submit(issue)}>
                             <span>{`${issue.key}:`}</span>
                             <span>{issue.name}</span>
