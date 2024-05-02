@@ -82,7 +82,7 @@ export const TrackerView: React.FC = () => {
                 )}
                 {hasUnsyncedLog && !self.error && (
                     <ActionLink
-                        disabled={!!editIssue.issue || self.error || !options.ttToken?.length}
+                        disabled={!!editIssue.issue || self.error || (options.instance === 'cloud' && !options.ttToken?.length)}
                         style={{ marginRight: 4, lineHeight: '16px' }}
                         onClick={startSync}
                     >

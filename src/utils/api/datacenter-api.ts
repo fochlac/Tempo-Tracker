@@ -48,10 +48,11 @@ export const checkPermissions = async (options: Partial<Options>) => {
     const permissions = (isFirefox ? browser : chrome)?.permissions
     if (!permissions) return Promise.reject('Unable to access permission api.')
 
-    return new Promise((resolve, reject) => permissions.contains(
-        { origins: getDomains(options) },
-        (hasPermission) => hasPermission ? resolve(true) : reject('No permission to access the api.')
-    ))
+    return new Promise((resolve, reject) =>
+        permissions.contains({ origins: getDomains(options) }, (hasPermission) =>
+            hasPermission ? resolve(true) : reject('No permission to access the api.')
+        )
+    )
 }
 
 const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklog | Worklog>): DatacenterWorklogPayload => {
@@ -120,9 +121,13 @@ export async function searchIssues(options: Options, searchString: string): Prom
         credentials: 'omit'
     })
 
-    const issueKeys = body?.sections?.map(section => section?.issues ?? [])?.flat()?.map(({ key }) => key) ?? []
+    const issueKeys =
+        body?.sections
+            ?.map((section) => section?.issues ?? [])
+            ?.flat()
+            ?.map(({ key }) => key) ?? []
     const [result] = searchString.match(/\w+-\d+/) ?? []
-    if (result && ! issueKeys.some(key => key === result)) {
+    if (result && !issueKeys.some((key) => key === result)) {
         issueKeys.push(result)
     }
     return issueKeys
