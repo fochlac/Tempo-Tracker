@@ -31,6 +31,9 @@ workflows:
             - run:
                 name: Lint code
                 command: npm run lint
+          filters:
+            tags:
+              only: /release.*/
       - cypress/run:
           name: "E2E Tests"
           requires:
