@@ -1,6 +1,6 @@
 {
     "name": "Tempo-Tracker",
-    "version": "3.5.0",
+    "version": "3.5.1",
     "manifest_version": 2,
     "description": "Timetracker with synchronization to the Jira Tempo-Plugin.",
     "icons": {
@@ -16,7 +16,9 @@
         }
     },
     "background": {
-        "scripts": ["./sw.js"],
+        "scripts": [
+            "./sw.js"
+        ],
         "persistent": true
     },
     "commands": {
@@ -45,15 +47,28 @@
             "description": "Start Tracking for Issue 3"
         }
     },
-    "permissions": ["alarms", "<all_urls>", "menus", "scripting"],
+    "permissions": [
+        "alarms",
+        "<all_urls>",
+        "menus",
+        "scripting"
+    ],
     "content_scripts": [
         {
-            "matches": ["*://*/*"],
-            "js": ["content-script.js"]
+            "matches": [
+                "*://*/*"
+            ],
+            "js": [
+                "content-script.js"
+            ]
         },
         {
-            "matches": ["https://wd5.myworkday.com/*"],
-            "js": ["workday-script.js"]
+            "matches": [
+                "https://wd5.myworkday.com/*"
+            ],
+            "js": [
+                "workday-script.js"
+            ]
         }
     ],
     "browser_action": {
@@ -65,5 +80,7 @@
         },
         "default_popup": "popup.html"
     },
-    "web_accessible_resources": ["https://wd5.myworkday.com/*"]
+    "web_accessible_resources": [
+        "https://wd5.myworkday.com/*"
+    ]
 }
