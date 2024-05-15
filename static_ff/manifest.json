@@ -16,9 +16,7 @@
         }
     },
     "background": {
-        "scripts": [
-            "./sw.js"
-        ],
+        "scripts": ["./sw.js"],
         "persistent": true
     },
     "commands": {
@@ -47,28 +45,15 @@
             "description": "Start Tracking for Issue 3"
         }
     },
-    "permissions": [
-        "alarms",
-        "<all_urls>",
-        "menus",
-        "scripting"
-    ],
+    "permissions": ["alarms", "<all_urls>", "menus", "scripting"],
     "content_scripts": [
         {
-            "matches": [
-                "*://*/*"
-            ],
-            "js": [
-                "content-script.js"
-            ]
+            "matches": ["*://*/*"],
+            "js": ["content-script.js"]
         },
         {
-            "matches": [
-                "https://wd5.myworkday.com/*"
-            ],
-            "js": [
-                "workday-script.js"
-            ]
+            "matches": ["https://wd5.myworkday.com/*"],
+            "js": ["workday-script.js"]
         }
     ],
     "browser_action": {
@@ -80,14 +65,5 @@
         },
         "default_popup": "popup.html"
     },
-    "web_accessible_resources": [
-        {
-            "matches": [
-                "https://wd5.myworkday.com/*"
-            ],
-            "resources": [
-                "popup.html"
-            ]
-        }
-    ]
+    "web_accessible_resources": ["https://wd5.myworkday.com/*"]
 }
