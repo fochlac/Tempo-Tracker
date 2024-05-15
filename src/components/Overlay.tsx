@@ -8,13 +8,13 @@ import { ButtonBar } from './atoms/ButtonBar'
 import { Button } from './atoms/Button'
 import { ChevronsDown, ChevronsUp, Clock, Loader } from 'preact-feather'
 import { Logo } from './atoms/Logo'
-import { InfoBox } from './atoms/Alert'
 import { Conditional } from './atoms/Conditional'
 import { createTheme } from 'src/utils/theme'
 import { Location } from 'src/utils/browser'
 import { OverlayHeaderRow, OverlayRow } from './molecules/OverlayRow'
 import { FlexColumn } from './atoms/Layout'
 import { H5 } from './atoms/Typography'
+import { ActionLink } from './atoms/ActionLink'
 
 const Main = styled.aside<{ $collapsed?: boolean }>`
     position: absolute;
@@ -108,12 +108,8 @@ const UploadButton = styled(Button)`
         background: var(--default-button-hover);
     }
 `
-const BetaBox = styled(InfoBox)`
-    margin: 4px;
-    cursor: pointer;
-    background: #35abed;
-    color: white;
-    border: none;
+const Impressum = styled.div`
+    padding: 4px;
 `
 const CollapseIndicator = styled.button`
     position: absolute;
@@ -253,10 +249,6 @@ export const Overlay: React.FC<{
             </Header>
             {!collapsed && (
                 <>
-                    <BetaBox
-                        onClick={() => window.open(githubUrl, 'blank')}
-                        text="Workday Upload is experimental. Click here to report any issues you find."
-                    />
                     <Conditional enable={!!workTimes.length}>
                         <Progress data-test="progress">
                             <Conditional enable={isLoading && !!selected.size}>
@@ -311,6 +303,13 @@ export const Overlay: React.FC<{
                             Upload
                         </UploadButton>
                     </UploadBar>
+                    <Impressum>
+
+                    <ActionLink
+                        onClick={() => window.open(githubUrl, 'blank')}
+                        
+                    >Report Issue</ActionLink>
+                    </Impressum>
                 </>
             )}
         </Main>
