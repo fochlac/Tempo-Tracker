@@ -4,12 +4,22 @@ import { WorkdayApi } from './utils/api/workday'
 import { triggerBackgroundAction } from './utils/background'
 import { Overlay } from './components/Overlay'
 
+interface AppOptions {
+    workTimes?: WorkTimeInfo[],
+    insertWorkTime?: (startTime: number, endTime: number) => Promise<void|{ error: string; }>,
+    workdayEntries?: WorkdayEntry[],
+    isInitializing?: boolean,
+    impressumUrl?: string
+}
+
 let entry
-function createApp (
-    workTimes: WorkTimeInfo[],
-    insertWorkTime: (startTime: number, endTime: number) => Promise<void|{ error: string; }>,
-    workdayEntries: WorkdayEntry[],
-    isInitializing = false
+function createApp ({
+    workTimes = [],
+    insertWorkTime,
+    workdayEntries = [],
+    isInitializing = false,
+    impressumUrl
+}: AppOptions = {}
 ) {
     if (!entry) {
         entry = document.createElement('div')
@@ -18,7 +28,7 @@ function createApp (
     unmountComponentAtNode(entry)
 
     const refresh = () => workday()
-    render(<Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh, isInitializing }} />, entry)
+    render(<Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh, isInitializing, impressumUrl }} />, entry)
 }
 
 let isVisible = false
@@ -30,10 +40,10 @@ async function workday () {
         return
     }
     isVisible = true
-    const {startTime, endTime, entries, insertWorkTime} = result
-    const { workTimeInfo: { workTimes } } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
+    const { startTime, endTime, entries: workdayEntries, insertWorkTime } = result
+    const { workTimeInfo: { workTimes }, impressumUrl } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
 
-    createApp(workTimes, insertWorkTime, entries)
+    createApp({ workTimes, insertWorkTime, workdayEntries, impressumUrl })
 }
 
 let currentLocation = location.href
@@ -42,7 +52,7 @@ setInterval(() => {
     if (currentLocation !== location.href) {
         currentLocation = location.href
         if (isVisible) {
-            createApp([], () => Promise.resolve(), [], true)
+            createApp({ isInitializing: true })
         }
 
         workday()

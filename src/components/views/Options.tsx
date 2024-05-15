@@ -152,11 +152,6 @@ export const OptionsView: React.FC = () => {
                     />
                 </Option>
             )}
-            {instance === 'cloud' && (
-                <Option>
-                    <InfoBox text="Support for Jira Cloud is experimental. Please report any issues you may find." />
-                </Option>
-            )}
             {isFirefox && (
                 <Option>
                     <InfoBox text="Due to technical limitations Firefox is only partially supported." />

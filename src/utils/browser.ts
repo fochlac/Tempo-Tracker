@@ -24,3 +24,5 @@ export const Location = {
         window.location.reload()
     }
 }
+
+export const getAssetUrl = (path) => controller && controller.runtime.getURL(path)

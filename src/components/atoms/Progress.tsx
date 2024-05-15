@@ -1,3 +1,4 @@
+import { Loader } from 'preact-feather'
 import styled, { keyframes } from 'styled-components'
 
 const movebar = keyframes`
@@ -29,3 +30,48 @@ export const ProgressIndeterminate = styled.figure`
     }
 `
 
+const lighten = keyframes`
+    0%{
+        stroke: currentcolor;
+    } 
+    80%{
+        stroke: currentcolor;
+    }
+    81%{
+        stroke: #656565;
+    }
+    100% {
+        stroke: #656565;
+    }
+`
+
+export const CircularProgress = styled(Loader)`
+    & > line {
+        animation: ${lighten} 1.6s infinite;
+    }
+
+    & > line:nth-child(1) {
+        animation-delay: -1.6s;
+    }
+    & > line:nth-child(2) {
+        animation-delay: -0.8s;
+    }
+    & > line:nth-child(3) {
+        animation-delay: -0.2s;
+    }
+    & > line:nth-child(4) {
+        animation-delay: -1.0s;
+    }
+    & > line:nth-child(5) {
+        animation-delay: -0.4s;
+    }
+    & > line:nth-child(6) {
+        animation-delay: -1.2s;
+    }
+    & > line:nth-child(7) {
+        animation-delay: -0.6s;
+    }
+    & > line:nth-child(8) {
+        animation-delay: -1.4s;
+    }
+`

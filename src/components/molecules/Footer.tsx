@@ -7,6 +7,7 @@ import { Github, X } from 'preact-feather'
 import { openTab } from '../../utils/browser'
 import { FlexRow } from '../atoms/Layout'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
+import { getUrlParam } from 'src/utils/url'
 
 const FooterBar = styled.div`
     cursor: default;
@@ -21,7 +22,7 @@ const Text = styled.p`
 `
 const githubUrl = 'https://github.com/fochlac/Tempo-Tracker'
 export function Footer () {
-    const [show, setShow] = useState(false)
+    const [show, setShow] = useState(!!getUrlParam('impressum') || false)
 
     useKeyBinding('Escape', () => setShow(false), !show)
 

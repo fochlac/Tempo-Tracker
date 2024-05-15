@@ -64,7 +64,7 @@
         },
         {
             "matches": [
-                "https://wd5.myworkday.com/bridgestone/d/*"
+                "https://wd5.myworkday.com/*"
             ],
             "js": [
                 "workday-script.js"
@@ -79,5 +79,15 @@
             "128": "icon128.png"
         },
         "default_popup": "popup.html"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "matches": [
+                "https://wd5.myworkday.com/*"
+            ],
+            "resources": [
+                "popup.html"
+            ]
+        }
+    ]
 }

@@ -1,10 +1,12 @@
+import { getAssetUrl } from 'src/utils/browser'
+
 export const ACTIONS = {
     FLUSH_UPDATES: {
         type: 'FLUSH_UPDATES',
-        create () {
+        create() {
             return { type: 'FLUSH_UPDATES' }
         },
-        response (success: boolean, message = '') {
+        response(success: boolean, message = '') {
             return {
                 type: 'FLUSH_UPDATES',
                 payload: {
@@ -16,10 +18,10 @@ export const ACTIONS = {
     },
     UPDATE_BADGE: {
         type: 'UPDATE_BADGE',
-        create () {
+        create() {
             return { type: 'UPDATE_BADGE' }
         },
-        response (success, message = '') {
+        response(success, message = '') {
             return {
                 type: 'UPDATE_BADGE',
                 payload: {
@@ -31,25 +33,26 @@ export const ACTIONS = {
     },
     WORKDAY_SETUP: {
         type: 'WORKDAY_SETUP',
-        create (startTime: number, endTime: number) {
+        create(startTime: number, endTime: number) {
             return { type: 'WORKDAY_SETUP', payload: { startTime, endTime } }
         },
-        response (success, workTimeInfo: { workTimes: WorkTimeInfo[], options: Options }) {
+        response(success, workTimeInfo: { workTimes: WorkTimeInfo[], options: Options }) {
             return {
                 type: 'WORKDAY_SETUP',
                 payload: {
                     success,
-                    workTimeInfo
+                    workTimeInfo,
+                    impressumUrl: getAssetUrl('popup.html?popped=1&view=tracker&impressum=1')
                 }
             }
         }
     },
     PAGE_SETUP: {
         type: 'PAGE_SETUP',
-        create () {
+        create() {
             return { type: 'PAGE_SETUP' }
         },
-        response (success: boolean, options?: Options) {
+        response(success: boolean, options?: Options) {
             return {
                 type: 'PAGE_SETUP',
                 payload: { success, options }
@@ -58,10 +61,10 @@ export const ACTIONS = {
     },
     SETUP_PAGE_QUEUE: {
         type: 'SETUP_PAGE_QUEUE',
-        create () {
+        create() {
             return { type: 'SETUP_PAGE_QUEUE' }
         },
-        response (success: boolean, queue?: TemporaryWorklog[], forceSync?: boolean, forceFetch?: boolean) {
+        response(success: boolean, queue?: TemporaryWorklog[], forceSync?: boolean, forceFetch?: boolean) {
             return {
                 type: 'SETUP_PAGE_QUEUE',
                 payload: { success, queue, forceSync, forceFetch }
@@ -70,13 +73,13 @@ export const ACTIONS = {
     },
     STORE_RECENT_WORKLOGS: {
         type: 'STORE_RECENT_WORKLOGS',
-        create (worklogs: Worklog[]) {
+        create(worklogs: Worklog[]) {
             return {
                 type: 'STORE_RECENT_WORKLOGS',
                 payload: { worklogs }
             }
         },
-        response (success: boolean) {
+        response(success: boolean) {
             return {
                 type: 'STORE_RECENT_WORKLOGS',
                 payload: { success }
@@ -85,13 +88,13 @@ export const ACTIONS = {
     },
     RESERVE_QUEUE_ITEM: {
         type: 'RESERVE_QUEUE_ITEM',
-        create (log) {
+        create(log) {
             return {
                 type: 'RESERVE_QUEUE_ITEM',
                 payload: { log }
             }
         },
-        response (success: boolean) {
+        response(success: boolean) {
             return {
                 type: 'RESERVE_QUEUE_ITEM',
                 payload: { success }
@@ -100,13 +103,13 @@ export const ACTIONS = {
     },
     UNRESERVE_QUEUE_ITEM: {
         type: 'UNRESERVE_QUEUE_ITEM',
-        create (log) {
+        create(log) {
             return {
                 type: 'UNRESERVE_QUEUE_ITEM',
                 payload: { log }
             }
         },
-        response (success: boolean) {
+        response(success: boolean) {
             return {
                 type: 'UNRESERVE_QUEUE_ITEM',
                 payload: { success }
@@ -115,13 +118,13 @@ export const ACTIONS = {
     },
     QUEUE_ITEM_SYNCHRONIZED: {
         type: 'QUEUE_ITEM_SYNCHRONIZED',
-        create (log, deleted) {
+        create(log, deleted) {
             return {
                 type: 'QUEUE_ITEM_SYNCHRONIZED',
                 payload: { log, deleted }
             }
         },
-        response (success: boolean) {
+        response(success: boolean) {
             return {
                 type: 'QUEUE_ITEM_SYNCHRONIZED',
                 payload: { success }

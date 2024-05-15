@@ -58,5 +58,15 @@
             "128": "icon128.png"
         },
         "default_popup": "popup.html"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "matches": [
+                "https://wd5.myworkday.com/*"
+            ],
+            "resources": [
+                "popup.html"
+            ]
+        }
+    ]
 }
