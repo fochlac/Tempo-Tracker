@@ -1,4 +1,4 @@
-import { getAssetUrl } from 'src/utils/browser'
+import { getAssetUrl } from '../utils/browser'
 
 export const ACTIONS = {
     FLUSH_UPDATES: {

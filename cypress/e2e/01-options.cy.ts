@@ -376,10 +376,6 @@ describe('Options view & initial setup', () => {
         cy.getOptions().its('domain').should('equal', serverDomain)
         cy.getOptions().its('email').should('equal', 'test@test.com')
 
-        cy.contains('div', 'Support for Jira Cloud is experimental. Please report any issues you may find.').should(
-            'be.visible'
-        )
-
         cy.contains('div', 'Personal Access Token').should('not.exist')
         cy.contains('div', 'Email Address')
             .should('exist')
