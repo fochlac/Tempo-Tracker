@@ -293,8 +293,8 @@ export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEnt
                 <Footer>
                     <p style={{ margin: '0 auto 0 4px' }}>© Florian Riedel</p>
 
-                    <ActionLink onClick={() => window.open(githubUrl, 'blank')} >Report Issue</ActionLink>
-                    <ActionLink onClick={() => window.open(impressumUrl, 'blank')} >Impressum</ActionLink>
+                    <ActionLink onClick={() => Location.openTab(githubUrl)} >Report Issue</ActionLink>
+                    <ActionLink onClick={() => Location.openTab(impressumUrl)} >Impressum</ActionLink>
                 </Footer>
             </Conditional>
         </Main>

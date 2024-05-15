@@ -20,6 +20,9 @@ export const getPermission = (permission: browser.permissions.Permissions) => {
 }
 
 export const Location = {
+    openTab(href) {
+        window.open(href, 'blank')
+    },
     reload() {
         window.location.reload()
     }

@@ -10,22 +10,28 @@ const SUCCESS_COLOR = 'rgb(238, 247, 241)'
 
 const dayInMs = 24 * 60 * 60 * 1000
 describe('Workday-Overlay', () => {
+    const impressumUrl = 'test.html'
     function setup(options?: {insertWorkTime?: () => Promise<void>, workdayEntries?: WorkdayEntry[]}) {
         cy.viewport(500, 750)
         cy.stub(Location, 'reload').as('reload')
+        cy.stub(Location, 'openTab').as('openTab')
         const insertWorkTime = options?.insertWorkTime || cy.spy(() => new Promise((resolve) => setTimeout(() => resolve(null), 200))).as('insertSpy')
         const refresh = cy.spy(() => new Promise((resolve) => setTimeout(() => resolve(null), 100))).as('refreshSpy')
         const workTimes = worklogs.map(toLocalWorklog).map(toWorktimeInfo(defaultOptions))
         const workdayEntries = options?.workdayEntries || []
 
-        cy.mount(<Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh }} />)
+        cy.mount(<Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh, impressumUrl }} />)
         cy.contains('header', 'Tempo Tracker Times').should('be.visible')
     }
 
     it('should render', () => {
         setup()
         cy.contains('header', 'Tempo Tracker Times').should('be.visible')
-        cy.contains('p', 'Workday Upload is experimental').should('be.visible')
+        cy.contains('div', 'Florian Riedel').should('be.visible')
+        cy.contains('a', 'Report Issue').should('exist').click()
+        cy.get('@openTab').should('have.been.calledWith', 'https://github.com/fochlac/Tempo-Tracker/issues')
+        cy.contains('a', 'Impressum').should('exist').click()
+        cy.get('@openTab').should('have.been.calledWith', impressumUrl)
         cy.get('li').filter(':contains(".10.20")').should('have.length', 5)
         cy.get('li').filter(':contains(":00 - ")').should('have.length', 10)
         cy.get('li input').filter(':checked').should('have.length', 15)
@@ -41,12 +47,11 @@ describe('Workday-Overlay', () => {
 
     it('should open and close', () => {
         setup()
-        cy.contains('p', 'Workday Upload is experimental').should('be.visible')
-
+        cy.contains('button', 'Upload').should('be.visible')
         cy.contains('header', 'Tempo Tracker Times').find('button').click()
-        cy.contains('p', 'Workday Upload is experimental').should('not.exist')
+        cy.contains('button', 'Upload').should('not.exist')
         cy.contains('header', 'Tempo Tracker Times').find('button').click()
-        cy.contains('p', 'Workday Upload is experimental').should('be.visible')
+        cy.contains('button', 'Upload').should('be.visible')
     })
 
     it('should select correctly', () => {
@@ -76,15 +81,15 @@ describe('Workday-Overlay', () => {
         cy.contains('li', '06.10.20').find('input').click()
         cy.contains('li', '05.10.20').find('input').click()
 
-        cy.get('[data-test="progress"]').find('div').should('have.length', 0)
+        cy.get('[data-test="progress"]').should('not.exist')
         cy.contains('button', 'Upload').should('not.be.disabled').should('be.visible').click()
         cy.contains('li', '08:30 - 10:00' + 'Test5').find('input').should('not.be.checked').should('be.disabled')
         cy.contains('li', '10:00 - 16:30' + 'TE3').find('input').should('not.be.checked').should('be.disabled')
         cy.contains('li', '08:00 - 16:00' + 'Test2').find('input').should('be.checked').should('be.disabled')
         cy.contains('button', 'Upload').should('be.disabled')
-        cy.get('[data-test="progress"]').find('div').should('have.length', 2)
-        cy.get('[data-test="progress"]').find('div').eq(0).as('first')
-        cy.get('[data-test="progress"]').find('div').eq(1).as('second')
+        cy.get('[data-test="progress"]').should('exist').find('div').should('have.length', 2)
+        cy.get('[data-test="progress"]').should('exist').find('div').eq(0).as('first')
+        cy.get('[data-test="progress"]').should('exist').find('div').eq(1).as('second')
         cy.get('@first').should('have.css', 'background-color', 'rgb(210, 226, 242)')
         cy.get('@second').should('not.have.css', 'background-color', 'rgb(210, 226, 242)')
 
