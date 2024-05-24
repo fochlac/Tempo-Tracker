@@ -67,7 +67,7 @@ export const sortAndAnalyzeWorkTimes = (workTimes: WorkTimeInfo[], existingEntri
             if (index > 0) {
                 const previousEnd = workTimeList[index - 1].end
                 const diff = previousEnd - workTime.start
-                if (diff > 0 && diff <= 60000) {
+                if (diff >= 0 && diff <= 60000) {
                     workTime.start = previousEnd + 1000
                 }
                 else if (diff > 60000) {
