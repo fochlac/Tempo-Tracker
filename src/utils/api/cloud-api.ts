@@ -53,7 +53,7 @@ export const PATHS: Record<URLS, PathDefinition> = {
     [URLS.ISSUE]: { url: '/api/3/issue', type: JIRA },
     [URLS.QUICKSEARCH]: { url: '/api/3/issue/picker', type: JIRA },
     [URLS.SEARCH]: { url: '/api/2/search', type: JIRA },
-    [URLS.WORKLOGS]: { url: '/4/worklogs/search', type: TEMPO },
+    [URLS.WORKLOGS]: { url: (accountId) => `/4/worklogs/user/${accountId}`, type: TEMPO },
     [URLS.CREATE_WORKLOG]: { url: '/4/worklogs', type: TEMPO },
     [URLS.SELF]: { url: '/api/2/myself', type: JIRA }
 }
@@ -82,6 +82,10 @@ const getUrl = (options: Options, url: URLS, query?: URLSearchParams) => {
     let queryString = ''
     if (query) {
         queryString = `?${query.toString()}`
+    }
+
+    if (typeof pathInfo.url === 'function') {
+        return (params) => `${baseUrl}${(pathInfo.url as PathGenerator)(params)}${queryString}`
     }
 
     return `${baseUrl}${pathInfo.url}${queryString}`
@@ -218,17 +222,15 @@ export async function searchIssues(options: Options, searchString: string): Prom
 
 export async function fetchWorklogs(startDate: number, endDate: number, options: Options, simpleMapping?: boolean): Promise<Worklog[]> {
     await checkPermissions(options)
-    const payload = {
-        from: dateString(startDate),
-        to: dateString(endDate),
-        workerId: [options.user]
-    }
-    const query = new URLSearchParams()
-    query.append('limit', '10000')
 
-    const data = await fetchJson(getUrl(options, URLS.WORKLOGS, query), {
-        method: 'POST',
-        body: JSON.stringify(payload),
+    const query = new URLSearchParams()
+    query.append('from', dateString(startDate))
+    query.append('to', dateString(endDate))
+    query.append('limit', '10000')
+    const pathGen = getUrl(options, URLS.WORKLOGS, query) as PathGenerator
+
+    const data = await fetchJson(pathGen(options.user), {
+        method: 'GET',
         headers: headers(options, URLS.WORKLOGS),
         credentials: 'omit'
     })
