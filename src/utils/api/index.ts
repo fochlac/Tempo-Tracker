@@ -6,8 +6,10 @@ import * as cloudApi from './cloud-api'
 import * as datacenterApi from './datacenter-api'
 
 declare global {
+    type PathGenerator = (params: unknown) => string
+
     interface PathDefinition {
-        url: string;
+        url: string | PathGenerator;
         type?: 'JIRA' | 'TEMPO';
     }
 

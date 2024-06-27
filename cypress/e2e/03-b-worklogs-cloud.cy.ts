@@ -19,6 +19,11 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
     })
 
     it('should be possible to delete logs and to cancel deletion for unsynced logs', () => {
+        cy.get('@getWorklogs.1').its('request.query').should('have.a.property', 'from', '2020-10-02')
+        cy.get('@getWorklogs.1').its('request.query').should('have.a.property', 'to', '2020-10-14')
+        cy.get('@getWorklogs.1').its('request.query').should('have.a.property', 'limit', '10000')
+        cy.get('@getWorklogs.1').its('request.url').should('include', 'user/testid')
+
         cy.get('li')
             .filter(':contains(08.10.20)')
             .filter(':contains(Test2)')

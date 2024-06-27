@@ -103,7 +103,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
         req.reply({ issues: matches })
     }).as('search')
 
-    cy.intercept('POST', 'https://api.tempo.io/4/worklogs/search*', { results: worklogsCloud }).as('getWorklogs')
+    cy.intercept('GET', 'https://api.tempo.io/4/worklogs/user/testid*', { results: worklogsCloud }).as('getWorklogs')
     cy.intercept('POST', 'https://api.tempo.io/4/worklogs', (req) => {
         const { startTime, startDate, timeSpentSeconds, issueId, authorAccountId } = req.body
 
