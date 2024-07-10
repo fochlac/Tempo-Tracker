@@ -72,11 +72,7 @@ export const TrackerView: React.FC = () => {
             <H6 style={{ margin: '0 0 4px 8px', display: 'flex', width: 'calc(100% - 16px)' }}>
                 <span style={{ marginRight: 'auto' }}>Tracking History</span>
                 {!self.error && !hasUnsyncedLog && (
-                    <ActionLink
-                        disabled={!!editIssue.issue}
-                        style={{ marginRight: 4, lineHeight: '16px' }}
-                        onClick={() => worklog.forceFetch()}
-                    >
+                    <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => worklog.forceFetch()}>
                         Refresh
                     </ActionLink>
                 )}
@@ -89,15 +85,11 @@ export const TrackerView: React.FC = () => {
                         Synchronize
                     </ActionLink>
                 )}
-                <ActionLink
-                    disabled={!!editIssue.issue}
-                    style={{ marginRight: 4, lineHeight: '16px' }}
-                    onClick={() => setShowPeriodDialog(true)}
-                >
+                <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => setShowPeriodDialog(true)}>
                     Log Multiple
                 </ActionLink>
                 <ActionLink
-                    disabled={!!editIssue.issue}
+                    disabled={!!editIssue.issue || !createNewWorklog}
                     style={{ marginRight: 4, lineHeight: '16px' }}
                     onClick={createNewWorklog}
                 >
@@ -111,9 +103,7 @@ export const TrackerView: React.FC = () => {
                 {self.error && (
                     <ErrorTooltipTop content={offlineTooltip}>
                         <WifiOff
-                            onClick={() =>
-                                self.error === 'PERMISSION' && requestPermission(options).then(() => self.refetch())
-                            }
+                            onClick={() => self.error === 'PERMISSION' && requestPermission(options).then(() => self.refetch())}
                             size={16}
                             style={{
                                 color: 'var(--destructive)',

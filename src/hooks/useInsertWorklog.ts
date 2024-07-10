@@ -4,17 +4,19 @@ import { useDispatch, useSelector } from '../utils/atom'
 import { useOptions } from './useOptions'
 import { v4 } from 'uuid'
 import { usePrevious } from './usePrevious'
+import { useJqlQueryResults } from './useJqlQueryResult'
 
 export function useInsertWorklog () {
     const dispatch = useDispatch()
     const editIssue = useSelector(editIssueDuck.selector)
+    const remoteIssues = useJqlQueryResults() as LocalIssue[]
     const {data: options} = useOptions()
     const [newWorklog, setNewWorklog] = useState<TemporaryWorklog>(null)
     const previousIssue = usePrevious(editIssue.issue)
+    const defaultIssue = Object.values(options.issues).concat(remoteIssues)[0]
 
     const createNewWorklog = async () => {
-        const issue = Object.values(options.issues)[0]
-        const newLog: TemporaryWorklog = { issue, start: Date.now(), end: Date.now(), synced: false, tempId: v4() }
+        const newLog: TemporaryWorklog = { issue: defaultIssue, start: Date.now(), end: Date.now(), synced: false, tempId: v4() }
         await dispatch('setEditIssue', { issue: newLog.tempId })
         setNewWorklog(newLog)
     }
@@ -27,6 +29,6 @@ export function useInsertWorklog () {
 
     return {
         newWorklog,
-        createNewWorklog
+        createNewWorklog: defaultIssue ? createNewWorklog : undefined
     }
 }
