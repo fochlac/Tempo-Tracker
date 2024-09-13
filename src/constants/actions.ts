@@ -130,5 +130,20 @@ export const ACTIONS = {
                 payload: { success }
             }
         }
+    },
+    AWAIT_WORKDAY_PERMISSION: {
+        type: 'AWAIT_WORKDAY_PERMISSION',
+        create() {
+            return {
+                type: 'AWAIT_WORKDAY_PERMISSION',
+                payload: { }
+            }
+        },
+        response(success: boolean) {
+            return {
+                type: 'AWAIT_WORKDAY_PERMISSION',
+                payload: { success }
+            }
+        }
     }
 }

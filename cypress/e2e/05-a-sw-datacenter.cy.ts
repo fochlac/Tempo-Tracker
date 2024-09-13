@@ -515,6 +515,40 @@ describe('Service Worker - Datacenter API', () => {
             .should('deep.equal', ACTIONS.UPDATE_BADGE.response(true))
     })
 
+    it('should wait for workday permissions on  AWAIT_WORKDAY_PERMISSION message', () => {
+        cy.networkMocks()
+        cy.openWithOptions({...defaultOptions, disableWorkdaySync: true}, true)
+        cy.startSw()
+        cy.wait(100)
+        cy.window().then((win) => {
+            win.chrome.permissions.contains = () => { return Promise.resolve(false) }
+        })
+        cy.window().then((win) => {
+            console.log(win.chrome.permissions.contains)
+        })
+        cy.sendMessage(ACTIONS.AWAIT_WORKDAY_PERMISSION.create())
+
+        cy.getOptions().should('have.property', 'disableWorkdaySync', true)
+
+        cy.wait(600)
+        cy.getOptions().should('have.property', 'disableWorkdaySync', true)
+
+        cy.window().then((win) => {
+            win.chrome.permissions.contains = () => Promise.resolve(true)
+        })
+        cy.wait(600)
+        cy.window().its('chrome.scripting.scripts').should('have.length', 1)
+        cy.window().its('chrome.scripting.scripts.0').should('deep.equal', {
+            id: 'workday-script',
+            js: ['workday-script.js'],
+            persistAcrossSessions: true,
+            matches: ['https://wd5.myworkday.com/*'],
+            runAt: 'document_start',
+            allFrames: true
+        })
+        cy.getOptions().should('have.property', 'disableWorkdaySync', false)
+    })
+
     it('should listen to hotkeys', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)

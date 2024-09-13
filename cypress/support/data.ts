@@ -48,7 +48,7 @@ export const defaultOptions: Options = {
         'TE-17'
     ],
     customTheme: undefined,
-    workdaySync: false
+    disableWorkdaySync: true
 }
 export const baseDate = new Date('2020-10-08T15:00:00.000Z')
 

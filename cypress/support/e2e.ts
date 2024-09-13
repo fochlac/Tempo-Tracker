@@ -39,7 +39,10 @@ declare global {
             chrome: {
                 runtime: { sendMessage?: (message: unknown, callback: (status: unknown) => void) => void },
                 // eslint-disable-next-line @typescript-eslint/ban-types
-                messageListeners: Function[]
+                messageListeners: Function[],
+                permissions: {
+                    contains: (options: unknown, cb: (granted: boolean) => void) => void
+                }
             },
             messages: unknown[]
         }

@@ -9,6 +9,8 @@ import { useEffect } from 'preact/hooks'
 import { Unlock } from 'preact-feather'
 import { ErrorTooltip } from '../atoms/Tooltip'
 import { FlexRow } from '../atoms/Layout'
+import { triggerBackgroundAction } from 'src/utils/background'
+import { ACTIONS } from 'src/constants/actions'
 
 const LockIcon = styled(Unlock)`
     width: 16px;
@@ -21,7 +23,7 @@ const LockIcon = styled(Unlock)`
 `
 
 export const WorkdayLink: React.FC = () => {
-    const { data: options, actions } = useOptions()
+    const { data: options } = useOptions()
     const [hasPermission, setHasPermission] = useSafeState(true)
 
     useEffect(() => {
@@ -42,16 +44,9 @@ export const WorkdayLink: React.FC = () => {
         e.stopPropagation()
         e.preventDefault()
 
-        let granted = hasPermission
         if (!hasPermission) {
-            granted = await Workday.requestPermission()
-            await Workday.registerScript()
-            if (granted) {
-                setHasPermission(true)
-            }
-        }
-        if (!options.workdaySync && granted) {
-            actions.merge({ workdaySync: true })
+            triggerBackgroundAction(ACTIONS.AWAIT_WORKDAY_PERMISSION)
+            await Workday.requestPermission()
         }
         openTab({ url: Workday.timeTrackingPage, active: true })
     }

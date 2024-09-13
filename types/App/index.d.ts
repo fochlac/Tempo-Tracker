@@ -120,7 +120,7 @@ interface Options {
         diagrammGreen: string;
     };
     token: string;
-    workdaySync: boolean;
+    disableWorkdaySync: boolean;
     ttToken: string;
     email: string;
     days: number[];

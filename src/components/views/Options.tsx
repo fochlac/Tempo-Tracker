@@ -76,17 +76,6 @@ export const OptionsView: React.FC = () => {
         return () => setToken('')
     }, [domain, setToken])
 
-    useEffect(() => {
-        if (options.workdaySync) {
-            Workday.hasPermission().then((hasPermission) => {
-                if (!hasPermission) {
-                    actions.merge({ workdaySync: false })
-                }
-            })
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
     const timeout = useRef<NodeJS.Timeout>()
     const tokenBlur = async (e) => {
         const newToken = e?.newToken || token
@@ -129,7 +118,7 @@ export const OptionsView: React.FC = () => {
             }
         }
         actions.merge({
-            workdaySync: Boolean(checked && granted)
+            disableWorkdaySync: !(checked && granted)
         })
     }
 
@@ -290,7 +279,7 @@ export const OptionsView: React.FC = () => {
                                 <Input
                                     style={{ margin: '0 6px' }}
                                     type="checkbox"
-                                    checked={options.workdaySync}
+                                    checked={!options.disableWorkdaySync}
                                     onChange={onChangeWorkdaySync}
                                 />
                                 <Label>enabled</Label>

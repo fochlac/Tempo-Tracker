@@ -21,7 +21,7 @@ export function getOptions (options: Partial<Options>): Options {
         instance,
         days,
         issueOrder,
-        workdaySync
+        disableWorkdaySync
     } = options || {}
 
     // migration from old domain format
@@ -62,7 +62,7 @@ export function getOptions (options: Partial<Options>): Options {
         ttToken: ttToken ?? '',
         email: email ?? '',
         instance: instance ?? 'datacenter',
-        workdaySync: workdaySync ?? false
+        disableWorkdaySync: disableWorkdaySync ?? false
     }
 }
 

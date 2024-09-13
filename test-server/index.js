@@ -22,7 +22,7 @@ const chromeApiMock = `
                 chrome.origins.push(...origins)
                 return Promise.resolve(true)
             },
-            contains: (options, cb) => cb(true)
+            contains: (options, cb) => typeof cb === 'function' ? cb(true) : Promise.resolve(true)
         },
         alarms: {
           create: (name, settings) => chrome.alarmList.push({name, settings}),
@@ -61,6 +61,11 @@ const chromeApiMock = `
             onClicked: {
                 addListener: (listener) => chrome.menuListeners.push(listener)
             }
+        },
+        scripting: {
+            scripts: [],
+            getRegisteredContentScripts: () => window.chrome.scripting.scripts,
+            registerContentScripts: (options) => window.chrome.scripting.scripts.push(...options)
         }
     };
 `

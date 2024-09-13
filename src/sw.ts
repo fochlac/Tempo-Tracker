@@ -66,22 +66,27 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
         try {
             options = getOptions(await DB.get(DB_KEYS.OPTIONS))
             if (options.autosync) {
+                console.log('flush')
                 await flushQueueRecursive()
+                console.log('flush done')
             }
         }
         catch (e) {
             console.log(e)
         }
-        if (options?.workdaySync) {
+        if (!options?.disableWorkdaySync) {
+            console.log('workday')
             await Workday.registerScript()
         }
         try {
+            console.log('badge')
             await updateBadgeTitle()
         }
         catch (e) {
             console.log(e)
         }
         try {
+            console.log('heart')
             await heartbeat()
         }
         catch (e) {
@@ -130,6 +135,26 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
         getTrackedTimes(request.payload.startTime, request.payload.endTime)
             .then((workTimeInfo) => sendResponse(ACTIONS.WORKDAY_SETUP.response(true, workTimeInfo)))
             .catch((e) => sendResponse(ACTIONS.WORKDAY_SETUP.response(false, e.message)))
+
+        return true
+    }
+    if (ACTIONS.AWAIT_WORKDAY_PERMISSION.type === request.type) {
+        const start = Date.now()
+        const interval = setInterval(() => {
+            if (Date.now() - start > 30000) {
+                clearInterval(interval)
+                return sendResponse(ACTIONS.AWAIT_WORKDAY_PERMISSION.response(false))
+            }
+            Workday.hasPermission().then(async (granted) => {
+                console.log('perm', granted)
+                if (granted) {
+                    clearInterval(interval)
+                    await DB.update(DB_KEYS.OPTIONS, (options) => ({ ...options, disableWorkdaySync: false }))
+                    await Workday.registerScript()
+                    sendResponse(ACTIONS.AWAIT_WORKDAY_PERMISSION.response(true))
+                }
+            })
+        }, 500)
 
         return true
     }
@@ -205,7 +230,7 @@ heartbeat();
 (async function () {
     try {
         const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
-        if (options?.workdaySync) {
+        if (!options?.disableWorkdaySync) {
             await Workday.registerScript()
         }
     }
