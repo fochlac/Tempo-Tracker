@@ -97,22 +97,22 @@ export const StatisticsView: React.FC = () => {
                 </Column>
             </Block>
             <Conditional enable={isWebfleet}>
-                <H6>Overhour Statistics</H6>
+                <H6>Overhour Statistics - Decay After 6 Month</H6>
                 <Block>
                     <Column>
-                        <Label>Current Overhours (6 Month)</Label>
+                        <Label>Overhours</Label>
                         <Value>
                             {overhourStats.totalDiffSeconds > 0 ? formatDuration(overhourStats?.totalDiffSeconds * 1000, true, true) : <>&mdash;</>}
                         </Value>
                     </Column>
                     <Column>
-                        <Label>Overhours at risk</Label>
+                        <Label>Overhours (decaying soon)</Label>
                         <Value>
                             {overhourStats.secondsInLastMonth > 0 ? formatDuration(overhourStats?.secondsInLastMonth * 1000, true, true) : <>&mdash;</>}
                         </Value>
                     </Column>
                     <Column>
-                        <Label>Overhours (Last Week)</Label>
+                        <Label>Overhours (last week)</Label>
                         <Value>
                             {overhourStats.secondsInLastWeek ? formatDuration(overhourStats?.secondsInLastWeek * 1000, true, true) : <>&mdash;</>}
                         </Value>

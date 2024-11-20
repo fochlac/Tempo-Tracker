@@ -204,7 +204,7 @@ export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: 
             let currentDiff = workedSeconds - getRequiredSeconds(year, week)
             for (let x = 0; x < index; x++) {
                 const oldWeek = array[x]
-                if (currentDiff === 0) {
+                if (currentDiff === 0 || !oldWeek) {
                     break
                 }
                 if (oldWeek.diffSeconds === 0 || currentDiff > 0 === oldWeek.diffSeconds > 0) {
