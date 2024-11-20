@@ -162,6 +162,8 @@ export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: 
         return lifeTimeStatsMap
     }, CACHE.LIFETIME_STATS_CACHE, {}, Number.MAX_SAFE_INTEGER)
 
+    const getRequiredSeconds = useGetRequiredSecondsForPeriod(lifetimeYear)
+
     useEffect(() => {
         forceFetch()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -196,6 +198,44 @@ export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: 
         }, []).sort((a, b) => a.workedSeconds - b.workedSeconds)
     }, [data, lifetimeYear])
 
+    const overhourStats: {totalDiffSeconds: number, secondsInLastWeek: number, secondsInLastMonth: number} = useMemo(() => {
+        const sorted = [...yearWeeksLifetime].sort((a, b) => `${a.year}-${a.week}`.localeCompare(`${b.year}-${b.week}`))
+        const resolvedLastHalfYear = sorted.reduce((array, {year, week, workedSeconds}, index) => {
+            let currentDiff = workedSeconds - getRequiredSeconds(year, week)
+            for (let x = 0; x < index; x++) {
+                const oldWeek = array[x]
+                if (currentDiff === 0) {
+                    break
+                }
+                if (oldWeek.diffSeconds === 0 || currentDiff > 0 === oldWeek.diffSeconds > 0) {
+                    continue
+                }
+                if (Math.abs(currentDiff) - Math.abs(oldWeek.diffSeconds) > 0) {
+                    currentDiff += oldWeek.diffSeconds
+                    oldWeek.diffSeconds = 0
+                }
+                else {
+                    oldWeek.diffSeconds += currentDiff
+                    currentDiff = 0
+                }
+            }
+
+            array.push({year, week, workedSeconds, diffSeconds: currentDiff})
+            return array.slice(-25)
+        }, [])
+
+        return resolvedLastHalfYear.reduce((stats, result, index) => {
+            if (index === 0) {
+                stats.secondsInLastWeek = result.diffSeconds
+            }
+            if (index < 4) {
+                stats.secondsInLastMonth += result.diffSeconds
+            }
+            stats.totalDiffSeconds += result.diffSeconds
+            return stats
+        }, {totalDiffSeconds: 0, secondsInLastWeek: 0, secondsInLastMonth: 0})
+    }, [yearWeeksLifetime, getRequiredSeconds])
+
     const lifeTimeTotal = useMemo(() => {
         const years = Array.from({ length: (new Date().getFullYear()) - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx)
         return years.reduce((total, year) => total + (data[year]?.total ?? 0), 0)
@@ -212,10 +252,11 @@ export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: 
     }, [yearWeeksLifetime])
 
     return {
-        data: { lifeTimeTotal, yearWeeksLifetime, lifeTimeMedianTop, lifeTimeMedianLow },
+        data: { lifeTimeTotal, yearWeeksLifetime, lifeTimeMedianTop, lifeTimeMedianLow, overhourStats },
         actions: {
             refresh: forceFetch
         },
         loading
     }
 }
+

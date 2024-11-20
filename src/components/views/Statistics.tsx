@@ -12,6 +12,8 @@ import { ErrorTooltip } from '../atoms/Tooltip'
 import { WifiOff } from 'preact-feather'
 import { ActionLink } from '../atoms/ActionLink'
 import { formatDuration } from '../../utils/datetime'
+import { useOptions } from 'src/hooks/useOptions'
+import { Conditional } from '../atoms/Conditional'
 
 const Body = styled.div`
     display: flex;
@@ -32,12 +34,14 @@ export const StatisticsView: React.FC = () => {
         actions: { setYear, getRequiredSeconds, refresh },
         loading
     } = useStatistics()
+    const { domain } = useOptions().data
+    const isWebfleet = domain?.includes('jira.ttt-sp.com')
     const self = useSelf()
 
     const { data: options, actions } = useStatisticsOptions()
     const getRequiredSecondsPeriod = useGetRequiredSecondsForPeriod(options.lifetimeYear)
     const {
-        data: { lifeTimeTotal, yearWeeksLifetime, lifeTimeMedianTop, lifeTimeMedianLow }
+        data: { lifeTimeTotal, yearWeeksLifetime, lifeTimeMedianTop, lifeTimeMedianLow, overhourStats }
     } = useLifetimeStatistics(loading ? {} : { stats, year })
 
     const updateOptionKey = (key) => (e) => actions.merge({ [key]: Number(e.target.value) })
@@ -92,6 +96,29 @@ export const StatisticsView: React.FC = () => {
                     </Value>
                 </Column>
             </Block>
+            <Conditional enable={isWebfleet}>
+                <H6>Overhour Statistics</H6>
+                <Block>
+                    <Column>
+                        <Label>Current Overhours (6 Month)</Label>
+                        <Value>
+                            {overhourStats.totalDiffSeconds > 0 ? formatDuration(overhourStats?.totalDiffSeconds * 1000, true, true) : <>&mdash;</>}
+                        </Value>
+                    </Column>
+                    <Column>
+                        <Label>Overhours at risk</Label>
+                        <Value>
+                            {overhourStats.secondsInLastMonth > 0 ? formatDuration(overhourStats?.secondsInLastMonth * 1000, true, true) : <>&mdash;</>}
+                        </Value>
+                    </Column>
+                    <Column>
+                        <Label>Overhours (Last Week)</Label>
+                        <Value>
+                            {overhourStats.secondsInLastWeek ? formatDuration(overhourStats?.secondsInLastWeek * 1000, true, true) : <>&mdash;</>}
+                        </Value>
+                    </Column>
+                </Block>
+            </Conditional>
             <H6>Work-time Settings</H6>
             <Block>
                 <Column>
