@@ -89,13 +89,21 @@ export function getISOWeeks(y) {
     return d.getDay() === 4 || (isLeap && d.getDay() === 3) ? 53 : 52
 }
 
-export function getISOWeekNumber(unixStamp: number) {
-    const date = new Date(unixStamp)
-    const week1 = new Date(date.getFullYear(), 0, 4)
+const getStartOfWeek1 = (year) => {
+    const week1 = new Date(year, 0, 4)
     const day = week1.getDay()
 
-    const startOfWeek1 = new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
-    return Math.ceil((unixStamp - startOfWeek1) / weekInMs)
+    return new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
+}
+
+export function getISOWeekNumber(unixStamp: number) {
+    const date = new Date(unixStamp)
+
+    const startOfWeek1 = getStartOfWeek1(date.getFullYear())
+    const startOfWeek1NextYear = getStartOfWeek1(date.getFullYear() + 1)
+    const weekNumber = Math.round((startOfWeek1NextYear - startOfWeek1) / weekInMs)
+
+    return Math.ceil((unixStamp - startOfWeek1) / weekInMs) % weekNumber || weekNumber
 }
 
 export function getIsoWeekPeriod(y, n) {
