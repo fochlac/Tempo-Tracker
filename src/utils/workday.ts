@@ -3,7 +3,7 @@ import { dateString } from './datetime'
 
 const timeTrackingPage = 'https://wd5.myworkday.com/bridgestone/d/task/2997$4767.htmld'
 const workdayUrl = 'https://wd5.myworkday.com/*'
-const controller = typeof chrome !== 'undefined' && chrome || typeof browser !== 'undefined' && browser
+const controller = (typeof chrome !== 'undefined' && chrome) || (typeof browser !== 'undefined' && browser)
 
 function hasPermission() {
     if (isFirefox) {
@@ -24,15 +24,16 @@ async function registerScript() {
         const scripts = await controller.scripting.getRegisteredContentScripts()
 
         if (scripts.every((script) => script.id !== 'workday-script')) {
-            return controller.scripting
-                .registerContentScripts([{
+            return controller.scripting.registerContentScripts([
+                {
                     id: 'workday-script',
                     js: ['workday-script.js'],
                     persistAcrossSessions: true,
                     matches: [workdayUrl],
                     runAt: 'document_start',
                     allFrames: true
-                }])
+                }
+            ])
         }
     }
     catch (e) {
@@ -48,7 +49,11 @@ export const isSynced = (workTime, conflicts): boolean => {
     return false
 }
 
-export const sortAndAnalyzeWorkTimes = (workTimes: WorkTimeInfo[], existingEntries: WorkdayEntry[]): Record<string, { conflicts: WorkdayEntry[], workTime: WorkTimeInfo }[]> => {
+export const sortAndAnalyzeWorkTimes = (
+    workTimes: WorkTimeInfo[],
+    existingEntries: WorkdayEntry[],
+    selected?: Set<string>
+): Record<string, { conflicts: WorkdayEntry[]; workTime: WorkTimeInfo }[]> => {
     const workTimeMap = workTimes.reduce((map, workTime) => {
         const date = dateString(workTime.start)
         if (!map[date]) {
@@ -60,28 +65,35 @@ export const sortAndAnalyzeWorkTimes = (workTimes: WorkTimeInfo[], existingEntri
         return map
     }, {})
 
-    return Object.keys(workTimeMap).sort((a, b) => a.localeCompare(b)).reduce((map, date) => {
-        map[date] = [...workTimeMap[date]].sort((a, b) => a.start - b.start).map((ttWorktime, index, workTimeList) => {
-            const workTime = { ...ttWorktime }
-            const conflicts = []
-            if (index > 0) {
-                const previousEnd = workTimeList[index - 1].end
-                const diff = previousEnd - workTime.start
-                if (diff >= 0 && diff <= 60000) {
-                    workTime.start = previousEnd + 1000
-                }
-                else if (diff > 60000) {
-                    conflicts.push(workTimeList[index - 1])
-                }
-            }
+    return Object.keys(workTimeMap)
+        .sort((a, b) => a.localeCompare(b))
+        .reduce((map, date) => {
+            map[date] = [...workTimeMap[date]]
+                .sort((a, b) => a.start - b.start)
+                .map((ttWorktime, index, workTimeList) => {
+                    const workTime = { ...ttWorktime }
+                    const conflicts = []
+                    if (index > 0) {
+                        const conflict = workTimeList.slice(0, index).find((entry) => {
+                            return (!selected || selected.has(entry.id)) && entry.end - workTime.start >= 0
+                        })
 
-            const end = Math.floor(workTime.end / 60000) * 60000
-            conflicts.push(...existingEntries.filter((entry) => entry.start < end && entry.end >= workTime.start))
+                        const diff = conflict ? conflict.end - workTime.start : -1
+                        if (diff >= 0 && diff <= 60000) {
+                            workTime.start = conflict.end + 1000
+                        }
+                        else if (diff > 60000) {
+                            conflicts.push(workTimeList[index - 1])
+                        }
+                    }
 
-            return { workTime, conflicts }
-        })
-        return map
-    }, {})
+                    const end = Math.floor(workTime.end / 60000) * 60000
+                    conflicts.push(...existingEntries.filter((entry) => entry.start < end && entry.end >= workTime.start))
+
+                    return { workTime, conflicts }
+                })
+            return map
+        }, {})
 }
 
 export const Workday = {

@@ -161,17 +161,18 @@ interface Props {
 }
 
 export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEntries, refresh, isInitializing, impressumUrl }) => {
-    const sortedWorkTimes = useMemo(
-        () => sortAndAnalyzeWorkTimes(workTimes, workdayEntries),
-        [workTimes, workdayEntries]
-    )
-
     const [selected, setSelected] = useState<Set<string>>(() => new Set(
-        Object.values(sortedWorkTimes)
+        Object.values(sortAndAnalyzeWorkTimes(workTimes, workdayEntries))
             .flat()
             .filter((entry) => !entry.conflicts.length)
             .map((entry) => entry.workTime.id)
     ))
+
+    const sortedWorkTimes = useMemo(
+        () => sortAndAnalyzeWorkTimes(workTimes, workdayEntries, selected),
+        [selected, workdayEntries, workTimes]
+    )
+
     const [collapsed, setCollapsed] = useState(false)
     const [isLoading, setLoading] = useState(false)
     const [progress, setProgress] = useState(0)
