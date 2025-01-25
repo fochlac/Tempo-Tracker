@@ -393,7 +393,7 @@ describe('Options view & initial setup', () => {
             .find('input')
             .should('be.visible')
             .should('have.value', '')
-        cy.contains('div', 'User').should('exist').find('input').should('be.visible').should('have.value', '')
+        cy.contains('div', 'User').should('exist').find('input').should('be.visible').should('have.value', 'test1')
 
         cy.contains('div', 'API Token').first().contains('a', 'Generate a API token').should('be.visible').click()
 
@@ -595,7 +595,7 @@ describe('Options view & initial setup', () => {
         cy.intercept('https://jira.atlassian.com/rest/api/2/myself', {
             displayName: 'Testuser',
             emailAddress: 'test@test.com',
-            accountId: 'test1'
+            accountId: 'test1-cloud'
         }).as('myselfCloud')
         cy.intercept('https://jira.nonexistent.com/**/*', (r) => r.reply(404, {})).as('myselfBad')
         cy.reload()
@@ -647,7 +647,7 @@ describe('Options view & initial setup', () => {
 
         cy.contains('dialog', 'Change Server Url').should('not.exist')
 
-        cy.getOptions().its('user').should('equal', '')
+        cy.getOptions().its('user').should('equal', 'test1-cloud')
         cy.getOptions().its('token').should('equal', '')
         cy.getOptions().its('instance').should('equal', 'cloud')
         cy.getOptions().its('email').should('equal', 'test@test.com')
@@ -661,7 +661,7 @@ describe('Options view & initial setup', () => {
         cy.intercept('https://jira.test.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/rest/api/2/myself', {
             displayName: 'Testuser',
-            key: 'test1'
+            key: 'test1-datacenter'
         }).as('myselfData')
         cy.intercept('https://jira.atlassian.com/rest/api/2/myself', {
             displayName: 'Testuser',
@@ -707,7 +707,7 @@ describe('Options view & initial setup', () => {
 
         cy.contains('dialog', 'Change Server Url').should('not.exist')
 
-        cy.getOptions().its('user').should('equal', '')
+        cy.getOptions().its('user').should('equal', 'test1-datacenter')
         cy.getOptions().its('token').should('equal', '')
         cy.getOptions().its('instance').should('equal', 'datacenter')
         cy.getOptions().its('email').should('equal', '')

@@ -24,7 +24,7 @@ const defaults = {
 
 const permissions = (isFirefox ? browser : chrome)?.permissions
 
-export function DomainEditor () {
+export function DomainEditor() {
     const { data: options, actions } = useOptions()
     const [edit, setEdit] = useState(false)
     const [domain, setDomain] = useState(options.domain || '')
@@ -36,14 +36,13 @@ export function DomainEditor () {
             setDomain(options.domain)
         }
         permissions.getAll(({ origins }) => setOrigins(origins))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [options.domain])
 
     const onSave = () => {
-        async function checkPermissions (newOptions: Partial<Options>) {
+        async function checkPermissions(newOptions: Partial<Options>) {
             if (isFirefox) return true
-            const domains =
-                newOptions.instance === 'cloud' ? getDomainsCloud(newOptions) : getDomainsDataCenter(newOptions)
+            const domains = newOptions.instance === 'cloud' ? getDomainsCloud(newOptions) : getDomainsDataCenter(newOptions)
             const hasPermissions = domains.every((domain) => origins.includes(domain))
             if (!hasPermissions) {
                 const granted = await permissions.request({ origins: domains })
@@ -54,7 +53,7 @@ export function DomainEditor () {
             }
         }
 
-        function testUrl (newOptions: Partial<Options>) {
+        function testUrl(newOptions: Partial<Options>) {
             return fetchSelf(newOptions, true)
                 .catch((result) => {
                     if (result.status !== 401 && result.status !== 302) {
@@ -79,8 +78,7 @@ export function DomainEditor () {
             return checkPermissions(newOptions)
                 .then(() => testUrl(newOptions))
                 .catch(() => setError(true))
-        }
-        else if (domainRegexp.test(domain.trim())) {
+        } else if (domainRegexp.test(domain.trim())) {
             const result = domain.trim().match(domainRegexp)
             const baseDomain = result[2]
             const protocol = result[1] || 'https://'
@@ -109,8 +107,7 @@ export function DomainEditor () {
                         )
                 })
                 .catch(() => setError(true))
-        }
-        else {
+        } else {
             setError(true)
         }
     }

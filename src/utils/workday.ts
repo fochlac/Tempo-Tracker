@@ -70,28 +70,29 @@ export const sortAndAnalyzeWorkTimes = (
         .reduce((map, date) => {
             map[date] = [...workTimeMap[date]]
                 .sort((a, b) => a.start - b.start)
-                .map((ttWorktime, index, workTimeList) => {
+                .reduce((workTimeList, ttWorktime, index) => {
                     const workTime = { ...ttWorktime }
                     const conflicts = []
                     if (index > 0) {
-                        const conflict = workTimeList.slice(0, index).find((entry) => {
-                            return (!selected || selected.has(entry.id)) && entry.end - workTime.start >= 0
+                        const conflict = workTimeList.find(({ workTime: entry, conflicts }) => {
+                            return (!selected || selected.has(entry.id)) && !conflicts?.length && entry.end - workTime.start >= 0
                         })
 
-                        const diff = conflict ? conflict.end - workTime.start : -1
+                        const diff = conflict ? conflict.workTime.end - workTime.start : -1
                         if (diff >= 0 && diff <= 60000) {
-                            workTime.start = conflict.end + 1000
+                            workTime.start = conflict.workTime.end + 1000
                         }
                         else if (diff > 60000) {
-                            conflicts.push(workTimeList[index - 1])
+                            conflicts.push(workTimeList[index - 1].workTime)
                         }
                     }
 
                     const end = Math.floor(workTime.end / 60000) * 60000
                     conflicts.push(...existingEntries.filter((entry) => entry.start < end && entry.end >= workTime.start))
 
-                    return { workTime, conflicts }
-                })
+                    workTimeList.push({ workTime, conflicts })
+                    return workTimeList
+                }, [])
             return map
         }, {})
 }
