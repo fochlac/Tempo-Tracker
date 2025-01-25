@@ -33,7 +33,7 @@ export const ActionLinkRaw = styled.a<ActionLinkRawProps>`
 
 export const ActionLink: React.FC<{
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    onClick: (e: Event) => void
+    onClick?: (e: Event) => void
     disabled?: boolean
     small?: boolean
     error?: boolean

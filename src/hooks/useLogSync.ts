@@ -24,7 +24,7 @@ export function useLogSync (self, worklog) {
             await options.actions.merge({ forceSync: true, forceFetch: true })
             const url = options.data.domain.split('/rest')[0]
             const tab = await openTab({
-                url: `${url}/secure/dashboard.jspa?__tt-close=true`,
+                url: `${url}/secure/Dashboard.jspa?__tt-close=true`,
                 active: true
             })
             const timer = setInterval(() => {

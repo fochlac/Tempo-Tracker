@@ -21,7 +21,7 @@ export const BaseButton = styled.button<{disabled?: boolean}>`
 `
 
 export const Button = styled(BaseButton)`
-    padding: 4px 16px;
+    padding: 4px 12px;
 `
 
 export const DestructiveButton = styled(Button)`

@@ -2,6 +2,7 @@ import { useEffect } from 'preact/hooks'
 import { fetchSelf, hasPermissions } from '../utils/api'
 import { useSafeState } from './useSafeState'
 import { useOptions } from './useOptions'
+import { AUTH_TYPES } from 'src/constants/constants'
 
 const cacheInfo = {
     id: null,
@@ -12,7 +13,9 @@ const cacheInfo = {
 export function useSelf() {
     const [error, setError] = useSafeState(null)
     const [name, setName] = useSafeState(null)
-    const { data: { token, domain, user }, actions } = useOptions()
+    const { data: { token, domain, user, authenticationType, instance }, actions } = useOptions()
+
+    const cookieAuth = instance === 'datacenter' && authenticationType === AUTH_TYPES.COOKIE
 
     const checkDomainToken = async (override?: Partial<Options>) => {
         const localToken = override?.token || token
@@ -30,6 +33,11 @@ export function useSelf() {
             }
             try {
                 const res = await fetchSelf({ token: localToken, domain: localDomain })
+
+                if (cacheInfo.id === id && cookieAuth && (!res.user || res.user !== user)) {
+                    return setError('COOKIE_AUTH_MISSING')
+                }
+
                 if (cacheInfo.id === id && res.user) {
                     cacheInfo.time = Date.now() + 1000 * 60
                     setError(null)
@@ -45,7 +53,7 @@ export function useSelf() {
             catch (e) {
                 if (cacheInfo.id !== id) return
                 if (e?.status === 401) {
-                    setError('TOKEN')
+                    setError(cookieAuth ? 'COOKIE_AUTH_MISSING' : 'TOKEN')
                 }
                 else {
                     setError('DEFAULT')

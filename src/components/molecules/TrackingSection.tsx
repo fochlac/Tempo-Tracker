@@ -11,7 +11,6 @@ import { useOptions } from '../../hooks/useOptions'
 import { FlexColumn, FlexRow } from '../atoms/Layout'
 import { IssueSearchDialog } from './IssueSearchDialog'
 import { IssueSelector } from './IssueSelector'
-import { useJqlQueryResults } from '../../hooks/useJqlQueryResult'
 import { DropDownButtonDestructive } from './DropDownButtonDestructive'
 import { SplitTrackingDialog } from './SplitTrackingDialog'
 
@@ -43,13 +42,11 @@ const Duration = styled(Timer)`
 
 const CUSTOM_ISSUE = 'CUSTOM_ISSUE'
 
-export function TrackingSection ({ hasError }) {
+export function TrackingSection ({ hasError, issues }: {hasError: boolean, issues: LocalIssue[] }) {
     const { data: tracker, actions } = useTracking()
     const { data: options } = useOptions()
     const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
     const [splitTrackingDialogVisible, showSplitTrackingDialog] = useState(false)
-    const remoteIssues = useJqlQueryResults() as LocalIssue[]
-    const issues = options.issueOrder.map((key) => options.issues[key]).concat(options.useJqlQuery ? remoteIssues : [])
 
     const optionList: ToggleBarOption[] = useMemo(() => {
         return issues

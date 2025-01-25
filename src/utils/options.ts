@@ -1,5 +1,5 @@
 import { Themes } from 'src/constants/themes'
-import { THEMES, domainRegexp } from '../constants/constants'
+import { AUTH_TYPES, THEMES, domainRegexp } from '../constants/constants'
 import { fetchIssueList } from './api'
 
 export function getOptions (options: Partial<Options>): Options {
@@ -21,7 +21,8 @@ export function getOptions (options: Partial<Options>): Options {
         instance,
         days,
         issueOrder,
-        disableWorkdaySync
+        disableWorkdaySync,
+        authenticationType
     } = options || {}
 
     // migration from old domain format
@@ -40,6 +41,7 @@ export function getOptions (options: Partial<Options>): Options {
     const selectedTheme = THEMES[theme] ? theme : THEMES.DEFAULT
 
     return {
+        authenticationType: authenticationType ?? AUTH_TYPES.TOKEN,
         days: Array.isArray(days) ? days : [1, 2, 3, 4, 5],
         issues: cleanIssues,
         issueOrder: Object.keys(cleanIssues).reduce((issueOrder, issueKey) => {

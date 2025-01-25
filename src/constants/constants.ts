@@ -23,6 +23,11 @@ export const DB_KEYS: Record<string, DB_KEYS> = {
 export const CACHE_STORE = 'CACHE_STORE'
 export const DATABASE_NAME = 'tempo-tracker'
 
+export const AUTH_TYPES: AUTHENTICATION_TYPE = {
+    COOKIE: 'COOKIE',
+    TOKEN: 'TOKEN'
+}
+
 export const atlassianRegexp = /(https?:\/\/|^)([\w-]+\.atlassian\.\w+)(\/|$)/
 export const domainRegexp = /(https?:\/\/|^)(([\w-]+\.)*([\w-]+\.)?\w+)(\/|$)/
 

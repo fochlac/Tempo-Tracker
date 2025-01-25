@@ -65,6 +65,7 @@ export function DomainEditor () {
                     if (result?.emailAddress && newOptions.instance === 'cloud') {
                         newOptions.email = result.emailAddress
                     }
+                    newOptions.user = result.user
                     actions.merge(newOptions)
                     setEdit(false)
                 })

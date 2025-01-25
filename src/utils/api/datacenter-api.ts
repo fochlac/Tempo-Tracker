@@ -1,3 +1,4 @@
+import { AUTH_TYPES } from 'src/constants/constants'
 import { dateString, timeStringFull } from '../datetime'
 import { jsonHeaders } from './constants'
 
@@ -27,6 +28,17 @@ const headers = (options: Options) => {
     return {
         ...jsonHeaders,
         Authorization
+    }
+}
+
+interface FetchOptionsOptions {
+    forceCookieAuth?: boolean
+}
+const fetchOptions = (options: Options, { forceCookieAuth = false }: FetchOptionsOptions = {}) => {
+    const cookieAuth = forceCookieAuth || (options.instance === 'datacenter' && options.authenticationType === AUTH_TYPES.COOKIE)
+    return {
+        headers: cookieAuth ? jsonHeaders : headers(options),
+        credentials: cookieAuth ? 'include' : 'omit'
     }
 }
 
@@ -92,16 +104,15 @@ export async function fetchIssues(options, jql, limit?: number): Promise<Issue[]
         query.append('maxResults', String(limit))
     }
     const url = getUrl(options, URLS.SEARCH, query)
-    const body = await fetchJson(url, { headers: headers(options), credentials: 'omit' })
+    const body = await fetchJson(url, fetchOptions(options))
 
     return body.issues.map(({ id, fields, key }) => ({ id, name: fields.summary, key }))
 }
 
-export async function fetchSelf(options?: Options, useCredentials?: boolean): Promise<Self> {
+export async function fetchSelf(options?: Options, forceCookieAuth?: boolean): Promise<Self> {
     await checkPermissions(options)
     const result = await fetch(getUrl(options, URLS.SELF), {
-        headers: useCredentials ? jsonHeaders : headers(options),
-        credentials: useCredentials ? 'include' : 'omit',
+        ...fetchOptions(options, { forceCookieAuth }),
         redirect: 'manual'
     })
     if (result.status >= 300) {
@@ -116,10 +127,7 @@ export async function searchIssues(options: Options, searchString: string): Prom
     const query = new URLSearchParams()
     query.append('query', searchString)
     query.append('currentJQL', 'created >= "1900/01/01"')
-    const body = await fetchJson(getUrl(options, URLS.QUICKSEARCH, query), {
-        headers: headers(options),
-        credentials: 'omit'
-    })
+    const body = await fetchJson(getUrl(options, URLS.QUICKSEARCH, query), fetchOptions(options))
 
     const issueKeys =
         body?.sections
@@ -144,8 +152,7 @@ export async function fetchWorklogs(startDate: number, endDate: number, options:
     const data = await fetchJson(getUrl(options, URLS.WORKLOGS), {
         method: 'POST',
         body: JSON.stringify(payload),
-        headers: headers(options),
-        credentials: 'omit'
+        ...fetchOptions(options)
     })
     return data.map(toLocalWorklog)
 }
@@ -155,10 +162,9 @@ export async function writeWorklog(worklog: Partial<Worklog>, options?: Options)
     const payload = createWorklogPayload(options, worklog)
 
     return fetchJson(getUrl(options, URLS.CREATE_WORKLOG), {
-        headers: headers(options),
         body: JSON.stringify(payload),
         method: 'POST',
-        credentials: 'omit'
+        ...fetchOptions(options)
     }).then(toLocalWorklog)
 }
 
@@ -167,10 +173,9 @@ export async function updateWorklog(worklog: Partial<Worklog>, options?: Options
     const payload = createWorklogPayload(options, worklog)
 
     const updatedLog = await fetchJson(`${getUrl(options, URLS.CREATE_WORKLOG)}/${payload.originId}`, {
-        headers: headers(options),
         body: JSON.stringify(payload),
         method: 'PUT',
-        credentials: 'omit'
+        ...fetchOptions(options)
     }).then(toLocalWorklog)
 
     if (Number(updatedLog.issue.id) === Number(payload.originTaskId)) {
@@ -180,19 +185,17 @@ export async function updateWorklog(worklog: Partial<Worklog>, options?: Options
     payload.originTaskId = Number(updatedLog.issue.id)
 
     return fetchJson(url, {
-        headers: headers(options),
         body: JSON.stringify(payload),
         method: 'PUT',
-        credentials: 'omit'
+        ...fetchOptions(options)
     }).then(toLocalWorklog)
 }
 
 export async function deleteWorklog(id: string, options: Options): Promise<void> {
     await checkPermissions(options)
     return fetch(`${getUrl(options, URLS.CREATE_WORKLOG)}/${id}`, {
-        headers: headers(options),
         method: 'DELETE',
-        credentials: 'omit'
+        ...fetchOptions(options)
     }).then(async (r) => {
         if (r.status === 404) {
             const body = await r.json()

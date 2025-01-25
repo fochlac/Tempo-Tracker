@@ -21,6 +21,9 @@ import { CommentDialog } from '../molecules/CommentDialog'
 import { editCommentDuck } from '../../store/ducks/edit-comment'
 import { requestPermission } from 'src/utils/api'
 import { useOptions } from 'src/hooks/useOptions'
+import { useJqlQueryResults } from 'src/hooks/useJqlQueryResult'
+import { openTab } from 'src/utils/browser'
+import { Conditional } from '../atoms/Conditional'
 
 const Body = styled.section`
     display: flex;
@@ -47,6 +50,7 @@ const ProgressWrapper = styled.div<{ $visible: boolean }>`
 const errorTooltips = {
     TOKEN: 'Invalid token. Please provide a correct token in the options.',
     PERMISSION: 'No permission to access Jira Instance. Click this icon to grant access.',
+    COOKIE_AUTH_MISSING: 'No active Jira Session for the selected user. Please log into Jira to synchronize.',
     DEFAULT: 'No connection to Jira instance - syncing and refresh not available.'
 }
 
@@ -61,6 +65,27 @@ export const TrackerView: React.FC = () => {
     const { hasError, startSync } = useLogSync(self, worklog)
     const { newWorklog, createNewWorklog } = useInsertWorklog()
     const [showPeriodDialog, setShowPeriodDialog] = useState(false)
+    const remoteIssues = useJqlQueryResults() as LocalIssue[]
+
+    const handleErrorClick = () => {
+        if (self.error === 'PERMISSION') {
+            requestPermission(options).then(() => self.refetch())
+        }
+        if (self.error === 'COOKIE_AUTH_MISSING') {
+            const url = options.domain.split('/rest')[0]
+            openTab({
+                url: `${url}/secure/Dashboard.jspa`,
+                active: true
+            })
+        }
+    }
+
+    const issues = useMemo(
+        () => options.issueOrder.map((key) => options.issues[key]).concat(options.useJqlQuery ? remoteIssues : []),
+        [remoteIssues, options.issueOrder] // eslint-disable-line react-hooks/exhaustive-deps
+    )
+    const rowLength = (issues.length + 1) / 4 < (issues.length + 1) / 5 ? 4 : 5
+    const trackerRows = Math.ceil((issues.length + 1) / rowLength)
 
     const offlineTooltip = errorTooltips[self.error] || errorTooltips.DEFAULT
 
@@ -68,15 +93,15 @@ export const TrackerView: React.FC = () => {
 
     return (
         <Body>
-            <TrackingSection hasError={!!self.error} />
+            <TrackingSection issues={issues} hasError={!!self.error} />
             <H6 style={{ margin: '0 0 4px 8px', display: 'flex', width: 'calc(100% - 16px)' }}>
                 <span style={{ marginRight: 'auto' }}>Tracking History</span>
-                {!self.error && !hasUnsyncedLog && (
+                <Conditional enable={!self.error && !hasUnsyncedLog}>
                     <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => worklog.forceFetch()}>
                         Refresh
                     </ActionLink>
-                )}
-                {hasUnsyncedLog && !self.error && (
+                </Conditional>
+                <Conditional enable={hasUnsyncedLog && !self.error}>
                     <ActionLink
                         disabled={!!editIssue.issue || self.error || (options.instance === 'cloud' && !options.ttToken?.length)}
                         style={{ marginRight: 4, lineHeight: '16px' }}
@@ -84,7 +109,7 @@ export const TrackerView: React.FC = () => {
                     >
                         Synchronize
                     </ActionLink>
-                )}
+                </Conditional>
                 <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => setShowPeriodDialog(true)}>
                     Log Multiple
                 </ActionLink>
@@ -95,31 +120,39 @@ export const TrackerView: React.FC = () => {
                 >
                     New Entry
                 </ActionLink>
-                {!self.error && hasUnsyncedLog && hasError && (
+                <Conditional enable={!self.error && hasUnsyncedLog && hasError}>
                     <ErrorTooltipTop content="Last synchronisation failed.">
                         <AlertCircle size={16} style={{ color: 'var(--destructive)', marginTop: -2 }} />
                     </ErrorTooltipTop>
-                )}
-                {self.error && (
+                </Conditional>
+                <Conditional enable={self.error}>
                     <ErrorTooltipTop content={offlineTooltip}>
+                        <Conditional enable={self.error === 'COOKIE_AUTH_MISSING'}>
+                            <ActionLink onClick={handleErrorClick} error style={{ marginRight: 4 }}>
+                                Login
+                            </ActionLink>
+                        </Conditional>
                         <WifiOff
-                            onClick={() => self.error === 'PERMISSION' && requestPermission(options).then(() => self.refetch())}
+                            onClick={handleErrorClick}
                             size={16}
                             style={{
                                 color: 'var(--destructive)',
                                 marginTop: -2,
                                 marginBottom: -3,
-                                cursor: self.error === 'PERMISSION' ? 'pointer' : 'default'
+                                cursor: ['PERMISSION', 'COOKIE_AUTH_MISSING'].includes(self.error) ? 'pointer' : 'default'
                             }}
                         />
                     </ErrorTooltipTop>
-                )}
+                </Conditional>
             </H6>
             <ProgressWrapper $visible={worklog.loading}>
                 <ProgressIndeterminate />
             </ProgressWrapper>
-            <List>
-                {newWorklog && <WorklogEditor log={newWorklog} />}
+            <List style={{ minHeight: 440 - trackerRows * 32 }}>
+                <Conditional enable={!!newWorklog}>
+                    {' '}
+                    <WorklogEditor log={newWorklog} />
+                </Conditional>
                 {
                     worklogs?.reduce(
                         (acc, log) => {
@@ -148,8 +181,12 @@ export const TrackerView: React.FC = () => {
                     ).list
                 }
             </List>
-            {showPeriodDialog && <LogPeriodDialog onClose={() => setShowPeriodDialog(false)} />}
-            {Boolean(commentLog) && <CommentDialog log={commentLog} />}
+            <Conditional enable={showPeriodDialog}>
+                <LogPeriodDialog onClose={() => setShowPeriodDialog(false)} />
+            </Conditional>
+            <Conditional enable={Boolean(commentLog)}>
+                <CommentDialog log={commentLog} />
+            </Conditional>
         </Body>
     )
 }

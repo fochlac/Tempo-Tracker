@@ -99,6 +99,11 @@ interface THEMES {
     CUSTOM: 'CUSTOM';
 }
 
+interface AUTHENTICATION_TYPE {
+    TOKEN: 'TOKEN';
+    COOKIE: 'COOKIE';
+}
+
 interface Options {
     issues: Record<string, LocalIssue>;
     issueOrder: string[];
@@ -120,6 +125,7 @@ interface Options {
         diagrammGreen: string;
     };
     token: string;
+    authenticationType: keyof AUTHENTICATION_TYPE;
     disableWorkdaySync: boolean;
     ttToken: string;
     email: string;

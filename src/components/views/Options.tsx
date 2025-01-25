@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { AlertCircle } from 'preact-feather'
 import { useRef } from 'preact/hooks'
 import styled from 'styled-components'
@@ -21,6 +22,9 @@ import { WorkingDayOption } from '../molecules/WorkingDayOptions'
 import { requestPermission } from 'src/utils/api'
 import { FlexRow } from '../atoms/Layout'
 import { Workday } from 'src/utils/workday'
+import { AUTH_TYPES } from 'src/constants/constants'
+import { Conditional } from '../atoms/Conditional'
+import { Button } from '../atoms/Button'
 
 const Body = styled.div`
     display: flex;
@@ -66,7 +70,7 @@ const TEMPO_API_LINK = '/plugins/servlet/ac/io.tempo.jira/tempo-app#!/configurat
 export const OptionsView: React.FC = () => {
     const { data: options, actions } = useOptions()
     const [ignoreError, setIgnoreError] = useSafeState(false)
-    const { domain, token: storedToken, ttToken, instance, email } = options
+    const { domain, token: storedToken, ttToken, instance, email, authenticationType } = options
     const [token, setToken] = useSafeState(storedToken)
     const { name, error, refetch } = useSelf()
     const valid = ignoreError || !error
@@ -101,6 +105,7 @@ export const OptionsView: React.FC = () => {
     }
 
     const showError = Boolean(error && !ignoreError && error === 'DEFAULT' && domain.length && storedToken.length)
+    const handleAuthTypeChange = (e) => !!AUTH_TYPES[e.target.value] && actions.merge({ authenticationType: e.target.value })
 
     const showOtherOptions = Boolean(
         domain.length && instance === 'datacenter'
@@ -128,28 +133,41 @@ export const OptionsView: React.FC = () => {
                 <Title>Authentification</Title>
                 <OptionsImportExport />
             </JiraHead>
-            {showError && (
+            <Conditional enable={showError}>
                 <Option>
                     <Alert text="Error connecting to the Jira-API: Please check the server url and the personal access token." />
                 </Option>
-            )}
-            {error === 'PERMISSION' && (
+            </Conditional>
+            <Conditional enable={error === 'PERMISSION'}>
                 <Option onClick={() => requestPermission(options).then(() => refetch())}>
                     <Alert
                         style={{ cursor: 'pointer' }}
                         text="No permission to access the Jira-API: Click this message to grant access."
                     />
                 </Option>
-            )}
-            {isFirefox && (
+            </Conditional>
+            <Conditional enable={isFirefox}>
                 <Option>
                     <InfoBox text="Due to technical limitations Firefox is only partially supported." />
                 </Option>
-            )}
+            </Conditional>
             <DomainEditor />
-
-            {Boolean(domain.length && instance === 'datacenter') && (
-                <>
+            <Conditional enable={domain.length && instance === 'datacenter'}>
+                <Option>
+                    <Label>
+                            Authentication Method
+                        <MandatoryStar />
+                    </Label>
+                    <select onChange={handleAuthTypeChange}>
+                        <option value={AUTH_TYPES.TOKEN} selected={authenticationType === AUTH_TYPES.TOKEN}>
+                                Access Token
+                        </option>
+                        <option value={AUTH_TYPES.COOKIE} selected={authenticationType === AUTH_TYPES.COOKIE}>
+                                Cookie
+                        </option>
+                    </select>
+                </Option>
+                <Conditional enable={authenticationType === AUTH_TYPES.TOKEN}>
                     <Option style={{ marginBottom: 12 }}>
                         <Label>
                             Personal Access Token
@@ -182,113 +200,120 @@ export const OptionsView: React.FC = () => {
                             </ActionLink>
                         )}
                     </Option>
-                </>
-            )}
-
-            {Boolean(domain.length && instance === 'cloud') && (
-                <>
+                </Conditional>
+                <Conditional enable={authenticationType === AUTH_TYPES.COOKIE}>
                     <Option>
-                        <Label>
-                            Email Address
-                            <MandatoryStar />
-                        </Label>
-                        <InfoText>The email address you used for your Atlassian account.</InfoText>
-                        <Input
-                            style={{ marginBottom: 4 }}
-                            $error={showError || (error === 'TOKEN' && !ignoreError)}
-                            value={email}
-                            onChange={(e) => actions.merge({ email: e.target.value })}
-                        />
-                        {error === 'TOKEN' && !ignoreError && (
-                            <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>
-                        )}
-                    </Option>
-                    <Option style={{ marginBottom: 12 }}>
-                        <Label>
-                            API Token
-                            <MandatoryStar />
-                        </Label>
-                        <InfoText>An API token can be generated via your Atlassian profile.</InfoText>
-                        <InputWrapper>
-                            <ObfuscatedInput
-                                key={options.domain}
-                                style={{ marginBottom: 4 }}
-                                error={showError || (error === 'TOKEN' && !ignoreError)}
-                                value={token}
-                                onBlur={tokenBlur}
-                                onChange={tokenChange}
-                            />
-                            {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
-                        </InputWrapper>
-                        {error === 'TOKEN' && !ignoreError && (
-                            <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>
-                        )}
-                        {Boolean(!options.token?.length || (error === 'TOKEN' && !ignoreError)) && (
-                            <ActionLink
-                                style={{ height: 6, marginTop: -2, marginLeft: 0 }}
-                                onClick={() => openTab({ url: ATL_API_LINK, active: true })}
-                            >
-                                Generate a API token
-                            </ActionLink>
-                        )}
-                    </Option>
-
-                    <Option style={{ marginBottom: 12 }}>
-                        <Label>
-                            Tempo API Token
-                        </Label>
                         <InfoText>
-                            To access the Tempo REST API an access token with the right to manage and view worklogs is
-                            needed. Without token synchronization will be disabled.
+                        TempoTracker will try use your your cookie to communicate with Jira.
+                        Synchronization will only be available, if you have an active session.
                         </InfoText>
+                        <Button onClick={() => refetch({ instance })}>
+                        Refresh user information
+                        </Button>
+                    </Option>
+                </Conditional>
+            </Conditional>
+
+            <Conditional enable={domain.length && instance === 'cloud'}>
+                <Option>
+                    <Label>
+                            Email Address
+                        <MandatoryStar />
+                    </Label>
+                    <InfoText>The email address you used for your Atlassian account.</InfoText>
+                    <Input
+                        style={{ marginBottom: 4 }}
+                        $error={showError || (error === 'TOKEN' && !ignoreError)}
+                        value={email}
+                        onChange={(e) => actions.merge({ email: e.target.value })}
+                    />
+                    {error === 'TOKEN' && !ignoreError && (
+                        <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>
+                    )}
+                </Option>
+                <Option style={{ marginBottom: 12 }}>
+                    <Label>
+                            API Token
+                        <MandatoryStar />
+                    </Label>
+                    <InfoText>An API token can be generated via your Atlassian profile.</InfoText>
+                    <InputWrapper>
                         <ObfuscatedInput
                             key={options.domain}
                             style={{ marginBottom: 4 }}
-                            value={ttToken}
-                            onChange={(ttToken) => actions.merge({ ttToken })}
+                            error={showError || (error === 'TOKEN' && !ignoreError)}
+                            value={token}
+                            onBlur={tokenBlur}
+                            onChange={tokenChange}
                         />
-                        {Boolean(!options.ttToken?.length || (error === 'TOKEN' && !ignoreError)) && (
-                            <ActionLink
-                                style={{ height: 6, marginTop: -2, marginLeft: 0 }}
-                                onClick={() => openTab({ url: `${domain}${TEMPO_API_LINK}`, active: true })}
-                            >
+                        {error === 'TOKEN' && !ignoreError && <InputErrorIcon size={16} />}
+                    </InputWrapper>
+                    <Conditional enable={error === 'TOKEN' && !ignoreError}>
+                        <ErrorInfoText>The provided token or email is invalid.</ErrorInfoText>
+                    </Conditional>
+                    <Conditional enable={Boolean(!options.token?.length || (error === 'TOKEN' && !ignoreError))}>
+                        <ActionLink
+                            style={{ height: 6, marginTop: -2, marginLeft: 0 }}
+                            onClick={() => openTab({ url: ATL_API_LINK, active: true })}
+                        >
                                 Generate a API token
-                            </ActionLink>
-                        )}
-                    </Option>
-                </>
-            )}
-            {Boolean(domain?.length) && (
+                        </ActionLink>
+                    </Conditional>
+                </Option>
+
+                <Option style={{ marginBottom: 12 }}>
+                    <Label>
+                            Tempo API Token
+                    </Label>
+                    <InfoText>
+                            To access the Tempo REST API an access token with the right to manage and view worklogs is
+                            needed. Without token synchronization will be disabled.
+                    </InfoText>
+                    <ObfuscatedInput
+                        key={options.domain}
+                        style={{ marginBottom: 4 }}
+                        value={ttToken}
+                        onChange={(ttToken) => actions.merge({ ttToken })}
+                    />
+                    <Conditional enable={Boolean(!options.ttToken?.length || (error === 'TOKEN' && !ignoreError))}>
+                        <ActionLink
+                            style={{ height: 6, marginTop: -2, marginLeft: 0 }}
+                            onClick={() => openTab({ url: `${domain}${TEMPO_API_LINK}`, active: true })}
+                        >
+                                Generate a API token
+                        </ActionLink>
+                    </Conditional>
+                </Option>
+            </Conditional>
+            <Conditional enable={!!domain?.length}>
                 <Option>
                     <Label>User</Label>
                     <Input readOnly value={name ? `${name} (${options.user})` : options.user} />
                 </Option>
-            )}
+            </Conditional>
 
-            {showOtherOptions && (
-                <>
-                    <SectionHead>Issue Options</SectionHead>
-                    <IssueOptions valid={valid} />
-                    <SectionHead>Work Time Options</SectionHead>
-                    <WorkingDayOption />
-                    <SectionHead>App Options</SectionHead>
-                    {domain.includes('ttt-sp.com') && (
-                        <Option>
-                            <Label>Workday Time Tracking Support</Label>
-                            <FlexRow $justify="flex-start">
-                                <Input
-                                    style={{ margin: '0 6px' }}
-                                    type="checkbox"
-                                    checked={!options.disableWorkdaySync}
-                                    onChange={onChangeWorkdaySync}
-                                />
-                                <Label>enabled</Label>
-                            </FlexRow>
-                        </Option>
-                    )}
-                    <AppOptionsSection />
-                </>
-            )}
+            <Conditional enable={showOtherOptions}>
+                <SectionHead>Issue Options</SectionHead>
+                <IssueOptions valid={valid} />
+                <SectionHead>Work Time Options</SectionHead>
+                <WorkingDayOption />
+                <SectionHead>App Options</SectionHead>
+                {domain.includes('ttt-sp.com') && (
+                    <Option>
+                        <Label>Workday Time Tracking Support</Label>
+                        <FlexRow $justify="flex-start">
+                            <Input
+                                style={{ margin: '0 6px' }}
+                                type="checkbox"
+                                checked={!options.disableWorkdaySync}
+                                onChange={onChangeWorkdaySync}
+                            />
+                            <Label>enabled</Label>
+                        </FlexRow>
+                    </Option>
+                )}
+                <AppOptionsSection />
+            </Conditional>
         </Body>
     )
 }
