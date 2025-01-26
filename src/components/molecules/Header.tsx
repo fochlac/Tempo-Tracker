@@ -11,6 +11,7 @@ import { isPopped } from '../../utils/url'
 import { ExternalLink } from 'preact-feather'
 import { openAsTab } from '../../utils/browser'
 import { WorkdayLink } from './WorkdayLink'
+import { hasValidJiraSettings } from 'src/utils/options'
 
 const AppBar = styled.header`
     display: flex;
@@ -33,23 +34,26 @@ const ExpandIcon = styled(ExternalLink)`
 export const Header: React.FC = () => {
     const view = useSelector(viewDuck.selector)
     const { data: options } = useOptions()
-    const mandatoryOptions = Boolean(options.user?.length && options.token?.length && options.domain?.length)
-    const trackerLink = <InternalLink style={{ marginRight: 4 }} disabled={!mandatoryOptions} to={VIEWS.TRACKER}>Tracker</InternalLink>
+    const mandatoryOptions = hasValidJiraSettings(options)
+    const trackerLink = (
+        <InternalLink style={{ marginRight: 4 }} disabled={!mandatoryOptions} to={VIEWS.TRACKER}>
+            Tracker
+        </InternalLink>
+    )
 
     return (
         <AppBar>
             <Logo style={{ width: 24, height: 24, filter: 'drop-shadow(0 0 2px #ffffff99)' }} />
             <Title>Tempo-Tracker</Title>
-            {view !== VIEWS.TRACKER && (
-                mandatoryOptions
-                    ? trackerLink
-                    : <Tooltip content="Please fill all mandatory options.">{trackerLink}</Tooltip>
-            )}
+            {view !== VIEWS.TRACKER &&
+                (mandatoryOptions ? trackerLink : <Tooltip content="Please fill all mandatory options.">{trackerLink}</Tooltip>)}
             {!isFirefox && mandatoryOptions && view !== VIEWS.STATS && (
-                <InternalLink style={{ marginRight: view !== VIEWS.OPTIONS ? 4 : 0 }} to={VIEWS.STATS}>Statistics</InternalLink>
+                <InternalLink style={{ marginRight: view !== VIEWS.OPTIONS ? 4 : 0 }} to={VIEWS.STATS}>
+                    Statistics
+                </InternalLink>
             )}
-            {view !== VIEWS.OPTIONS && (
-                isFirefox && !isPopped() ? (
+            {view !== VIEWS.OPTIONS &&
+                (isFirefox && !isPopped() ? (
                     <ActionLink style={{ marginRight: 4 }} onClick={() => openAsTab(VIEWS.OPTIONS)}>
                         Options
                     </ActionLink>
@@ -57,8 +61,7 @@ export const Header: React.FC = () => {
                     <InternalLink style={{ marginRight: !isPopped() ? 4 : 0 }} to={VIEWS.OPTIONS}>
                         Options
                     </InternalLink>
-                )
-            )}
+                ))}
             <WorkdayLink />
             {!isPopped() && (
                 <ActionLink title="Open in Tab" onClick={() => openAsTab(view)}>
