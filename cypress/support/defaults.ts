@@ -64,7 +64,12 @@ Cypress.Commands.add('networkMocksCloud', () => {
         'TE-16': issues['123466'],
         'TE-17': issues['123467']
     }
-    cy.intercept({ url: /^https/ }, (req) => req.reply(404))
+    cy.intercept({ url: /^https/ }, (req) => {
+        if (req.url.startsWith('https://localhost')) {
+            return req.continue()
+        }
+        req.reply(404)
+    })
 
     cy.intercept('GET', 'https://*.atlassian.org/rest/api/2/myself', {
         displayName: 'Testuser',

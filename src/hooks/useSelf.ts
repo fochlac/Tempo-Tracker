@@ -13,15 +13,14 @@ const cacheInfo = {
 export function useSelf() {
     const [error, setError] = useSafeState(null)
     const [name, setName] = useSafeState(null)
-    const { data: { token, domain, user, authenticationType, instance }, actions } = useOptions()
-
-    const cookieAuth = instance === 'datacenter' && authenticationType === AUTH_TYPES.COOKIE
+    const { data: externalOptions, actions } = useOptions()
 
     const checkDomainToken = async (override?: Partial<Options>) => {
-        const localToken = override?.token || token
-        const localDomain = override?.domain || domain
-        if (localDomain.length && (localToken.length || cookieAuth)) {
-            const id = `${localDomain}${localToken}`
+        const { token, domain, user, authenticationType, instance } = {...externalOptions, ...(override ?? {})}
+
+        const cookieAuth = instance === 'datacenter' && authenticationType === AUTH_TYPES.COOKIE
+        if (domain.length && (token.length || cookieAuth)) {
+            const id = `${domain}${token}`
             if (cacheInfo.id === id && cacheInfo.time > Date.now() && !(override && Object.values(override).length)) {
                 setName(cacheInfo.name)
                 return
@@ -32,9 +31,9 @@ export function useSelf() {
                 return setError('PERMISSION')
             }
             try {
-                const res = await fetchSelf({ token: localToken, domain: localDomain })
+                const res = await fetchSelf({ token, domain })
 
-                if (cacheInfo.id === id && cookieAuth && (!res.user || res.user !== user)) {
+                if (cacheInfo.id === id && cookieAuth && (!res.user || (user?.length && res.user !== user))) {
                     return setError('COOKIE_AUTH_MISSING')
                 }
 

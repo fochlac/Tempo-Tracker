@@ -117,9 +117,10 @@ export const OptionsView: React.FC = () => {
     }
 
     const showError = Boolean(error && !ignoreError && error === 'DEFAULT' && domain.length && storedToken.length)
-    const handleAuthTypeChange = (e) => {
+    const handleAuthTypeChange = async (e) => {
         if (AUTH_TYPES[e.target.value]) {
-            actions.merge({ authenticationType: e.target.value, user: '' })
+            await actions.merge({ authenticationType: e.target.value, user: '' })
+            await refetch({ authenticationType: e.target.value, user: '' })
         }
     }
 
@@ -237,7 +238,7 @@ export const OptionsView: React.FC = () => {
                             an active session.
                         </InfoText>
                         <Conditional enable={error !== 'COOKIE_AUTH_MISSING'}>
-                            <Button onClick={() => refetch({ instance })}>Refresh user information</Button>
+                            <Button onClick={() => refetch({ user: '' })}>Refresh user information</Button>
                         </Conditional>
                         <Conditional enable={error === 'COOKIE_AUTH_MISSING'}>
                             <Button

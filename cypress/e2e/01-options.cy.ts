@@ -184,9 +184,11 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Authentication Method').find('select').select('Cookie')
         cy.contains('button', 'Refresh user information').click()
 
+        cy.wait('@myself2')
+
         cy.get('@myself2.all').should('have.length', 1)
-        cy.get('@myself.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
-        cy.get('@myself.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
+        cy.get('@myself2.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
+        cy.get('@myself2.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
 
         cy.getOptions().its('token').should('equal', testtoken)
 
