@@ -24,6 +24,7 @@ declare global {
             networkMocks(domain?: string)
             networkMocksCloud()
             openWithOptions(options?: Partial<Options>, skipStartApp?: boolean)
+            openWithCookieOptions(options?: Partial<Options>, skipStartApp?: boolean)
             open(clearStorage?: boolean)
             setOptions(options: Partial<Options>)
             getOptions(): Chainable<Partial<Options>>

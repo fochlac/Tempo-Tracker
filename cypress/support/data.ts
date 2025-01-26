@@ -18,6 +18,7 @@ export const issues = {
 
 export const defaultOptions: Options = {
     autosync: false,
+    authenticationType: 'TOKEN',
     days: [1, 2, 3, 4, 5],
     domain: 'https://jira.test.com',
     forceFetch: false,

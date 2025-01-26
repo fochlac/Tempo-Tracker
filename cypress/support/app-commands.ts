@@ -2,7 +2,7 @@ import { CACHE_STORE, DATABASE_NAME, DB_KEYS } from '../../src/constants/constan
 import { baseDate, defaultOptions } from './data'
 
 Cypress.Commands.add('open', (clearStorage = true) => {
-    cy.visit('http://localhost:3000', {
+    cy.visit('https://localhost:3443', {
         async onBeforeLoad(win) {
             if (clearStorage) {
                 await win.indexedDB.deleteDatabase(DATABASE_NAME)
@@ -19,6 +19,13 @@ Cypress.Commands.add('openWithOptions', (options = defaultOptions, skipStartApp 
     if (!skipStartApp) {
         cy.startApp()
     }
+})
+Cypress.Commands.add('openWithCookieOptions', (options, skipStartApp) => {
+    cy.openWithOptions({
+        ...defaultOptions,
+        token: '',
+        authenticationType: 'COOKIE'
+    }, skipStartApp)
 })
 
 Cypress.Commands.add('startApp', () => {

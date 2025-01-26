@@ -13,6 +13,7 @@ import { TrackerView } from './views/Tracker'
 import { Themes } from '../constants/themes'
 import { CssVariables } from './atoms/CssVariables'
 import { createTheme } from 'src/utils/theme'
+import { hasValidJiraSettings } from 'src/utils/options'
 
 const Main = styled.main`
     display: flex;
@@ -24,7 +25,7 @@ const Main = styled.main`
     width: 100%;
     background-color: var(--background);
     color: var(--font);
-    
+
     ::-webkit-scrollbar-thumb {
         background: var(--contrast-light);
     }
@@ -40,10 +41,10 @@ export const App: React.FC = () => {
     const { data: options } = useOptions()
 
     useEffect(() => {
-        if (!options.user?.length || !options.token?.length || !options.domain?.length) {
+        if (!hasValidJiraSettings(options)) {
             dispatch('setView', VIEWS.OPTIONS)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     document.querySelector('body').style.height = '100%'
@@ -52,10 +53,9 @@ export const App: React.FC = () => {
     const theme = useMemo(() => {
         try {
             return createTheme(themeObject)
-        }
-        catch (e) {}
+        } catch (e) {}
         return createTheme(Themes.DEFAULT)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [...Object.values(themeObject)])
 
     return (

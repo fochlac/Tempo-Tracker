@@ -5,8 +5,17 @@ import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
 import 'cypress-real-events'
 
 describe('Options view & initial setup', () => {
+    const serverDomain = 'https://jira.test.com'
+
     beforeEach(() => {
-        cy.intercept('https://jira.test.com/**/*', (req) => req.reply(404))
+        cy.intercept(`${serverDomain}**/*`, (req) => req.reply(404))
+        cy.intercept(serverDomain, (req) => req.reply('<http><body>content</body></http>', { 'Content-Type': 'text/html; charset=UTF-8' }))
+        cy.origin(serverDomain, {args: { domain: serverDomain.replace('https://jira.', '') }}, ({ domain }) => {
+            cy.visit('/')
+            cy.setCookie('test', 'cookie', { domain, secure: true, sameSite: 'no_restriction' })
+            // Verify the cookie
+            cy.getCookie('test').should('have.property', 'value', 'cookie')
+        })
         cy.open()
         cy.startApp()
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
@@ -105,10 +114,7 @@ describe('Options view & initial setup', () => {
     it('should setup and select issues for datacenter', () => {
         cy.contains('h6', 'Authentification').should('be.visible')
         cy.fakeTimers(Date.now())
-        cy.intercept('https://jira.test.com/rest/api/2/myself', {
-            displayName: 'Testuser',
-            key: 'test1'
-        }).as('myself')
+        cy.intercept('https://jira.test.com/rest/api/2/myself', { displayName: 'Testuser', key: 'test1' }).as('myself')
 
         cy.contains('h6', 'Authentification').should('be.visible')
         cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(247, 248, 251)')
@@ -123,8 +129,7 @@ describe('Options view & initial setup', () => {
 
         cy.contains('div', 'Server Url').contains('button', 'Change').should('be.visible').click()
 
-        const serverUrl = 'https://jira.test.com/rest'
-        const serverDomain = 'https://jira.test.com'
+        const serverUrl = `${serverDomain}/rest`
         cy.contains('dialog', 'Change Server Url')
             .find('input')
             .type(serverUrl, { delay: 100 })
@@ -164,8 +169,24 @@ describe('Options view & initial setup', () => {
         cy.get('@myself.all').should('have.length', 2)
 
         cy.get('@myself.2').its('request.headers').should('have.property', 'authorization', `Bearer ${testtoken}`)
+        cy.get('@myself.2').its('request.headers').should('not.have.property', 'cookie', 'test=cookie')
 
         cy.contains('div', 'User').click().find('input').should('have.value', 'Testuser (test1)')
+
+        cy.wait(100)
+
+        cy.get('@myself.all').should('have.length.above', 2)
+        cy.get('@myself.3').its('request.headers').should('have.property', 'authorization', `Bearer ${testtoken}`)
+        cy.get('@myself.3').its('request.headers').should('not.have.property', 'cookie', 'test=cookie')
+
+        cy.intercept('https://jira.test.com/rest/api/2/myself', { displayName: 'Testuser', key: 'test1' }).as('myself2')
+
+        cy.contains('div', 'Authentication Method').find('select').select('Cookie')
+        cy.contains('button', 'Refresh user information').click()
+
+        cy.get('@myself2.all').should('have.length', 1)
+        cy.get('@myself.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
+        cy.get('@myself.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
 
         cy.getOptions().its('token').should('equal', testtoken)
 
@@ -193,7 +214,7 @@ describe('Options view & initial setup', () => {
                     issues: [UnpaidLeave, Sickness]
                 }
             ]
-        })
+        }).as('pickerAll')
         cy.intercept('https://jira.test.com/rest/api/2/issue/picker?query=TE-12*', {
             sections: [
                 {
@@ -201,7 +222,7 @@ describe('Options view & initial setup', () => {
                     issues: [Sickness]
                 }
             ]
-        })
+        }).as('picker')
         cy.intercept('https://jira.test.com/rest/api/2/search?jql=issuekey+in+*', (req) => {
             const filteredIssues = issues.filter((issue) => req.url.includes(issue.key))
             const res = {
@@ -209,7 +230,7 @@ describe('Options view & initial setup', () => {
                 issues: filteredIssues
             }
             req.reply(res)
-        })
+        }).as('search')
 
         cy.get('.modal')
             .contains('dialog', 'Add Issue')
@@ -218,11 +239,18 @@ describe('Options view & initial setup', () => {
             .find('input')
             .type('TE-1', { delay: 100 })
 
+        cy.get('@pickerAll.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
+        cy.get('@pickerAll.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
+
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible')
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible')
         cy.get('.modal').contains('dialog', 'Add Issue').find('li').should('have.length', 2)
 
         cy.get('.modal').contains('dialog', 'Add Issue').contains('div', 'Issue Key').find('input').type('2')
+
+        cy.get('@picker.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
+        cy.get('@picker.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
+
         cy.get('.modal').contains('dialog', 'Add Issue').find('li').should('have.length', 1)
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('not.exist')
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible').click()
@@ -240,6 +268,8 @@ describe('Options view & initial setup', () => {
         cy.getOptions().its('issues.TE-12.alias').should('equal', 'Illness')
         cy.getOptions().its('issues.TE-12.name').should('equal', 'Sickness')
 
+        cy.contains('div', 'Authentication Method').find('select').select('Access Token')
+
         cy.contains('div', 'Tracked Issues').contains('button', 'Add Issue').click()
         cy.get('.modal')
             .contains('dialog', 'Add Issue')
@@ -247,7 +277,11 @@ describe('Options view & initial setup', () => {
             .contains('div', 'Issue Key')
             .find('input')
             .type('TE-1', { delay: 100 })
+
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
+
+        cy.get('@pickerAll.2').its('request.headers').should('not.have.property', 'cookie', 'test=cookie')
+        cy.get('@pickerAll.2').its('request.headers').should('have.property', 'authorization', `Bearer ${testtoken}`)
 
         cy.getOptions().its('issues.ARCHTE-6.alias').should('equal', 'ARCHTE-6: Unpaid leave')
         cy.getOptions().its('issues.ARCHTE-6.name').should('equal', 'Unpaid leave')
@@ -287,10 +321,10 @@ describe('Options view & initial setup', () => {
 
         cy.contains('div', 'Custom JQL Query').should('be.visible').find('textarea').type('test123', { delay: 100 })
 
-        cy.intercept('https://jira.test.com/rest/api/2/search?*', []).as('search')
+        cy.intercept('https://jira.test.com/rest/api/2/search?*', []).as('search2')
 
         cy.contains('div', 'Custom JQL Query').contains('a', 'Test Query').click()
-        cy.wait('@search').its('request.url').should('contain', 'jql=test123')
+        cy.wait('@search2').its('request.url').should('contain', 'jql=test123')
 
         cy.contains('div', 'Custom JQL Query')
             .find('select')
@@ -305,7 +339,7 @@ describe('Options view & initial setup', () => {
 
         cy.contains('div', 'Custom JQL Query').contains('a', 'Test Query').click()
 
-        cy.wait('@search').its('request.url').should('contain', 'jql=assignee+was+currentUser')
+        cy.wait('@search2').its('request.url').should('contain', 'jql=assignee+was+currentUser')
 
         cy.getOptions().its('showComments').should('equal', false)
 

@@ -1,6 +1,9 @@
 const express = require('express')
 const { readFile } = require('fs/promises')
 const path = require('path')
+const http = require('http')
+const https = require('https')
+const selfsigned = require('selfsigned')
 const app = express()
 
 const chromeApiMock = `
@@ -95,6 +98,19 @@ app.get('/', (req, res) => res.status(200).send(`
     </html>
 `))
 
-app.listen(3000, () => {
-    console.log('Listening on: http://localhost:3000/')
+// Start the HTTP server
+const httpServer = http.createServer(app)
+httpServer.listen(3000, () => {
+    console.log('HTTP server running on: http://localhost:3000/')
+})
+
+// Start the HTTPS server
+const sslCert = selfsigned.generate(null, { days: 1 }) // Certificate valid for 1 day
+const sslOptions = {
+    key: sslCert.private,
+    cert: sslCert.cert
+}
+const httpsServer = https.createServer(sslOptions, app)
+httpsServer.listen(3443, () => {
+    console.log('HTTPS server running on: https://localhost:3443/')
 })

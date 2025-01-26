@@ -2,6 +2,15 @@ import { Themes } from 'src/constants/themes'
 import { AUTH_TYPES, THEMES, domainRegexp } from '../constants/constants'
 import { fetchIssueList } from './api'
 
+export function hasValidJiraSettings (rawOptions: Partial<Options>) {
+    const {instance, domain, token, authenticationType, user} = getOptions(rawOptions)
+    if (!['datacenter', 'cloud'].includes(instance) || !domain?.length || !user.length) {
+        return false
+    }
+
+    return token || (instance === 'datacenter' && authenticationType === 'COOKIE')
+}
+
 export function getOptions (options: Partial<Options>): Options {
     const {
         issues,

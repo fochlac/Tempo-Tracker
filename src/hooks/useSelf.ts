@@ -20,7 +20,7 @@ export function useSelf() {
     const checkDomainToken = async (override?: Partial<Options>) => {
         const localToken = override?.token || token
         const localDomain = override?.domain || domain
-        if (localDomain.length && localToken.length) {
+        if (localDomain.length && (localToken.length || cookieAuth)) {
             const id = `${localDomain}${localToken}`
             if (cacheInfo.id === id && cacheInfo.time > Date.now() && !(override && Object.values(override).length)) {
                 setName(cacheInfo.name)

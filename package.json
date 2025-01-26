@@ -67,6 +67,7 @@
         "prettier": "^3.2.5",
         "prettier-eslint": "^16.3.0",
         "regenerator-runtime": "^0.14.1",
+        "selfsigned": "^2.4.1",
         "styled-components": "6.1.8",
         "tiny-atom": "^4.2.2",
         "typescript": "^5.3.3",
