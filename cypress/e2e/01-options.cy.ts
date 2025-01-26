@@ -182,13 +182,22 @@ describe('Options view & initial setup', () => {
         cy.intercept('https://jira.test.com/rest/api/2/myself', { displayName: 'Testuser', key: 'test1' }).as('myself2')
 
         cy.contains('div', 'Authentication Method').find('select').select('Cookie')
-        cy.contains('button', 'Refresh user information').click()
-
-        cy.wait('@myself2')
+        cy.contains('div', 'User').find('input').should('have.value', 'Testuser ()')
+        cy.contains('div', 'User').find('input').should('have.value', 'Testuser (test1)')
 
         cy.get('@myself2.all').should('have.length', 1)
         cy.get('@myself2.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
         cy.get('@myself2.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
+
+        cy.intercept('https://jira.test.com/rest/api/2/myself', { displayName: 'Testuser', key: 'test3' }).as('myself2')
+
+        cy.contains('button', 'Refresh user information').click()
+
+        cy.contains('div', 'User').find('input').should('have.value', 'Testuser (test3)')
+
+        cy.get('@myself2.all').should('have.length', 2)
+        cy.get('@myself2.2').its('request.headers').should('have.property', 'cookie', 'test=cookie')
+        cy.get('@myself2.2').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
 
         cy.getOptions().its('token').should('equal', testtoken)
 
