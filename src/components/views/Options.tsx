@@ -94,6 +94,15 @@ export const OptionsView: React.FC = () => {
         return () => setToken('')
     }, [domain, setToken])
 
+    useEffect(() => {
+        if (authenticationType === 'COOKIE' && instance === 'datacenter') {
+            const onFocus = () => refetch({ authenticationType })
+            document.addEventListener('focus', onFocus)
+            return () => document.removeEventListener('focus', onFocus)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authenticationType, instance])
+
     const timeout = useRef<NodeJS.Timeout>()
     const tokenBlur = async (e) => {
         const newToken = e?.newToken || token
