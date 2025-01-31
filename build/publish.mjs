@@ -41,8 +41,7 @@ async function publishFF() {
         if (status.valid === true) {
             console.log('Version is valid:\n', status)
             isValidated = true
-        }
-        else if (status.processed && status.validation) {
+        } else if (status.processed && status.validation) {
             console.log('Version is not valid:\n', status)
             console.log('Error messages:\n', JSON.stringify(status.validation?.messages, null, 4))
             throw new Error('Version is not valid', JSON.stringify(status.validation, null, 4))
@@ -65,10 +64,13 @@ async function publishFF() {
 async function publishEdge() {
     const BASE_API_URL = `https://api.addons.microsoftedge.microsoft.com/v1/products/${process.env.edge_product_id}/submissions`
 
-    async function upload({ Authorization, file: body }) {
-        const res = await fetch(`${BASE_API_URL}/draft/package`,
-            { headers: { Authorization, 'Content-Type': 'application/zip' }, duplex: 'half', method: 'POST', body }
-        )
+    async function upload({ Authorization, clientId, file: body }) {
+        const res = await fetch(`${BASE_API_URL}/draft/package`, {
+            headers: { Authorization, 'X-ClientID': clientId, 'Content-Type': 'application/zip' },
+            duplex: 'half',
+            method: 'POST',
+            body
+        })
 
         const operationId = res.headers.get('location')
         if (res.status !== 202) throw new Error(`Got status ${res.status} when uploading add-on`)
@@ -77,8 +79,8 @@ async function publishEdge() {
         return operationId
     }
 
-    async function publish({ Authorization }) {
-        const res = await fetch(`${BASE_API_URL}`, { headers: { Authorization }, method: 'POST' })
+    async function publish({ Authorization, clientId }) {
+        const res = await fetch(`${BASE_API_URL}`, { headers: { Authorization, 'X-ClientID': clientId }, method: 'POST' })
 
         const operationId = res.headers.get('location')
         if (res.status !== 202) throw new Error(`Got status ${res.status} when uploading add-on`)
@@ -87,13 +89,14 @@ async function publishEdge() {
         return operationId
     }
 
-    async function waitForOperation({ Authorization, operation, operationId }) {
+    async function waitForOperation({ Authorization, clientId, operation, operationId }) {
         const startTime = Date.now()
-        const operationUrl = operation === 'upload' ? `${BASE_API_URL}/draft/package/operations/${operationId}` : `${BASE_API_URL}/operations/${operationId}`
+        const operationUrl =
+            operation === 'upload' ? `${BASE_API_URL}/draft/package/operations/${operationId}` : `${BASE_API_URL}/operations/${operationId}`
 
         let status
         while (status?.status !== 'Succeeded') {
-            status = await fetch(operationUrl, { headers: { Authorization } }).then((res) => res.json())
+            status = await fetch(operationUrl, { headers: { Authorization, 'X-ClientID': clientId } }).then((res) => res.json())
 
             if (status.status === 'Failed') throw new Error(`Operation failed: ${status.message} (code ${status.errorCode})`)
             if (Date.now() - startTime > 10 * 60 * 1000) throw new Error('Timed out waiting for operation to complete')
@@ -102,22 +105,12 @@ async function publishEdge() {
         }
     }
 
-    async function getAccessToken() {
-        const body = new URLSearchParams({
-            client_id: process.env.edge_client_id,
-            client_secret: process.env.edge_client_secret,
-            grant_type: 'client_credentials',
-            scope: 'https://api.addons.microsoftedge.microsoft.com/.default'
-        })
-        const data = await fetch(`https://login.microsoftonline.com/${process.env.edge_oauth_key}/oauth2/v2.0/token`, { method: 'POST', body }).then((res) => res.json())
-        if (!data.access_token) throw new Error('Error getting access-token.')
-        return `Bearer ${data.access_token}`
-    }
+    const Authorization = process.env.edge_api_key
+    const clientId = process.env.edge_client_id
 
-    const Authorization = await getAccessToken()
     const file = Readable.toWeb(fs.createReadStream(path.join(__dirname, '../extension_chrome.zip')))
-    const uploadOperationId = await upload({ Authorization, file })
-    await waitForOperation({ Authorization, operation: 'upload', operationId: uploadOperationId })
+    const uploadOperationId = await upload({ Authorization, clientId, file })
+    await waitForOperation({ Authorization, clientId, operation: 'upload', operationId: uploadOperationId })
     console.log('Uploaded edge extension.\n')
     const publishOperationId = await publish({ Authorization, notes: '' })
     await waitForOperation({ Authorization, operation: 'publish', operationId: publishOperationId })
@@ -144,10 +137,11 @@ async function publishChrome() {
 
 async function publish() {
     let failed = false
-    const withCatch = (fn, store) => fn().catch((e) => {
-        console.log(`Publishing ${store} extension failed:\n`, e)
-        failed = true
-    })
+    const withCatch = (fn, store) =>
+        fn().catch((e) => {
+            console.log(`Publishing ${store} extension failed:\n`, e)
+            failed = true
+        })
 
     console.log('========= Publishing Chrome Extension ==========')
     await withCatch(publishChrome, 'Chrome')
