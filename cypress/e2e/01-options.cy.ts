@@ -385,7 +385,7 @@ describe('Options view & initial setup', () => {
     it('should setup and select issues for cloud', () => {
         cy.contains('h6', 'Authentification').should('be.visible')
         cy.fakeTimers(Date.now())
-        cy.intercept('https://jira.atlassian.com/rest/api/2/myself', {
+        cy.intercept('https://jira.atlassian.com/rest/api/3/myself', {
             displayName: 'Testuser',
             emailAddress: 'test@test.com',
             accountId: 'test1'
@@ -514,7 +514,7 @@ describe('Options view & initial setup', () => {
                 }
             ]
         })
-        cy.intercept('https://jira.atlassian.com/rest/api/2/search?jql=issuekey+in+*', (req) => {
+        cy.intercept('https://jira.atlassian.com/rest/api/3/search/jql?jql=issuekey+in+*', (req) => {
             const filteredIssues = issues.filter((issue) => req.url.includes(issue.key))
             const res = {
                 ...issueBody,
@@ -599,7 +599,7 @@ describe('Options view & initial setup', () => {
 
         cy.contains('div', 'Custom JQL Query').should('be.visible').find('textarea').type('test123', { delay: 100 })
 
-        cy.intercept('https://jira.atlassian.com/rest/api/2/search?*', []).as('search')
+        cy.intercept('https://jira.atlassian.com/rest/api/3/search/jql?*', []).as('search')
 
         cy.contains('div', 'Custom JQL Query').contains('a', 'Test Query').click()
         cy.wait('@search').its('request.url').should('contain', 'jql=test123')
@@ -637,7 +637,7 @@ describe('Options view & initial setup', () => {
             displayName: 'Testuser',
             key: 'test1'
         }).as('myselfData')
-        cy.intercept('https://jira.atlassian.com/rest/api/2/myself', {
+        cy.intercept('https://jira.atlassian.com/rest/api/3/myself', {
             displayName: 'Testuser',
             emailAddress: 'test@test.com',
             accountId: 'test1-cloud'
@@ -708,7 +708,7 @@ describe('Options view & initial setup', () => {
             displayName: 'Testuser',
             key: 'test1-datacenter'
         }).as('myselfData')
-        cy.intercept('https://jira.atlassian.com/rest/api/2/myself', {
+        cy.intercept('https://jira.atlassian.com/rest/api/3/myself', {
             displayName: 'Testuser',
             emailAddress: 'test@test.com',
             accountId: 'test1'

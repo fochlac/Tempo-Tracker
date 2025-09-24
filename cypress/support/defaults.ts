@@ -71,7 +71,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
         req.reply(404)
     })
 
-    cy.intercept('GET', 'https://*.atlassian.org/rest/api/2/myself', {
+    cy.intercept('GET', 'https://*.atlassian.org/rest/api/3/myself', {
         displayName: 'Testuser',
         emailAddress: 'test@test.com',
         accountId: 'test1'
@@ -99,7 +99,7 @@ Cypress.Commands.add('networkMocksCloud', () => {
         })
     }).as('issuePicker')
 
-    cy.intercept('GET', 'https://*.atlassian.org/rest/api/2/search*', (req) => {
+    cy.intercept('GET', 'https://*.atlassian.org/rest/api/3/search/jql*', (req) => {
         const search = String(req.query.jql)
         const matches = Object.keys(issueIdKeyMap)
             .filter((key) => search.includes(key))

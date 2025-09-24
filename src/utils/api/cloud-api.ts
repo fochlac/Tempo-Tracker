@@ -52,10 +52,10 @@ const TEMPO = 'TEMPO'
 export const PATHS: Record<URLS, PathDefinition> = {
     [URLS.ISSUE]: { url: '/api/3/issue', type: JIRA },
     [URLS.QUICKSEARCH]: { url: '/api/3/issue/picker', type: JIRA },
-    [URLS.SEARCH]: { url: '/api/2/search', type: JIRA },
+    [URLS.SEARCH]: { url: '/api/3/search/jql', type: JIRA },
     [URLS.WORKLOGS]: { url: (accountId) => `/4/worklogs/user/${accountId}`, type: TEMPO },
     [URLS.CREATE_WORKLOG]: { url: '/4/worklogs', type: TEMPO },
-    [URLS.SELF]: { url: '/api/2/myself', type: JIRA }
+    [URLS.SELF]: { url: '/api/3/myself', type: JIRA }
 }
 
 const headers = (options: Options, url: URLS) => {
@@ -175,6 +175,7 @@ export async function fetchIssues(options, jql, limit?: number): Promise<Issue[]
     await checkPermissions(options)
     const query = new URLSearchParams()
     query.append('jql', jql)
+    query.append('fields', 'key,summary')
     if (limit) {
         query.append('maxResults', String(limit))
     }
