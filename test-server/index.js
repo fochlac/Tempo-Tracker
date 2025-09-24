@@ -74,14 +74,15 @@ const chromeApiMock = `
 `
 
 app.get('/sw.js', async (req, res) => {
-    const swContent = await readFile(path.join(__dirname, '../dist/sw.js'), {encoding: 'utf8'})
+    const swContent = await readFile(path.join(__dirname, '../dist/sw.js'), { encoding: 'utf8' })
     res.setHeader('content-type', 'application/javascript')
     res.status(200).send(`${chromeApiMock}\n${swContent}`)
 })
 
 app.use('/', express.static(path.join(__dirname, '../dist')))
 
-app.get('/', (req, res) => res.status(200).send(`
+app.get('/', (req, res) =>
+    res.status(200).send(`
     <!doctype html>
     <html>
         <head>
@@ -96,7 +97,8 @@ app.get('/', (req, res) => res.status(200).send(`
             <div class="modal"></div>
         </body>
     </html>
-`))
+`)
+)
 
 // Start the HTTP server
 const httpServer = http.createServer(app)
@@ -105,7 +107,7 @@ httpServer.listen(3000, () => {
 })
 
 // Start the HTTPS server
-const sslCert = selfsigned.generate(null, { days: 1 }) // Certificate valid for 1 day
+const sslCert = selfsigned.generate(null, { days: 1, keySize: 4096, algorithm: 'sha256' }) // Certificate valid for 1 day
 const sslOptions = {
     key: sslCert.private,
     cert: sslCert.cert
