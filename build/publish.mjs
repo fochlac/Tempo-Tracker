@@ -65,27 +65,85 @@ async function publishEdge() {
     const BASE_API_URL = `https://api.addons.microsoftedge.microsoft.com/v1/products/${process.env.edge_product_id}/submissions`
 
     async function upload({ Authorization, clientId, file: body }) {
+        console.log('📤 Uploading package...')
+        console.log(`Client ID: ${clientId ? `${clientId.substring(0, 8)}...` : 'NOT SET'}`)
+
         const res = await fetch(`${BASE_API_URL}/draft/package`, {
-            headers: { Authorization, 'X-ClientID': clientId, 'Content-Type': 'application/zip' },
+            headers: {
+                Authorization: `ApiKey ${Authorization}`,
+                'X-ClientID': clientId,
+                'Content-Type': 'application/zip'
+            },
             duplex: 'half',
             method: 'POST',
             body
         })
 
+        console.log(`Upload response status: ${res.status}`)
+        console.log('Upload response headers:', Object.fromEntries(res.headers.entries()))
+
+        if (res.status !== 202) {
+            let errorBody = ''
+            try {
+                errorBody = await res.text()
+                console.log('Error response body:', errorBody)
+            } catch (e) {
+                console.log('Could not read error response body')
+            }
+
+            if (res.status === 401 || res.status === 403) {
+                console.log('\n🔑 API Key might be expired or invalid!')
+                console.log('Please check your credentials at: https://partner.microsoft.com/en-us/dashboard/microsoftedge/publishapi')
+            } else if (res.status === 404) {
+                console.log('\n❌ Product not found!')
+                console.log('Please verify your product ID at: https://partner.microsoft.com/en-us/dashboard/microsoftedge/publishapi')
+                console.log(`Current product ID: ${process.env.edge_product_id ? `${process.env.edge_product_id.substring(0, 8)}...` : 'NOT SET'}`)
+            }
+
+            throw new Error(`Got status ${res.status} when uploading add-on.${errorBody ? ` Error: ${errorBody}` : ''}`)
+        }
+
         const operationId = res.headers.get('location')
-        if (res.status !== 202) throw new Error(`Got status ${res.status} when uploading add-on`)
         if (!operationId) throw new Error('Failed to get operation ID from response')
 
+        console.log(`Upload operation ID: ${operationId}`)
         return operationId
     }
 
     async function publish({ Authorization, clientId }) {
-        const res = await fetch(`${BASE_API_URL}`, { headers: { Authorization, 'X-ClientID': clientId }, method: 'POST' })
+        console.log(`Publishing to: ${BASE_API_URL}`)
+
+        const res = await fetch(`${BASE_API_URL}`, {
+            headers: {
+                Authorization: `ApiKey ${Authorization}`,
+                'X-ClientID': clientId
+            },
+            method: 'POST'
+        })
+
+        console.log(`Publish response status: ${res.status}`)
+
+        if (res.status !== 202) {
+            let errorBody = ''
+            try {
+                errorBody = await res.text()
+                console.log('Publish error response body:', errorBody)
+            } catch (e) {
+                console.log('Could not read publish error response body')
+            }
+
+            if (res.status === 401 || res.status === 403) {
+                console.log('\n🔑 API Key might be expired or invalid for publishing!')
+                console.log('Please check your credentials at: https://partner.microsoft.com/en-us/dashboard/microsoftedge/publishapi')
+            }
+
+            throw new Error(`Got status ${res.status} when publishing add-on.${errorBody ? ` Error: ${errorBody}` : ''}`)
+        }
 
         const operationId = res.headers.get('location')
-        if (res.status !== 202) throw new Error(`Got status ${res.status} when uploading add-on`)
         if (!operationId) throw new Error('Failed to get operation ID from response')
 
+        console.log(`Publish operation ID: ${operationId}`)
         return operationId
     }
 
@@ -96,7 +154,12 @@ async function publishEdge() {
 
         let status
         while (status?.status !== 'Succeeded') {
-            status = await fetch(operationUrl, { headers: { Authorization, 'X-ClientID': clientId } }).then((res) => res.json())
+            status = await fetch(operationUrl, {
+                headers: {
+                    Authorization: `ApiKey ${Authorization}`,
+                    'X-ClientID': clientId
+                }
+            }).then((res) => res.json())
 
             if (status.status === 'Failed') throw new Error(`Operation failed: ${status.message} (code ${status.errorCode})`)
             if (Date.now() - startTime > 10 * 60 * 1000) throw new Error('Timed out waiting for operation to complete')
@@ -107,13 +170,23 @@ async function publishEdge() {
 
     const Authorization = process.env.edge_api_key
     const clientId = process.env.edge_client_id
+    const productId = process.env.edge_product_id
+
+    console.log('🚀 Starting Edge extension publishing...')
+    console.log(`Product ID: ${productId ? `${productId.substring(0, 8)}...` : 'NOT SET'}`)
+    console.log(`Client ID: ${clientId ? `${clientId.substring(0, 8)}...` : 'NOT SET'}`)
+    console.log(`API Key: ${Authorization ? `${Authorization.substring(0, 4)}...` : 'NOT SET'}`)
+
+    if (!Authorization || !clientId || !productId) {
+        throw new Error('Missing required Edge API credentials')
+    }
 
     const file = Readable.toWeb(fs.createReadStream(path.join(__dirname, '../extension_chrome.zip')))
     const uploadOperationId = await upload({ Authorization, clientId, file })
     await waitForOperation({ Authorization, clientId, operation: 'upload', operationId: uploadOperationId })
     console.log('Uploaded edge extension.\n')
-    const publishOperationId = await publish({ Authorization, notes: '' })
-    await waitForOperation({ Authorization, operation: 'publish', operationId: publishOperationId })
+    const publishOperationId = await publish({ Authorization, clientId })
+    await waitForOperation({ Authorization, clientId, operation: 'publish', operationId: publishOperationId })
     console.log('Published Edge extension.\n')
 }
 
