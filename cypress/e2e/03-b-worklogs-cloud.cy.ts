@@ -99,7 +99,7 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
                 }
             ]
         })
-        cy.intercept('https://jira.atlassian.org/rest/api/2/search?jql=issuekey+in+*', (req) => {
+        cy.intercept('https://jira.atlassian.org/rest/api/3/search/jql?jql=issuekey+in+*', (req) => {
             const filteredIssues = issues.filter((issue) => req.url.includes(issue.key))
             const res = {
                 ...issueBody,
