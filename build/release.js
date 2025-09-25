@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { execSync } = require('child_process')
 const packageJson = require('../package.json')
 const manifest = require('../static/manifest.json')
@@ -17,18 +18,14 @@ function compareVersion(a, b) {
     return 0
 }
 let version = packageVersion
-if (
-    packageVersion.join('.') !== manifestVersion.join('.') ||
-    packageVersion.join('.') !== manifestFFVersion.join('.')
-) {
+if (packageVersion.join('.') !== manifestVersion.join('.') || packageVersion.join('.') !== manifestFFVersion.join('.')) {
     const sortedVersions = [packageVersion, manifestVersion, manifestFFVersion].sort(compareVersion)
     version = sortedVersions[0]
 }
 let newVersion = `${version[0]}.${Number(version[1]) + 1}.0`
 if (process.argv[2] === 'patch') {
     newVersion = `${version[0]}.${version[1]}.${Number(version[2]) + 1}`
-}
-else if (process.argv[2] === 'major') {
+} else if (process.argv[2] === 'major') {
     newVersion = `${Number(version[0]) + 1}.0.0`
 }
 
@@ -40,6 +37,7 @@ writeJSONSync('./package.json', packageJson, { spaces: 4 })
 writeJSONSync('./static/manifest.json', manifest, { spaces: 4 })
 writeJSONSync('./static_ff/manifest.json', manifest_ff, { spaces: 4 })
 
+execSync('npm install')
 execSync(`git commit -am "release/${newVersion}"`)
 execSync(`git tag -a "release/${newVersion}" -m "release/${newVersion}"`)
-execSync(`git push --follow-tags`)
+execSync('git push --follow-tags')
