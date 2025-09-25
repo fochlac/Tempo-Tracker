@@ -1,4 +1,5 @@
 import { useOptions } from 'src/hooks/useOptions'
+import { useStatisticsOptions } from '../../hooks/useStatisticsOptions'
 import styled from 'styled-components'
 import { Input } from '../atoms/Input'
 import { Label } from '../atoms/Typography'
@@ -22,6 +23,7 @@ const Col = styled.div`
 `
 export function WorkingDayOption () {
     const { data: options, actions } = useOptions()
+    const { data: statsOptions } = useStatisticsOptions()
 
     const updateDay = (day) => (e) => {
         if (e.target.checked) {
@@ -32,22 +34,44 @@ export function WorkingDayOption () {
         }
     }
 
+    // Reorder days based on week start preference
+    let orderedDays: Array<{ label: string, index: number }>
+    if (statsOptions.weekStartDay === 1) { // Monday first
+        orderedDays = [
+            { label: 'Mon', index: 1 },
+            { label: 'Tue', index: 2 },
+            { label: 'Wed', index: 3 },
+            { label: 'Thu', index: 4 },
+            { label: 'Fri', index: 5 },
+            { label: 'Sat', index: 6 },
+            { label: 'Sun', index: 0 }
+        ]
+    } else { // Sunday first
+        orderedDays = [
+            { label: 'Sun', index: 0 },
+            { label: 'Mon', index: 1 },
+            { label: 'Tue', index: 2 },
+            { label: 'Wed', index: 3 },
+            { label: 'Thu', index: 4 },
+            { label: 'Fri', index: 5 },
+            { label: 'Sat', index: 6 }
+        ]
+    }
+
     return (
         <Option>
             <Label>Working Days</Label>
             <Row style={{ marginTop: 8 }}>
-                {['Sun', 'Mo', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
-                    (day, idx: 0 | 1 | 2 | 3 | 4 | 5 | 6) => (
-                        <Col key={day} style={{ width: 25, alignItems: 'center', marginRight: 0 }}>
-                            <Checkbox
-                                type="checkbox"
-                                checked={options.days.includes(idx)}
-                                onChange={updateDay(idx)}
-                            />
-                            <Label>{day}</Label>
-                        </Col>
-                    )
-                )}
+                {orderedDays.map(({ label, index }) => (
+                    <Col key={label} style={{ width: 25, alignItems: 'center', marginRight: 0 }}>
+                        <Checkbox
+                            type="checkbox"
+                            checked={options.days.includes(index)}
+                            onChange={updateDay(index)}
+                        />
+                        <Label>{label}</Label>
+                    </Col>
+                ))}
             </Row>
         </Option>
     )

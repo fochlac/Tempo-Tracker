@@ -19,6 +19,7 @@ import { MandatoryStar } from '../atoms/MandatoryStar'
 import { DomainEditor } from '../molecules/DomainEditor'
 import { useEffect } from 'react'
 import { WorkingDayOption } from '../molecules/WorkingDayOptions'
+import { WeekStartOption } from '../molecules/WeekStartOption'
 import { requestPermission } from 'src/utils/api'
 import { FlexRow } from '../atoms/Layout'
 import { Workday } from 'src/utils/workday'
@@ -341,6 +342,7 @@ export const OptionsView: React.FC = () => {
                 <SectionHead>Issue Options</SectionHead>
                 <IssueOptions valid={valid} />
                 <SectionHead>Work Time Options</SectionHead>
+                <WeekStartOption />
                 <WorkingDayOption />
                 <SectionHead>App Options</SectionHead>
                 {domain.includes('ttt-sp.com') && (

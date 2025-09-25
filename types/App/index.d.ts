@@ -145,6 +145,8 @@ type LifeTimeStatsMap = Record<string, StatsMap>
 
 interface StatisticsOptions {
     defaultHours: number;
+    defaultDailyHours: number;
+    weekStartDay: 0 | 1; // 0 = Sunday, 1 = Monday
     lifetimeYear: number;
     exceptions: HourException[];
 }

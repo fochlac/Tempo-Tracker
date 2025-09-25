@@ -138,8 +138,16 @@ export function useStatistics() {
         })).sort((a, b) => a.workedSeconds - b.workedSeconds)
     }, [stats?.weeks, year])
 
+    const yearDays = useMemo(() => {
+        return Object.keys(stats?.days || {}).map((day) => ({
+            day,
+            year,
+            workedSeconds: stats.days[day]
+        })).sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime())
+    }, [stats?.days, year])
+
     return {
-        data: { stats, year, unsyncedStats: unsyncedLogStatistics?.[year] || createWorkMap(year), yearWeeks },
+        data: { stats, year, unsyncedStats: unsyncedLogStatistics?.[year] || createWorkMap(year), yearWeeks, yearDays },
         actions: {
             setYear,
             getRequiredSeconds,

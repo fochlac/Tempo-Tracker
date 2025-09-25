@@ -49,6 +49,16 @@ describe('Statistics View - Tracking Area', () => {
 
         cy.contains('h6', 'Weekly Hours')
             .should('exist')
+            .contains('button', 'Week')
+            .should('exist')
+            .should('have.css', 'background-color', 'rgb(128, 128, 128)')
+            .should('have.css', 'color', 'rgb(15, 15, 15)')
+            .parent()
+            .contains('button', 'Day')
+            .should('exist')
+            .should('have.css', 'background-color', 'rgba(0, 0, 0, 0)')
+            .should('have.css', 'color', 'rgb(241, 241, 241)')
+            .parent()
             .contains('a', 'Refresh')
             .should('exist')
             .should('have.css', 'color', 'rgb(88, 163, 253)')
@@ -98,6 +108,24 @@ describe('Statistics View - Tracking Area', () => {
                 to: '2020-12-28',
                 worker: ['testid']
             })
+
+        cy.contains('button', 'Day')
+            .should('exist')
+            .click()
+
+        cy.contains('h6', 'Daily Hours')
+            .should('exist')
+            .contains('button', 'Week')
+            .should('exist')
+            .should('have.css', 'background-color', 'rgba(0, 0, 0, 0)')
+            .should('have.css', 'color', 'rgb(241, 241, 241)')
+            .parent()
+            .contains('button', 'Day')
+            .should('exist')
+            .should('have.css', 'background-color', 'rgb(128, 128, 128)')
+            .should('have.css', 'color', 'rgb(15, 15, 15)')
+
+        cy.contains('div', 'Median Hours (Day)').find('p').should('contain.text', '8h 00m')
     })
 
     const hourInMs = 1000 * 60 * 60

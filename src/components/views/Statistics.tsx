@@ -1,12 +1,15 @@
 import styled from 'styled-components'
+import { useState } from 'preact/hooks'
 import { useGetRequiredSecondsForPeriod, useLifetimeStatistics, useStatistics } from '../../hooks/useStatistics'
 import { useStatisticsOptions } from '../../hooks/useStatisticsOptions'
 import { Input } from '../atoms/Input'
 import { Block, Column } from '../atoms/Layout'
 import { H6, Label, Value } from '../atoms/Typography'
 import { WorkTimeDiagramm } from '../molecules/WorkTimeDiagramm'
+import { WorkTimeDailyDiagramm } from '../molecules/WorkTimeDailyDiagramm'
 import { WorkTimeExceptions } from '../molecules/WorkTimeExceptions'
 import { WorkTimeStats } from '../molecules/WorkTimeStats'
+import { WorkTimeDailyStats } from '../molecules/WorkTimeDailyStats'
 import { useSelf } from '../../hooks/useSelf'
 import { ErrorTooltip } from '../atoms/Tooltip'
 import { WifiOff } from 'preact-feather'
@@ -14,6 +17,7 @@ import { ActionLink } from '../atoms/ActionLink'
 import { formatDuration } from '../../utils/datetime'
 import { useOptions } from 'src/hooks/useOptions'
 import { Conditional } from '../atoms/Conditional'
+import { Button } from '../atoms/Button'
 
 const Body = styled.div`
     display: flex;
@@ -28,9 +32,12 @@ const Title = styled(H6)`
     padding-right: 4px;
 `
 
+type ViewMode = 'week' | 'day'
+
 export const StatisticsView: React.FC = () => {
+    const [viewMode, setViewMode] = useState<ViewMode>('week')
     const {
-        data: { stats, year, unsyncedStats, yearWeeks },
+        data: { stats, year, unsyncedStats, yearWeeks, yearDays },
         actions: { setYear, getRequiredSeconds, refresh },
         loading
     } = useStatistics()
@@ -49,39 +56,89 @@ export const StatisticsView: React.FC = () => {
     return (
         <Body>
             <Title>
-                {'Weekly Hours'}
-                <ActionLink
-                    disabled={loading || self.error}
-                    style={{ marginRight: 4, lineHeight: '16px', marginLeft: 'auto' }}
-                    onClick={() => refresh()}
-                >
-                    Refresh
-                </ActionLink>
-                {self.error && (
-                    <ErrorTooltip
-                        style={{ paddingBottom: 2 }}
-                        content="No connection to Jira instance - only cached statistics available"
+                {viewMode === 'week' ? 'Weekly Hours' : 'Daily Hours'}
+                <Block style={{ gap: '8px', marginLeft: 'auto' }}>
+                    <Button
+                        onClick={() => setViewMode('week')}
+                        style={{
+                            backgroundColor: viewMode === 'week' ? 'var(--contrast)' : 'transparent',
+                            color: viewMode === 'week' ? 'var(--background)' : 'var(--font)',
+                            padding: '2px 8px',
+                            fontSize: '12px'
+                        }}
                     >
-                        <WifiOff size={14} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />
-                    </ErrorTooltip>
-                )}
+                        Week
+                    </Button>
+                    <Button
+                        onClick={() => setViewMode('day')}
+                        style={{
+                            backgroundColor: viewMode === 'day' ? 'var(--contrast)' : 'transparent',
+                            color: viewMode === 'day' ? 'var(--background)' : 'var(--font)',
+                            padding: '2px 8px',
+                            fontSize: '12px'
+                        }}
+                    >
+                        Day
+                    </Button>
+                    <ActionLink
+                        disabled={loading || self.error}
+                        style={{ marginRight: 4, lineHeight: '16px' }}
+                        onClick={() => refresh()}
+                    >
+                        Refresh
+                    </ActionLink>
+                    {self.error && (
+                        <ErrorTooltip
+                            style={{ paddingBottom: 2 }}
+                            content="No connection to Jira instance - only cached statistics available"
+                        >
+                            <WifiOff size={14} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />
+                        </ErrorTooltip>
+                    )}
+                </Block>
             </Title>
-            <WorkTimeDiagramm
-                {...{ year, setYear, stats, options, unsyncedStats, error: self.error }}
-                getRequiredSeconds={getRequiredSeconds}
-            />
+            {viewMode === 'week' ? (
+                <WorkTimeDiagramm
+                    {...{ year, setYear, stats, options, unsyncedStats, error: self.error }}
+                    getRequiredSeconds={getRequiredSeconds}
+                />
+            ) : (
+                <WorkTimeDailyDiagramm
+                    {...{ year, setYear, stats, options, unsyncedStats, error: self.error }}
+                />
+            )}
             <H6>{`Statistics for ${year}`}</H6>
-            <WorkTimeStats
-                weeks={yearWeeks}
-                total={(stats?.total ?? 0) + (unsyncedStats?.total ?? 0) / 1000}
-                getRequiredSeconds={(year, week) => getRequiredSeconds(week)}
-            />
+            {viewMode === 'week' ? (
+                <WorkTimeStats
+                    weeks={yearWeeks}
+                    total={(stats?.total ?? 0) + (unsyncedStats?.total ?? 0) / 1000}
+                    getRequiredSeconds={(year, week) => getRequiredSeconds(week)}
+                />
+            ) : (
+                <WorkTimeDailyStats
+                    days={yearDays}
+                    weeks={yearWeeks}
+                    total={(stats?.total ?? 0) + (unsyncedStats?.total ?? 0) / 1000}
+                    getRequiredSeconds={(year, week) => getRequiredSeconds(week)}
+                    options={options}
+                />
+            )}
             <H6>{`Statistics since ${options.lifetimeYear}`}</H6>
-            <WorkTimeStats
-                weeks={yearWeeksLifetime}
-                total={lifeTimeTotal}
-                getRequiredSeconds={getRequiredSecondsPeriod}
-            />
+            {viewMode === 'week' ? (
+                <WorkTimeStats
+                    weeks={yearWeeksLifetime}
+                    total={lifeTimeTotal}
+                    getRequiredSeconds={getRequiredSecondsPeriod}
+                />
+            ) : (
+                <WorkTimeDailyStats
+                    days={[]} // We don't have lifetime daily data readily available
+                    weeks={yearWeeksLifetime}
+                    total={lifeTimeTotal}
+                    getRequiredSeconds={getRequiredSecondsPeriod}
+                    options={options}
+                />
+            )}
             <Block>
                 <Column>
                     <Label>Median Hours (Week) Lowest Quarter</Label>
@@ -134,6 +191,18 @@ export const StatisticsView: React.FC = () => {
                     />
                 </Column>
                 <Column>
+                    <Label>Hours per Day</Label>
+                    <Input
+                        type="number"
+                        style={{ width: 65 }}
+                        min={0}
+                        value={options.defaultDailyHours}
+                        max={24}
+                        step={0.1}
+                        onChange={updateOptionKey('defaultDailyHours')}
+                    />
+                </Column>
+                <Column>
                     <Label>Start Year Lifetime Statistics</Label>
                     <Input
                         type="number"
@@ -145,7 +214,6 @@ export const StatisticsView: React.FC = () => {
                         onChange={updateOptionKey('lifetimeYear')}
                     />
                 </Column>
-                <Column />
                 <Column />
             </Block>
             <WorkTimeExceptions />

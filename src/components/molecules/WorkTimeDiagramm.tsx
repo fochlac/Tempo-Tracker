@@ -1,12 +1,8 @@
-import { ChevronLeft, ChevronRight } from 'preact-feather'
 import { useEffect, useState } from 'preact/hooks'
 import styled from 'styled-components'
-import { dateHumanized, durationString, formatDuration, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from '../../utils/datetime'
-import { IconButton } from '../atoms/IconButton'
-import { Input } from '../atoms/Input'
-import { Block, Column } from '../atoms/Layout'
+import { dateHumanized, durationString, formatDuration, getISOWeekNumber, getISOWeeks } from '../../utils/datetime'
 import { Tooltip, TooltipTop } from '../atoms/Tooltip'
-import { Label } from '../atoms/Typography'
+import { DiagramNavigation } from './DiagramNavigation'
 
 const Diagramm = styled.div`
     display: flex;
@@ -134,6 +130,8 @@ const MissingHours = styled.span`
 const WeekTooltip = styled(Tooltip)`
     &:before {
         white-space: nowrap;
+        min-width: 200px;
+        max-width: 300px;
     }
 `
 
@@ -148,6 +146,54 @@ interface Props {
     setYear: (year: number) => void
 }
 export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getRequiredSeconds, options, unsyncedStats, error }) => {
+    // Helper function to get week start based on user preference
+    const getWeekStart = (date: Date, weekStartDay: 0 | 1): Date => {
+        const result = new Date(date)
+        const dayOfWeek = result.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+        let daysToWeekStart: number
+        if (weekStartDay === 1) { // Week starts on Monday
+            daysToWeekStart = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+        } else { // Week starts on Sunday
+            daysToWeekStart = -dayOfWeek
+        }
+
+        result.setDate(result.getDate() + daysToWeekStart)
+        result.setHours(0, 0, 0, 0)
+        return result
+    }
+
+    // Helper function to get week periods respecting user's week start preference
+    const getWeekPeriods = (year: number, weekStartDay: 0 | 1) => {
+        const periods = []
+        const yearStart = new Date(year, 0, 1)
+
+        // Start from the first week of the year
+        let currentWeekStart = getWeekStart(yearStart, weekStartDay)
+        let weekNumber = 1
+
+        while (currentWeekStart.getFullYear() <= year) {
+            const weekEnd = new Date(currentWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000)
+            weekEnd.setHours(23, 59, 59, 999)
+
+            // Only include weeks that have days in the target year
+            if (weekEnd.getFullYear() >= year && currentWeekStart.getFullYear() <= year) {
+                periods.push({
+                    week: weekNumber,
+                    period: [new Date(currentWeekStart), new Date(weekEnd)]
+                })
+            }
+
+            // Move to next week
+            currentWeekStart = new Date(currentWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+            weekNumber++
+
+            // Stop if we've gone too far past the year
+            if (currentWeekStart.getFullYear() > year + 1) break
+        }
+
+        return periods
+    }
     const currentYear = new Date().getFullYear()
     const [weekOffset, setWeekOffset] = useState(getISOWeeks(currentYear))
     const isCurrentYear = year === currentYear
@@ -162,33 +208,30 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
         setWeekOffset(weeknumber)
     }, [weeknumber])
 
+    // Navigation functions
+    const canScrollLeft = weekOffset > 15
+    const canScrollRight = weekOffset < weeknumber
+
+    const goToFirstWeek = () => setWeekOffset(columns)
+    const goToLastWeek = () => setWeekOffset(weeknumber)
+
     return (
         <>
-            <Block style={{ userSelect: 'none' }}>
-                <Column style={{ justifyContent: 'center' }}>
-                    <IconButton disabled={weekOffset <= 15} onClick={() => setWeekOffset(Math.max(columns, weekOffset - columns))}>
-                        <ChevronLeft />
-                    </IconButton>
-                </Column>
-                <Column style={{ alignItems: 'center' }}>
-                    <Label style={{ width: 65 }}>Year</Label>
-                    <Input
-                        disabled={error}
-                        type="number"
-                        style={{ width: 65 }}
-                        min={2000}
-                        value={year}
-                        max={currentYear}
-                        step={1}
-                        onChange={(e) => setYear(Number(e.target.value))}
-                    />
-                </Column>
-                <Column style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
-                    <IconButton disabled={weekOffset === weeknumber} onClick={() => setWeekOffset(Math.min(weeknumber, weekOffset + columns))}>
-                        <ChevronRight />
-                    </IconButton>
-                </Column>
-            </Block>
+            <DiagramNavigation
+                year={year}
+                setYear={setYear}
+                error={error}
+                canScrollLeft={canScrollLeft}
+                canScrollRight={canScrollRight}
+                onPreviousClick={() => setWeekOffset(Math.max(columns, weekOffset - columns))}
+                onNextClick={() => setWeekOffset(Math.min(weeknumber, weekOffset + columns))}
+                onFirstClick={goToFirstWeek}
+                onLastClick={goToLastWeek}
+                previousTitle="Previous weeks"
+                nextTitle="Next weeks"
+                firstTitle="Go to first week of year"
+                lastTitle="Go to last week of year"
+            />
             <Diagramm>
                 <TimeBar>
                     {[options.defaultHours, Math.floor(options.defaultHours / 2)].map((hour) => (
@@ -198,7 +241,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                     ))}
                 </TimeBar>
                 {!!stats &&
-                    getIsoWeekPeriods(year)
+                    getWeekPeriods(year, options.weekStartDay)
                         .slice(0, weeknumber + 1)
                         .slice(Math.max(weekOffset - columns, 0), weekOffset)
                         .map(({ week, period }, index) => {

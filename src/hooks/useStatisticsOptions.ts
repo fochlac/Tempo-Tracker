@@ -5,6 +5,8 @@ import { getISOWeekNumber } from '../utils/datetime'
 const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
     return {
         defaultHours: Number(rawOptions.defaultHours ?? defaultStatisticsOptions.defaultHours),
+        defaultDailyHours: Number(rawOptions.defaultDailyHours ?? defaultStatisticsOptions.defaultDailyHours),
+        weekStartDay: Number(rawOptions.weekStartDay ?? defaultStatisticsOptions.weekStartDay) as 0 | 1,
         lifetimeYear: Number(rawOptions.lifetimeYear ?? defaultStatisticsOptions.lifetimeYear),
         exceptions: (rawOptions.exceptions ?? defaultStatisticsOptions.exceptions).map((e) => ({
             startYear: Number(e.startYear),
@@ -18,6 +20,8 @@ const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
 
 const defaultStatisticsOptions = {
     defaultHours: 40,
+    defaultDailyHours: 8,
+    weekStartDay: 1, // Default to Monday
     lifetimeYear: new Date().getFullYear(),
     exceptions: []
 }
@@ -70,7 +74,7 @@ export function useStatisticsOptions () {
             async set (newOptions) {
                 await updateOptions(newOptions)
             },
-            async merge (newOptions: Partial<Options>) {
+            async merge (newOptions: Partial<StatisticsOptions>) {
                 const update = {
                     ...options,
                     ...newOptions
