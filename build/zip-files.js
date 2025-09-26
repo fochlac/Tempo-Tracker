@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const zip = require('zip-a-folder').zip
 
-function copyFileSync (source, target) {
+function copyFileSync(source, target) {
     let targetFile = target
 
     if (fs.existsSync(target)) {
@@ -14,7 +14,7 @@ function copyFileSync (source, target) {
     fs.writeFileSync(targetFile, fs.readFileSync(source))
 }
 
-function copyFolderSync (source, target, recursive = true, initial = true) {
+function copyFolderSync(source, target, recursive = true, initial = true) {
     let files = []
 
     // Check if folder needs to be created or integrated
@@ -33,15 +33,14 @@ function copyFolderSync (source, target, recursive = true, initial = true) {
                     return
                 }
                 copyFolderSync(curSource, targetFolder, recursive, false)
-            }
-            else {
+            } else {
                 copyFileSync(curSource, targetFolder)
             }
         })
     }
 }
 
-function zipFiles () {
+function zipFiles() {
     return Promise.all([
         zip('./extension_firefox_source', './extension_firefox_source.zip')
             .then(() => console.log('Successfully packaged Firefox-Extension-Source.'))
@@ -71,7 +70,6 @@ copyFolderSync('./types/', './extension_firefox_source/types/')
 copyFolderSync('./static/', './extension_firefox_source/static/')
 copyFolderSync('./static_ff/', './extension_firefox_source/static_ff/')
 
-zipFiles()
-.then(() => {
+zipFiles().then(() => {
     fs.rmSync('./extension_firefox_source', { recursive: true, force: true })
 })

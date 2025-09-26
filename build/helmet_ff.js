@@ -1,3 +1,3 @@
 const isFirefox = true
 
-export { isFirefox } 
+export { isFirefox }
