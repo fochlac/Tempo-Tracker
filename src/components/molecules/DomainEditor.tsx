@@ -3,6 +3,7 @@ import { useOptions } from '../../hooks/useOptions'
 import { Button } from '../atoms/Button'
 import { ErrorInfoText, H5, InfoText, Label } from '../atoms/Typography'
 import { Input } from '../atoms/Input'
+import { t } from '../../translations/translate'
 import { FlexColumn, FlexRow } from '../atoms/Layout'
 import { MandatoryStar } from '../atoms/MandatoryStar'
 import { Option } from '../atoms/Option'
@@ -123,20 +124,20 @@ export function DomainEditor() {
     return (
         <Option>
             <Label>
-                Server Url
+                {t('label.serverUrl')}
                 <MandatoryStar />
             </Label>
-            <InfoText>Url of your Jira server.</InfoText>
+            <InfoText>{t('info.jiraServerUrl')}</InfoText>
             <FlexRow>
                 <Input readOnly value={options.domain || ''} style={{ width: '100%', marginRight: 16 }} />
-                <Button onClick={() => setEdit(true)}>Change</Button>
+                <Button onClick={() => setEdit(true)}>{t('action.change')}</Button>
             </FlexRow>
             {edit && (
                 <Modal style={{ padding: 16, alignItems: 'stretch', width: 380, height: 'unset' }}>
-                    <H5>Change Server Url</H5>
+                    <H5>{t('dialog.changeServerUrl')}</H5>
                     <FlexColumn $align="flex-start">
                         <Label>
-                            Server Url
+                            {t('label.serverUrl')}
                             <MandatoryStar />
                         </Label>
                         <Input
@@ -148,11 +149,11 @@ export function DomainEditor() {
                                 setError(false)
                             }}
                         />
-                        {error && <ErrorInfoText>Unable to find the JIRA-Api with the provided Domain.</ErrorInfoText>}
+                        {error && <ErrorInfoText>{t('error.domainNotFound')}</ErrorInfoText>}
                     </FlexColumn>
                     <ButtonBar style={{ marginTop: 24 }}>
-                        <Button onClick={onClose}>Cancel</Button>
-                        <Button onClick={onSave}>Save</Button>
+                        <Button onClick={onClose}>{t('action.cancel')}</Button>
+                        <Button onClick={onSave}>{t('action.save')}</Button>
                     </ButtonBar>
                 </Modal>
             )}

@@ -1,0 +1,183 @@
+- **action.addException**: "Add Exception" button - adds new work time override period
+- **action.addIssue**: "Add Issue" button - opens issue selection dialog
+- **action.cancel**: Generic "Cancel" button - appears in all confirmation dialogs and forms to dismiss without saving
+- **action.change**: "Change" button - generic button for changing settings or values
+- **action.createWorklog**: "Create Worklog" button - confirms worklog creation from activity gap
+- **action.createWorklogs**: "Create Worklogs" button in LogPeriodDialog - confirms creation of multiple worklog entries
+- **action.delete**: "Delete" button - confirms deletion of items
+- **action.deleteWorklog**: "Delete Worklog" tooltip - for delete button on synced worklogs
+- **action.discardChanges**: "Discard Changes" button - discards unsaved local changes
+- **action.discardTracking**: "Discard Tracking" button - discards current tracking session
+- **action.editComment**: "Edit Comment" tooltip - for comment edit button
+- **action.editWorklog**: "Edit Worklog" tooltip - for worklog edit button
+- **action.export**: "Export" - button text for exporting options/data
+- **action.export**: "Export" button - exports options/configuration data
+- **action.ignoreGap**: "Ignore Gap" button - dismisses activity gap without creating worklog
+- **action.overwriteSettings**: "Overwrite Settings" button - confirms overwriting current settings with imported ones
+- **action.refresh**: "Refresh" button in Statistics view - refreshes data from server
+- **action.save**: "Save" button - generic save button for forms
+- **action.splitTracking**: "Split Tracking" action - splits current tracking into separate entries
+- **action.splitWorklog**: "Split Worklog" button in SplitTrackingDialog - confirms splitting current time tracking into separate entries
+- **action.testQuery**: "Test Query" button - tests JQL query functionality
+- **action.undoDelete**: "Undo Delete" button - reverses delete action
+- **action.upload**: "Upload" button - uploads files or data
+- **aria.openButtonList**: "Open Button List" - aria-label for dropdown button menu toggle (DropDownButtonDestructive)
+- **dialog.activityGap**: "Activity Gap Detected" - title for forgotten tracking dialog
+- **dialog.addIssueTitle**: "Add Issue" - title for issue selection dialog
+- **dialog.addIssueTitle**: "Add Issue" - title for issue selection dialog when adding new issues
+- **dialog.changeServerUrl**: "Change Server Url" - dialog title for server URL configuration
+- **dialog.comment**: "Comment" - label for comment input field
+- **dialog.confirmDeletion**: "Confirm Deletion" - title for delete confirmation when worklog exists on server
+- **dialog.confirmDiscard**: "Confirm Discard" - title for discard confirmation for local changes
+- **dialog.confirmImport**: "Confirm Import" - title for import confirmation dialog
+- **dialog.confirmImportText**: "Do you really want to replace your existing configuration with the one you just imported?" - confirmation message for settings import
+- **dialog.confirmRemoval**: "Confirm Removal" - title for issue removal confirmation dialog
+- **dialog.confirmRemoval**: "Confirm Removal" - title for issue removal confirmation dialog
+- **dialog.issueSearch**: "Issue Key / Search Term" - label for issue search input field
+- **dialog.issueSearch**: "Issue Key / Search Term" - label for issue search input field
+- **dialog.logDetails**: "Please enter the logs' details:" - instruction text in LogPeriodDialog
+- **dialog.logPeriodMultipleDays**: "Log Time for Multiple Days" - dialog title for bulk worklog creation
+- **dialog.searchIssueTitle**: "Search Issue for Tracking" - title for issue search dialog in tracking context
+- **dialog.searchIssueTitle**: "Search Issue for Tracking" - title for issue search dialog in tracking context
+- **dialog.splitTracking**: "Split Current Tracking" - dialog title for splitting current time tracking
+- **empty.noTimeLogged**: "No time logged for this week." - message when no worklogs exist for the current week
+- **error.domainNotFound**: "Unable to find the JIRA-Api with the provided Domain." - error message when domain validation fails
+- **error.issueBrokenReadd**: "Issue broken, please re-add via \"Add Issue\" button." - error message when issue data is corrupted
+- **field.endTime**: "End Time" - field label for worklog end time
+- **field.firstDay**: "First Day" - field label for date range start
+- **field.hoursPerDay**: "Hours Per Day" - field label for daily hour input
+- **field.issue**: "Issue" - field label for Jira issue selection
+- **field.lastDay**: "Last Day" - field label for date range end
+- **field.startTime**: "Start Time" - field label for worklog start time
+- **footer.copyright**: "© Florian Riedel" - copyright text in footer
+- **footer.designedBy**: "Designed and developed by Florian Riedel. © 2022" - copyright attribution in footer
+- **footer.legalDisclosure**: "Legal Disclosure" - link text for legal/impressum modal
+- **header.tempoTracker**: "Tempo-Tracker" - main application title in header
+- **hotkey.ctrlShift0**: "CTRL+SHIFT+0" - key combination for stop tracking
+- **hotkey.ctrlShift1**: "CTRL+SHIFT+1" - key combination for first issue tracking
+- **hotkey.ctrlShift2**: "CTRL+SHIFT+2" - key combination for second issue tracking  
+- **hotkey.ctrlShift3**: "CTRL+SHIFT+3" - key combination for third issue tracking
+- **hotkey.stopTracking**: "Stop Tracking" - table header for stop tracking hotkey
+- **hotkey.trackFirstIssue**: "Track First Issue" - table header for first issue tracking hotkey
+- **hotkey.trackSecondIssue**: "Track Second Issue" - table header for second issue tracking hotkey
+- **hotkey.trackThirdIssue**: "Track Third Issue" - table header for third issue tracking hotkey
+- **import.importButton**: "Import" - button text for importing options
+- **info.extendedCommentsDesc**: "Show comments in the worklog list and show an input field for entering a comment while tracking." - help text for extended comments option
+- **info.firefoxSyncWarning**: "For Firefox this setting is always inactive. Due to browser restrictions it is neccesary to open jira in a new tab and use that tab for synchronization." - Firefox-specific warning text
+- **info.hotkeysList**: "Following Hotkeys are registered:" - text introducing the hotkeys table
+- **info.issueTrackingInstructions**: "Please add all issues you want to use for time tracking. You can set an alias for each issue." - instruction text for issue tracking setup
+- **info.jiraServerUrl**: "Url of your Jira server." - help text explaining server URL input field
+- **info.jqlAutoSelect**: "Automatically select issues based on a custom JQL query." - description for JQL auto-selection feature
+- **info.jqlExtendTemplates**: "You can extend the available templates or create your own:" - text about extending JQL templates
+- **info.jqlQueryInstructions**: "You can set up a custom JQL-query to automatically add to your manually created issue list. This will add issues up to a total of 15 issues." - instruction text for JQL query setup
+- **issue.noTrackedIssues**: "No tracked issues." - message displayed when no issues are being tracked
+- **jql.recentAssigned**: "Recently assigned Issues" - name for JQL template showing recently assigned issues
+- **label.advancedIssueSelection**: "Advanced Issue Selection" - header for JQL query section
+- **label.automaticSynchronization**: "Automatic Synchronization" - header for auto-sync option
+- **label.customJqlQuery**: "Custom JQL Query" - label for JQL query input
+- **label.enabled**: "enabled" - generic label for checkbox/toggle states
+- **label.extendedComments**: "Extended Comments" - header for extended comments option
+- **label.finalWeek**: "Final Week" - label for final week input in work-time overrides
+- **label.finalYear**: "Final Year" - label for final year input in work-time overrides
+- **label.firstWeek**: "First Week" - label for first week input in work-time overrides
+- **label.firstYear**: "First Year" - label for first year input in work-time overrides
+- **label.hotkeys**: "Hotkeys" - header for hotkeys configuration section
+- **label.hoursPerWeek**: "Hours per Week" - label for hours per week input in work-time overrides
+- **label.jqlTemplates**: "JQL Templates" - header for JQL templates section
+- **label.overhours**: "Overhours" - label for overtime hours statistic
+- **label.requiredHours**: "Required Hours" - label for required working hours statistic
+- **label.theme**: "Theme" - header for theme selection section
+- **label.totalHours**: "Total Hours" - label for total tracked hours statistic
+- **label.trackedIssues**: "Tracked Issues" - header for tracked issues section
+- **label.workingDays**: "Working Days" - header for working days selection in options
+- **legal.accountability**: "Accountability for content" - legal section header
+- **legal.accountabilityText1**: Legal disclaimer text about content accuracy and monitoring obligations
+- **legal.accountabilityText2**: Legal text about TMG obligations for content removal
+- **legal.copyright**: "Copyright" - legal section header
+- **legal.copyrightText1**: Legal text about German copyright law and usage permissions
+- **legal.copyrightText2**: Legal text about private use limitations and unauthorized use violations
+- **legal.linksAccountability**: "Accountability for links" - legal section header  
+- **legal.linksText1**: Legal disclaimer about external link responsibility
+- **legal.linksText2**: Legal text about link removal policy
+- **legal.personalData**: "Use of Your Personal Data" - privacy section header
+- **legal.personalDataText**: "We do not use or store Your personal data." - privacy statement
+- **legal.security**: "Security of Your Personal Data" - privacy section header
+- **legal.securityText**: Legal disclaimer about data security limitations and commercial protection efforts
+- **legal.title**: "Legal Disclosure" - modal title for legal information
+- **legal.tmgSection5**: "Information in accordance with Section 5 TMG" - legal section header
+- **legal.tracking**: "Tracking Technologies and Cookies" - privacy section header
+- **legal.trackingText1**: Privacy text about browser storage usage for functionality
+- **legal.trackingText2**: "We do not use any form of tracking, and we do not pass your information to any third party." - privacy assurance
+- **legal.usageData**: "Usage Data" - privacy section header
+- **legal.usageDataText**: "No Usage Data is collected when using the extension." - privacy statement
+- **link.customJqlQuery**: "See Documentation." - link text for JQL documentation
+- **link.impressum**: "Impressum" - link text for legal/impressum modal
+- **link.reportIssue**: "Report Issue" - link text for issue reporting
+- **link.templateList**: "Github Link." - link text for template list
+- **loading.generic**: "Loading..." - generic loading message
+- **message.conflictingWorklog**: "Conflicting worklog detected." - tooltip message when worklog conflicts exist (OverlayRow)
+- **message.loadingDatabase**: "Loading Database..." - loading message displayed while initializing database
+- **message.queuedForSync**: "Queued for synchronization." - tooltip text for unsynced worklog entries
+- **message.selectIssueToTrack**: "Please select an issue to start tracking." - message shown when no issue is selected for tracking
+- **nav.firstWeek**: "Go to first week of year" - tooltip for navigation to first week of current year
+- **nav.github**: "Github" - link text to GitHub repository
+- **nav.goToFirst**: "Go to first" - generic go-to-first button tooltip for navigation controls (DiagramNavigation)
+- **nav.goToLast**: "Go to last" - generic go-to-last button tooltip for navigation controls (DiagramNavigation)
+- **nav.lastWeek**: "Go to last week of year" - tooltip for navigation to last week of current year
+- **nav.next**: "Next" - generic next button for navigation controls (DiagramNavigation)
+- **nav.nextMonth**: "Next month" - tooltip for navigation to next month in daily diagram
+- **nav.nextWeeks**: "Next weeks" - tooltip for navigation to next weeks in weekly diagram
+- **nav.openInTab**: "Open in Tab" - tooltip for expand button to open in new tab
+- **nav.options**: "Options" - navigation link to options view
+- **nav.previous**: "Previous" - generic previous button for navigation controls (DiagramNavigation)
+- **nav.previousMonth**: "Previous month" - tooltip for navigation to previous month in daily diagram
+- **nav.previousWeeks**: "Previous weeks" - tooltip for navigation to previous weeks in weekly diagram
+- **nav.statistics**: "Statistics" - navigation link to statistics view  
+- **nav.tracker**: "Tracker" - navigation link to tracker view
+- **options.accessToken**: "Access Token" - option label in authentication method dropdown
+- **options.appOptions**: "App Options" - section header for general application settings
+- **options.authentication**: "Authentication" - main section header for authentication settings
+- **options.authenticationMethod**: "Authentication Method" - label for authentication type selection
+- **options.enabled**: "enabled" - generic label for checkbox/toggle states in options
+- **options.issueOptions**: "Issue Options" - section header for Jira issue-related configuration
+- **options.personalAccessToken**: "Personal Access Token" - label for personal access token field
+- **options.personalAccessTokenInfo**: "Personal Access Token Information" - header for token information section
+- **options.user**: "User" - label for current authenticated user display
+- **options.workdayTimeTrackingSupport**: "Workday Time Tracking Support" - label for Workday integration option
+- **options.workTimeOptions**: "Work Time Options" - section header for work schedule configuration
+- **placeholder.comment**: "Comment" - placeholder text for comment input fields
+- **placeholder.searchIssue**: "Search Issue..." - placeholder text for issue search inputs
+- **section.customTheme**: "Custom Theme" - section for custom theme configuration
+- **section.worktimeOverrides**: "Work-time Overrides" - section for custom work schedule exceptions
+- **statistics.day**: "Day" - short label for day-based view toggle
+- **statistics.medianHoursHighest**: "Median Hours (Highest)" - label for highest quarterly median hours statistic
+- **statistics.medianHoursLowest**: "Median Hours (Lowest)" - label for lowest quarterly median hours statistic
+- **statistics.overhoursDecaying**: "Overhours (decaying)" - label for overtime hours that are expiring/decaying
+- **statistics.overhoursLastWeek**: "Overhours (last week)" - label for overtime hours from the previous week
+- **statistics.overhourStatistics**: "Overhour Statistics" - section header for overtime statistics
+- **statistics.week**: "Week" - short label for week-based view toggle
+- **statistics.weeklyHours**: "Weekly Hours" - toggle option text for weekly statistics view
+- **statistics.workTimeSettings**: "Work Time Settings" - section header for work time configuration options
+- **stats.avgHoursDay**: "Avg. Hours (Day)" - average daily hours worked
+- **stats.medianHoursWeek**: "Median Hours (Week)" - median weekly hours worked
+- **theme.background**: "Background" - theme setting for background color
+- **theme.custom**: "Custom Theme" - option for custom theme selection
+- **theme.dark**: "Dark Theme" - option for dark theme selection
+- **theme.diagramBarColor**: "Diagram Bar Color" - theme setting for diagram bar colors
+- **theme.diagramOverhourColor**: "Diagram Overhour Color" - theme setting for overhour indication color
+- **theme.fontColor**: "Font Color" - theme setting for font color
+- **theme.lightDefault**: "Light Theme (default)" - option for default light theme
+- **theme.linkColor**: "Link Color" - theme setting for link color
+- **theme.negativeColor**: "Negative Color" - theme setting for negative values color
+- **time.today**: "today" - relative time indicator for today
+- **time.yesterday**: "yesterday" - relative time indicator for yesterday
+- **tooltip.exportContent**: "This export contains the issue list and the server url. The personal access token and the username are not included in the export." - tooltip explaining what's included in settings export (OptionImportExport)
+- **tooltip.fillMandatoryOptions**: "Please fill all mandatory options." - tooltip when mandatory fields are missing
+- **tracker.logMultiple**: "Log Multiple" - button text for logging time across multiple days/periods
+- **tracker.newEntry**: "New Entry" - button text for creating a new worklog entry
+- **tracker.trackingHistory**: "Tracking History" - header text for the worklog history section in main tracker view
+- **view.tempoTrackerTimes**: "Tempo Tracker Times" - view header for tempo tracker times section
+- **workday.permissionsMissing**: "Permissions to access Workday are missing. Click the lock-icon to grant permissions." - tooltip text for permission requirements
+- **workday.workday**: "Workday" - link text for Workday integration
+- **worklog.commentPrefix**: "Comment:" - prefix label displayed before worklog comments
+- **worklog.today**: "Today" - label suffix for current day in worklog headers

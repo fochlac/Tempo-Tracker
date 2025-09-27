@@ -1,16 +1,16 @@
-
 import { DefaultText, H5 } from '../atoms/Typography'
 import { Modal } from '../atoms/Modal'
 import { Button } from '../atoms/Button'
 import { ButtonBar } from '../atoms/ButtonBar'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
+import { t } from '../../translations/translate'
 
 interface Props {
-    open: boolean;
-    onClose: () => void;
-    text: JSX.Element|string;
-    buttons?: JSX.Element;
-    title: string;
+    open: boolean
+    onClose: () => void
+    text: JSX.Element | string
+    buttons?: JSX.Element
+    title: string
 }
 
 export const ConfirmDialog: React.FC<Props> = ({ open, onClose, text, buttons, title }) => {
@@ -21,11 +21,9 @@ export const ConfirmDialog: React.FC<Props> = ({ open, onClose, text, buttons, t
     return (
         <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>
             <H5>{title}</H5>
-            <DefaultText style={{ textAlign: 'center', marginBottom: 16 }}>
-                {text}
-            </DefaultText>
+            <DefaultText style={{ textAlign: 'center', marginBottom: 16 }}>{text}</DefaultText>
             <ButtonBar>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={onClose}>{t('action.cancel')}</Button>
                 {buttons}
             </ButtonBar>
         </Modal>

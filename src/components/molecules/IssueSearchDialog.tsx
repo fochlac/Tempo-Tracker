@@ -7,6 +7,7 @@ import { H5, Label } from '../atoms/Typography'
 import { ProgressIndeterminate } from '../atoms/Progress'
 import { searchIssues } from '../../utils/api'
 import { FlexRow } from '../atoms/Layout'
+import { t } from '../../translations/translate'
 
 const SearchFieldWrapper = styled.div`
     width: 100%;
@@ -42,9 +43,9 @@ const SearchResultItem = styled.li`
 `
 
 interface Props {
-    onSelect: (issue: Issue) => void,
-    onCancel: () => void,
-    title: string;
+    onSelect: (issue: Issue) => void
+    onCancel: () => void
+    title: string
 }
 
 export const IssueSearchDialog: React.FC<Props> = ({ onSelect, onCancel, title }) => {
@@ -98,32 +99,29 @@ export const IssueSearchDialog: React.FC<Props> = ({ onSelect, onCancel, title }
                 </div>
             </FlexRow>
             <SearchFieldWrapper>
-                <Label>Issue Key / Search Term</Label>
-                <Input
-                    ref={searchInput}
-                    style={{ width: '100%' }}
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value || '')}
-                />
+                <Label>{t('dialog.issueSearch')}</Label>
+                <Input ref={searchInput} style={{ width: '100%' }} value={search} onChange={(e) => setSearch(e.target.value || '')} />
                 {result?.isLoading && <ProgressIndeterminate />}
             </SearchFieldWrapper>
             <SearchResultList>
                 {!result?.isLoading &&
                     !!result?.data?.length &&
-                    result.data.sort((i1, i2) => {
-                        if (search.toLowerCase().includes(i1.key.toLowerCase())) {
-                            return -1
-                        }
-                        if (search.toLowerCase().includes(i2.key.toLowerCase())) {
-                            return 1
-                        }
-                        return 0
-                    }).map((issue) => (
-                        <SearchResultItem key={issue.key} onClick={() => submit(issue)}>
-                            <span>{`${issue.key}:`}</span>
-                            <span>{issue.name}</span>
-                        </SearchResultItem>
-                    ))}
+                    result.data
+                        .sort((i1, i2) => {
+                            if (search.toLowerCase().includes(i1.key.toLowerCase())) {
+                                return -1
+                            }
+                            if (search.toLowerCase().includes(i2.key.toLowerCase())) {
+                                return 1
+                            }
+                            return 0
+                        })
+                        .map((issue) => (
+                            <SearchResultItem key={issue.key} onClick={() => submit(issue)}>
+                                <span>{`${issue.key}:`}</span>
+                                <span>{issue.name}</span>
+                            </SearchResultItem>
+                        ))}
             </SearchResultList>
         </Modal>
     )

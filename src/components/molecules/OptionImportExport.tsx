@@ -4,6 +4,7 @@ import { Tooltip } from '../atoms/Tooltip'
 import { ImportOptionsAction } from './ImportOptionsAction'
 import { ActionLink } from '../atoms/ActionLink'
 import { saveAs } from 'file-saver'
+import { t } from '../../translations/translate'
 
 const ImportExportBar = styled.div`
     font-size: 0.8rem;
@@ -20,15 +21,18 @@ const ExportLink = styled(ActionLink)`
 export const OptionsImportExport: React.FC = () => {
     const { data: options } = useOptions()
 
-    const onExportOptions = () => saveAs(
-        new Blob([JSON.stringify({ ...options, token: '', user: '', ttToken: '', email: '' }, null, 4)], { type: 'application/json;charset=utf-8' }),
-        'tempo-tracker.options.json'
-    )
+    const onExportOptions = () =>
+        saveAs(
+            new Blob([JSON.stringify({ ...options, token: '', user: '', ttToken: '', email: '' }, null, 4)], {
+                type: 'application/json;charset=utf-8'
+            }),
+            'tempo-tracker.options.json'
+        )
 
     return (
         <ImportExportBar>
-            <Tooltip content='This export contains the issue list and the server url. The personal access token and the username are not included in the export.'>
-                <ExportLink onClick={onExportOptions}>Export</ExportLink>
+            <Tooltip content={t('tooltip.exportContent')}>
+                <ExportLink onClick={onExportOptions}>{t('action.export')}</ExportLink>
             </Tooltip>
             <ImportOptionsAction />
         </ImportExportBar>

@@ -11,6 +11,7 @@ import { TimeInput } from '../atoms/TimeInput'
 import { WorklogAtoms } from './Worklog'
 import { IssueSelector } from './IssueSelector'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
+import { t } from '../../translations/translate'
 
 const DateInput = styled(Input)`
     flex-shrink: 0;
@@ -107,10 +108,10 @@ export function WorklogEditor({ log: pureLog }) {
                     <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
                 </Duration>
                 <div style={{ marginLeft: 'auto' }}>
-                    <IconButton title="Save" onClick={onSubmit} style={{ marginLeft: 16 }}>
+                    <IconButton title={t('action.save')} onClick={onSubmit} style={{ marginLeft: 16 }}>
                         <Check />
                     </IconButton>
-                    <IconButton title="Cancel" onClick={() => dispatch('resetEditIssue')} style={{ marginLeft: 4 }}>
+                    <IconButton title={t('action.cancel')} onClick={() => dispatch('resetEditIssue')} style={{ marginLeft: 4 }}>
                         <X />
                     </IconButton>
                 </div>

@@ -5,6 +5,7 @@ import { useJiraWorklog } from '../../hooks/useWorklogs'
 import { dateHumanized, formatDuration } from '../../utils/datetime'
 import { Timer } from '../atoms/Timer'
 import { WorklogAtoms } from './Worklog'
+import { t } from '../../translations/translate'
 
 const { Datum } = WorklogAtoms
 
@@ -32,20 +33,27 @@ const DurationTimer = styled(Timer)`
     text-align: end;
 `
 
-export const WorklogHeader: React.FC<{ date: string; }> = ({ date }) => {
+export const WorklogHeader: React.FC<{ date: string }> = ({ date }) => {
     const { data: tracker } = useTracking()
     const worklog = useJiraWorklog()
-    const duration = useMemo(() => worklog.data?.reduce((duration, log) => {
-        if (dateHumanized(log.start) === date) {
-            return duration + log.end - log.start
-        }
-        return duration
-    }, 0), [date, worklog.data])
+    const duration = useMemo(
+        () =>
+            worklog.data?.reduce((duration, log) => {
+                if (dateHumanized(log.start) === date) {
+                    return duration + log.end - log.start
+                }
+                return duration
+            }, 0),
+        [date, worklog.data]
+    )
     const isToday = dateHumanized(Date.now()) === date
 
     return (
         <ListRow>
-            <Datum style={{ color: 'var(--font)', whiteSpace: 'nowrap' }}>{date}{isToday ? ' (Today)' : ''}</Datum>
+            <Datum style={{ color: 'var(--font)', whiteSpace: 'nowrap' }}>
+                {date}
+                {isToday ? ` (${t('worklog.today')})` : ''}
+            </Datum>
             {tracker.start && dateHumanized(tracker.start) === date ? (
                 <DurationTimer start={tracker.start - duration} />
             ) : (

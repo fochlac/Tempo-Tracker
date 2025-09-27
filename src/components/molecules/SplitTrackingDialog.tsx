@@ -8,6 +8,7 @@ import { Modal } from '../atoms/Modal'
 import { TimeInput } from '../atoms/TimeInput'
 import { DefaultText, H5, Label } from '../atoms/Typography'
 import { Input } from '../atoms/Input'
+import { t } from '../../translations/translate'
 
 const Row = styled.div`
     display: flex;
@@ -25,7 +26,7 @@ const Line = styled(DefaultText)`
     text-align: left;
 `
 
-export const SplitTrackingDialog: React.FC<{onClose: () => void}> = ({onClose}) => {
+export const SplitTrackingDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { actions, data } = useTracking()
     const [end, setEnd] = useState(Date.now())
 
@@ -41,34 +42,36 @@ export const SplitTrackingDialog: React.FC<{onClose: () => void}> = ({onClose}) 
 
     return (
         <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>
-            <H5>Split Current Tracking</H5>
+            <H5>{t('dialog.splitTracking')}</H5>
             <div style={{ padding: '0 8px', marginBottom: 8 }}>
-                <Line>
-                    You are tracking work on {label} since <b>{timeString(data?.start)}</b>.
-                </Line>
+                <Line>{t('dialog.splitTrackingInfo', { label, time: timeString(data?.start) })}</Line>
                 <Row>
                     <Col>
-                        <Label>Issue</Label>
+                        <Label>{t('field.issue')}</Label>
                         <Input readOnly value={label} />
                     </Col>
                     <Col>
-                        <Label>Start Time</Label>
+                        <Label>{t('field.startTime')}</Label>
                         <TimeInput onChange={onChangeTime} value={timeString(data?.start)} readOnly />
                     </Col>
                     <Col>
-                        <Label>End Time</Label>
+                        <Label>{t('field.endTime')}</Label>
                         <TimeInput onChange={onChangeTime} value={timeString(end)} />
                     </Col>
                 </Row>
             </div>
             <ButtonBar>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={async () => {
-                    const issue = data.issue
-                    await actions.stop(end)
-                    await actions.start(issue, end)
-                    onClose()
-                }}>Split Worklog</Button>
+                <Button onClick={onClose}>{t('action.cancel')}</Button>
+                <Button
+                    onClick={async () => {
+                        const issue = data.issue
+                        await actions.stop(end)
+                        await actions.start(issue, end)
+                        onClose()
+                    }}
+                >
+                    {t('action.splitWorklog')}
+                </Button>
             </ButtonBar>
         </Modal>
     )

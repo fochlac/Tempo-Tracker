@@ -8,6 +8,9 @@ import { THEMES } from 'src/constants/constants'
 import { Conditional } from '../atoms/Conditional'
 import { SectionHead } from '../views/Options'
 import { CustomThemeCssInput } from '../atoms/CustomThemeCssInput'
+import { t } from '../../translations/translate'
+
+const isFirefox = navigator.userAgent.includes('Firefox')
 
 const Select = styled.select`
     width: 200px;
@@ -35,35 +38,40 @@ export const AppOptionsSection: React.FC = () => {
     return (
         <>
             <Option>
-                <Label>Hotkeys</Label>
+                <Label>{t('label.hotkeys')}</Label>
                 <InfoText>
-                    <p>Following Hotkeys are registered:</p>
+                    <p>{t('info.hotkeysList')}</p>
                     <Table>
                         <tr>
-                            <HeadCell>Stop Tracking</HeadCell>
-                            <HeadCell>Track First Issue</HeadCell>
-                            <HeadCell>Track Second Issue</HeadCell>
-                            <HeadCell>Track Third Issue</HeadCell>
+                            <HeadCell>{t('hotkey.stopTracking')}</HeadCell>
+                            <HeadCell>{t('hotkey.trackFirstIssue')}</HeadCell>
+                            <HeadCell>{t('hotkey.trackSecondIssue')}</HeadCell>
+                            <HeadCell>{t('hotkey.trackThirdIssue')}</HeadCell>
                         </tr>
                         <tr>
-                            <Cell>CTRL+SHIFT+0</Cell>
-                            <Cell>CTRL+SHIFT+1</Cell>
-                            <Cell>CTRL+SHIFT+2</Cell>
-                            <Cell>CTRL+SHIFT+3</Cell>
+                            <Cell>{t('hotkey.ctrlShift0')}</Cell>
+                            <Cell>{t('hotkey.ctrlShift1')}</Cell>
+                            <Cell>{t('hotkey.ctrlShift2')}</Cell>
+                            <Cell>{t('hotkey.ctrlShift3')}</Cell>
                         </tr>
                     </Table>
                 </InfoText>
             </Option>
             <Option>
-                <Label>Extended Comments</Label>
-                <InfoText>Show comments in the worklog list and show an input field for entering a comment while tracking.</InfoText>
+                <Label>{t('label.extendedComments')}</Label>
+                <InfoText>{t('info.extendedCommentsDesc')}</InfoText>
                 <FlexRow $justify="flex-start">
-                    <Input style={{ margin: '0 6px' }} type="checkbox" checked={options.showComments} onChange={(e) => actions.merge({ showComments: e.target.checked })} />
-                    <Label>enabled</Label>
+                    <Input
+                        style={{ margin: '0 6px' }}
+                        type="checkbox"
+                        checked={options.showComments}
+                        onChange={(e) => actions.merge({ showComments: e.target.checked })}
+                    />
+                    <Label>{t('label.enabled')}</Label>
                 </FlexRow>
             </Option>
             <Option>
-                <Label>Automatic Synchronization</Label>
+                <Label>{t('label.automaticSynchronization')}</Label>
                 <FlexRow $justify="flex-start">
                     <Input
                         style={{ margin: '0 6px' }}
@@ -72,37 +80,33 @@ export const AppOptionsSection: React.FC = () => {
                         checked={isFirefox ? false : options.autosync}
                         onChange={(e) => actions.merge({ autosync: e.target.checked })}
                     />
-                    <Label>enabled</Label>
+                    <Label>{t('label.enabled')}</Label>
                 </FlexRow>
-                {isFirefox && (
-                    <InfoText>
-                        For Firefox this setting is always inactive. Due to browser restrictions it is neccesary to open jira in a new tab and use that tab for synchronization.
-                    </InfoText>
-                )}
+                {isFirefox && <InfoText>{t('info.firefoxSyncWarning')}</InfoText>}
             </Option>
             <Option>
-                <Label>Theme</Label>
+                <Label>{t('label.theme')}</Label>
                 <Select onChange={(e) => actions.merge({ theme: e.target.value })}>
                     <option selected={options.theme === THEMES.DEFAULT} value={THEMES.DEFAULT}>
-                        Light Theme (default)
+                        {t('theme.lightDefault')}
                     </option>
                     <option selected={options.theme === THEMES.DARK} value={THEMES.DARK}>
-                        Dark Theme
+                        {t('theme.dark')}
                     </option>
                     <option selected={options.theme === THEMES.CUSTOM} value={THEMES.CUSTOM}>
-                        Custom Theme
+                        {t('theme.custom')}
                     </option>
                 </Select>
             </Option>
             <Conditional enable={options.theme === THEMES.CUSTOM}>
-                <SectionHead>Custom Theme</SectionHead>
+                <SectionHead>{t('section.customTheme')}</SectionHead>
                 <Grid>
-                    <CustomThemeCssInput label="Background" field="background" />
-                    <CustomThemeCssInput label="Font Color" field="font" />
-                    <CustomThemeCssInput label="Link Color" field="link" />
-                    <CustomThemeCssInput label="Negative Color" field="destructive" />
-                    <CustomThemeCssInput label="Diagram Bar Color" field="diagramm" />
-                    <CustomThemeCssInput label="Diagram Overhour Color" field="diagrammGreen" />
+                    <CustomThemeCssInput label={t('theme.background')} field="background" />
+                    <CustomThemeCssInput label={t('theme.fontColor')} field="font" />
+                    <CustomThemeCssInput label={t('theme.linkColor')} field="link" />
+                    <CustomThemeCssInput label={t('theme.negativeColor')} field="destructive" />
+                    <CustomThemeCssInput label={t('theme.diagramBarColor')} field="diagramm" />
+                    <CustomThemeCssInput label={t('theme.diagramOverhourColor')} field="diagrammGreen" />
                 </Grid>
             </Conditional>
         </>

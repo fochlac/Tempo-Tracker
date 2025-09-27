@@ -1,4 +1,5 @@
 import { formatDuration } from '../../utils/datetime'
+import { t } from '../../translations/translate'
 import { Block, Column } from '../atoms/Layout'
 import { Label, Value } from '../atoms/Typography'
 
@@ -35,25 +36,25 @@ export const WorkTimeStats: React.FC<Props> = ({ total, weeks = [], days = [], g
     return (
         <Block>
             <Column>
-                <Label>Total Hours</Label>
+                <Label>{t('label.totalHours')}</Label>
                 <Value>{total ? formatDuration(total * 1000, true, true) : <>&mdash;</>}</Value>
             </Column>
             <Column>
-                <Label>Required Hours</Label>
+                <Label>{t('label.requiredHours')}</Label>
                 <Value>{total ? formatDuration(requiredSeconds * 1000, true, true) : <>&mdash;</>}</Value>
             </Column>
             <Column>
-                <Label>Overhours</Label>
+                <Label>{t('label.overhours')}</Label>
                 <Value>{overseconds > 0 ? formatDuration(overseconds * 1000, true, true) : <>&mdash;</>}</Value>
             </Column>
             {!dayStat ? (
                 <Column>
-                    <Label>Median Hours (Week)</Label>
+                    <Label>{t('stats.medianHoursWeek')}</Label>
                     <Value>{total ? formatDuration(medianWeek * 1000, true, true) : <>&mdash;</>}</Value>
                 </Column>
             ) : (
                 <Column>
-                    <Label>Avg. Hours (Day)</Label>
+                    <Label>{t('stats.avgHoursDay')}</Label>
                     <Value>{averageDay ? formatDuration(averageDay * 1000, true, true) : <>&mdash;</>}</Value>
                 </Column>
             )}

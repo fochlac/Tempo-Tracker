@@ -3,6 +3,7 @@ import { IconButton } from '../atoms/IconButton'
 import { Input } from '../atoms/Input'
 import { Block, Column } from '../atoms/Layout'
 import { DefaultText } from '../atoms/Typography'
+import { t } from '../../translations/translate'
 
 interface Props {
     year: number
@@ -32,10 +33,10 @@ export const DiagramNavigation: React.FC<Props> = ({
     onNextClick,
     onFirstClick,
     onLastClick,
-    previousTitle = 'Previous',
-    nextTitle = 'Next',
-    firstTitle = 'Go to first',
-    lastTitle = 'Go to last'
+    previousTitle = t('nav.previous'),
+    nextTitle = t('nav.next'),
+    firstTitle = t('nav.goToFirst'),
+    lastTitle = t('nav.goToLast')
 }) => {
     const currentYear = new Date().getFullYear()
 

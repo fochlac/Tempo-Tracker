@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { dateHumanized, durationString, formatDuration, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from '../../utils/datetime'
 import { TooltipTop } from '../atoms/Tooltip'
 import { DiagramNavigation } from './DiagramNavigation'
+import { t } from '../../translations/translate'
 import { Bar, BarLabel, BarTooltip, BarWrapper, Diagramm, MissingHours, OverHours, Time, TimeBar } from '../atoms/Diagram'
 
 const Duration = styled.legend`
@@ -60,10 +61,10 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                 onNextClick={() => setWeekOffset(Math.min(weeknumber, weekOffset + columns))}
                 onFirstClick={goToFirstWeek}
                 onLastClick={goToLastWeek}
-                previousTitle="Previous weeks"
-                nextTitle="Next weeks"
-                firstTitle="Go to first week of year"
-                lastTitle="Go to last week of year"
+                previousTitle={t('nav.previousWeeks')}
+                nextTitle={t('nav.nextWeeks')}
+                firstTitle={t('nav.firstWeek')}
+                lastTitle={t('nav.lastWeek')}
             />
             <Diagramm>
                 <TimeBar>

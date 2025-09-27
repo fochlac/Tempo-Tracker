@@ -16,6 +16,7 @@ import { H5 } from './atoms/Typography'
 import { ActionLink } from './atoms/ActionLink'
 import { sortAndAnalyzeWorkTimes } from 'src/utils/workday'
 import { CircularProgress } from './atoms/Progress'
+import { t } from '../translations/translate'
 
 const Main = styled.aside<{ $collapsed?: boolean }>`
     position: absolute;
@@ -94,10 +95,10 @@ const ProgressOverlay = styled.div`
     justify-content: center;
     flex-direction: column;
 `
-const ProgressSegment = styled.div<{$checked: boolean}>`
+const ProgressSegment = styled.div<{ $checked: boolean }>`
     flex: 1 1 auto;
     height: 100%;
-    background-color: ${(props) => props['$checked'] ? 'var(--diagramm)' : '#fbfbfb'};
+    background-color: ${(props) => (props['$checked'] ? 'var(--diagramm)' : '#fbfbfb')};
 `
 const UploadBar = styled(ButtonBar)`
     padding: 8px 4px;
@@ -152,26 +153,26 @@ const CollapseIndicator = styled.button`
 const githubUrl = 'https://github.com/fochlac/Tempo-Tracker/issues'
 
 interface Props {
-    insertWorkTime?: (startTime: number, endTime: number) => Promise<void|{error: string}>
-    workTimes: WorkTimeInfo[],
-    workdayEntries: WorkdayEntry[],
-    refresh: () => Promise<void>,
-    isInitializing?: boolean,
+    insertWorkTime?: (startTime: number, endTime: number) => Promise<void | { error: string }>
+    workTimes: WorkTimeInfo[]
+    workdayEntries: WorkdayEntry[]
+    refresh: () => Promise<void>
+    isInitializing?: boolean
     impressumUrl: string
 }
 
 export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEntries, refresh, isInitializing, impressumUrl }) => {
-    const [selected, setSelected] = useState<Set<string>>(() => new Set(
-        Object.values(sortAndAnalyzeWorkTimes(workTimes, workdayEntries))
-            .flat()
-            .filter((entry) => !entry.conflicts.length)
-            .map((entry) => entry.workTime.id)
-    ))
-
-    const sortedWorkTimes = useMemo(
-        () => sortAndAnalyzeWorkTimes(workTimes, workdayEntries, selected),
-        [selected, workdayEntries, workTimes]
+    const [selected, setSelected] = useState<Set<string>>(
+        () =>
+            new Set(
+                Object.values(sortAndAnalyzeWorkTimes(workTimes, workdayEntries))
+                    .flat()
+                    .filter((entry) => !entry.conflicts.length)
+                    .map((entry) => entry.workTime.id)
+            )
     )
+
+    const sortedWorkTimes = useMemo(() => sortAndAnalyzeWorkTimes(workTimes, workdayEntries, selected), [selected, workdayEntries, workTimes])
 
     const [collapsed, setCollapsed] = useState(false)
     const [isLoading, setLoading] = useState(false)
@@ -182,9 +183,9 @@ export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEnt
         setLoading(true)
         setProgress(0)
         const errors = {}
-        const workTimes:Record<string, WorkTimeInfo> = Object.values(sortedWorkTimes)
+        const workTimes: Record<string, WorkTimeInfo> = Object.values(sortedWorkTimes)
             .flat()
-            .reduce((map, {workTime}) => ({...map, [workTime.id]: workTime}), {})
+            .reduce((map, { workTime }) => ({ ...map, [workTime.id]: workTime }), {})
 
         for (const workTimeId of selected) {
             const workTime = workTimes[workTimeId]
@@ -208,22 +209,22 @@ export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEnt
         setLoading(true)
         try {
             await refresh()
-        }
-        catch (e) {}
+        } catch (e) {}
     }
 
-    const onChange = (workTimes = []) => (e) => {
-        e.stopPropagation()
-        if (isLoading) return
-        const newSet = new Set(selected)
-        if (workTimes.every(({ workTime }) => selected.has(workTime.id))) {
-            workTimes.forEach(({ workTime }) => newSet.delete(workTime.id))
-        }
-        else {
-            workTimes.forEach(({ workTime }) => newSet.add(workTime.id))
-        }
+    const onChange = (workTimes = []) => {
+        return (e) => {
+            e.stopPropagation()
+            if (isLoading) return
+            const newSet = new Set(selected)
+            if (workTimes.every(({ workTime }) => selected.has(workTime.id))) {
+                workTimes.forEach(({ workTime }) => newSet.delete(workTime.id))
+            } else {
+                workTimes.forEach(({ workTime }) => newSet.add(workTime.id))
+            }
 
-        setSelected(newSet)
+            setSelected(newSet)
+        }
     }
 
     return (
@@ -231,7 +232,7 @@ export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEnt
             <CssVariables theme={createTheme(Themes.DEFAULT)} />
             <Header onClick={() => setCollapsed(!collapsed)}>
                 <Img />
-                <span>Tempo Tracker Times</span>
+                <span>{t('view.tempoTrackerTimes')}</span>
                 <CollapseIndicator>{collapsed ? <ChevronsDown /> : <ChevronsUp />}</CollapseIndicator>
             </Header>
             <Conditional enable={!collapsed}>
@@ -248,54 +249,54 @@ export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEnt
                     <List>
                         {Object.keys(sortedWorkTimes).map((date, index, array) => (
                             <Fragment key={date}>
-                                <OverlayHeaderRow {...{onChange, selected }}
+                                <OverlayHeaderRow
+                                    {...{ onChange, selected }}
                                     disabled={isLoading}
                                     sortedWorkTimes={sortedWorkTimes[date]}
                                     date={sortedWorkTimes[date][0].workTime.start}
                                 />
-                                {sortedWorkTimes[date]
-                                    .map(({workTime, conflicts}) => (
-                                        <OverlayRow
-                                            top={index > array.length / 2}
-                                            onClick={onChange([{workTime, conflicts}])}
-                                            key={workTime.id}
-                                            error={errors[workTime.id]}
-                                            {...{workTime, conflicts}}
-                                            disabled={isLoading}
-                                            checked={selected.has(workTime.id)} />
-                                    ))}
+                                {sortedWorkTimes[date].map(({ workTime, conflicts }) => (
+                                    <OverlayRow
+                                        top={index > array.length / 2}
+                                        onClick={onChange([{ workTime, conflicts }])}
+                                        key={workTime.id}
+                                        error={errors[workTime.id]}
+                                        {...{ workTime, conflicts }}
+                                        disabled={isLoading}
+                                        checked={selected.has(workTime.id)}
+                                    />
+                                ))}
                             </Fragment>
-                        )
-                        )}
+                        ))}
                     </List>
                 </Conditional>
                 <Conditional enable={!workTimes.length && !isInitializing}>
                     <EmptySpacer $justify="center">
                         <Clock size={50} />
-                        <EmptyMessage>No time logged for this week.</EmptyMessage>
+                        <EmptyMessage>{t('empty.noTimeLogged')}</EmptyMessage>
                     </EmptySpacer>
                 </Conditional>
                 <Conditional enable={isInitializing}>
                     <EmptySpacer $justify="center">
                         <CircularProgress size={50} />
-                        <EmptyMessage>Loading...</EmptyMessage>
+                        <EmptyMessage>{t('loading.generic')}</EmptyMessage>
                     </EmptySpacer>
                 </Conditional>
                 <Conditional enable={!isInitializing}>
                     <UploadBar>
                         <UploadButton onClick={onRefresh} disabled={isLoading}>
-                            Refresh
+                            {t('action.refresh')}
                         </UploadButton>
                         <UploadButton onClick={onSubmit} disabled={!selected.size || isLoading}>
-                            Upload
+                            {t('action.upload')}
                         </UploadButton>
                     </UploadBar>
                 </Conditional>
                 <Footer>
-                    <p style={{ margin: '0 auto 0 4px' }}>© Florian Riedel</p>
+                    <p style={{ margin: '0 auto 0 4px' }}>{t('footer.copyright')}</p>
 
-                    <ActionLink onClick={() => Location.openTab(githubUrl)} >Report Issue</ActionLink>
-                    <ActionLink onClick={() => Location.openTab(impressumUrl)} >Impressum</ActionLink>
+                    <ActionLink onClick={() => Location.openTab(githubUrl)}>{t('link.reportIssue')}</ActionLink>
+                    <ActionLink onClick={() => Location.openTab(impressumUrl)}>{t('link.impressum')}</ActionLink>
                 </Footer>
             </Conditional>
         </Main>

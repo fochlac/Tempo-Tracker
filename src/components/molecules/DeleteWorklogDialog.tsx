@@ -2,6 +2,7 @@ import { useOptions } from '../../hooks/useOptions'
 import { timeString } from '../../utils/datetime'
 import { DestructiveButton } from '../atoms/Button'
 import { ConfirmDialog } from './ConfirmDialog'
+import { t, TranslationVars } from '../../translations/translate'
 
 interface DeleteWorklogProps {
     open: boolean
@@ -11,9 +12,13 @@ interface DeleteWorklogProps {
 }
 export const DeleteWorklogDialog: React.FC<DeleteWorklogProps> = ({ open, onDelete, onClose, log }) => {
     const { data: options } = useOptions()
-    const text =
-        `Do you really want to ${!!log.id && !log.synced ? 'discard the changes for' : 'delete'} the worklog` +
-        ` from ${timeString(log.start)} till ${timeString(log.end)} for Issue "${options.issues[log.issue.key]?.alias || log.issue.name}".`
+    const isDiscardAction = !!log.id && !log.synced
+    const vars: TranslationVars = {
+        startTime: timeString(log.start),
+        endTime: timeString(log.end),
+        issue: options.issues[log.issue.key]?.alias || log.issue.name
+    }
+    const text = isDiscardAction ? t('dialog.discardWorklogText', vars) : t('dialog.deleteWorklogText', vars)
     const buttons =
         !!log.id && !log.synced ? (
             <DestructiveButton
@@ -22,7 +27,7 @@ export const DeleteWorklogDialog: React.FC<DeleteWorklogProps> = ({ open, onDele
                     onDelete(true)
                 }}
             >
-                {!log.delete ? 'Discard Changes' : 'Undo Delete'}
+                {!log.delete ? t('action.discardChanges') : t('action.undoDelete')}
             </DestructiveButton>
         ) : (
             <DestructiveButton
@@ -31,14 +36,14 @@ export const DeleteWorklogDialog: React.FC<DeleteWorklogProps> = ({ open, onDele
                     onDelete()
                 }}
             >
-                Delete
+                {t('action.delete')}
             </DestructiveButton>
         )
     return (
         <ConfirmDialog
             {...{ open, onDelete, onClose }}
             text={text}
-            title={log.id && log.synced ? 'Confirm Deletion' : 'Confirm Discard'}
+            title={log.id && log.synced ? t('dialog.confirmDeletion') : t('dialog.confirmDiscard')}
             buttons={buttons}
         />
     )

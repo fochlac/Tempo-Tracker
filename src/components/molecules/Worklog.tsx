@@ -9,6 +9,7 @@ import { useState } from 'preact/hooks'
 import { DeleteWorklogDialog } from './DeleteWorklogDialog'
 import { UploadIcon } from '../atoms/UploadIcon'
 import { useOptions } from '../../hooks/useOptions'
+import { t } from '../../translations/translate'
 import { InfoText } from '../atoms/Typography'
 
 const WorklogEntry = styled.li<{ delete?: boolean }>`
@@ -101,7 +102,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
                 <Datum>
                     {dateHumanized(log.start)}
                     {(!log.synced || log.syncTabId) && (
-                        <Tooltip right content="Queued for synchronization.">
+                        <Tooltip right content={t('message.queuedForSync')}>
                             <Icon style={{ marginLeft: 8 }} />
                         </Tooltip>
                     )}
@@ -121,7 +122,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
                 </Duration>
                 <div style={{ marginLeft: 'auto' }}>
                     <IconButton
-                        title="Edit Worklog"
+                        title={t('action.editWorklog')}
                         disabled={(options.autosync && !log.id) || disableButtons}
                         onClick={() => dispatch('setEditIssue', { issue: log.id || log.tempId })}
                         style={{ marginLeft: 16 }}
@@ -129,7 +130,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
                         <Edit3 />
                     </IconButton>
                     <IconButton
-                        title={log.comment ? `Edit Comment: ${log.comment}` : 'Edit Comment'}
+                        title={log.comment ? `${t('action.editComment')}: ${log.comment}` : t('action.editComment')}
                         disabled={(options.autosync && !log.id) || disableButtons}
                         onClick={() => dispatch('setEditComment', { issue: log.id || log.tempId })}
                         style={{ marginLeft: 4 }}
@@ -137,7 +138,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
                         <MessageSquare />
                     </IconButton>
                     <IconButton
-                        title={log.id && log.synced ? 'Delete Worklog' : 'Discard Changes'}
+                        title={log.id && log.synced ? t('action.deleteWorklog') : t('action.discardChanges')}
                         disabled={disableButtons}
                         onClick={() => setStartDelete(true)}
                         style={{ marginLeft: 4 }}
@@ -145,11 +146,16 @@ export function Worklog({ log, disableButtons, onDelete }) {
                         {log.id && log.synced ? <Trash2 /> : <X />}
                     </IconButton>
                 </div>
-                <DeleteWorklogDialog open={startDelete} log={log} onClose={() => setStartDelete(false)} onDelete={(updateOnly) => onDelete(log, updateOnly)} />
+                <DeleteWorklogDialog
+                    open={startDelete}
+                    log={log}
+                    onClose={() => setStartDelete(false)}
+                    onDelete={(updateOnly) => onDelete(log, updateOnly)}
+                />
             </WorklogBody>
             {showComment && log.comment ? (
                 <WorklogComment>
-                    <span>Comment:</span>
+                    <span>{t('worklog.commentPrefix')}</span>
                     <Comment title={log.comment}>{log.comment?.trim()?.replace(/[\n\r]+/g, ' – ')}</Comment>
                 </WorklogComment>
             ) : null}

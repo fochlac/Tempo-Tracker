@@ -1,4 +1,3 @@
-
 import { H5, Label } from '../atoms/Typography'
 import { Modal } from '../atoms/Modal'
 import { Button } from '../atoms/Button'
@@ -11,9 +10,10 @@ import { useState } from 'preact/hooks'
 import { useJiraWorklog } from '../../hooks/useWorklogs'
 import { Textarea } from '../atoms/Input'
 import styled from 'styled-components'
+import { t } from '../../translations/translate'
 
 interface Props {
-    log: TemporaryWorklog|Worklog;
+    log: TemporaryWorklog | Worklog
 }
 
 const Title = styled(H5)`
@@ -25,10 +25,14 @@ const Title = styled(H5)`
 `
 
 export const CommentDialog: React.FC<Props> = ({ log }) => {
-    const {data: options} = useOptions()
+    const { data: options } = useOptions()
     const dispatch = useDispatch()
-    const {actions} = useJiraWorklog()
-    const title = `Comment for ${options.issues[log.issue.key]?.alias || log.issue.name}, ${timeString(log.start)} till ${timeString(log.end)} `
+    const { actions } = useJiraWorklog()
+    const title = t('dialog.commentTitle', {
+        issue: options.issues[log.issue.key]?.alias || log.issue.name,
+        startTime: timeString(log.start),
+        endTime: timeString(log.end)
+    })
     const [comment, setComment] = useState(log.comment)
 
     const hasChanges = log.comment !== comment
@@ -50,12 +54,12 @@ export const CommentDialog: React.FC<Props> = ({ log }) => {
         <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>
             <Title title={title}>{title}</Title>
             <div style={{ textAlign: 'center', marginBottom: 16, width: '100%', padding: '0 8px' }}>
-                <Label>Comment</Label>
+                <Label>{t('dialog.comment')}</Label>
                 <Textarea onChange={(e) => setComment(e.target.value)} value={comment} />
             </div>
             <ButtonBar>
-                <Button onClick={() => dispatch('resetEditComment')}>Cancel</Button>
-                <Button onClick={onSave}>Save</Button>
+                <Button onClick={() => dispatch('resetEditComment')}>{t('action.cancel')}</Button>
+                <Button onClick={onSave}>{t('action.save')}</Button>
             </ButtonBar>
         </Modal>
     )

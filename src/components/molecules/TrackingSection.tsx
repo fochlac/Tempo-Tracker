@@ -10,6 +10,7 @@ import { TimeInput } from '../atoms/TimeInput'
 import { useOptions } from '../../hooks/useOptions'
 import { FlexColumn, FlexRow } from '../atoms/Layout'
 import { IssueSearchDialog } from './IssueSearchDialog'
+import { t } from '../../translations/translate'
 import { IssueSelector } from './IssueSelector'
 import { DropDownButtonDestructive } from './DropDownButtonDestructive'
 import { SplitTrackingDialog } from './SplitTrackingDialog'
@@ -42,7 +43,7 @@ const Duration = styled(Timer)`
 
 const CUSTOM_ISSUE = 'CUSTOM_ISSUE'
 
-export function TrackingSection ({ hasError, issues }: {hasError: boolean, issues: LocalIssue[] }) {
+export function TrackingSection({ hasError, issues }: { hasError: boolean; issues: LocalIssue[] }) {
     const { data: tracker, actions } = useTracking()
     const { data: options } = useOptions()
     const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
@@ -57,12 +58,12 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
                         name: issue.alias || issue.key,
                         title: `${issue.key}: ${issue.name}`,
                         color: issue.color
-                    } as ToggleBarOption)
+                    }) as ToggleBarOption
             )
             .concat([
                 {
                     value: CUSTOM_ISSUE,
-                    name: 'Search Issue...',
+                    name: t('placeholder.searchIssue'),
                     color: undefined,
                     disabled: hasError,
                     full: true
@@ -85,8 +86,7 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
             newDay.setFullYear(y, m - 1, d)
             if (newDay.getTime() < Date.now()) {
                 actions.updateStart(newDay.getTime())
-            }
-            else {
+            } else {
                 const newDay = new Date(tracker.start)
                 newDay.setFullYear(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
                 actions.updateStart(newDay.getTime())
@@ -103,15 +103,13 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
             let newDay = new Date(tracker.start)
             if (oldH === '00' && h === '23') {
                 newDay = new Date(newDay.getTime() - 24 * 60 * 60 * 1000)
-            }
-            else if (h === '00' && oldH === '23') {
+            } else if (h === '00' && oldH === '23') {
                 newDay = new Date(newDay.getTime() + 24 * 60 * 60 * 1000)
             }
             newDay.setHours(h, m)
             if (newDay.getTime() < Date.now()) {
                 actions.updateStart(newDay.getTime())
-            }
-            else {
+            } else {
                 actions.updateStart(Date.now())
             }
         }
@@ -119,8 +117,7 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
     const onChangeTracking = (issueId) => {
         if (issueId === CUSTOM_ISSUE) {
             showCustomIssueDialog(true)
-        }
-        else {
+        } else {
             actions.swap(issueMap[issueId])
         }
     }
@@ -129,19 +126,19 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
     const stopButton = (
         <DropDownButtonDestructive
             buttonList={[
-                { label: 'Split Tracking', onClick: () => showSplitTrackingDialog(true) },
-                { label: 'Discard Tracking', onClick: () => actions.abort() }
+                { label: t('action.splitTracking'), onClick: () => showSplitTrackingDialog(true) },
+                { label: t('action.discardTracking'), onClick: () => actions.abort() }
             ]}
             onClick={() => actions.stop()}
         >
-            Stop Tracking
+            {t('hotkey.stopTracking')}
         </DropDownButtonDestructive>
     )
     return (
         <Header onSubmit={(e) => e.preventDefault()}>
             {customIssueDialogVisible && (
                 <IssueSearchDialog
-                    title="Search Issue for Tracking"
+                    title={t('dialog.searchIssueTitle')}
                     onCancel={() => showCustomIssueDialog(false)}
                     onSelect={(issue) => {
                         actions.swap(issue)
@@ -149,9 +146,7 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
                     }}
                 />
             )}
-            {splitTrackingDialogVisible && (
-                <SplitTrackingDialog onClose={() => showSplitTrackingDialog(false)} />
-            )}
+            {splitTrackingDialogVisible && <SplitTrackingDialog onClose={() => showSplitTrackingDialog(false)} />}
             <ToggleBar options={optionList} onChange={onChangeTracking} value={tracker.issue?.id || null} />
             <Tracker>
                 {!tracker.lastHeartbeat &&
@@ -171,11 +166,7 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
                                     onChange={onChangeDate}
                                     value={dateString(tracker.start)}
                                 />
-                                <TimeInput
-                                    style={{ marginRight: 12 }}
-                                    onChange={onChangeTime}
-                                    value={timeString(tracker.start)}
-                                />
+                                <TimeInput style={{ marginRight: 12 }} onChange={onChangeTime} value={timeString(tracker.start)} />
                                 &mdash;
                                 <Duration start={tracker.start} style={{ marginRight: 'auto' }} />
                                 {stopButton}
@@ -183,7 +174,7 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
                             {showComment && (
                                 <FlexRow>
                                     <Textarea
-                                        placeholder="Comment"
+                                        placeholder={t('placeholder.comment')}
                                         style={{ height: 31, marginLeft: 3 }}
                                         onChange={(e) => actions.updateComment(e.target.value)}
                                         value={tracker.comment}
@@ -192,9 +183,7 @@ export function TrackingSection ({ hasError, issues }: {hasError: boolean, issue
                             )}
                         </FlexColumn>
                     ) : (
-                        <DefaultText style={{ margin: '0 auto' }}>
-                            Please select an issue to start tracking.
-                        </DefaultText>
+                        <DefaultText style={{ margin: '0 auto' }}>{t('message.selectIssueToTrack')}</DefaultText>
                     ))}
             </Tracker>
         </Header>

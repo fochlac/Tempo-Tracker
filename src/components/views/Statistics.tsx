@@ -17,6 +17,7 @@ import { formatDuration } from '../../utils/datetime'
 import { useOptions } from 'src/hooks/useOptions'
 import { Conditional } from '../atoms/Conditional'
 import { ToggleButton } from '../atoms/Button'
+import { t } from '../../translations/translate'
 
 const Body = styled.div`
     display: flex;
@@ -55,20 +56,20 @@ export const StatisticsView: React.FC = () => {
     return (
         <Body>
             <Title>
-                {viewMode === 'week' ? 'Weekly Hours' : 'Daily Hours'}
+                {viewMode === 'week' ? t('statistics.weeklyHours') : t('statistics.dailyHours')}
                 <Block style={{ gap: 4, marginLeft: 'auto', padding: 0, marginTop: -3, marginBottom: 4, marginRight: 8 }}>
                     <ToggleButton onClick={() => setViewMode('week')} selected={viewMode === 'week'}>
-                        Week
+                        {t('statistics.week')}
                     </ToggleButton>
                     <ToggleButton onClick={() => setViewMode('day')} selected={viewMode === 'day'}>
-                        Day
+                        {t('statistics.day')}
                     </ToggleButton>
                 </Block>
                 <ActionLink disabled={loading || self.error} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => refresh()}>
-                    Refresh
+                    {t('action.refresh')}
                 </ActionLink>
                 {self.error && (
-                    <ErrorTooltip style={{ paddingBottom: 2 }} content="No connection to Jira instance - only cached statistics available">
+                    <ErrorTooltip style={{ paddingBottom: 2 }} content={t('tooltip.noConnectionJiraStatistics')}>
                         <WifiOff size={14} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />
                     </ErrorTooltip>
                 )}
@@ -78,7 +79,7 @@ export const StatisticsView: React.FC = () => {
             ) : (
                 <WorkTimeDailyDiagramm {...{ year, setYear, stats, options, unsyncedStats, error: self.error }} />
             )}
-            <H6>{`Statistics for ${year}`}</H6>
+            <H6>{t('statistics.statisticsFor', { year })}</H6>
             <WorkTimeStats
                 dayStat={viewMode === 'day'}
                 days={yearDays}
@@ -86,30 +87,30 @@ export const StatisticsView: React.FC = () => {
                 total={(stats?.total ?? 0) + (unsyncedStats?.total ?? 0) / 1000}
                 getRequiredSeconds={(year, week) => getRequiredSeconds(week)}
             />
-            <H6>{`Statistics since ${options.lifetimeYear}`}</H6>
+            <H6>{t('statistics.statisticsSince', { year: options.lifetimeYear })}</H6>
             <WorkTimeStats weeks={yearWeeksLifetime} total={lifeTimeTotal} getRequiredSeconds={getRequiredSecondsPeriod} />
 
             <Block>
                 <Column>
-                    <Label>Median Hours (Week) Lowest Quarter</Label>
+                    <Label>{t('statistics.medianHoursLowest')}</Label>
                     <Value>{lifeTimeMedianLow ? formatDuration(lifeTimeMedianLow * 1000, true, true) : <>&mdash;</>}</Value>
                 </Column>
                 <Column>
-                    <Label>Median Hours (Week) Highest Quarter</Label>
+                    <Label>{t('statistics.medianHoursHighest')}</Label>
                     <Value>{lifeTimeMedianTop ? formatDuration(lifeTimeMedianTop * 1000, true, true) : <>&mdash;</>}</Value>
                 </Column>
             </Block>
             <Conditional enable={isWebfleet}>
-                <H6>Overhour Statistics - Decay After 6 Month</H6>
+                <H6>{t('statistics.overhourStatistics')}</H6>
                 <Block>
                     <Column>
-                        <Label>Overhours</Label>
+                        <Label>{t('statistics.overhours')}</Label>
                         <Value>
                             {overhourStats.totalDiffSeconds > 0 ? formatDuration(overhourStats?.totalDiffSeconds * 1000, true, true) : <>&mdash;</>}
                         </Value>
                     </Column>
                     <Column>
-                        <Label>Overhours (decaying soon)</Label>
+                        <Label>{t('statistics.overhoursDecaying')}</Label>
                         <Value>
                             {overhourStats.secondsInLastMonth > 0 ? (
                                 formatDuration(overhourStats?.secondsInLastMonth * 1000, true, true)
@@ -119,17 +120,17 @@ export const StatisticsView: React.FC = () => {
                         </Value>
                     </Column>
                     <Column>
-                        <Label>Overhours (last week)</Label>
+                        <Label>{t('statistics.overhoursLastWeek')}</Label>
                         <Value>
                             {overhourStats.secondsInLastWeek ? formatDuration(overhourStats?.secondsInLastWeek * 1000, true, true) : <>&mdash;</>}
                         </Value>
                     </Column>
                 </Block>
             </Conditional>
-            <H6>Work-time Settings</H6>
+            <H6>{t('statistics.workTimeSettings')}</H6>
             <Block>
                 <Column>
-                    <Label>Hours per Week</Label>
+                    <Label>{t('statistics.hoursPerWeek')}</Label>
                     <Input
                         type="number"
                         style={{ width: 65 }}
@@ -141,7 +142,7 @@ export const StatisticsView: React.FC = () => {
                     />
                 </Column>
                 <Column>
-                    <Label>Hours per Day</Label>
+                    <Label>{t('statistics.hoursPerDay')}</Label>
                     <Input
                         type="number"
                         style={{ width: 65 }}
@@ -153,7 +154,7 @@ export const StatisticsView: React.FC = () => {
                     />
                 </Column>
                 <Column>
-                    <Label>Start Year Lifetime Statistics</Label>
+                    <Label>{t('statistics.startYearLifetimeStats')}</Label>
                     <Input
                         type="number"
                         style={{ width: 65 }}

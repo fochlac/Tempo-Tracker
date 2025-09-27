@@ -12,6 +12,7 @@ import { verticalListSortingStrategy, useSortable, SortableContext } from '@dnd-
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext } from '@dnd-kit/core'
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers'
+import { t } from '../../translations/translate'
 
 const InputList = styled.ul`
     width: 100%;
@@ -86,11 +87,7 @@ const IssueRow = ({ issue, setDelIssue, index }) => {
     }
 
     return (
-        <IssueRowWrapper
-            ref={setNodeRef}
-            {...attributes}
-            style={{ transform: CSS.Transform.toString(transform) }}
-        >
+        <IssueRowWrapper ref={setNodeRef} {...attributes} style={{ transform: CSS.Transform.toString(transform) }}>
             <DragWrapper {...listeners} ref={setActivatorNodeRef}>
                 <DragHandle />
             </DragWrapper>
@@ -99,15 +96,10 @@ const IssueRow = ({ issue, setDelIssue, index }) => {
             </Tooltip>
             <Input
                 style={{ flexGrow: 1, marginRight: 8 }}
-                value={issue?.id ? issue.alias : 'Issue broken, please re-add via "Add Issue" button.'}
+                value={issue?.id ? issue.alias : t('error.issueBrokenReadd')}
                 onChange={handleAliasChange(issue.key)}
             />
-            <Input
-                type="color"
-                style={{ width: 20, marginRight: 8 }}
-                value={issue.color || '#ffffff'}
-                onChange={handleColorChange(issue.key)}
-            />
+            <Input type="color" style={{ width: 20, marginRight: 8 }} value={issue.color || '#ffffff'} onChange={handleColorChange(issue.key)} />
             <IconButton disabled={!issue} onClick={() => setDelIssue(issue)}>
                 <Trash2 />
             </IconButton>
@@ -141,7 +133,7 @@ export const IssueInput: React.FC<Props> = ({ disabled }) => {
     return (
         <Wrapper>
             <Button style={{ marginBottom: 8 }} onClick={() => setOpen(true)} disabled={disabled}>
-                Add Issue
+                {t('action.addIssue')}
             </Button>
             <InputList>
                 <DndContext
@@ -151,28 +143,23 @@ export const IssueInput: React.FC<Props> = ({ disabled }) => {
                     <SortableContext items={options.issueOrder} strategy={verticalListSortingStrategy}>
                         {options.issueOrder.map((issueKey, index) =>
                             options.issues[issueKey] ? (
-                                <IssueRow
-                                    key={issueKey}
-                                    index={index}
-                                    issue={options.issues[issueKey]}
-                                    setDelIssue={setDelIssue}
-                                />
+                                <IssueRow key={issueKey} index={index} issue={options.issues[issueKey]} setDelIssue={setDelIssue} />
                             ) : null
                         )}
                     </SortableContext>
                 </DndContext>
                 {!Object.keys(options.issues).length && (
-                    <IssueRowWrapper style={{ justifyContent: 'center' }}>No tracked issues.</IssueRowWrapper>
+                    <IssueRowWrapper style={{ justifyContent: 'center' }}>{t('issue.noTrackedIssues')}</IssueRowWrapper>
                 )}
             </InputList>
             <ConfirmDialog
                 open={!!delIssue}
                 onClose={() => setDelIssue(null)}
                 text={`Are you sure you want to remove the issue "${delIssue?.alias}" (${delIssue?.key}) from your tracking list?`}
-                title="Confirm Removal"
-                buttons={<DestructiveButton onClick={deleteIssue}>Delete</DestructiveButton>}
+                title={t('dialog.confirmRemoval')}
+                buttons={<DestructiveButton onClick={deleteIssue}>{t('action.delete')}</DestructiveButton>}
             />
-            {open && <IssueSearchDialog title="Add Issue" onCancel={() => setOpen(false)} onSelect={addIssue} />}
+            {open && <IssueSearchDialog title={t('dialog.addIssueTitle')} onCancel={() => setOpen(false)} onSelect={addIssue} />}
         </Wrapper>
     )
 }

@@ -13,6 +13,7 @@ import { v4 } from 'uuid'
 import { useOptions } from '../../hooks/useOptions'
 import { useJiraWorklog } from '../../hooks/useWorklogs'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
+import { t } from '../../translations/translate'
 
 const Row = styled.div`
     display: flex;
@@ -46,7 +47,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     const [year, setYear] = useState(new Date().getFullYear())
     const [week, setWeek] = useState(getISOWeekNumber(Date.now()))
     const getRequiredSeconds = useGetRequiredSettings(year)
-    const {actions} = useJiraWorklog()
+    const { actions } = useJiraWorklog()
 
     useKeyBinding('Escape', onClose)
 
@@ -155,22 +156,22 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
 
     return (
         <Modal style={{ width: 320, minHeight: 180, height: 'unset' }}>
-            <H5>Log Time for Multiple Days</H5>
+            <H5>{t('dialog.logPeriodMultipleDays')}</H5>
             <div style={{ padding: '0 8px', marginBottom: 8, width: '100%' }}>
-                <Line>Please enter the logs' details:</Line>
+                <Line>{t('dialog.logDetails')}</Line>
                 <Row>
                     <Col>
-                        <Label>First Day</Label>
+                        <Label>{t('field.firstDay')}</Label>
                         <DateInput type="date" onChange={onChangeStart} value={dateString(options.startDate)} />
                     </Col>
                     <Col style={{ marginLeft: 'auto' }}>
-                        <Label>Last Day</Label>
+                        <Label>{t('field.lastDay')}</Label>
                         <DateInput type="date" onChange={onChangeEnd} value={dateString(options.endDate)} />
                     </Col>
                 </Row>
-                <Row style={{justifyContent: 'space-between'}}>
+                <Row style={{ justifyContent: 'space-between' }}>
                     <Col style={{ maxWidth: '65%' }}>
-                        <Label>Issue</Label>
+                        <Label>{t('field.issue')}</Label>
                         <IssueSelector
                             value={options.issue?.key}
                             style={{ marginTop: 3 }}
@@ -179,7 +180,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
                         />
                     </Col>
                     <Col>
-                        <Label>Hours Per Day</Label>
+                        <Label>{t('field.hoursPerDay')}</Label>
                         <TimeInput
                             style={{ marginTop: 2, width: '100%' }}
                             duration
@@ -190,8 +191,8 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 </Row>
             </div>
             <ButtonBar>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={createWorklogs}>Create Worklogs</Button>
+                <Button onClick={onClose}>{t('action.cancel')}</Button>
+                <Button onClick={createWorklogs}>{t('action.createWorklogs')}</Button>
             </ButtonBar>
         </Modal>
     )

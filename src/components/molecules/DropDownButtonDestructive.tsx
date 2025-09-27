@@ -3,18 +3,21 @@ import styled from 'styled-components'
 import { ChevronDown, ChevronUp } from 'preact-feather'
 import { DestructiveButton } from '../atoms/Button'
 import { useRef } from 'preact/hooks'
+import { t } from '../../translations/translate'
 
-const ButtonWrapper = styled.div<{open?: boolean}>`
+const ButtonWrapper = styled.div<{ open?: boolean }>`
     display: flex;
     border: solid var(--destructive-dark);
     border-radius: 3px;
     background: var(--destructive);
     position: relative;
-    border-bottom-left-radius: ${(props) => props.open ? 0 : 3}px;
-    border-bottom-right-radius: ${(props) => props.open ? 0 : 3}px;
+    border-bottom-left-radius: ${(props) => (props.open ? 0 : 3)}px;
+    border-bottom-right-radius: ${(props) => (props.open ? 0 : 3)}px;
     border-width: 1px;
 
-    ${(props) => props.open ? `
+    ${(props) =>
+        props.open
+            ? `
     &:before {
         content: '';
         position: fixed;
@@ -23,7 +26,8 @@ const ButtonWrapper = styled.div<{open?: boolean}>`
         right: 0;
         bottom: 0;
         background: #0000001f;
-    }` : ''}
+    }`
+            : ''}
 
     &:hover {
         border-color: var(--destructive-darker);
@@ -70,7 +74,7 @@ const MenuList = styled.ul`
     }
 `
 const ListItem = styled.li`
-        display: flex;
+    display: flex;
 `
 const ListButton = styled(DestructiveButton)`
     width: 100%;
@@ -83,8 +87,8 @@ const ListButton = styled(DestructiveButton)`
 `
 
 interface ListButtonType extends Omit<React.HTMLAttributes<HTMLButtonElement>, 'onClick'> {
-    label: string;
-    onClick: (e) => void;
+    label: string
+    onClick: (e) => void
 }
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
     buttonList?: ListButtonType[]
@@ -103,8 +107,7 @@ export const DropDownButtonDestructive: React.FC<Props> = ({ children, buttonLis
     const handleClick = (open) => (e) => {
         if (open) {
             document.removeEventListener('click', onClose.current)
-        }
-        else {
+        } else {
             document.addEventListener('click', onClose.current)
         }
         setOpen(!open)
@@ -114,7 +117,7 @@ export const DropDownButtonDestructive: React.FC<Props> = ({ children, buttonLis
     return (
         <ButtonWrapper open={open}>
             <MainButton {...props}>{children}</MainButton>
-            <MenuButton aria-label="Open Button List" onClick={handleClick(open)}>
+            <MenuButton aria-label={t('aria.openButtonList')} onClick={handleClick(open)}>
                 {open ? <ChevronUp size={18} style={iconStyles} /> : <ChevronDown size={18} style={iconStyles} />}
             </MenuButton>
             {open && (

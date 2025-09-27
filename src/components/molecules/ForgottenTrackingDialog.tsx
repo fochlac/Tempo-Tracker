@@ -9,6 +9,7 @@ import { Input } from '../atoms/Input'
 import { Modal } from '../atoms/Modal'
 import { TimeInput } from '../atoms/TimeInput'
 import { DefaultText, H5, Label } from '../atoms/Typography'
+import { t } from '../../translations/translate'
 
 const Row = styled.div`
     display: flex;
@@ -43,7 +44,7 @@ export const ForgottenTrackingDialog: React.FC = () => {
             const { issue, start } = data
             setNewWorklog({ issue, start, end: data.lastHeartbeat, synced: false, tempId: v4() })
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data.issue?.id, data.lastHeartbeat])
 
     if (!data.issue || !data.lastHeartbeat || !newWorklog) return null
@@ -73,24 +74,32 @@ export const ForgottenTrackingDialog: React.FC = () => {
 
     return (
         <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>
-            <H5>Activity Gap Detected</H5>
+            <H5>{t('dialog.activityGap')}</H5>
             <div style={{ padding: '0 8px', marginBottom: 8 }}>
                 <Line>
-                    You were tracking work on {data.issue.alias} while your computer was turned off or your browser was closed.
-                    Your last activity was detected <b>{daysAgo(data.lastHeartbeat)}</b> at <b>{timeString(data.lastHeartbeat)}</b>.
+                    {t('dialog.activityGapText1', {
+                        alias: data.issue.alias,
+                        lastActivity: daysAgo(data.lastHeartbeat),
+                        lastTime: timeString(data.lastHeartbeat)
+                    })}
                 </Line>
-                <Line>Do you want to finalize the worklog entry as follows and resume tracking from when you returned at <b>{timeString(data.firstHeartbeat)}</b>?</Line>
+                <Line>{t('dialog.activityGapText2', { returnTime: timeString(data.firstHeartbeat) })}</Line>
                 <Row>
                     <Col>
-                        <Label>Start</Label>
-                        <DateInput max={dateString(newWorklog.end)} type="date" onChange={onChangeDate('start')} value={dateString(newWorklog.start)} />
+                        <Label>{t('field.startTime')}</Label>
+                        <DateInput
+                            max={dateString(newWorklog.end)}
+                            type="date"
+                            onChange={onChangeDate('start')}
+                            value={dateString(newWorklog.start)}
+                        />
                     </Col>
                     <Col>
                         <Label> </Label>
                         <TimeInput onChange={onChangeTime('start')} value={timeString(newWorklog.start)} />
                     </Col>
                     <Col style={{ marginLeft: 'auto' }}>
-                        <Label>End</Label>
+                        <Label>{t('field.endTime')}</Label>
                         <DateInput min={dateString(newWorklog.start)} type="date" onChange={onChangeDate('end')} value={dateString(newWorklog.end)} />
                     </Col>
                     <Col>
@@ -100,8 +109,8 @@ export const ForgottenTrackingDialog: React.FC = () => {
                 </Row>
             </div>
             <ButtonBar>
-                <Button onClick={actions.discardGap}>Ignore Gap</Button>
-                <Button onClick={() => actions.fixGap(newWorklog)}>Create Worklog</Button>
+                <Button onClick={actions.discardGap}>{t('action.ignoreGap')}</Button>
+                <Button onClick={() => actions.fixGap(newWorklog)}>{t('action.createWorklog')}</Button>
             </ButtonBar>
         </Modal>
     )

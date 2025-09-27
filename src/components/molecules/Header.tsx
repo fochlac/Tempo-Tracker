@@ -12,6 +12,7 @@ import { ExternalLink } from 'preact-feather'
 import { openAsTab } from '../../utils/browser'
 import { WorkdayLink } from './WorkdayLink'
 import { hasValidJiraSettings } from 'src/utils/options'
+import { t } from '../../translations/translate'
 
 const AppBar = styled.header`
     display: flex;
@@ -37,34 +38,34 @@ export const Header: React.FC = () => {
     const mandatoryOptions = hasValidJiraSettings(options)
     const trackerLink = (
         <InternalLink style={{ marginRight: 4 }} disabled={!mandatoryOptions} to={VIEWS.TRACKER}>
-            Tracker
+            {t('nav.tracker')}
         </InternalLink>
     )
 
     return (
         <AppBar>
             <Logo style={{ width: 24, height: 24, filter: 'drop-shadow(0 0 2px #ffffff99)' }} />
-            <Title>Tempo-Tracker</Title>
+            <Title>{t('header.tempoTracker')}</Title>
             {view !== VIEWS.TRACKER &&
-                (mandatoryOptions ? trackerLink : <Tooltip content="Please fill all mandatory options.">{trackerLink}</Tooltip>)}
+                (mandatoryOptions ? trackerLink : <Tooltip content={t('tooltip.fillMandatoryOptions')}>{trackerLink}</Tooltip>)}
             {!isFirefox && mandatoryOptions && view !== VIEWS.STATS && (
                 <InternalLink style={{ marginRight: view !== VIEWS.OPTIONS ? 4 : 0 }} to={VIEWS.STATS}>
-                    Statistics
+                    {t('nav.statistics')}
                 </InternalLink>
             )}
             {view !== VIEWS.OPTIONS &&
                 (isFirefox && !isPopped() ? (
                     <ActionLink style={{ marginRight: 4 }} onClick={() => openAsTab(VIEWS.OPTIONS)}>
-                        Options
+                        {t('nav.options')}
                     </ActionLink>
                 ) : (
                     <InternalLink style={{ marginRight: !isPopped() ? 4 : 0 }} to={VIEWS.OPTIONS}>
-                        Options
+                        {t('nav.options')}
                     </InternalLink>
                 ))}
             <WorkdayLink />
             {!isPopped() && (
-                <ActionLink title="Open in Tab" onClick={() => openAsTab(view)}>
+                <ActionLink title={t('nav.openInTab')} onClick={() => openAsTab(view)}>
                     <ExpandIcon size={16} />
                 </ActionLink>
             )}

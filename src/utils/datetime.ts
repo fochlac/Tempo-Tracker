@@ -1,3 +1,5 @@
+import { t } from '../translations/translate'
+
 const hourInMs = 1000 * 60 * 60
 const dayInMs = hourInMs * 24
 const weekInMs = dayInMs * 7
@@ -84,10 +86,10 @@ export function durationString(ms: number) {
 export function daysAgo(unixStamp: number) {
     const days = (new Date().setHours(0, 0, 0, 0) - unixStamp) / dayInMs
     if (days < -1) return ''
-    if (days < 0) return 'today'
-    if (days < 1) return 'yesterday'
-    if (days < 7) return `${Math.ceil(days)} days ago`
-    return `on ${dateHumanized(unixStamp)}`
+    if (days < 0) return t('time.today')
+    if (days < 1) return t('time.yesterday')
+    if (days < 7) return t('time.daysAgo', { count: Math.ceil(days) })
+    return t('time.onDate', { date: dateHumanized(unixStamp) })
 }
 
 // Extended Locale interface for getWeekInfo method

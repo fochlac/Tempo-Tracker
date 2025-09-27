@@ -1,5 +1,6 @@
 import { Trash2 } from 'preact-feather'
 import { useStatisticsOptions } from '../../hooks/useStatisticsOptions'
+import { t } from '../../translations/translate'
 import { Button } from '../atoms/Button'
 import { IconButton } from '../atoms/IconButton'
 import { Input } from '../atoms/Input'
@@ -13,11 +14,11 @@ export const WorkTimeExceptions: React.FC = () => {
 
     return (
         <>
-            <H6>Work-time Overrides</H6>
+            <H6>{t('section.worktimeOverrides')}</H6>
             {options.exceptions?.map((exception, index) => (
                 <Block key={index}>
                     <Column>
-                        <Label>First Week</Label>
+                        <Label>{t('label.firstWeek')}</Label>
                         <Input
                             type="number"
                             min={0}
@@ -28,11 +29,18 @@ export const WorkTimeExceptions: React.FC = () => {
                         />
                     </Column>
                     <Column>
-                        <Label>First Year</Label>
-                        <Input type="number" min={2000} value={exception.startYear} max={exception.endYear} step={1} onChange={updateExceptionKey('startYear', index)} />
+                        <Label>{t('label.firstYear')}</Label>
+                        <Input
+                            type="number"
+                            min={2000}
+                            value={exception.startYear}
+                            max={exception.endYear}
+                            step={1}
+                            onChange={updateExceptionKey('startYear', index)}
+                        />
                     </Column>
                     <Column>
-                        <Label>Final Week</Label>
+                        <Label>{t('label.finalWeek')}</Label>
                         <Input
                             type="number"
                             min={exception.startYear === exception.endYear ? exception.startWeek : 0}
@@ -43,11 +51,18 @@ export const WorkTimeExceptions: React.FC = () => {
                         />
                     </Column>
                     <Column>
-                        <Label>Final Year</Label>
-                        <Input type="number" min={exception.startYear} value={exception.endYear} max={2099} step={1} onChange={updateExceptionKey('endYear', index)} />
+                        <Label>{t('label.finalYear')}</Label>
+                        <Input
+                            type="number"
+                            min={exception.startYear}
+                            value={exception.endYear}
+                            max={2099}
+                            step={1}
+                            onChange={updateExceptionKey('endYear', index)}
+                        />
                     </Column>
                     <Column>
-                        <Label>Hours per Week</Label>
+                        <Label>{t('label.hoursPerWeek')}</Label>
                         <Input type="number" min={0} value={exception.hours} max={48} step={0.1} onChange={updateExceptionKey('hours', index)} />
                     </Column>
                     <Column style={{ flexBasis: 'auto', justifyContent: 'flex-end' }}>
@@ -58,7 +73,7 @@ export const WorkTimeExceptions: React.FC = () => {
                 </Block>
             ))}
             <Block>
-                <Button onClick={() => actions.addException()}>Add Exception</Button>
+                <Button onClick={() => actions.addException()}>{t('action.addException')}</Button>
             </Block>
         </>
     )

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks'
 import { formatDuration, dateString } from '../../utils/datetime'
 import { TooltipTop } from '../atoms/Tooltip'
 import { DiagramNavigation } from './DiagramNavigation'
+import { t } from '../../translations/translate'
 import { Bar, BarLabel, BarWrapper, Diagramm, MissingHours, OverHours, Time, TimeBar } from '../atoms/Diagram'
 
 interface Props {
@@ -48,8 +49,8 @@ export const WorkTimeDailyDiagramm: React.FC<Props> = ({ stats, year, setYear, o
                     onNextClick={() => setMonth(month + 1)}
                     onFirstClick={() => setMonth(0)}
                     onLastClick={() => setMonth(maxMonth)}
-                    previousTitle="Previous month"
-                    nextTitle="Next month"
+                    previousTitle={t('nav.previousMonth')}
+                    nextTitle={t('nav.nextMonth')}
                     firstTitle={new Date(year, 0, 1).toLocaleString(undefined, { month: 'long' })}
                     lastTitle={new Date(year, maxMonth, 1).toLocaleString(undefined, { month: 'long' })}
                 />
@@ -85,8 +86,8 @@ export const WorkTimeDailyDiagramm: React.FC<Props> = ({ stats, year, setYear, o
                 onNextClick={() => setMonth(month + 1)}
                 onFirstClick={() => setMonth(0)}
                 onLastClick={() => setMonth(maxMonth)}
-                previousTitle="Previous month"
-                nextTitle="Next month"
+                previousTitle={t('nav.previousMonth')}
+                nextTitle={t('nav.nextMonth')}
                 firstTitle={new Date(year, 0, 1).toLocaleString(undefined, { month: 'long' })}
                 lastTitle={new Date(year, maxMonth, 1).toLocaleString(undefined, { month: 'long' })}
             />

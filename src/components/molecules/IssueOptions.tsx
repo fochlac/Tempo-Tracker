@@ -5,7 +5,8 @@ import { ActionLink } from '../atoms/ActionLink'
 import { Input, Textarea } from '../atoms/Input'
 import { FlexRow } from '../atoms/Layout'
 import { InfoText, Label } from '../atoms/Typography'
-import { IssueInput } from '../molecules/IssueInput'
+import { IssueInput } from './IssueInput'
+import { t } from '../../translations/translate'
 import { JQL_TEMPLATES } from '../../constants/jql-templates'
 import { checkJql } from '../../utils/options'
 import { Option } from '../atoms/Option'
@@ -25,16 +26,13 @@ export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
     return (
         <>
             <Option>
-                <Label>Tracked Issues</Label>
-                <InfoText>Please add all issues you want to use for time tracking. You can set an alias for each issue.</InfoText>
+                <Label>{t('label.trackedIssues')}</Label>
+                <InfoText>{t('info.issueTrackingInstructions')}</InfoText>
                 <IssueInput disabled={!valid} />
             </Option>
             <Option>
-                <Label>Advanced Issue Selection</Label>
-                <InfoText>
-                    You can set up a custom JQL-query to automatically add to your manually created issue list. This will add issues up to a total of
-                    15 issues.
-                </InfoText>
+                <Label>{t('label.advancedIssueSelection')}</Label>
+                <InfoText>{t('info.jqlQueryInstructions')}</InfoText>
                 <FlexRow $justify="flex-start">
                     <Input
                         style={{ margin: '0 6px' }}
@@ -42,16 +40,18 @@ export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
                         checked={options.useJqlQuery}
                         onChange={(e) => actions.merge({ useJqlQuery: e.target.checked })}
                     />
-                    <Label>enabled</Label>
+                    <Label>{t('label.enabled')}</Label>
                 </FlexRow>
             </Option>
             {options.useJqlQuery && (
                 <Option>
-                    <Label>Custom JQL Query</Label>
+                    <Label>{t('label.customJqlQuery')}</Label>
                     <InfoText>
-                        Automatically select issues based on a
-                        <ActionLink onClick={() => openTab({ active: true, url: JQL_LINK })}>custom JQL-query</ActionLink>. Feel free to extend the
-                        <ActionLink onClick={() => openTab({ active: true, url: TMPL_LINK })}>template list</ActionLink>.
+                        {t('info.jqlAutoSelect')}
+                        <ActionLink onClick={() => openTab({ active: true, url: JQL_LINK })}>{t('link.customJqlQuery')}</ActionLink>
+                        <br />
+                        {t('info.jqlExtendTemplates')}
+                        <ActionLink onClick={() => openTab({ active: true, url: TMPL_LINK })}>{t('link.templateList')}</ActionLink>
                     </InfoText>
                     <Textarea
                         onChange={(e) => {
@@ -70,7 +70,7 @@ export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
                             }}
                         >
                             <option value="" disabled selected hidden>
-                                JQL Templates
+                                {t('label.jqlTemplates')}
                             </option>
                             {Object.values(JQL_TEMPLATES).map((template) => (
                                 <option key={template.id} value={template.id}>
@@ -78,7 +78,7 @@ export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
                                 </option>
                             ))}
                         </Select>
-                        <ActionLink onClick={checkJql}>Test Query</ActionLink>
+                        <ActionLink onClick={checkJql}>{t('action.testQuery')}</ActionLink>
                     </FlexRow>
                 </Option>
             )}

@@ -11,6 +11,7 @@ import { ErrorTooltip } from '../atoms/Tooltip'
 import { FlexRow } from '../atoms/Layout'
 import { triggerBackgroundAction } from 'src/utils/background'
 import { ACTIONS } from 'src/constants/actions'
+import { t } from '../../translations/translate'
 
 const LockIcon = styled(Unlock)`
     width: 16px;
@@ -52,17 +53,10 @@ export const WorkdayLink: React.FC = () => {
     }
 
     return (
-        <ErrorTooltip
-            onClick={onGrantPermissions}
-            content={
-                !hasPermission
-                    ? 'Permissions to access Workday are missing. Click the lock-icon to grant permissions.'
-                    : undefined
-            }
-        >
+        <ErrorTooltip onClick={onGrantPermissions} content={!hasPermission ? t('workday.permissionsMissing') : undefined}>
             <FlexRow>
                 <ActionLink error={!hasPermission} onClick={onClick}>
-                    Workday
+                    {t('workday.workday')}
                 </ActionLink>
                 {!hasPermission ? <LockIcon onClick={onGrantPermissions} /> : null}
             </FlexRow>

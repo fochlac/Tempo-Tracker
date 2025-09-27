@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Input } from '../atoms/Input'
 import { Label } from '../atoms/Typography'
 import { Option } from '../atoms/Option'
+import { t } from '../../translations/translate'
 import { getDaysShort } from 'src/utils/datetime'
 
 const Checkbox = styled(Input)`
@@ -34,7 +35,7 @@ export function WorkingDayOption() {
 
     return (
         <Option>
-            <Label>Working Days</Label>
+            <Label>{t('label.workingDays')}</Label>
             <Row style={{ marginTop: 8 }}>
                 {getDaysShort().map(({ label, index }) => (
                     <Col key={label} style={{ minWidth: 25, alignItems: 'center', marginRight: 2 }}>

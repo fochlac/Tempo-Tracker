@@ -24,6 +24,7 @@ import { useOptions } from 'src/hooks/useOptions'
 import { useJqlQueryResults } from 'src/hooks/useJqlQueryResult'
 import { openTab } from 'src/utils/browser'
 import { Conditional } from '../atoms/Conditional'
+import { t } from '../../translations/translate'
 
 const Body = styled.section`
     display: flex;
@@ -48,10 +49,10 @@ const ProgressWrapper = styled.div<{ $visible: boolean }>`
 `
 
 const errorTooltips = {
-    TOKEN: 'Invalid token. Please provide a correct token in the options.',
-    PERMISSION: 'No permission to access Jira Instance. Click this icon to grant access.',
-    COOKIE_AUTH_MISSING: 'No active Jira Session for the selected user. Please log into Jira to synchronize.',
-    DEFAULT: 'No connection to Jira instance - syncing and refresh not available.'
+    TOKEN: () => t('tooltip.invalidToken'),
+    PERMISSION: () => t('tooltip.noPermissionJira'),
+    COOKIE_AUTH_MISSING: () => t('tooltip.noActiveJiraSession'),
+    DEFAULT: () => t('tooltip.noConnectionJira')
 }
 
 export const TrackerView: React.FC = () => {
@@ -87,7 +88,7 @@ export const TrackerView: React.FC = () => {
     const rowLength = (issues.length + 1) / 4 < (issues.length + 1) / 5 ? 4 : 5
     const trackerRows = Math.ceil((issues.length + 1) / rowLength)
 
-    const offlineTooltip = errorTooltips[self.error] || errorTooltips.DEFAULT
+    const offlineTooltip = (errorTooltips[self.error] || errorTooltips.DEFAULT)()
 
     const commentLog = commentId && worklogs.find((log) => log.id === commentId || log.tempId === commentId)
 
@@ -95,10 +96,10 @@ export const TrackerView: React.FC = () => {
         <Body>
             <TrackingSection issues={issues} hasError={!!self.error} />
             <H6 style={{ margin: '0 0 4px 8px', display: 'flex', width: 'calc(100% - 16px)' }}>
-                <span style={{ marginRight: 'auto' }}>Tracking History</span>
+                <span style={{ marginRight: 'auto' }}>{t('tracker.trackingHistory')}</span>
                 <Conditional enable={!self.error && !hasUnsyncedLog}>
                     <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => worklog.forceFetch()}>
-                        Refresh
+                        {t('action.refresh')}
                     </ActionLink>
                 </Conditional>
                 <Conditional enable={hasUnsyncedLog && !self.error}>
@@ -107,21 +108,21 @@ export const TrackerView: React.FC = () => {
                         style={{ marginRight: 4, lineHeight: '16px' }}
                         onClick={startSync}
                     >
-                        Synchronize
+                        {t('action.synchronize')}
                     </ActionLink>
                 </Conditional>
                 <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => setShowPeriodDialog(true)}>
-                    Log Multiple
+                    {t('tracker.logMultiple')}
                 </ActionLink>
                 <ActionLink
                     disabled={!!editIssue.issue || !createNewWorklog}
                     style={{ marginRight: 4, lineHeight: '16px' }}
                     onClick={createNewWorklog}
                 >
-                    New Entry
+                    {t('tracker.newEntry')}
                 </ActionLink>
                 <Conditional enable={!self.error && hasUnsyncedLog && hasError}>
-                    <ErrorTooltipTop content="Last synchronisation failed.">
+                    <ErrorTooltipTop content={t('tooltip.syncFailed')}>
                         <AlertCircle size={16} style={{ color: 'var(--destructive)', marginTop: -2 }} />
                     </ErrorTooltipTop>
                 </Conditional>
@@ -129,7 +130,7 @@ export const TrackerView: React.FC = () => {
                     <ErrorTooltipTop content={offlineTooltip}>
                         <Conditional enable={self.error === 'COOKIE_AUTH_MISSING'}>
                             <ActionLink onClick={handleErrorClick} error style={{ marginRight: 4 }}>
-                                Login
+                                {t('action.login')}
                             </ActionLink>
                         </Conditional>
                         <WifiOff
@@ -164,8 +165,7 @@ export const TrackerView: React.FC = () => {
                             const id = log?.id || log?.tempId
                             if (editIssue?.issue === id) {
                                 acc.list.push(<WorklogEditor log={log} key={id} />)
-                            }
-                            else {
+                            } else {
                                 acc.list.push(
                                     <Worklog
                                         onDelete={worklog.actions.delete}

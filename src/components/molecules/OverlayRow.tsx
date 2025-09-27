@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { AlertOctagon, Repeat } from 'preact-feather'
 import { isSynced } from 'src/utils/workday'
 import { Input } from '../atoms/Input'
+import { t } from '../../translations/translate'
 
 const ListRow = styled.li`
     display: flex;
@@ -72,7 +73,7 @@ interface Props extends OverlayWorkLog {
     onClick: (e: Event) => void
 }
 
-export const OverlayRow: React.FC<Props> = ({workTime, conflicts, error, onClick, checked, disabled, top}) => {
+export const OverlayRow: React.FC<Props> = ({ workTime, conflicts, error, onClick, checked, disabled, top }) => {
     const TooltipComponent = top ? TooltipTop : Tooltip
 
     return (
@@ -85,18 +86,14 @@ export const OverlayRow: React.FC<Props> = ({workTime, conflicts, error, onClick
             >
                 <Time>{`${timeString(workTime.start)} - ${timeString(workTime.end)}`}</Time>
                 <Issue>{workTime.name}</Issue>
-                <Conditional enable={!conflicts.length} >
-                    <Checkbox
-                        type="checkbox"
-                        disabled={disabled}
-                        checked={checked}
-                    />
+                <Conditional enable={!conflicts.length}>
+                    <Checkbox type="checkbox" disabled={disabled} checked={checked} />
                 </Conditional>
-                <Conditional enable={isSynced(workTime, conflicts)} >
+                <Conditional enable={isSynced(workTime, conflicts)}>
                     <RepeatIcon />
                 </Conditional>
-                <Conditional enable={Boolean(!isSynced(workTime, conflicts) && conflicts.length)} >
-                    <TooltipComponent content="Conflicting worklog detected.">
+                <Conditional enable={Boolean(!isSynced(workTime, conflicts) && conflicts.length)}>
+                    <TooltipComponent content={t('message.conflictingWorklog')}>
                         <ErrorIcon />
                     </TooltipComponent>
                 </Conditional>
@@ -112,8 +109,8 @@ interface HeaderProps {
     selected: Set<string>
 }
 
-export const OverlayHeaderRow: React.FC<HeaderProps> = ({onChange, date, disabled, selected, sortedWorkTimes}) => {
-    const filteredTimes = sortedWorkTimes.filter(({conflicts}) => !conflicts.length)
+export const OverlayHeaderRow: React.FC<HeaderProps> = ({ onChange, date, disabled, selected, sortedWorkTimes }) => {
+    const filteredTimes = sortedWorkTimes.filter(({ conflicts }) => !conflicts.length)
     const allSelected = filteredTimes.every(({ workTime }) => selected.has(workTime.id))
 
     return (
