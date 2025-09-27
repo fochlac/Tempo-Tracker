@@ -1,8 +1,12 @@
 import styled from 'styled-components'
 
-const Wrapper = styled.div<{$right: boolean;}>`
-    position: relative;
-    
+const Wrapper = styled.div<{ $right: boolean; $absolute?: boolean }>`
+    position: ${({ $absolute }) => ($absolute ? 'absolute' : 'relative')};
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
     &:before {
         content: attr(data-content);
         position: absolute;
@@ -20,7 +24,7 @@ const Wrapper = styled.div<{$right: boolean;}>`
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        ${({$right}) => !$right ? 'right: 0;' : 'left: 0;'}
+        ${({ $right }) => (!$right ? 'right: 0;' : 'left: 0;')}
     }
 
     &:hover:before {
@@ -33,8 +37,8 @@ const Wrapper = styled.div<{$right: boolean;}>`
         position: absolute;
         top: calc(100% + 1px);
         left: calc(50% - 4px);
-        width: 0; 
-        height: 0; 
+        width: 0;
+        height: 0;
         border-left: 4px solid transparent;
         border-right: 4px solid transparent;
         border-bottom: 6px solid var(--contrast);
@@ -43,22 +47,24 @@ const Wrapper = styled.div<{$right: boolean;}>`
     &:hover:after {
         display: block;
     }
-
 `
 
 interface TooltipProps {
-    content: string;
-    className?: string;
-    right?: boolean;
-    onClick?: (e: unknown) => void;
-    style?: React.CSSProperties;
+    content: string
+    className?: string
+    right?: boolean
+    absolute?: boolean
+    onClick?: (e: unknown) => void
+    style?: React.CSSProperties
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, className, right, onClick }) => {
+export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, className, right, onClick, absolute }) => {
     if (!content) return <>{children}</>
-    return <Wrapper onClick={onClick} className={className} data-content={content} style={style} $right={right}>
-        {children}
-    </Wrapper>
+    return (
+        <Wrapper onClick={onClick} className={className} data-content={content} style={style} $right={right} $absolute={absolute}>
+            {children}
+        </Wrapper>
+    )
 }
 
 export const TooltipTop = styled(Tooltip)`
@@ -86,7 +92,7 @@ export const ErrorTooltip = styled(Tooltip)`
     }
     &:after {
         border-bottom: 6px solid var(--destructive-dark);
-        z-index: 1000
+        z-index: 1000;
     }
 `
 export const ErrorTooltipTop = styled(TooltipTop)`

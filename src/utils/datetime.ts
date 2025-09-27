@@ -10,8 +10,7 @@ export function formatDuration(ms: number, noSecond?: boolean, noDays?: boolean)
 
     if (d > 0 && !noDays) {
         return `${d}d ${h % 24}h ${pad(m % 60)}m`
-    }
-    else if (h > 0) {
+    } else if (h > 0) {
         return `${h}h ${pad(m % 60)}m`
     }
     return noSecond ? `0h ${m % 60}m` : `${m % 60}m ${pad(s % 60)}s`
@@ -40,11 +39,22 @@ export function dateString(unixStamp: number) {
 
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
+
 export function dateHumanized(unixStamp: number) {
     const date = new Date(unixStamp)
 
-    return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${String(date.getFullYear()).slice(-2)}`
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+        return 'Invalid Date'
+    }
+
+    return new Intl.DateTimeFormat(undefined, {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+    }).format(date)
 }
+
 export function roundTimeSeconds(unixStamp: number, ceil: boolean = false) {
     return new Date(unixStamp + (ceil ? 1000 : 0)).setMilliseconds(0)
 }
@@ -80,20 +90,75 @@ export function daysAgo(unixStamp: number) {
     return `on ${dateHumanized(unixStamp)}`
 }
 
-export function getISOWeeks(y) {
-    const d = new Date(y, 0, 1)
-    const isLeap = new Date(y, 1, 29).getMonth() === 1
+// Extended Locale interface for getWeekInfo method
+interface ExtendedLocale extends Intl.Locale {
+    getWeekInfo?(): { firstDay: number; minimalDays: number }
+}
 
-    // check for a Jan 1 that's a Thursday or a leap year that has a
-    // Wednesday jan 1. Otherwise it's 52
-    return d.getDay() === 4 || (isLeap && d.getDay() === 3) ? 53 : 52
+export interface WeekInfo {
+    /** First day of the week: 0 = Sunday, 1 = Monday, ... 6 = Saturday */
+    firstDay: number
+    /** Minimum days required in the new year for the first week to count as week 1 */
+    minimalDays: number
+}
+
+/**
+ * Returns week rules for the current or given locale.
+ * Falls back to ISO: Monday (1) + minimalDays = 4.
+ */
+export function getWeekInfo(locale?: string): WeekInfo {
+    const resolvedLocale = locale || new Intl.DateTimeFormat().resolvedOptions().locale
+
+    try {
+        const locale = new Intl.Locale(resolvedLocale) as ExtendedLocale
+        const weekInfo = locale.getWeekInfo?.()
+        if (weekInfo) {
+            // spec: firstDay is 1–7 (Mon–Sun). Convert to 0–6 (Sun–Sat).
+            return {
+                firstDay: weekInfo.firstDay % 7,
+                minimalDays: weekInfo.minimalDays ?? 4
+            }
+        }
+    } catch {}
+
+    // Known locale-specific week rules
+    const lowerLocale = resolvedLocale.toLowerCase()
+
+    // US, Canada, Japan, and others use Sunday as first day
+    if (
+        lowerLocale.startsWith('en-us') ||
+        lowerLocale.startsWith('en-ca') ||
+        lowerLocale.startsWith('ja') ||
+        lowerLocale.startsWith('ko') ||
+        lowerLocale.startsWith('th') ||
+        lowerLocale.startsWith('il')
+    ) {
+        return { firstDay: 0, minimalDays: 1 } // Sunday first, minimal days = 1
+    }
+
+    // Some Middle Eastern countries use Saturday as first day
+    if (lowerLocale.startsWith('ar-sa') || lowerLocale.startsWith('fa') || lowerLocale.startsWith('he')) {
+        return { firstDay: 6, minimalDays: 1 } // Saturday first, minimal days = 1
+    }
+
+    // Most European and other countries follow ISO (Monday first, minimal days = 4)
+    return { firstDay: 1, minimalDays: 4 }
 }
 
 const getStartOfWeek1 = (year) => {
-    const week1 = new Date(year, 0, 4)
-    const day = week1.getDay()
+    const { firstDay, minimalDays } = getWeekInfo()
 
-    return new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
+    const jan1 = new Date(year, 0, 1)
+    const daysInPreviousYear = (jan1.getDay() - firstDay + 7) % 7
+
+    // Align to the start of the week
+    const start = new Date(jan1)
+    start.setDate(jan1.getDate() - daysInPreviousYear)
+
+    // Check if this week has enough days in the year, otherwie shift by a week
+    const minimalDaysOffset = 7 - daysInPreviousYear < minimalDays ? weekInMs : 0
+
+    return start.setHours(0, 0, 0, 0) + minimalDaysOffset
 }
 
 export function getISOWeekNumber(unixStamp: number) {
@@ -107,10 +172,7 @@ export function getISOWeekNumber(unixStamp: number) {
 }
 
 export function getIsoWeekPeriod(y, n) {
-    const week1 = new Date(y, 0, 4)
-    const day = week1.getDay()
-
-    const startOfWeek1 = new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
+    const startOfWeek1 = getStartOfWeek1(y)
     const startOfWeekX = startOfWeek1 + (n - 1) * weekInMs
 
     return [new Date(startOfWeekX), new Date(startOfWeekX + weekInMs - 1)]
@@ -125,19 +187,23 @@ export function getIsoWeekPeriods(y) {
 }
 
 export function getYearIsoWeeksPeriod(y) {
-    const week1 = new Date(y, 0, 4)
-    const day = week1.getDay()
-
-    const startOfWeek1 = new Date(week1.setHours(0, 0, 0, 0) - day * dayInMs).setHours(0, 0, 0, 0)
-    const week1NextYear = new Date(y + 1, 0, 4)
-    const dayNextYear = week1.getDay()
-
-    const startOfWeek1NextYear = new Date(week1NextYear.setHours(0, 0, 0, 0) - dayNextYear * dayInMs).setHours(
-        0,
-        0,
-        0,
-        0
-    )
+    const startOfWeek1 = getStartOfWeek1(y)
+    const startOfWeek1NextYear = getStartOfWeek1(y + 1)
 
     return [new Date(startOfWeek1), new Date(startOfWeek1NextYear - 1)]
+}
+
+export function getISOWeeks(y) {
+    const [start, end] = getYearIsoWeeksPeriod(y)
+
+    return Math.round((end.getTime() - start.getTime()) / weekInMs)
+}
+
+export function getDaysShort() {
+    const { firstDay } = getWeekInfo()
+    const firstDayOfYear = getStartOfWeek1(2021)
+    return [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
+        const date = new Date(firstDayOfYear + dayOfWeek * dayInMs)
+        return { label: new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(date), index: (dayOfWeek + firstDay) % 7 }
+    })
 }

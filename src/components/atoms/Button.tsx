@@ -1,12 +1,13 @@
+import React from 'preact/compat'
 import styled from 'styled-components'
 
-export const BaseButton = styled.button<{disabled?: boolean}>`
+export const BaseButton = styled.button<{ disabled?: boolean }>`
     border: 1px solid var(--contrast);
     background-color: var(--default-button-background);
-    color: var(--font);    
-    cursor: ${(props) => props.disabled ? 'default' : 'pointer'};
-    opacity: ${(props) => props.disabled ? 0.5 : 1};
-    pointer-events: ${(props) => props.disabled ? 'none' : 'all'};
+    color: var(--font);
+    cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
+    opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+    pointer-events: ${(props) => (props.disabled ? 'none' : 'all')};
     border-radius: 3px;
 
     &:hover {
@@ -23,6 +24,30 @@ export const BaseButton = styled.button<{disabled?: boolean}>`
 export const Button = styled(BaseButton)`
     padding: 4px 12px;
 `
+
+const ToggleButtonActive = styled(BaseButton)`
+    background-color: transparent;
+    padding: 2px 8px;
+    font-size: 12px;
+`
+
+const ToggleButtonSelected = styled(ToggleButtonActive)`
+    background-color: var(--contrast);
+    font-weight: 600;
+    cursor: default;
+    pointer-events: none;
+`
+
+interface ToggleButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
+    selected?: boolean
+}
+
+export const ToggleButton: React.FC<React.PropsWithChildren<ToggleButtonProps>> = ({ selected, ...props }) => {
+    if (selected) {
+        return <ToggleButtonSelected {...props} />
+    }
+    return <ToggleButtonActive {...props} />
+}
 
 export const DestructiveButton = styled(Button)`
     background: var(--destructive);

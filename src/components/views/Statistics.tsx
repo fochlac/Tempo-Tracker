@@ -1,10 +1,12 @@
 import styled from 'styled-components'
+import { useState } from 'preact/hooks'
 import { useGetRequiredSecondsForPeriod, useLifetimeStatistics, useStatistics } from '../../hooks/useStatistics'
 import { useStatisticsOptions } from '../../hooks/useStatisticsOptions'
 import { Input } from '../atoms/Input'
 import { Block, Column } from '../atoms/Layout'
 import { H6, Label, Value } from '../atoms/Typography'
 import { WorkTimeDiagramm } from '../molecules/WorkTimeDiagramm'
+import { WorkTimeDailyDiagramm } from '../molecules/WorkTimeDailyDiagramm'
 import { WorkTimeExceptions } from '../molecules/WorkTimeExceptions'
 import { WorkTimeStats } from '../molecules/WorkTimeStats'
 import { useSelf } from '../../hooks/useSelf'
@@ -14,6 +16,7 @@ import { ActionLink } from '../atoms/ActionLink'
 import { formatDuration } from '../../utils/datetime'
 import { useOptions } from 'src/hooks/useOptions'
 import { Conditional } from '../atoms/Conditional'
+import { ToggleButton } from '../atoms/Button'
 
 const Body = styled.div`
     display: flex;
@@ -28,9 +31,12 @@ const Title = styled(H6)`
     padding-right: 4px;
 `
 
+type ViewMode = 'week' | 'day'
+
 export const StatisticsView: React.FC = () => {
+    const [viewMode, setViewMode] = useState<ViewMode>('week')
     const {
-        data: { stats, year, unsyncedStats, yearWeeks },
+        data: { stats, year, unsyncedStats, yearWeeks, yearDays },
         actions: { setYear, getRequiredSeconds, refresh },
         loading
     } = useStatistics()
@@ -49,51 +55,48 @@ export const StatisticsView: React.FC = () => {
     return (
         <Body>
             <Title>
-                {'Weekly Hours'}
-                <ActionLink
-                    disabled={loading || self.error}
-                    style={{ marginRight: 4, lineHeight: '16px', marginLeft: 'auto' }}
-                    onClick={() => refresh()}
-                >
+                {viewMode === 'week' ? 'Weekly Hours' : 'Daily Hours'}
+                <Block style={{ gap: 4, marginLeft: 'auto', padding: 0, marginTop: -3, marginBottom: 4, marginRight: 8 }}>
+                    <ToggleButton onClick={() => setViewMode('week')} selected={viewMode === 'week'}>
+                        Week
+                    </ToggleButton>
+                    <ToggleButton onClick={() => setViewMode('day')} selected={viewMode === 'day'}>
+                        Day
+                    </ToggleButton>
+                </Block>
+                <ActionLink disabled={loading || self.error} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => refresh()}>
                     Refresh
                 </ActionLink>
                 {self.error && (
-                    <ErrorTooltip
-                        style={{ paddingBottom: 2 }}
-                        content="No connection to Jira instance - only cached statistics available"
-                    >
+                    <ErrorTooltip style={{ paddingBottom: 2 }} content="No connection to Jira instance - only cached statistics available">
                         <WifiOff size={14} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />
                     </ErrorTooltip>
                 )}
             </Title>
-            <WorkTimeDiagramm
-                {...{ year, setYear, stats, options, unsyncedStats, error: self.error }}
-                getRequiredSeconds={getRequiredSeconds}
-            />
+            {viewMode === 'week' ? (
+                <WorkTimeDiagramm {...{ year, setYear, stats, options, unsyncedStats, error: self.error }} getRequiredSeconds={getRequiredSeconds} />
+            ) : (
+                <WorkTimeDailyDiagramm {...{ year, setYear, stats, options, unsyncedStats, error: self.error }} />
+            )}
             <H6>{`Statistics for ${year}`}</H6>
             <WorkTimeStats
+                dayStat={viewMode === 'day'}
+                days={yearDays}
                 weeks={yearWeeks}
                 total={(stats?.total ?? 0) + (unsyncedStats?.total ?? 0) / 1000}
                 getRequiredSeconds={(year, week) => getRequiredSeconds(week)}
             />
             <H6>{`Statistics since ${options.lifetimeYear}`}</H6>
-            <WorkTimeStats
-                weeks={yearWeeksLifetime}
-                total={lifeTimeTotal}
-                getRequiredSeconds={getRequiredSecondsPeriod}
-            />
+            <WorkTimeStats weeks={yearWeeksLifetime} total={lifeTimeTotal} getRequiredSeconds={getRequiredSecondsPeriod} />
+
             <Block>
                 <Column>
                     <Label>Median Hours (Week) Lowest Quarter</Label>
-                    <Value>
-                        {lifeTimeMedianLow ? formatDuration(lifeTimeMedianLow * 1000, true, true) : <>&mdash;</>}
-                    </Value>
+                    <Value>{lifeTimeMedianLow ? formatDuration(lifeTimeMedianLow * 1000, true, true) : <>&mdash;</>}</Value>
                 </Column>
                 <Column>
                     <Label>Median Hours (Week) Highest Quarter</Label>
-                    <Value>
-                        {lifeTimeMedianTop ? formatDuration(lifeTimeMedianTop * 1000, true, true) : <>&mdash;</>}
-                    </Value>
+                    <Value>{lifeTimeMedianTop ? formatDuration(lifeTimeMedianTop * 1000, true, true) : <>&mdash;</>}</Value>
                 </Column>
             </Block>
             <Conditional enable={isWebfleet}>
@@ -108,7 +111,11 @@ export const StatisticsView: React.FC = () => {
                     <Column>
                         <Label>Overhours (decaying soon)</Label>
                         <Value>
-                            {overhourStats.secondsInLastMonth > 0 ? formatDuration(overhourStats?.secondsInLastMonth * 1000, true, true) : <>&mdash;</>}
+                            {overhourStats.secondsInLastMonth > 0 ? (
+                                formatDuration(overhourStats?.secondsInLastMonth * 1000, true, true)
+                            ) : (
+                                <>&mdash;</>
+                            )}
                         </Value>
                     </Column>
                     <Column>
@@ -134,6 +141,18 @@ export const StatisticsView: React.FC = () => {
                     />
                 </Column>
                 <Column>
+                    <Label>Hours per Day</Label>
+                    <Input
+                        type="number"
+                        style={{ width: 65 }}
+                        min={0}
+                        value={options.defaultDailyHours}
+                        max={24}
+                        step={0.1}
+                        onChange={updateOptionKey('defaultDailyHours')}
+                    />
+                </Column>
+                <Column>
                     <Label>Start Year Lifetime Statistics</Label>
                     <Input
                         type="number"
@@ -145,7 +164,6 @@ export const StatisticsView: React.FC = () => {
                         onChange={updateOptionKey('lifetimeYear')}
                     />
                 </Column>
-                <Column />
                 <Column />
             </Block>
             <WorkTimeExceptions />
