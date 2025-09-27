@@ -18,59 +18,72 @@ const emptyStats = {
 function useUnsyncedLogStatistics(): Record<string, StatsMap> {
     const { updates, originals } = useWorklogUpdates()
 
-    const updateStatChanges: Record<string, StatsMap> = useMemo(() => updates.reduce((updateStatChanges, log) => {
-        const logYear = new Date(log.start).getFullYear()
-        const day = dateString(log.start)
-        const weekNumber = getISOWeekNumber(log.start)
-        const month = new Date(log.start).getMonth() + 1
-        if (!updateStatChanges[logYear]) {
-            updateStatChanges[logYear] = createWorkMap(logYear)
-        }
-        if (!updateStatChanges[logYear].days[day]) {
-            updateStatChanges[logYear].days[day] = 0
-        }
-        if (!updateStatChanges[logYear].weeks[weekNumber]) {
-            updateStatChanges[logYear].weeks[weekNumber] = 0
-        }
-        if (!updateStatChanges[logYear].month[month]) {
-            updateStatChanges[logYear].month[month] = 0
-        }
-        const newDuration = log.end - log.start
-        const oldDuration = originals[log.id] ? originals[log.id].end - originals[log.id].start : 0
-        const durationChange = newDuration - oldDuration
-        updateStatChanges[logYear].days[day] += durationChange
-        updateStatChanges[logYear].weeks[weekNumber] += durationChange
-        updateStatChanges[logYear].month[month] += durationChange
-        updateStatChanges[logYear].total += durationChange
+    const updateStatChanges: Record<string, StatsMap> = useMemo(
+        () =>
+            updates.reduce((updateStatChanges, log) => {
+                const logYear = new Date(log.start).getFullYear()
+                const day = dateString(log.start)
+                const weekNumber = getISOWeekNumber(log.start)
+                const month = new Date(log.start).getMonth() + 1
+                if (!updateStatChanges[logYear]) {
+                    updateStatChanges[logYear] = createWorkMap(logYear)
+                }
+                if (!updateStatChanges[logYear].days[day]) {
+                    updateStatChanges[logYear].days[day] = 0
+                }
+                if (!updateStatChanges[logYear].weeks[weekNumber]) {
+                    updateStatChanges[logYear].weeks[weekNumber] = 0
+                }
+                if (!updateStatChanges[logYear].month[month]) {
+                    updateStatChanges[logYear].month[month] = 0
+                }
+                const newDuration = log.end - log.start
+                const oldDuration = originals[log.id] ? originals[log.id].end - originals[log.id].start : 0
+                const durationChange = newDuration - oldDuration
+                updateStatChanges[logYear].days[day] += durationChange
+                updateStatChanges[logYear].weeks[weekNumber] += durationChange
+                updateStatChanges[logYear].month[month] += durationChange
+                updateStatChanges[logYear].total += durationChange
 
-        return updateStatChanges
-    }, {}), [updates, originals])
+                return updateStatChanges
+            }, {}),
+        [updates, originals]
+    )
 
     return updateStatChanges
 }
 
 export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: number) {
     const options = useStatisticsOptions()
-    const { data: { days } } = useOptions()
+    const {
+        data: { days }
+    } = useOptions()
     const { exceptions, defaultHours } = options.data
 
     const getRequiredSeconds = useMemo(() => {
         const currentWeek = getISOWeekNumber(Date.now())
         const currentYear = new Date().getFullYear()
         const currentDay = new Date().getDay()
-        const { workdays, passedWorkdays } = Array(7).fill(0).reduce((progress, _v, dayNo) => {
-            if (days.includes(dayNo)) {
-                progress.workdays++
-                if (dayNo <= currentDay) {
-                    progress.passedWorkdays++
-                }
-            }
-            return progress
-        }, { workdays: 0, passedWorkdays: 0 })
+        const { workdays, passedWorkdays } = Array(7)
+            .fill(0)
+            .reduce(
+                (progress, _v, dayNo) => {
+                    if (days.includes(dayNo)) {
+                        progress.workdays++
+                        if (dayNo <= currentDay) {
+                            progress.passedWorkdays++
+                        }
+                    }
+                    return progress
+                },
+                { workdays: 0, passedWorkdays: 0 }
+            )
 
-        const modifier = (year: number, week: number, skipModifier?: boolean) => !skipModifier && year === currentYear && week === currentWeek ? passedWorkdays / workdays : 1
+        const modifier = (year: number, week: number, skipModifier?: boolean) =>
+            !skipModifier && year === currentYear && week === currentWeek ? passedWorkdays / workdays : 1
 
-        if (!exceptions.length) return (year: number, week: number, skipModifier?: boolean) => modifier(year, week, skipModifier) * defaultHours * 60 * 60
+        if (!exceptions.length)
+        { return (year: number, week: number, skipModifier?: boolean) => modifier(year, week, skipModifier) * defaultHours * 60 * 60 }
 
         const years = Array.from({ length: (endYear ?? new Date().getFullYear()) - startYear + 1 }, (_v, idx) => startYear + idx)
 
@@ -78,20 +91,26 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
             const weeknumber = getISOWeeks(year)
             const yearExceptions = exceptions.filter((exception) => exception.startYear <= year && exception.endYear >= year).reverse()
 
-            const weekHourMap = Array(weeknumber).fill(0).reduce((weekHourMap, _v, index) => {
-                const week = index + 1
-                const exception = yearExceptions.find((exception) => (exception.startYear < year || exception.startYear === year && exception.startWeek <= week) &&
-                    (exception.endYear > year || exception.endYear === year && exception.endWeek >= week))
+            const weekHourMap = Array(weeknumber)
+                .fill(0)
+                .reduce((weekHourMap, _v, index) => {
+                    const week = index + 1
+                    const exception = yearExceptions.find(
+                        (exception) =>
+                            (exception.startYear < year || (exception.startYear === year && exception.startWeek <= week)) &&
+                            (exception.endYear > year || (exception.endYear === year && exception.endWeek >= week))
+                    )
 
-                weekHourMap[week] = exception?.hours ?? defaultHours
-                return weekHourMap
-            }, {})
+                    weekHourMap[week] = exception?.hours ?? defaultHours
+                    return weekHourMap
+                }, {})
 
             map[year] = weekHourMap
             return map
         }, {})
 
-        return (year: number, week: number, skipModifier?: boolean) => modifier(year, week, skipModifier) * (yearWeekHourMap[year]?.[week] ?? defaultHours) * 60 * 60
+        return (year: number, week: number, skipModifier?: boolean) =>
+            modifier(year, week, skipModifier) * (yearWeekHourMap[year]?.[week] ?? defaultHours) * 60 * 60
     }, [startYear, endYear, exceptions, defaultHours, days])
 
     return getRequiredSeconds
@@ -114,8 +133,7 @@ export function useStatistics() {
     useEffect(() => {
         setOverwriteData(null)
         if (!isCurrentYear) {
-            fetchWorkStatistics(year)
-                .then((data) => setOverwriteData(data))
+            fetchWorkStatistics(year).then((data) => setOverwriteData(data))
         }
     }, [year, isCurrentYear, setOverwriteData])
 
@@ -131,19 +149,23 @@ export function useStatistics() {
     }, [unsyncedLogStatistics])
 
     const yearWeeks = useMemo(() => {
-        return Object.keys(stats?.weeks || {}).map((week) => ({
-            week: Number(week),
-            year,
-            workedSeconds: stats.weeks[week]
-        })).sort((a, b) => a.workedSeconds - b.workedSeconds)
+        return Object.keys(stats?.weeks || {})
+            .map((week) => ({
+                week: Number(week),
+                year,
+                workedSeconds: stats.weeks[week]
+            }))
+            .sort((a, b) => a.workedSeconds - b.workedSeconds)
     }, [stats?.weeks, year])
 
     const yearDays = useMemo(() => {
-        return Object.keys(stats?.days || {}).map((day) => ({
-            day,
-            year,
-            workedSeconds: stats.days[day]
-        })).sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime())
+        return Object.keys(stats?.days || {})
+            .map((day) => ({
+                day,
+                year,
+                workedSeconds: stats.days[day]
+            }))
+            .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime())
     }, [stats?.days, year])
 
     return {
@@ -157,18 +179,26 @@ export function useStatistics() {
     }
 }
 
-export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: StatsMap }) {
-    const { data: { lifetimeYear } } = useStatisticsOptions()
-    const { data, updateData, loading, forceFetch } = usePersitentFetch<'LIFETIME_STATS_CACHE'>(async () => {
-        const years = Array.from({ length: (new Date().getFullYear()) - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx)
-            .filter((year) => !data?.[year])
-        const lifeTimeStatsMap = { ...data }
-        for (const year of years) {
-            const stats = await fetchWorkStatistics(year)
-            lifeTimeStatsMap[year] = stats
-        }
-        return lifeTimeStatsMap
-    }, CACHE.LIFETIME_STATS_CACHE, {}, Number.MAX_SAFE_INTEGER)
+export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: StatsMap }) {
+    const {
+        data: { lifetimeYear }
+    } = useStatisticsOptions()
+    const { data, updateData, loading, forceFetch } = usePersitentFetch<'LIFETIME_STATS_CACHE'>(
+        async () => {
+            const years = Array.from({ length: new Date().getFullYear() - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx).filter(
+                (year) => !data?.[year]
+            )
+            const lifeTimeStatsMap = { ...data }
+            for (const year of years) {
+                const stats = await fetchWorkStatistics(year)
+                lifeTimeStatsMap[year] = stats
+            }
+            return lifeTimeStatsMap
+        },
+        CACHE.LIFETIME_STATS_CACHE,
+        {},
+        Number.MAX_SAFE_INTEGER
+    )
 
     const getRequiredSeconds = useGetRequiredSecondsForPeriod(lifetimeYear)
 
@@ -180,10 +210,6 @@ export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: 
     useEffect(() => {
         if (year && stats?.year === year && stats.total > 0) {
             updateData((cacheData = {}) => {
-                console.log(year, stats.total, stats, {
-                    ...cacheData,
-                    [year]: stats
-                })
                 return {
                     ...cacheData,
                     [year]: stats
@@ -193,22 +219,24 @@ export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [year, stats])
 
-    const yearWeeksLifetime: { week: number, year: number, workedSeconds: number }[] = useMemo(() => {
-        const years = Array.from({ length: (new Date().getFullYear()) - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx)
-        return years.reduce((weeksList, year) => {
-            if (!data[year]?.weeks) return weeksList
-            const yearWeeks = Object.keys(data[year].weeks).map((week) => ({
-                week: Number(week),
-                year,
-                workedSeconds: data[year].weeks[week]
-            }))
-            return weeksList.concat(yearWeeks)
-        }, []).sort((a, b) => a.workedSeconds - b.workedSeconds)
+    const yearWeeksLifetime: { week: number; year: number; workedSeconds: number }[] = useMemo(() => {
+        const years = Array.from({ length: new Date().getFullYear() - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx)
+        return years
+            .reduce((weeksList, year) => {
+                if (!data[year]?.weeks) return weeksList
+                const yearWeeks = Object.keys(data[year].weeks).map((week) => ({
+                    week: Number(week),
+                    year,
+                    workedSeconds: data[year].weeks[week]
+                }))
+                return weeksList.concat(yearWeeks)
+            }, [])
+            .sort((a, b) => a.workedSeconds - b.workedSeconds)
     }, [data, lifetimeYear])
 
-    const overhourStats: {totalDiffSeconds: number, secondsInLastWeek: number, secondsInLastMonth: number} = useMemo(() => {
+    const overhourStats: { totalDiffSeconds: number; secondsInLastWeek: number; secondsInLastMonth: number } = useMemo(() => {
         const sorted = [...yearWeeksLifetime].sort((a, b) => `${a.year}-${a.week}`.localeCompare(`${b.year}-${b.week}`))
-        const resolvedLastHalfYear = sorted.reduce((array, {year, week, workedSeconds}, index) => {
+        const resolvedLastHalfYear = sorted.reduce((array, { year, week, workedSeconds }, index) => {
             let currentDiff = workedSeconds - getRequiredSeconds(year, week)
             for (let x = 0; x < index; x++) {
                 const oldWeek = array[x]
@@ -221,31 +249,33 @@ export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: 
                 if (Math.abs(currentDiff) - Math.abs(oldWeek.diffSeconds) > 0) {
                     currentDiff += oldWeek.diffSeconds
                     oldWeek.diffSeconds = 0
-                }
-                else {
+                } else {
                     oldWeek.diffSeconds += currentDiff
                     currentDiff = 0
                 }
             }
 
-            array.push({year, week, workedSeconds, diffSeconds: currentDiff})
+            array.push({ year, week, workedSeconds, diffSeconds: currentDiff })
             return array.slice(-25)
         }, [])
 
-        return resolvedLastHalfYear.reduce((stats, result, index) => {
-            if (index === 0) {
-                stats.secondsInLastWeek = result.diffSeconds
-            }
-            if (index < 4) {
-                stats.secondsInLastMonth += result.diffSeconds
-            }
-            stats.totalDiffSeconds += result.diffSeconds
-            return stats
-        }, {totalDiffSeconds: 0, secondsInLastWeek: 0, secondsInLastMonth: 0})
+        return resolvedLastHalfYear.reduce(
+            (stats, result, index) => {
+                if (index === 0) {
+                    stats.secondsInLastWeek = result.diffSeconds
+                }
+                if (index < 4) {
+                    stats.secondsInLastMonth += result.diffSeconds
+                }
+                stats.totalDiffSeconds += result.diffSeconds
+                return stats
+            },
+            { totalDiffSeconds: 0, secondsInLastWeek: 0, secondsInLastMonth: 0 }
+        )
     }, [yearWeeksLifetime, getRequiredSeconds])
 
     const lifeTimeTotal = useMemo(() => {
-        const years = Array.from({ length: (new Date().getFullYear()) - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx)
+        const years = Array.from({ length: new Date().getFullYear() - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx)
         return years.reduce((total, year) => total + (data[year]?.total ?? 0), 0)
     }, [data, lifetimeYear])
 
@@ -267,4 +297,3 @@ export function useLifetimeStatistics({ year, stats }: { year?: number, stats?: 
         loading
     }
 }
-

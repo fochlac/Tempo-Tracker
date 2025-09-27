@@ -6,7 +6,6 @@ const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
     return {
         defaultHours: Number(rawOptions.defaultHours ?? defaultStatisticsOptions.defaultHours),
         defaultDailyHours: Number(rawOptions.defaultDailyHours ?? defaultStatisticsOptions.defaultDailyHours),
-        weekStartDay: Number(rawOptions.weekStartDay ?? defaultStatisticsOptions.weekStartDay) as 0 | 1,
         lifetimeYear: Number(rawOptions.lifetimeYear ?? defaultStatisticsOptions.lifetimeYear),
         exceptions: (rawOptions.exceptions ?? defaultStatisticsOptions.exceptions).map((e) => ({
             startYear: Number(e.startYear),
@@ -18,21 +17,20 @@ const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
     }
 }
 
-const defaultStatisticsOptions = {
+const defaultStatisticsOptions: StatisticsOptions = {
     defaultHours: 40,
     defaultDailyHours: 8,
-    weekStartDay: 1, // Default to Monday
     lifetimeYear: new Date().getFullYear(),
     exceptions: []
 }
-export function useStatisticsOptions () {
+export function useStatisticsOptions() {
     const options: StatisticsOptions = useDatabase<'statsOptions'>('statsOptions') || defaultStatisticsOptions
     const updateOptions = useDatabaseUpdate(DB_KEYS.STATS_OPTIONS)
 
     return {
         data: normalizeStatisticsOptions(options),
         actions: {
-            async addException () {
+            async addException() {
                 const year = new Date().getFullYear()
                 const week = getISOWeekNumber(Date.now())
                 const update = {
@@ -50,17 +48,14 @@ export function useStatisticsOptions () {
                 }
                 await updateOptions(update)
             },
-            async deleteException (index) {
+            async deleteException(index) {
                 const update = {
                     ...options,
-                    exceptions: [
-                        ...options.exceptions.slice(0, index),
-                        ...options.exceptions.slice(index + 1)
-                    ]
+                    exceptions: [...options.exceptions.slice(0, index), ...options.exceptions.slice(index + 1)]
                 }
                 await updateOptions(update)
             },
-            async mergeException (index, merge) {
+            async mergeException(index, merge) {
                 const update = {
                     ...options,
                     exceptions: [
@@ -71,10 +66,10 @@ export function useStatisticsOptions () {
                 }
                 await updateOptions(update)
             },
-            async set (newOptions) {
+            async set(newOptions) {
                 await updateOptions(newOptions)
             },
-            async merge (newOptions: Partial<StatisticsOptions>) {
+            async merge(newOptions: Partial<StatisticsOptions>) {
                 const update = {
                     ...options,
                     ...newOptions
