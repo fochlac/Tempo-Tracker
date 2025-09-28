@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Input } from '../atoms/Input'
 import { Label } from '../atoms/Typography'
 import { Option } from '../atoms/Option'
+import { getDaysShort } from 'src/utils/datetime'
 
 const Checkbox = styled(Input)`
     height: 15px;
@@ -20,14 +21,13 @@ const Col = styled.div`
     margin-right: 8px;
     position: relative;
 `
-export function WorkingDayOption () {
+export function WorkingDayOption() {
     const { data: options, actions } = useOptions()
 
     const updateDay = (day) => (e) => {
         if (e.target.checked) {
             actions.merge({ days: [day].concat(options.days) })
-        }
-        else {
+        } else {
             actions.merge({ days: options.days.filter((v) => v !== day) })
         }
     }
@@ -36,18 +36,12 @@ export function WorkingDayOption () {
         <Option>
             <Label>Working Days</Label>
             <Row style={{ marginTop: 8 }}>
-                {['Sun', 'Mo', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
-                    (day, idx: 0 | 1 | 2 | 3 | 4 | 5 | 6) => (
-                        <Col key={day} style={{ width: 25, alignItems: 'center', marginRight: 0 }}>
-                            <Checkbox
-                                type="checkbox"
-                                checked={options.days.includes(idx)}
-                                onChange={updateDay(idx)}
-                            />
-                            <Label>{day}</Label>
-                        </Col>
-                    )
-                )}
+                {getDaysShort().map(({ label, index }) => (
+                    <Col key={label} style={{ minWidth: 25, alignItems: 'center', marginRight: 2 }}>
+                        <Checkbox type="checkbox" checked={options.days.includes(index)} onChange={updateDay(index)} />
+                        <Label>{label}</Label>
+                    </Col>
+                ))}
             </Row>
         </Option>
     )

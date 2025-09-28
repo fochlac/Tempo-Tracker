@@ -5,7 +5,7 @@
         "sourceMap": true,
         "module": "Node16",
         "moduleResolution": "Node16",
-        "target": "es2020",
+        "target": "es2022",
         "jsx": "react-jsx",
         "jsxImportSource": "preact",
         "baseUrl": "./",
@@ -14,12 +14,7 @@
             "react": ["./node_modules/preact/compat/"],
             "react-dom": ["./node_modules/preact/compat/"]
         },
-        "typeRoots": [
-            "node_modules/@types",
-            "node_modules/cypress/types",
-            "./types",
-            "node_modules/web-ext-types/global"
-        ]
+        "typeRoots": ["node_modules/@types", "node_modules/cypress/types", "./types", "node_modules/web-ext-types/global"]
     },
     "include": [
         "./src/**/*.jsx",
