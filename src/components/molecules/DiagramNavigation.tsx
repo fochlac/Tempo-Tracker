@@ -51,7 +51,7 @@ export const DiagramNavigation: React.FC<Props> = ({
                 </IconButton>
             </Column>
             <Block style={{ alignItems: 'center', padding: 0, gap: 8 }}>
-                {month && <DefaultText style={{ marginTop: 2 }}>{month}</DefaultText>}
+                {month && <DefaultText style={{ marginTop: 2, minWidth: 75, marginLeft: -50, textAlign: 'right' }}>{month}</DefaultText>}
                 <Input
                     disabled={error}
                     type="number"

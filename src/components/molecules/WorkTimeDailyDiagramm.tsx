@@ -38,7 +38,7 @@ export const WorkTimeDailyDiagramm: React.FC<Props> = ({ stats, year, setYear, o
     const navigation = (
         <DiagramNavigation
             year={year}
-            month={new Date(year, month, 1).toLocaleString(getLocale(), { month: 'short' })}
+            month={new Date(year, month, 1).toLocaleString(getLocale(), { month: 'long' })}
             setYear={setYear}
             error={error}
             canScrollLeft={canScrollLeft}

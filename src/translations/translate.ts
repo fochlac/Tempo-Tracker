@@ -1,4 +1,5 @@
 import enJson from './en.json'
+import deJson from './de.json'
 
 export interface TranslationVars {
     count?: number | string
@@ -9,7 +10,8 @@ const DEFAULT_LOCALE = 'en'
 const PLURAL_SUFFIX = '-pl'
 
 const bundles: Record<string, Record<string, string>> = {
-    [DEFAULT_LOCALE]: enJson
+    [DEFAULT_LOCALE]: enJson,
+    de: deJson
 }
 
 export function getLocale(): string {

@@ -70,7 +70,7 @@ export const SplitTrackingDialog: React.FC<{ onClose: () => void }> = ({ onClose
                         onClose()
                     }}
                 >
-                    {t('action.splitWorklog')}
+                    {t('action.splitTracking')}
                 </Button>
             </ButtonBar>
         </Modal>
