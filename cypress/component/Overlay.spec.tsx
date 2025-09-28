@@ -21,18 +21,18 @@ describe('Workday-Overlay', () => {
         const workdayEntries = options?.workdayEntries || []
 
         cy.mount(<Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh, impressumUrl }} />)
-        cy.contains('header', 'Tempo Tracker Times').should('be.visible')
+        cy.contains('header', 'Tempo Tracker').should('be.visible')
     }
 
     it('should render', () => {
         setup()
-        cy.contains('header', 'Tempo Tracker Times').should('be.visible')
+        cy.contains('header', 'Tempo Tracker').should('be.visible')
         cy.contains('div', 'Florian Riedel').should('be.visible')
         cy.contains('a', 'Report Issue').should('exist').click()
         cy.get('@openTab').should('have.been.calledWith', 'https://github.com/fochlac/Tempo-Tracker/issues')
         cy.contains('a', 'Impressum').should('exist').click()
         cy.get('@openTab').should('have.been.calledWith', impressumUrl)
-        cy.get('li').filter(':contains(".10.20")').should('have.length', 5)
+        cy.get('li').filter(':contains("/10/20")').should('have.length', 5)
         cy.get('li').filter(':contains(":00 - ")').should('have.length', 10)
         cy.get('li input').filter(':checked').should('have.length', 15)
         cy.contains('li', '09:00 - 09:30' + 'Test5').should('have.css', 'background-color', ERROR_COLOR)
@@ -50,9 +50,9 @@ describe('Workday-Overlay', () => {
     it('should open and close', () => {
         setup()
         cy.contains('button', 'Upload').should('be.visible')
-        cy.contains('header', 'Tempo Tracker Times').find('button').click()
+        cy.contains('header', 'Tempo Tracker').find('button').click()
         cy.contains('button', 'Upload').should('not.exist')
-        cy.contains('header', 'Tempo Tracker Times').find('button').click()
+        cy.contains('header', 'Tempo Tracker').find('button').click()
         cy.contains('button', 'Upload').should('be.visible')
     })
 

@@ -213,7 +213,7 @@
     "tracker.logMultiple": "Zeitraum erfassen",
     "tracker.newEntry": "Neuer Eintrag",
     "tracker.trackingHistory": "Zeiterfassungen",
-    "view.tempoTrackerTimes": "Tempo Tracker Zeiten",
+    "view.tempoTrackerTimes": "Tempo Tracker",
     "workday.permissionsMissing": "Berechtigungen für den Zugriff auf Workday fehlen. Klicken Sie auf das Schloss-Symbol, um Berechtigungen zu erteilen.",
     "workday.workday": "Workday",
     "worklog.commentPrefix": "Kommentar:",

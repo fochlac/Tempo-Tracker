@@ -213,7 +213,7 @@
     "tracker.logMultiple": "Log Multiple",
     "tracker.newEntry": "New Entry",
     "tracker.trackingHistory": "Tracking History",
-    "view.tempoTrackerTimes": "Tempo Tracker Times",
+    "view.tempoTrackerTimes": "Tempo Tracker",
     "workday.permissionsMissing": "Permissions to access Workday are missing. Click the lock-icon to grant permissions.",
     "workday.workday": "Workday",
     "worklog.commentPrefix": "Comment:",
