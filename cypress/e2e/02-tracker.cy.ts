@@ -57,21 +57,15 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.contains('form', 'Stop Tracking').find('select').select('Test2')
 
-        cy.contains('form', 'Stop Tracking')
-            .contains('button', 'Test2')
-            .should('have.css', 'background-color', 'rgb(15, 15, 15)')
+        cy.contains('form', 'Stop Tracking').contains('button', 'Test2').should('have.css', 'background-color', 'rgb(15, 15, 15)')
 
-        cy.contains('form', 'Stop Tracking')
-            .contains('button', 'Test4')
-            .should('have.css', 'background-color', 'rgb(37, 37, 37)')
+        cy.contains('form', 'Stop Tracking').contains('button', 'Test4').should('have.css', 'background-color', 'rgb(37, 37, 37)')
 
         cy.contains('button', 'Stop Tracking').click()
 
         cy.contains('p', 'Please select an issue').should('be.visible')
 
-        cy.contains('form', 'Please select an issue')
-            .contains('button', 'Test2')
-            .should('have.css', 'background-color', 'rgb(37, 37, 37)')
+        cy.contains('form', 'Please select an issue').contains('button', 'Test2').should('have.css', 'background-color', 'rgb(37, 37, 37)')
 
         cy.contains('li', '17:00 - 17:05')
             .should('be.visible')
@@ -79,7 +73,7 @@ describe('Tracking View - Tracking Area', () => {
             .find('[data-content="Queued for synchronization."]')
             .should('exist')
 
-        cy.contains('li', '08.10.20 (Today)').should('contain.text', '8h 05m')
+        cy.contains('li', '08/10/20 (Today)').should('contain.text', '8h 05m')
     })
 
     it('should consider show comments setting', () => {
@@ -97,11 +91,9 @@ describe('Tracking View - Tracking Area', () => {
         })
         cy.contains('form', 'Please select an issue').find('button').should('have.length', 7).contains('Test4').click()
 
-        cy.contains('form', 'Stop Tracking')
-            .should('be.visible')
+        cy.contains('form', 'Stop Tracking').should('be.visible')
 
-        cy.contains('form', 'Stop Tracking').find('textarea[placeholder="Comment"]').should('have.value', '')
-            .type('Some Comment', { delay: 80 })
+        cy.contains('form', 'Stop Tracking').find('textarea[placeholder="Comment"]').should('have.value', '').type('Some Comment', { delay: 80 })
 
         cy.get('@clock').invoke('tick', 300000)
 
@@ -215,11 +207,13 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', 'today')
             .should('contain.text', '12:30')
             .should('contain.text', '13:50')
-            .contains('button', 'Create Worklog').click()
+            .contains('button', 'Create Worklog')
+            .click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
+        cy.get('li:has([data-content="Queued for synchronization."])')
+            .should('have.length', 1)
             .should('contain.text', 'Test7')
-            .should('contain.text', '08.10.20')
+            .should('contain.text', '08/10/20')
             .should('contain.text', '08:00 - 12:30')
             .should('contain.text', '4h 30m')
 
@@ -261,7 +255,8 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', 'today')
             .should('contain.text', '12:30')
             .should('contain.text', '13:50')
-            .contains('button', 'Ignore Gap').click()
+            .contains('button', 'Ignore Gap')
+            .click()
 
         cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 0)
 
@@ -299,7 +294,7 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
         cy.contains('div', 'Stop Tracking').contains('button', 'Split Tracking').should('be.visible').click()
 
-        cy.contains('dialog', 'Split Current Tracking').should('be.visible').contains('b', '08:00')
+        cy.contains('dialog', 'Split Current Tracking').should('be.visible').contains('08:00')
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'Issue').find('input').should('have.value', 'Test7')
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(0).should('have.value', '08')
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
@@ -308,9 +303,10 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(0).type('13:00')
         cy.contains('dialog', 'Split Current Tracking').contains('button', 'Split Worklog').click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
+        cy.get('li:has([data-content="Queued for synchronization."])')
+            .should('have.length', 1)
             .should('contain.text', 'Test7')
-            .should('contain.text', '08.10.20')
+            .should('contain.text', '08/10/20')
             .should('contain.text', '08:00 - 13:00')
             .should('contain.text', '5h 00m')
 
@@ -327,7 +323,7 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
         cy.contains('div', 'Stop Tracking').contains('button', 'Split Tracking').should('be.visible').click()
-        cy.contains('dialog', 'Split Current Tracking').should('be.visible').contains('b', '13:00')
+        cy.contains('dialog', 'Split Current Tracking').should('be.visible').contains('13:00')
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'Issue').find('input').should('have.value', 'Test7')
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(0).should('have.value', '13')
         cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
@@ -337,8 +333,7 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
 
-        cy.contains('form', 'Stop Tracking')
-            .should('be.visible')
+        cy.contains('form', 'Stop Tracking').should('be.visible')
 
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
         cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')

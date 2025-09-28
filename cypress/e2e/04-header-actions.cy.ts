@@ -13,10 +13,7 @@ describe('Tracking View - Header Actions', () => {
         cy.contains('li', 'Test2').should('be.visible')
 
         cy.get('section figure').should('not.be.visible')
-        cy.intercept(
-            { url: 'https://jira.test.com/rest/tempo-timesheets/4/worklogs/search', times: 1 },
-            { delay: 1000, body: [] }
-        ).as('search')
+        cy.intercept({ url: 'https://jira.test.com/rest/tempo-timesheets/4/worklogs/search', times: 1 }, { delay: 1000, body: [] }).as('search')
         cy.contains('h6', 'Tracking History').contains('a', 'Refresh').should('be.visible').click()
         cy.get('section figure').should('be.visible')
         cy.get('@search.all').should('have.length', 1)
@@ -49,7 +46,7 @@ describe('Tracking View - Header Actions', () => {
 
         cy.getUnsyncedWorklogs().should('have.length', 1).its(0).should('have.nested.property', 'issue.key', 'TE-14')
         cy.get('li')
-            .filter(':contains(08.10.20)')
+            .filter(':contains(08/10/20)')
             .filter(':contains(Test4)')
             .should('have.length', 1)
             .find('[data-content="Queued for synchronization."]')
@@ -83,29 +80,20 @@ describe('Tracking View - Header Actions', () => {
 
         cy.contains('dialog', 'Log Time for Multiple Days').contains('div', 'Issue').find('select').select('Test4')
 
-        cy.contains('dialog', 'Log Time for Multiple Days')
-            .contains('div', 'Hours Per Day')
-            .find('input')
-            .eq(0)
-            .should('have.value', '08')
-            .type('5')
+        cy.contains('dialog', 'Log Time for Multiple Days').contains('div', 'Hours Per Day').find('input').eq(0).should('have.value', '08').type('5')
 
-        cy.contains('dialog', 'Log Time for Multiple Days')
-            .contains('div', 'Hours Per Day')
-            .find('input')
-            .eq(1)
-            .should('have.value', '00')
+        cy.contains('dialog', 'Log Time for Multiple Days').contains('div', 'Hours Per Day').find('input').eq(1).should('have.value', '00')
 
         cy.contains('dialog', 'Log Time for Multiple Days').contains('button', 'Create Worklogs').click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 2).as('newRows')
+        cy.get('li:has([data-content="Queued for synchronization."])')
+            .should('have.length', 2)
+            .as('newRows')
             .each((row) => {
-                cy.wrap(row)
-                    .should('contain.text', '5h 00m')
-                    .should('contain.text', 'Test4')
+                cy.wrap(row).should('contain.text', '5h 00m').should('contain.text', 'Test4')
             })
-        cy.get('@newRows').contains('08.10.20').should('have.length', 1)
-        cy.get('@newRows').contains('09.10.20').should('have.length', 1)
+        cy.get('@newRows').contains('08/10/20').should('have.length', 1)
+        cy.get('@newRows').contains('09/10/20').should('have.length', 1)
     })
 
     it('should synchronize if unsynced logs exist', () => {

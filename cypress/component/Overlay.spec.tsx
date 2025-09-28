@@ -37,7 +37,7 @@ describe('Workday-Overlay', () => {
         cy.get('li input').filter(':checked').should('have.length', 15)
         cy.contains('li', '09:00 - 09:30' + 'Test5').should('have.css', 'background-color', ERROR_COLOR)
 
-        cy.contains('li', '07.10.20').find('input').should('be.checked')
+        cy.contains('li', '07/10/20').find('input').should('be.checked')
         cy.contains('li', '08:30 - 10:00' + 'Test5')
             .should('be.visible')
             .find('input')
@@ -67,13 +67,13 @@ describe('Workday-Overlay', () => {
         cy.contains('li', '08:30 - 10:00' + 'Test5')
             .find('input')
             .should('not.be.checked')
-        cy.contains('li', '07.10.20').find('input').should('not.be.checked').click()
+        cy.contains('li', '07/10/20').find('input').should('not.be.checked').click()
         cy.contains('li', '08:30 - 10:00' + 'Test5')
             .find('input')
             .should('be.checked')
 
-        cy.contains('li', '07.10.20').find('input').click()
-        cy.contains('li', '07.10.20').find('input').should('not.be.checked')
+        cy.contains('li', '07/10/20').find('input').click()
+        cy.contains('li', '07/10/20').find('input').should('not.be.checked')
         cy.contains('li', '08:30 - 10:00' + 'Test5')
             .find('input')
             .should('not.be.checked')
@@ -86,15 +86,15 @@ describe('Workday-Overlay', () => {
         cy.contains('li', '10:00 - 16:30' + 'TE3')
             .find('input')
             .click()
-        cy.contains('li', '07.10.20').find('input').should('be.checked')
+        cy.contains('li', '07/10/20').find('input').should('be.checked')
     })
 
     it('should handle successful uploads correctly', () => {
         setup()
 
-        cy.contains('li', '07.10.20').find('input').click()
-        cy.contains('li', '06.10.20').find('input').click()
-        cy.contains('li', '05.10.20').find('input').click()
+        cy.contains('li', '07/10/20').find('input').click()
+        cy.contains('li', '06/10/20').find('input').click()
+        cy.contains('li', '05/10/20').find('input').click()
 
         cy.get('[data-test="progress"]').should('not.exist')
         cy.contains('button', 'Upload').should('not.be.disabled').should('be.visible').click()
@@ -122,7 +122,7 @@ describe('Workday-Overlay', () => {
         cy.get('@insertSpy').should('have.been.calledWith', 1602136801000, 1602165600000)
         cy.get('@reload').should('have.been.called')
 
-        cy.contains('li', '07.10.20').find('input').click()
+        cy.contains('li', '07/10/20').find('input').click()
         cy.contains('button', 'Upload').should('not.be.disabled')
     })
 
@@ -131,10 +131,10 @@ describe('Workday-Overlay', () => {
 
         setup({ insertWorkTime })
 
-        cy.contains('li', '09.10.20').find('input').click()
-        cy.contains('li', '08.10.20').find('input').click()
-        cy.contains('li', '06.10.20').find('input').click()
-        cy.contains('li', '05.10.20').find('input').click()
+        cy.contains('li', '09/10/20').find('input').click()
+        cy.contains('li', '08/10/20').find('input').click()
+        cy.contains('li', '06/10/20').find('input').click()
+        cy.contains('li', '05/10/20').find('input').click()
 
         cy.contains('button', 'Upload').should('be.visible').should('not.be.disabled').click()
 

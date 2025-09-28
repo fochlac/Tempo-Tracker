@@ -12,9 +12,10 @@ const bundles: Record<string, Record<string, string>> = {
     [DEFAULT_LOCALE]: enJson
 }
 
-function getLocale(): string {
+export function getLocale(): string {
     try {
-        return new Intl.DateTimeFormat().resolvedOptions().locale || DEFAULT_LOCALE
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (window as any)?.testLocale || new Intl.DateTimeFormat().resolvedOptions().locale || DEFAULT_LOCALE
     } catch {
         return DEFAULT_LOCALE
     }

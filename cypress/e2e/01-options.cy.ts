@@ -10,7 +10,7 @@ describe('Options view & initial setup', () => {
     beforeEach(() => {
         cy.intercept(`${serverDomain}**/*`, (req) => req.reply(404))
         cy.intercept(serverDomain, (req) => req.reply('<http><body>content</body></http>', { 'Content-Type': 'text/html; charset=UTF-8' }))
-        cy.origin(serverDomain, {args: { domain: serverDomain.replace('https://jira.', '') }}, ({ domain }) => {
+        cy.origin(serverDomain, { args: { domain: serverDomain.replace('https://jira.', '') } }, ({ domain }) => {
             cy.visit('/')
             cy.setCookie('test', 'cookie', { domain, secure: true, sameSite: 'no_restriction' })
             // Verify the cookie
@@ -112,11 +112,11 @@ describe('Options view & initial setup', () => {
     })
 
     it('should setup and select issues for datacenter', () => {
-        cy.contains('h6', 'Authentification').should('be.visible')
+        cy.contains('h6', 'Authentication').should('be.visible')
         cy.fakeTimers(Date.now())
         cy.intercept('https://jira.test.com/rest/api/2/myself', { displayName: 'Testuser', key: 'test1' }).as('myself')
 
-        cy.contains('h6', 'Authentification').should('be.visible')
+        cy.contains('h6', 'Authentication').should('be.visible')
         cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(247, 248, 251)')
 
         cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', '')
@@ -130,11 +130,7 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Server Url').contains('button', 'Change').should('be.visible').click()
 
         const serverUrl = `${serverDomain}/rest`
-        cy.contains('dialog', 'Change Server Url')
-            .find('input')
-            .type(serverUrl, { delay: 100 })
-            .invoke('attr', 'error')
-            .should('be.undefined')
+        cy.contains('dialog', 'Change Server Url').find('input').type(serverUrl, { delay: 100 }).invoke('attr', 'error').should('be.undefined')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
@@ -159,10 +155,7 @@ describe('Options view & initial setup', () => {
         })
 
         const testtoken = 'testtoken123'
-        cy.contains('div', 'Personal Access Token')
-            .find('input')
-            .type(testtoken, { delay: 100 })
-            .should('have.value', testtoken)
+        cy.contains('div', 'Personal Access Token').find('input').type(testtoken, { delay: 100 }).should('have.value', testtoken)
 
         cy.get('@clock').invoke('tick', 2000)
 
@@ -201,18 +194,9 @@ describe('Options view & initial setup', () => {
 
         cy.getOptions().its('token').should('equal', testtoken)
 
-        cy.contains('div', 'Tracked Issues')
-            .should('be.visible')
-            .should('contain.text', 'No tracked issues')
-            .contains('button', 'Add Issue')
-            .click()
+        cy.contains('div', 'Tracked Issues').should('be.visible').should('contain.text', 'No tracked issues').contains('button', 'Add Issue').click()
 
-        cy.get('.modal')
-            .contains('dialog', 'Add Issue')
-            .should('be.visible')
-            .contains('div', 'Add Issue')
-            .find('svg')
-            .click()
+        cy.get('.modal').contains('dialog', 'Add Issue').should('be.visible').contains('div', 'Add Issue').find('svg').click()
 
         cy.get('.modal').contains('dialog', 'Add Issue').should('not.exist')
 
@@ -243,12 +227,7 @@ describe('Options view & initial setup', () => {
             req.reply(res)
         }).as('search')
 
-        cy.get('.modal')
-            .contains('dialog', 'Add Issue')
-            .should('be.visible')
-            .contains('div', 'Issue Key')
-            .find('input')
-            .type('TE-1', { delay: 100 })
+        cy.get('.modal').contains('dialog', 'Add Issue').should('be.visible').contains('div', 'Issue Key').find('input').type('TE-1', { delay: 100 })
 
         cy.get('@pickerAll.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
         cy.get('@pickerAll.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
@@ -282,12 +261,7 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Authentication Method').find('select').select('Access Token')
 
         cy.contains('div', 'Tracked Issues').contains('button', 'Add Issue').click()
-        cy.get('.modal')
-            .contains('dialog', 'Add Issue')
-            .should('be.visible')
-            .contains('div', 'Issue Key')
-            .find('input')
-            .type('TE-1', { delay: 100 })
+        cy.get('.modal').contains('dialog', 'Add Issue').should('be.visible').contains('div', 'Issue Key').find('input').type('TE-1', { delay: 100 })
 
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
 
@@ -310,23 +284,13 @@ describe('Options view & initial setup', () => {
 
         cy.getOptions().its('issues').should('not.have.a.property', 'ARCHTE-6')
 
-        cy.contains('div', 'Tracked Issues')
-            .find('li')
-            .should('have.length', 1)
-            .first()
-            .contains('li', 'TE-12')
-            .should('exist')
+        cy.contains('div', 'Tracked Issues').find('li').should('have.length', 1).first().contains('li', 'TE-12').should('exist')
 
         cy.contains('div', 'Custom JQL Query').should('not.exist')
 
         cy.getOptions().its('useJqlQuery').should('equal', false)
 
-        cy.contains('div', 'Advanced Issue Selection')
-            .find('input')
-            .should('be.visible')
-            .should('not.be.checked')
-            .click()
-            .should('be.checked')
+        cy.contains('div', 'Advanced Issue Selection').find('input').should('be.visible').should('not.be.checked').click().should('be.checked')
 
         cy.getOptions().its('useJqlQuery').should('equal', true)
 
@@ -343,10 +307,7 @@ describe('Options view & initial setup', () => {
             .should('contain.text', 'JQL Templates')
             .select('Recently assigned Issues')
 
-        cy.contains('div', 'Custom JQL Query')
-            .should('be.visible')
-            .find('textarea')
-            .should('contain.value', 'assignee was currentUser()')
+        cy.contains('div', 'Custom JQL Query').should('be.visible').find('textarea').should('contain.value', 'assignee was currentUser()')
 
         cy.contains('div', 'Custom JQL Query').contains('a', 'Test Query').click()
 
@@ -366,12 +327,7 @@ describe('Options view & initial setup', () => {
 
         cy.getOptions().its('autosync').should('equal', false)
 
-        cy.contains('div', 'Automatic Synchronization')
-            .find('input')
-            .should('be.visible')
-            .should('not.be.checked')
-            .click()
-            .should('be.checked')
+        cy.contains('div', 'Automatic Synchronization').find('input').should('be.visible').should('not.be.checked').click().should('be.checked')
 
         cy.getOptions().its('autosync').should('equal', true)
 
@@ -383,7 +339,7 @@ describe('Options view & initial setup', () => {
     })
 
     it('should setup and select issues for cloud', () => {
-        cy.contains('h6', 'Authentification').should('be.visible')
+        cy.contains('h6', 'Authentication').should('be.visible')
         cy.fakeTimers(Date.now())
         cy.intercept('https://jira.atlassian.com/rest/api/3/myself', {
             displayName: 'Testuser',
@@ -391,7 +347,7 @@ describe('Options view & initial setup', () => {
             accountId: 'test1'
         }).as('myself')
 
-        cy.contains('h6', 'Authentification').should('be.visible')
+        cy.contains('h6', 'Authentication').should('be.visible')
         cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(247, 248, 251)')
 
         cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', '')
@@ -422,22 +378,9 @@ describe('Options view & initial setup', () => {
         cy.getOptions().its('email').should('equal', 'test@test.com')
 
         cy.contains('div', 'Personal Access Token').should('not.exist')
-        cy.contains('div', 'Email Address')
-            .should('exist')
-            .find('input')
-            .should('be.visible')
-            .should('have.value', 'test@test.com')
-        cy.contains('div', 'API Token')
-            .should('exist')
-            .first()
-            .find('input')
-            .should('be.visible')
-            .should('have.value', '')
-        cy.contains('div', 'Tempo API Token')
-            .should('exist')
-            .find('input')
-            .should('be.visible')
-            .should('have.value', '')
+        cy.contains('div', 'Email Address').should('exist').find('input').should('be.visible').should('have.value', 'test@test.com')
+        cy.contains('div', 'API Token').should('exist').first().find('input').should('be.visible').should('have.value', '')
+        cy.contains('div', 'Tempo API Token').should('exist').find('input').should('be.visible').should('have.value', '')
         cy.contains('div', 'User').should('exist').find('input').should('be.visible').should('have.value', 'test1')
 
         cy.contains('div', 'API Token').first().contains('a', 'Generate a API token').should('be.visible').click()
@@ -455,44 +398,26 @@ describe('Options view & initial setup', () => {
         })
 
         const testtoken = 'testtoken123'
-        cy.contains('div', 'API Token')
-            .first()
-            .find('input')
-            .type(testtoken, { delay: 100 })
-            .should('have.value', testtoken)
+        cy.contains('div', 'API Token').first().find('input').type(testtoken, { delay: 100 }).should('have.value', testtoken)
 
         cy.get('@clock').invoke('tick', 2000)
 
         cy.get('@myself.all').should('have.length', 2)
 
-        cy.get('@myself.2')
-            .its('request.headers')
-            .should('have.property', 'authorization', 'Basic dGVzdEB0ZXN0LmNvbTp0ZXN0dG9rZW4xMjM=')
+        cy.get('@myself.2').its('request.headers').should('have.property', 'authorization', 'Basic dGVzdEB0ZXN0LmNvbTp0ZXN0dG9rZW4xMjM=')
 
         cy.contains('div', 'User').click().find('input').should('have.value', 'Testuser (test1)')
 
         cy.getOptions().its('token').should('equal', testtoken)
 
         const testTTtoken = 'testTT123'
-        cy.contains('div', 'Tempo API Token')
-            .find('input')
-            .type(testTTtoken, { delay: 100 })
-            .should('have.value', testTTtoken)
+        cy.contains('div', 'Tempo API Token').find('input').type(testTTtoken, { delay: 100 }).should('have.value', testTTtoken)
 
         cy.getOptions().its('ttToken').should('equal', testTTtoken)
 
-        cy.contains('div', 'Tracked Issues')
-            .should('be.visible')
-            .should('contain.text', 'No tracked issues')
-            .contains('button', 'Add Issue')
-            .click()
+        cy.contains('div', 'Tracked Issues').should('be.visible').should('contain.text', 'No tracked issues').contains('button', 'Add Issue').click()
 
-        cy.get('.modal')
-            .contains('dialog', 'Add Issue')
-            .should('be.visible')
-            .contains('div', 'Add Issue')
-            .find('svg')
-            .click()
+        cy.get('.modal').contains('dialog', 'Add Issue').should('be.visible').contains('div', 'Add Issue').find('svg').click()
 
         cy.get('.modal').contains('dialog', 'Add Issue').should('not.exist')
 
@@ -523,12 +448,7 @@ describe('Options view & initial setup', () => {
             req.reply(res)
         })
 
-        cy.get('.modal')
-            .contains('dialog', 'Add Issue')
-            .should('be.visible')
-            .contains('div', 'Issue Key')
-            .find('input')
-            .type('TE-1', { delay: 100 })
+        cy.get('.modal').contains('dialog', 'Add Issue').should('be.visible').contains('div', 'Issue Key').find('input').type('TE-1', { delay: 100 })
 
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible')
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'TE-12').should('be.visible')
@@ -553,12 +473,7 @@ describe('Options view & initial setup', () => {
         cy.getOptions().its('issues.TE-12.name').should('equal', 'Sickness')
 
         cy.contains('div', 'Tracked Issues').contains('button', 'Add Issue').click()
-        cy.get('.modal')
-            .contains('dialog', 'Add Issue')
-            .should('be.visible')
-            .contains('div', 'Issue Key')
-            .find('input')
-            .type('TE-1', { delay: 100 })
+        cy.get('.modal').contains('dialog', 'Add Issue').should('be.visible').contains('div', 'Issue Key').find('input').type('TE-1', { delay: 100 })
         cy.get('.modal').contains('dialog', 'Add Issue').contains('li', 'ARCHTE-6').should('be.visible').click()
 
         cy.getOptions().its('issues.ARCHTE-6.alias').should('equal', 'ARCHTE-6: Unpaid leave')
@@ -577,23 +492,13 @@ describe('Options view & initial setup', () => {
 
         cy.getOptions().its('issues').should('not.have.a.property', 'ARCHTE-6')
 
-        cy.contains('div', 'Tracked Issues')
-            .find('li')
-            .should('have.length', 1)
-            .first()
-            .contains('li', 'TE-12')
-            .should('exist')
+        cy.contains('div', 'Tracked Issues').find('li').should('have.length', 1).first().contains('li', 'TE-12').should('exist')
 
         cy.contains('div', 'Custom JQL Query').should('not.exist')
 
         cy.getOptions().its('useJqlQuery').should('equal', false)
 
-        cy.contains('div', 'Advanced Issue Selection')
-            .find('input')
-            .should('be.visible')
-            .should('not.be.checked')
-            .click()
-            .should('be.checked')
+        cy.contains('div', 'Advanced Issue Selection').find('input').should('be.visible').should('not.be.checked').click().should('be.checked')
 
         cy.getOptions().its('useJqlQuery').should('equal', true)
 
@@ -610,27 +515,20 @@ describe('Options view & initial setup', () => {
             .should('contain.text', 'JQL Templates')
             .select('Recently assigned Issues')
 
-        cy.contains('div', 'Custom JQL Query')
-            .should('be.visible')
-            .find('textarea')
-            .should('contain.value', 'assignee was currentUser()')
+        cy.contains('div', 'Custom JQL Query').should('be.visible').find('textarea').should('contain.value', 'assignee was currentUser()')
 
         cy.contains('div', 'Custom JQL Query').contains('a', 'Test Query').click()
 
         cy.wait('@search').its('request.url').should('contain', 'jql=assignee+was+currentUser')
 
-        cy.contains('div', 'Working Days')
-            .find('input')
-            .should('have.length', 7)
-            .filter(':checked')
-            .should('have.length', 5)
+        cy.contains('div', 'Working Days').find('input').should('have.length', 7).filter(':checked').should('have.length', 5)
 
         cy.contains('div', 'Working Days').contains('div', 'Sat').find('input').click()
         cy.getOptions().its('days').should('include', 6)
     })
 
     it('should reset sensitive data when the domain is changed from datacenter to cloud', () => {
-        cy.contains('h6', 'Authentification').should('be.visible')
+        cy.contains('h6', 'Authentication').should('be.visible')
         cy.intercept('https://jira.atlassian.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/rest/api/2/myself', {
@@ -657,10 +555,7 @@ describe('Options view & initial setup', () => {
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
         cy.get('header').contains('a', 'Options').click()
 
-        cy.contains('div', 'Server Url')
-            .find('input')
-            .should('be.visible')
-            .should('have.value', 'https://jira.test.com')
+        cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', 'https://jira.test.com')
 
         cy.contains('div', 'Server Url').contains('button', 'Change').should('be.visible').click()
 
@@ -701,7 +596,7 @@ describe('Options view & initial setup', () => {
     })
 
     it('should reset sensitive data when the domain is changed from cloud to datacenter', () => {
-        cy.contains('h6', 'Authentification').should('be.visible')
+        cy.contains('h6', 'Authentication').should('be.visible')
         cy.intercept('https://jira.atlassian.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/**/*', (r) => r.reply(404, {}))
         cy.intercept('https://jira.test.com/rest/api/2/myself', {
@@ -730,10 +625,7 @@ describe('Options view & initial setup', () => {
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
         cy.get('header').contains('a', 'Options').click()
 
-        cy.contains('div', 'Server Url')
-            .find('input')
-            .should('be.visible')
-            .should('have.value', 'https://jira.atlassian.com')
+        cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', 'https://jira.atlassian.com')
 
         cy.contains('div', 'Server Url').contains('button', 'Change').should('be.visible').click()
 
@@ -776,11 +668,7 @@ describe('Options view & initial setup', () => {
 
     it('should open legal disclosure', () => {
         cy.contains('Legal Disclosure').should('be.visible').click()
-        cy.get('.modal')
-            .contains('dialog', 'Information in accordance with Section 5 TMG')
-            .contains('div', 'Legal Disclosure')
-            .find('svg')
-            .click()
+        cy.get('.modal').contains('dialog', 'Information in accordance with Section 5 TMG').contains('div', 'Legal Disclosure').find('svg').click()
         cy.get('.modal').contains('dialog', 'Information in accordance with Section 5 TMG').should('not.exist')
     })
 
@@ -866,12 +754,12 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Diagram Overhour Color').find('input').first().clear().type('#fa00fa')
 
         cy.getOptions().its('customTheme').should('deep.equal', {
-            'background': '#008000',
-            'font': '#ff0',
-            'link': '#f00',
-            'destructive': '#fafa00',
-            'diagramm': '#fa0000',
-            'diagrammGreen': '#fa00fa'
+            background: '#008000',
+            font: '#ff0',
+            link: '#f00',
+            destructive: '#fafa00',
+            diagramm: '#fa0000',
+            diagrammGreen: '#fa00fa'
         })
     })
 })

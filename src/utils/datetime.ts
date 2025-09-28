@@ -1,4 +1,4 @@
-import { t } from '../translations/translate'
+import { getLocale, t } from '../translations/translate'
 
 const hourInMs = 1000 * 60 * 60
 const dayInMs = hourInMs * 24
@@ -47,10 +47,10 @@ export function dateHumanized(unixStamp: number) {
 
     // Check if the date is valid
     if (isNaN(date.getTime())) {
-        return 'Invalid Date'
+        return t('time.invalid')
     }
 
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(getLocale(), {
         day: '2-digit',
         month: '2-digit',
         year: '2-digit'
@@ -88,7 +88,7 @@ export function daysAgo(unixStamp: number) {
     if (days < -1) return ''
     if (days < 0) return t('time.today')
     if (days < 1) return t('time.yesterday')
-    if (days < 7) return t('time.daysAgo', { count: Math.ceil(days) })
+    if (days < 7) return t('time.daysAgo', { date: Math.ceil(days) })
     return t('time.onDate', { date: dateHumanized(unixStamp) })
 }
 
@@ -126,9 +126,8 @@ const nonIsoLocales = {
  * Returns week rules for the current or given locale.
  * Falls back to ISO: Monday (1) + minimalDays = 4.
  */
-export function getWeekInfo(locale?: string): WeekInfo {
-    const resolvedLocale = locale || new Intl.DateTimeFormat().resolvedOptions().locale
-
+export function getWeekInfo(): WeekInfo {
+    const resolvedLocale = getLocale()
     try {
         const locale = new Intl.Locale(resolvedLocale) as ExtendedLocale
         const weekInfo = locale.getWeekInfo?.()
@@ -208,6 +207,6 @@ export function getDaysShort() {
     const firstDayOfYear = getStartOfWeek1(2021)
     return [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
         const date = new Date(firstDayOfYear + dayOfWeek * dayInMs)
-        return { label: new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(date), index: (dayOfWeek + firstDay) % 7 }
+        return { label: new Intl.DateTimeFormat(getLocale(), { weekday: 'short' }).format(date), index: (dayOfWeek + firstDay) % 7 }
     })
 }

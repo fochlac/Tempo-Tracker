@@ -88,6 +88,7 @@ app.get('/', (req, res) =>
         <head>
             <script>
                 ${chromeApiMock}
+                window.testLocale = 'en-GB';
             </script>
             <title>Tempo Tracker</title>
             <link rel="stylesheet" type="text/css" href="./popup.css">

@@ -14,7 +14,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
     beforeEach(() => {
         cy.intercept(`${serverDomain}**/*`, (req) => req.reply(404))
         cy.intercept(serverDomain, (req) => req.reply('<http><body>content</body></http>', { 'Content-Type': 'text/html; charset=UTF-8' }))
-        cy.origin(serverDomain, {args: { domain: serverDomain.replace('https://jira.', '') }}, ({ domain }) => {
+        cy.origin(serverDomain, { args: { domain: serverDomain.replace('https://jira.', '') } }, ({ domain }) => {
             cy.visit('/')
             cy.setCookie('test', 'cookie', { domain, secure: true, sameSite: 'no_restriction' })
             // Verify the cookie
@@ -33,11 +33,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             }
         })
 
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title="Delete Worklog"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
 
         cy.contains('dialog', 'Confirm Deletion')
             .should('include.text', '08:00 till 16:00')
@@ -47,43 +43,32 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .click()
 
         cy.get('li')
-            .filter(':contains(08.10.20)')
+            .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
             .find('[data-content="Queued for synchronization."]')
             .should('have.length', 0)
 
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title="Delete Worklog"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
 
         cy.contains('dialog', 'Confirm Deletion').contains('button', 'Delete').click()
 
-        cy.getUnsyncedWorklogs()
-            .should('have.length', 1)
-            .invoke('pop')
-            .should('have.nested.property', 'issue.key', 'TE-12')
+        cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.nested.property', 'issue.key', 'TE-12')
         cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.property', 'delete', true)
 
         cy.get('li')
-            .filter(':contains(08.10.20)')
+            .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'line-through')
             .find('[data-content="Queued for synchronization."]')
             .should('have.length', 1)
 
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title="Discard Changes"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Discard Changes"]').click()
 
         cy.contains('dialog', 'Confirm Discard').contains('button', 'Undo Delete').click()
 
         cy.get('li')
-            .filter(':contains(08.10.20)')
+            .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
             .find('[data-content="Queued for synchronization."]')
@@ -102,41 +87,27 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             }
         })
 
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title*="Edit Comment"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title*="Edit Comment"]').click()
 
-        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00')
-            .find('textarea')
-            .should('have.value', '')
-            .type('testcomment', { delay: 50 })
+        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').find('textarea').should('have.value', '').type('testcomment', { delay: 50 })
 
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', 'Cancel').click()
 
         cy.get('li')
-            .filter(':contains(08.10.20)')
+            .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
             .find('[data-content="Queued for synchronization."]')
             .should('have.length', 0)
 
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title*="Edit Comment"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title*="Edit Comment"]').click()
 
-        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00')
-            .find('textarea')
-            .should('have.value', '')
-            .type('testcomment', { delay: 50 })
+        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').find('textarea').should('have.value', '').type('testcomment', { delay: 50 })
 
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', 'Save').click()
 
         cy.get('li')
-            .filter(':contains(08.10.20)')
+            .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
             .find('[data-content="Queued for synchronization."]')
@@ -144,28 +115,16 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').should('not.exist')
 
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title*="Edit Comment"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title*="Edit Comment"]').click()
 
-        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00')
-            .find('textarea')
-            .should('have.value', 'testcomment')
+        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').find('textarea').should('have.value', 'testcomment')
 
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', 'Cancel').click()
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').should('not.exist')
 
-        cy.getUnsyncedWorklogs()
-            .should('have.length', 1)
-            .invoke('pop')
-            .should('have.property', 'comment', 'testcomment')
+        cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.property', 'comment', 'testcomment')
 
-        cy.getUnsyncedWorklogs()
-            .should('have.length', 1)
-            .invoke('pop')
-            .should('have.nested.property', 'issue.key', 'TE-12')
+        cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.nested.property', 'issue.key', 'TE-12')
     })
 
     it('should be possible to start edit worklogs and cancel without persisted changes', () => {
@@ -179,11 +138,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             }
         })
 
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title="Edit Worklog"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Edit Worklog"]').click()
 
         cy.get('li:has(input[type="date"])')
             .as('activeRow')
@@ -206,7 +161,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
         cy.get('@activeRow').find('button[title="Cancel"]').click()
 
         cy.get('li')
-            .filter(':contains(08.10.20)')
+            .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.length', 1)
             .find('[data-content="Queued for synchronization."]')
@@ -223,11 +178,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
                 callback({ payload: { success: true } })
             }
         })
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title="Edit Worklog"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Edit Worklog"]').click()
 
         cy.get('li:has(input[type="date"])').as('activeRow').should('have.length', 1)
 
@@ -257,10 +208,10 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.get('@activeRow').find('button[title="Save"]').click()
 
-        cy.get('li').filter(':contains(08.10.20)').should('have.length', 0)
+        cy.get('li').filter(':contains(08/10/20)').should('have.length', 0)
 
         cy.get('li')
-            .filter(':contains(09.10.20)')
+            .filter(':contains(09/10/20)')
             .filter(':contains(Test4)')
             .should('have.length', 1)
             .should('contain.text', '07:15 - 18:15')
@@ -274,21 +225,14 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
         cy.get('@unsyncedLog').should('have.property', 'end', 1602260100000)
         cy.get('@unsyncedLog').should('have.nested.property', 'issue.key', 'TE-14')
 
-        cy.get('li')
-            .filter(':contains(09.10.20)')
-            .filter(':contains(Test4)')
-            .find('button[title="Discard Changes"]')
-            .click()
+        cy.get('li').filter(':contains(09/10/20)').filter(':contains(Test4)').find('button[title="Discard Changes"]').click()
 
-        cy.contains('dialog', 'Confirm')
-            .should('contain.text', 'discard the changes')
-            .contains('button', 'Discard Changes')
-            .click()
+        cy.contains('dialog', 'Confirm').should('contain.text', 'discard the changes').contains('button', 'Discard Changes').click()
 
-        cy.get('li').filter(':contains(09.10.20)').filter(':contains(Test4)').should('have.length', 0)
+        cy.get('li').filter(':contains(09/10/20)').filter(':contains(Test4)').should('have.length', 0)
 
         cy.get('li')
-            .filter(':contains(08.10.20)')
+            .filter(':contains(08/10/20)')
             .should('have.length', 2)
             .filter(':contains(Test2)')
             .should('have.length', 1)
@@ -308,11 +252,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
                 callback({ payload: { success: true } })
             }
         })
-        cy.get('li')
-            .filter(':contains(08.10.20)')
-            .filter(':contains(Test2)')
-            .find('button[title="Edit Worklog"]')
-            .click()
+        cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Edit Worklog"]').click()
 
         cy.get('li:has(input[type="date"])').as('activeRow').should('have.length', 1)
 
