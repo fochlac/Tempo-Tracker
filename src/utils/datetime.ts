@@ -102,6 +102,24 @@ export interface WeekInfo {
     minimalDays: number
 }
 
+const WEEK_DAYS = { SUNDAY: 0, MONDAY: 1, TUESDAY: 2, WEDNESDAY: 3, THURSDAY: 4, FRIDAY: 5, SATURDAY: 6 }
+
+// Known non-ISO locales with different week rules
+const nonIsoLocales = {
+    'en-us': { minimalDays: 1, firstDay: WEEK_DAYS.SUNDAY },
+    'en-ca': { minimalDays: 1, firstDay: WEEK_DAYS.SUNDAY },
+    'fr-ca': { minimalDays: 1, firstDay: WEEK_DAYS.SUNDAY },
+    'es-mx': { minimalDays: 1, firstDay: WEEK_DAYS.SUNDAY },
+    'he-il': { minimalDays: 1, firstDay: WEEK_DAYS.SUNDAY },
+    'ar-eg': { minimalDays: 1, firstDay: WEEK_DAYS.SATURDAY },
+    'fa-af': { minimalDays: 1, firstDay: WEEK_DAYS.SATURDAY },
+    'dv-mv': { minimalDays: 1, firstDay: WEEK_DAYS.FRIDAY },
+    'fa-ir': { minimalDays: 1, firstDay: WEEK_DAYS.SATURDAY },
+    'ar-sa': { minimalDays: 1, firstDay: WEEK_DAYS.SATURDAY },
+    'ar-ae': { minimalDays: 1, firstDay: WEEK_DAYS.SATURDAY },
+    'bn-bd': { minimalDays: 1, firstDay: WEEK_DAYS.FRIDAY }
+}
+
 /**
  * Returns week rules for the current or given locale.
  * Falls back to ISO: Monday (1) + minimalDays = 4.
@@ -121,24 +139,8 @@ export function getWeekInfo(locale?: string): WeekInfo {
         }
     } catch {}
 
-    // Known locale-specific week rules
-    const lowerLocale = resolvedLocale.toLowerCase()
-
-    // US, Canada, Japan, and others use Sunday as first day
-    if (
-        lowerLocale.startsWith('en-us') ||
-        lowerLocale.startsWith('en-ca') ||
-        lowerLocale.startsWith('ja') ||
-        lowerLocale.startsWith('ko') ||
-        lowerLocale.startsWith('th') ||
-        lowerLocale.startsWith('il')
-    ) {
-        return { firstDay: 0, minimalDays: 1 } // Sunday first, minimal days = 1
-    }
-
-    // Some Middle Eastern countries use Saturday as first day
-    if (lowerLocale.startsWith('ar-sa') || lowerLocale.startsWith('fa') || lowerLocale.startsWith('he')) {
-        return { firstDay: 6, minimalDays: 1 } // Saturday first, minimal days = 1
+    if (nonIsoLocales[resolvedLocale.toLowerCase()]) {
+        return nonIsoLocales[resolvedLocale.toLowerCase()]
     }
 
     // Most European and other countries follow ISO (Monday first, minimal days = 4)
