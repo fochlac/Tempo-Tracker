@@ -25,7 +25,8 @@ describe('Statistics View - Tracking Area', () => {
         cy.contains('div', 'Median Hours (Week)').find('p').should('contain.text', '40h 00m')
         cy.contains('div', 'Overhours').find('p').should('contain.text', '—')
 
-        cy.contains('div', 'Hours per Week').find('input').should('have.value', '40').type('{selectall}35')
+        cy.contains('div', 'Hours per Week').find('input').should('have.value', '40').clear()
+        cy.contains('div', 'Hours per Week').find('input').should('have.value', '0').type('35{del}', { delay: 100 })
 
         cy.contains('div', 'Total Hours').find('p').should('contain.text', '40h 00m')
         cy.contains('div', 'Required Hours').find('p').should('contain.text', '35h 00m')
@@ -148,6 +149,25 @@ describe('Statistics View - Tracking Area', () => {
         cy.get('@day9').closest('[data-testid="bar"]').should('have.attr', 'style', 'height: 80%;')
         cy.get('@day9').closest('[data-testid="bar"]').find('[data-content="8h 00m"]').should('exist')
         cy.get('@day9').closest('[data-testid="bar-wrapper"]').find('[data-content]').should('have.length', 1)
+
+        cy.injectUnsyncedWorklog({
+            id: '1234567891011',
+            comment: 'comment',
+            start: new Date('2020-10-07 13:01').getTime(),
+            end: new Date('2020-10-07 16:01').getTime(),
+            issue: {
+                key: 'TE-12',
+                id: '12345',
+                name: 'Test2'
+            },
+            synced: false
+        })
+
+        cy.get('[data-testid="bar-wrapper"]').contains('legend', '7').as('day7-b').should('exist')
+        cy.get('@day7-b').closest('[data-testid="bar"]').should('have.attr', 'style', 'height: 110%;')
+        cy.get('@day7-b').closest('[data-testid="bar-wrapper"]').find('[data-content]').should('have.length', 2)
+        cy.get('@day7-b').closest('[data-testid="bar"]').find('[data-content="11h 00m"]').should('exist')
+        cy.get('@day7-b').closest('[data-testid="bar"]').find('[data-content="3h 00m"]').should('exist')
     })
 
     const hourInMs = 1000 * 60 * 60

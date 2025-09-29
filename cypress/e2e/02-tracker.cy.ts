@@ -292,16 +292,16 @@ describe('Tracking View - Tracking Area', () => {
             .should('have.css', 'background-color', 'rgb(15, 15, 15)')
 
         cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
-        cy.contains('div', 'Stop Tracking').contains('button', 'Split Tracking').should('be.visible').click()
+        cy.contains('div', 'Stop Tracking').contains('button', 'Split').should('be.visible').click()
 
-        cy.contains('dialog', 'Split Current Tracking').should('be.visible').contains('08:00')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Issue').find('input').should('have.value', 'Test7')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(0).should('have.value', '08')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(0).type('13:00')
-        cy.contains('dialog', 'Split Current Tracking').contains('button', 'Split Worklog').click()
+        cy.contains('dialog', 'Split Active Worklog').should('be.visible').contains('08:00')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Issue').find('input').should('have.value', 'Test7')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Start Time').find('input').eq(0).should('have.value', '08')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(0).type('13:00')
+        cy.contains('dialog', 'Split Active Worklog').contains('button', 'Split').click()
 
         cy.get('li:has([data-content="Queued for synchronization."])')
             .should('have.length', 1)
@@ -322,14 +322,14 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '4h 00m')
 
         cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
-        cy.contains('div', 'Stop Tracking').contains('button', 'Split Tracking').should('be.visible').click()
-        cy.contains('dialog', 'Split Current Tracking').should('be.visible').contains('13:00')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Issue').find('input').should('have.value', 'Test7')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(0).should('have.value', '13')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
-        cy.contains('dialog', 'Split Current Tracking').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
-        cy.contains('dialog', 'Split Current Tracking').contains('button', 'Cancel').click()
+        cy.contains('div', 'Stop Tracking').contains('button', 'Split').should('be.visible').click()
+        cy.contains('dialog', 'Split Active Worklog').should('be.visible').contains('13:00')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Issue').find('input').should('have.value', 'Test7')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Start Time').find('input').eq(0).should('have.value', '13')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
+        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', 'Split Active Worklog').contains('button', 'Cancel').click()
 
         cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
 
@@ -341,7 +341,7 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
 
-        cy.contains('div', 'Stop Tracking').contains('button', 'Discard Tracking').should('be.visible').click()
+        cy.contains('div', 'Stop Tracking').contains('button', 'Discard').should('be.visible').click()
         cy.contains('form', 'Stop Tracking').should('not.exist')
     })
 })
