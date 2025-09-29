@@ -49,7 +49,7 @@ describe('Tracking View - Header Actions', () => {
             .filter(':contains(08/10/20)')
             .filter(':contains(Test4)')
             .should('have.length', 1)
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 1)
     })
 
@@ -86,7 +86,7 @@ describe('Tracking View - Header Actions', () => {
 
         cy.contains('dialog', 'Log Time for Multiple Days').contains('button', 'Create Worklogs').click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])')
+        cy.get('li:has([data-content="Queued for synchronisation."])')
             .should('have.length', 2)
             .as('newRows')
             .each((row) => {
@@ -126,11 +126,11 @@ describe('Tracking View - Header Actions', () => {
 
         cy.startApp()
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
-        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
+        cy.get('li:has([data-content="Queued for synchronisation."])').should('have.length', 1)
         cy.contains('h6', 'Tracking History').contains('a', 'Refresh').should('not.exist')
         cy.window().its('messages').should('not.exist')
 
-        cy.contains('h6', 'Tracking History').contains('a', 'Synchronize').should('be.visible').click()
+        cy.contains('h6', 'Tracking History').contains('a', 'Synchronise').should('be.visible').click()
 
         cy.window().its('messages').should('have.length', 1)
         cy.window().its('messages.0').should('have.a.property', 'type', 'FLUSH_UPDATES')

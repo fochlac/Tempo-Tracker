@@ -37,7 +37,7 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 0)
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
@@ -51,7 +51,7 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'line-through')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 1)
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Discard Changes"]').click()
@@ -62,7 +62,7 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 0)
         cy.getUnsyncedWorklogs().should('have.length', 0)
     })

@@ -366,7 +366,8 @@ describe('Options view & initial setup', () => {
             .find('input')
             .type(serverUrl, { delay: 100 })
             .closest('div')
-            .contains('Unable to find the JIRA-Api with the provided Domain.')
+            .as('inputDiv')
+            .contains('Unable to find the Jira API with the provided domain.')
             .should('not.exist')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
@@ -567,12 +568,14 @@ describe('Options view & initial setup', () => {
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
 
         cy.wait('@myselfBad')
+        cy.wait(100)
 
         cy.contains('dialog', 'Change Server Url')
             .find('input')
             .should('be.visible')
             .closest('div')
-            .contains('Unable to find the JIRA-Api with the provided Domain.')
+            .as('inputDiv')
+            .contains('Unable to find the Jira API with the provided domain.')
             .should('exist')
 
         cy.contains('dialog', 'Change Server Url')
@@ -580,7 +583,8 @@ describe('Options view & initial setup', () => {
             .clear()
             .type(serverUrl, { delay: 100 })
             .closest('div')
-            .contains('Unable to find the JIRA-Api with the provided Domain.')
+            .as('inputDiv')
+            .contains('Unable to find the Jira API with the provided domain.')
             .should('not.exist')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
@@ -637,7 +641,7 @@ describe('Options view & initial setup', () => {
             .clear()
             .type(serverUrl, { delay: 100 })
             .closest('div')
-            .contains('Unable to find the JIRA-Api with the provided Domain.')
+            .contains('Unable to find the Jira API with the provided domain.')
             .should('not.exist')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
@@ -719,11 +723,11 @@ describe('Options view & initial setup', () => {
         cy.contains('h6', 'Custom Theme').scrollIntoView().should('be.visible')
 
         cy.contains('div', 'Background').find('input').first().should('have.value', Themes.DEFAULT.background)
-        cy.contains('div', 'Font Color').find('input').first().should('have.value', Themes.DEFAULT.font)
-        cy.contains('div', 'Link Color').find('input').first().should('have.value', Themes.DEFAULT.link)
-        cy.contains('div', 'Negative Color').find('input').first().should('have.value', Themes.DEFAULT.destructive)
-        cy.contains('div', 'Diagram Bar Color').find('input').first().should('have.value', Themes.DEFAULT.diagramm)
-        cy.contains('div', 'Diagram Overhour Color').find('input').first().should('have.value', Themes.DEFAULT.diagrammGreen)
+        cy.contains('div', 'Font Colour').find('input').first().should('have.value', Themes.DEFAULT.font)
+        cy.contains('div', 'Link Colour').find('input').first().should('have.value', Themes.DEFAULT.link)
+        cy.contains('div', 'Negative Colour').find('input').first().should('have.value', Themes.DEFAULT.destructive)
+        cy.contains('div', 'Diagram Bar Colour').find('input').first().should('have.value', Themes.DEFAULT.diagramm)
+        cy.contains('div', 'Diagram Overhour Colour').find('input').first().should('have.value', Themes.DEFAULT.diagrammGreen)
 
         cy.contains('div', 'Background').find('input').first().clear().type('gree')
         cy.contains('div', 'Background').find('input').first().should('have.value', 'gree')
@@ -733,25 +737,25 @@ describe('Options view & initial setup', () => {
         cy.get('main').should('have.css', 'background-color', 'rgb(0, 128, 0)')
         cy.contains('div', 'Background').find('input').eq(1).should('have.value', '#008000')
 
-        cy.contains('div', 'Font Color').find('input').first().clear().type('#ff')
-        cy.contains('div', 'Font Color').find('input').first().should('have.value', '#ff')
-        cy.contains('div', 'Font Color').find('input').eq(1).should('have.value', '#1b1928')
+        cy.contains('div', 'Font Colour').find('input').first().clear().type('#ff')
+        cy.contains('div', 'Font Colour').find('input').first().should('have.value', '#ff')
+        cy.contains('div', 'Font Colour').find('input').eq(1).should('have.value', '#1b1928')
         cy.get('main').should('have.css', 'color', 'rgb(27, 25, 40)')
-        cy.contains('div', 'Font Color').find('input').first().type('0')
-        cy.contains('div', 'Font Color').find('input').eq(1).should('have.value', '#ffff00')
+        cy.contains('div', 'Font Colour').find('input').first().type('0')
+        cy.contains('div', 'Font Colour').find('input').eq(1).should('have.value', '#ffff00')
         cy.get('main').should('have.css', 'color', 'rgb(255, 255, 0)')
 
-        cy.contains('div', 'Link Color').find('input').first().clear().type('#f')
-        cy.contains('div', 'Link Color').find('input').first().should('have.value', '#f')
-        cy.contains('div', 'Link Color').find('input').eq(1).should('have.value', '#1e6bf7')
+        cy.contains('div', 'Link Colour').find('input').first().clear().type('#f')
+        cy.contains('div', 'Link Colour').find('input').first().should('have.value', '#f')
+        cy.contains('div', 'Link Colour').find('input').eq(1).should('have.value', '#1e6bf7')
         cy.get('a').should('have.css', 'color', 'rgb(30, 107, 247)')
-        cy.contains('div', 'Link Color').find('input').first().type('00')
+        cy.contains('div', 'Link Colour').find('input').first().type('00')
         cy.get('a').should('have.css', 'color', 'rgb(255, 0, 0)')
-        cy.contains('div', 'Link Color').find('input').eq(1).should('have.value', '#ff0000')
+        cy.contains('div', 'Link Colour').find('input').eq(1).should('have.value', '#ff0000')
 
-        cy.contains('div', 'Negative Color').find('input').first().clear().type('#fafa00')
-        cy.contains('div', 'Diagram Bar Color').find('input').first().clear().type('#fa0000')
-        cy.contains('div', 'Diagram Overhour Color').find('input').first().clear().type('#fa00fa')
+        cy.contains('div', 'Negative Colour').find('input').first().clear().type('#fafa00')
+        cy.contains('div', 'Diagram Bar Colour').find('input').first().clear().type('#fa0000')
+        cy.contains('div', 'Diagram Overhour Colour').find('input').first().clear().type('#fa00fa')
 
         cy.getOptions().its('customTheme').should('deep.equal', {
             background: '#008000',

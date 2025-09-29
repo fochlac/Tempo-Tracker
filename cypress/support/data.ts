@@ -1,5 +1,5 @@
 import { THEMES } from '../../src/constants/constants'
-import { formatDuration, timeStringSeconds } from '../../src/utils/datetime'
+import { timeStringSeconds } from '../../src/utils/datetime'
 
 export const issues = {
     '123462': { alias: 'Test2', id: '123462', key: 'TE-12', fields: { summary: 'testname 2' }, name: 'testname 2' },
@@ -32,6 +32,7 @@ export const defaultOptions: Options = {
     showComments: false,
     jqlQuery: '',
     user: 'testid',
+    locale: 'en-GB',
     issues: {
         'TE-12': issues['123462'],
         'TE-13': issues['123463'],
@@ -40,14 +41,7 @@ export const defaultOptions: Options = {
         'TE-16': issues['123466'],
         'TE-17': issues['123467']
     },
-    issueOrder: [
-        'TE-12',
-        'TE-13',
-        'TE-14',
-        'TE-15',
-        'TE-16',
-        'TE-17'
-    ],
+    issueOrder: ['TE-12', 'TE-13', 'TE-14', 'TE-15', 'TE-16', 'TE-17'],
     customTheme: undefined,
     disableWorkdaySync: true
 }
@@ -59,7 +53,7 @@ export const createWorklog = (started, issue, hours): DatacenterWorklogRemote =>
     return {
         tempoWorklogId: getNextWorklogId(),
         timeSpentSeconds: Math.round(hours * 60 * 60),
-        timeSpent: formatDuration(Math.round(hours * 60 * 60 * 1000)),
+        timeSpent: `${Math.floor(hours)}h ${Math.round((hours % 1) * 60)}min`,
         started,
         comment: '',
         originId: issue.id,

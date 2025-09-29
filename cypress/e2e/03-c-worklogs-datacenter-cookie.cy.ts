@@ -46,7 +46,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 0)
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
@@ -60,7 +60,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'line-through')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 1)
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Discard Changes"]').click()
@@ -71,7 +71,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 0)
         cy.getUnsyncedWorklogs().should('have.length', 0)
     })
@@ -97,7 +97,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 0)
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title*="Edit Comment"]').click()
@@ -110,7 +110,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.css', 'text-decoration-line', 'none')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 1)
 
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').should('not.exist')
@@ -164,7 +164,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .filter(':contains(08/10/20)')
             .filter(':contains(Test2)')
             .should('have.length', 1)
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 0)
     })
 
@@ -216,7 +216,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .should('have.length', 1)
             .should('contain.text', '07:15 - 18:15')
             .should('contain.text', '11h 00m')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 1)
 
         cy.getUnsyncedWorklogs().should('have.length', 1).its(0).as('unsyncedLog')
@@ -238,7 +238,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
             .should('have.length', 1)
             .should('contain.text', '08:00 - 16:00')
             .should('contain.text', '8h 00m')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('have.length', 0)
     })
 

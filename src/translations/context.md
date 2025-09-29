@@ -117,7 +117,7 @@
 - **loading.generic**: "Loading..." - generic loading message
 - **message.conflictingWorklog**: "Conflicting worklog detected." - tooltip message when worklog conflicts exist (OverlayRow)
 - **message.loadingDatabase**: "Loading Database..." - loading message displayed while initializing database
-- **message.queuedForSync**: "Queued for synchronization." - tooltip text for unsynced worklog entries
+- **message.queuedForSync**: "Queued for synchronisation." - tooltip text for unsynced worklog entries
 - **message.selectIssueToTrack**: "Please select an issue to start tracking." - message shown when no issue is selected for tracking
 - **nav.firstWeek**: "Go to first week of year" - tooltip for navigation to first week of current year
 - **nav.github**: "Github" - link text to GitHub repository

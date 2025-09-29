@@ -70,7 +70,7 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('li', '17:00 - 17:05')
             .should('be.visible')
             .should('contain.text', 'Test2')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('exist')
 
         cy.contains('li', '08/10/20 (Today)').should('contain.text', '8h 05m')
@@ -105,7 +105,7 @@ describe('Tracking View - Tracking Area', () => {
             .should('be.visible')
             .should('contain.text', 'Test4')
             .should('contain.text', 'Comment:Some Comment')
-            .find('[data-content="Queued for synchronization."]')
+            .find('[data-content="Queued for synchronisation."]')
             .should('exist')
 
         cy.getUnsyncedWorklogs().its(0).should('have.a.property', 'comment', 'Some Comment')
@@ -210,7 +210,7 @@ describe('Tracking View - Tracking Area', () => {
             .contains('button', 'Create Worklog')
             .click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])')
+        cy.get('li:has([data-content="Queued for synchronisation."])')
             .should('have.length', 1)
             .should('contain.text', 'Test7')
             .should('contain.text', '08/10/20')
@@ -258,7 +258,7 @@ describe('Tracking View - Tracking Area', () => {
             .contains('button', 'Ignore Gap')
             .click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 0)
+        cy.get('li:has([data-content="Queued for synchronisation."])').should('have.length', 0)
 
         cy.contains('form', 'Stop Tracking').find('option:selected').should('have.text', 'Test7')
         cy.contains('form', 'Stop Tracking').find('input[type="date"]').should('have.value', '2020-10-08')
@@ -303,7 +303,7 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(0).type('13:00')
         cy.contains('dialog', 'Split Active Worklog').contains('button', 'Split').click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])')
+        cy.get('li:has([data-content="Queued for synchronisation."])')
             .should('have.length', 1)
             .should('contain.text', 'Test7')
             .should('contain.text', '08/10/20')
@@ -331,7 +331,7 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
         cy.contains('dialog', 'Split Active Worklog').contains('button', 'Cancel').click()
 
-        cy.get('li:has([data-content="Queued for synchronization."])').should('have.length', 1)
+        cy.get('li:has([data-content="Queued for synchronisation."])').should('have.length', 1)
 
         cy.contains('form', 'Stop Tracking').should('be.visible')
 

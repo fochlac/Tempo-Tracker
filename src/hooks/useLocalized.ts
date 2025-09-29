@@ -84,10 +84,10 @@ export function useLocalized(): LocalizedHook {
                     delete options['hours']
                 }
 
-                let str = `${options.minutes}${t('time.minuteShortest')}`
+                let str = `${String(options.minutes).padStart(2, '0')}${t('time.minuteShortest')}`
                 if (typeof options.hours === 'number') str = `${options.hours}${t('time.hourShortest')} ${str}`
                 if (typeof options.days === 'number') str = `${options.days}${t('time.dayShortest')} ${str}`
-                if (typeof options.seconds === 'number') str += ` ${options.seconds}${t('time.secondShortest')}`
+                if (typeof options.seconds === 'number') str += ` ${String(options.seconds).padStart(2, '0')}${t('time.secondShortest')}`
                 return str.trim()
             },
             formatRelativeTime: (date?: number | Date | string) => {
