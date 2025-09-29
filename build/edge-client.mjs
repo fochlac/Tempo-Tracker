@@ -116,8 +116,12 @@ class EdgeClient {
 
         let status
         do {
-            const { body } = await this.fetchJson(operationUrl, { headers: this.headers })
-            status = JSON.parse(body)
+            const { data } = await this.fetchJson(operationUrl, { headers: this.headers })
+            if (data && Object.keys(data).length > 0) {
+                status = data
+            } else {
+                status = {} // or handle as appropriate for empty response
+            }
 
             if (type === 'cancel') {
                 console.log(`Cancellation status: ${status.status}`)
