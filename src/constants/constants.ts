@@ -36,3 +36,12 @@ export const THEMES: THEMES = {
     DARK: 'DARK',
     CUSTOM: 'CUSTOM'
 }
+
+export const LOCALES = {
+    en: 'en',
+    'en-US': 'en-US',
+    'en-CA': 'en-CA',
+    fr: 'fr',
+    'fr-CA': 'fr-CA',
+    de: 'de'
+} as const

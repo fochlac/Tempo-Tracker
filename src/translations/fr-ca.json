@@ -1,0 +1,17 @@
+{
+    "options.emailAddress": "Adresse courriel",
+    "options.emailAddressInfo": "L’adresse courriel utilisée pour votre compte Atlassian.",
+    "options.appOptions": "Paramètres",
+    "nav.options": "Paramètres",
+    "action.refresh": "Rafraîchir",
+    "options.refreshUserInfo": "Rafraîchir les informations usager",
+    "options.user": "Usager",
+    "action.createWorklog": "Créer une feuille de temps",
+    "action.createWorklogs": "Créer des feuilles de temps",
+    "dialog.logDetails": "Détails de la feuille de temps :",
+    "tracker.trackingHistory": "Feuilles de temps",
+    "tracker.logMultiple": "Entrées multiples",
+    "tracker.newEntry": "Entrée",
+    "options.personalAccessToken": "Clé d’accès personnelle",
+    "options.personalAccessTokenInfo": "Une clé d’accès personnelle peut être générée via votre profil Jira."
+}

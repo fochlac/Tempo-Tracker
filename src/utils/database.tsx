@@ -4,7 +4,7 @@ import { DB_KEYS } from '../constants/constants'
 import { DB } from './data-layer'
 import { v4 } from 'uuid'
 import { FlexRow } from '../components/atoms/Layout'
-import { t } from '../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const DBContext = createContext<Partial<DbHelper>>({})
 
@@ -33,6 +33,7 @@ interface CallbackRef {
 export function DBProvider({ children }) {
     const { Provider } = DBContext
     const [isLoading, setLoading] = useState(true)
+    const { t } = useLocalized()
     const currentDb = useRef<Partial<DataBase>>({})
     const callbacks = useRef<CallbackRef>(
         Object.values(DB_KEYS).reduce((callbacks, key) => {

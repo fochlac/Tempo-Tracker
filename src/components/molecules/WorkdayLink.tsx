@@ -11,7 +11,7 @@ import { ErrorTooltip } from '../atoms/Tooltip'
 import { FlexRow } from '../atoms/Layout'
 import { triggerBackgroundAction } from 'src/utils/background'
 import { ACTIONS } from 'src/constants/actions'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const LockIcon = styled(Unlock)`
     width: 16px;
@@ -26,6 +26,7 @@ const LockIcon = styled(Unlock)`
 export const WorkdayLink: React.FC = () => {
     const { data: options } = useOptions()
     const [hasPermission, setHasPermission] = useSafeState(true)
+    const { t } = useLocalized()
 
     useEffect(() => {
         if (options.domain.includes('ttt-sp.com')) {

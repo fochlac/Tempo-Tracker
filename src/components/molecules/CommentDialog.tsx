@@ -10,7 +10,7 @@ import { useState } from 'preact/hooks'
 import { useJiraWorklog } from '../../hooks/useWorklogs'
 import { Textarea } from '../atoms/Input'
 import styled from 'styled-components'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 interface Props {
     log: TemporaryWorklog | Worklog
@@ -25,6 +25,7 @@ const Title = styled(H5)`
 `
 
 export const CommentDialog: React.FC<Props> = ({ log }) => {
+    const { t } = useLocalized()
     const { data: options } = useOptions()
     const dispatch = useDispatch()
     const { actions } = useJiraWorklog()

@@ -3,8 +3,7 @@ import styled from 'styled-components'
 import { Input } from '../atoms/Input'
 import { Label } from '../atoms/Typography'
 import { Option } from '../atoms/Option'
-import { t } from '../../translations/translate'
-import { getDaysShort } from 'src/utils/datetime'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Checkbox = styled(Input)`
     height: 15px;
@@ -23,6 +22,7 @@ const Col = styled.div`
     position: relative;
 `
 export function WorkingDayOption() {
+    const { t, getWeekDays } = useLocalized()
     const { data: options, actions } = useOptions()
 
     const updateDay = (day) => (e) => {
@@ -37,7 +37,7 @@ export function WorkingDayOption() {
         <Option>
             <Label>{t('label.workingDays')}</Label>
             <Row style={{ marginTop: 8 }}>
-                {getDaysShort().map(({ label, index }) => (
+                {getWeekDays().map(({ label, index }) => (
                     <Col key={label} style={{ minWidth: 25, alignItems: 'center', marginRight: 2 }}>
                         <Checkbox type="checkbox" checked={options.days.includes(index)} onChange={updateDay(index)} />
                         <Label>{label}</Label>

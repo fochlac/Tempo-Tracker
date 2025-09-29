@@ -3,7 +3,7 @@ import { IconButton } from '../atoms/IconButton'
 import { Input } from '../atoms/Input'
 import { Block, Column } from '../atoms/Layout'
 import { DefaultText } from '../atoms/Typography'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 interface Props {
     year: number
@@ -33,20 +33,26 @@ export const DiagramNavigation: React.FC<Props> = ({
     onNextClick,
     onFirstClick,
     onLastClick,
-    previousTitle = t('nav.previous'),
-    nextTitle = t('nav.next'),
-    firstTitle = t('nav.goToFirst'),
-    lastTitle = t('nav.goToLast')
+    previousTitle,
+    nextTitle,
+    firstTitle,
+    lastTitle
 }) => {
+    const { t } = useLocalized()
+    // fallback to translations if props not provided
+    const _previousTitle = previousTitle || t('nav.previous')
+    const _nextTitle = nextTitle || t('nav.next')
+    const _firstTitle = firstTitle || t('nav.goToFirst')
+    const _lastTitle = lastTitle || t('nav.goToLast')
     const currentYear = new Date().getFullYear()
 
     return (
         <Block style={{ userSelect: 'none' }}>
             <Column style={{ justifyContent: 'flex-start', flexDirection: 'row' }}>
-                <IconButton disabled={!canScrollLeft} onClick={onFirstClick} title={firstTitle} style={{ marginRight: 4 }}>
+                <IconButton disabled={!canScrollLeft} onClick={onFirstClick} title={_firstTitle} style={{ marginRight: 4 }}>
                     <ChevronsLeft />
                 </IconButton>
-                <IconButton disabled={!canScrollLeft} onClick={onPreviousClick} title={previousTitle}>
+                <IconButton disabled={!canScrollLeft} onClick={onPreviousClick} title={_previousTitle}>
                     <ChevronLeft />
                 </IconButton>
             </Column>
@@ -64,10 +70,10 @@ export const DiagramNavigation: React.FC<Props> = ({
                 />
             </Block>
             <Column style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
-                <IconButton disabled={!canScrollRight} onClick={onNextClick} title={nextTitle} style={{ marginRight: 4 }}>
+                <IconButton disabled={!canScrollRight} onClick={onNextClick} title={_nextTitle} style={{ marginRight: 4 }}>
                     <ChevronRight />
                 </IconButton>
-                <IconButton disabled={!canScrollRight} onClick={onLastClick} title={lastTitle}>
+                <IconButton disabled={!canScrollRight} onClick={onLastClick} title={_lastTitle}>
                     <ChevronsRight />
                 </IconButton>
             </Column>

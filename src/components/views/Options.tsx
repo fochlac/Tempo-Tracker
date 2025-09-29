@@ -26,7 +26,7 @@ import { AUTH_TYPES } from 'src/constants/constants'
 import { Conditional } from '../atoms/Conditional'
 import { Button } from '../atoms/Button'
 import { IconButton } from '../atoms/IconButton'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Body = styled.div`
     display: flex;
@@ -81,6 +81,7 @@ const ATL_API_LINK = 'https://id.atlassian.com/manage-profile/security/api-token
 const TEMPO_API_LINK = '/plugins/servlet/ac/io.tempo.jira/tempo-app#!/configuration/api-integration'
 
 export const OptionsView: React.FC = () => {
+    const { t } = useLocalized()
     const { data: options, actions } = useOptions()
     const [ignoreError, setIgnoreError] = useSafeState(false)
     const { domain, token: storedToken, ttToken, instance, email, authenticationType } = options

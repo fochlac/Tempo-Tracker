@@ -1,27 +1,12 @@
-import { getLocale, t } from '../translations/translate'
-
 const hourInMs = 1000 * 60 * 60
 const dayInMs = hourInMs * 24
 const weekInMs = dayInMs * 7
-
-export function formatDuration(ms: number, noSecond?: boolean, noDays?: boolean): string {
-    const s = Math.floor(ms / 1000)
-    const m = Math.floor(s / 60)
-    const h = Math.floor(m / 60)
-    const d = Math.floor(h / 24)
-
-    if (d > 0 && !noDays) {
-        return `${d}d ${h % 24}h ${pad(m % 60)}m`
-    } else if (h > 0) {
-        return `${h}h ${pad(m % 60)}m`
-    }
-    return noSecond ? `0h ${m % 60}m` : `${m % 60}m ${pad(s % 60)}s`
-}
 
 function pad(n: number): string {
     const length = Math.max(2, String(n).length)
     return `00${n}`.slice(-length)
 }
+
 export function fromWorkdayMoment(moment, { startOf = false, endOf = false } = {}) {
     const { Y, M, D, H = 0, m = 0, s = 0, f = 0 } = moment
     if (!Y || !M || !D) return null
@@ -40,21 +25,6 @@ export function dateString(unixStamp: number) {
     const date = new Date(unixStamp)
 
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
-}
-
-export function dateHumanized(unixStamp: number) {
-    const date = new Date(unixStamp)
-
-    // Check if the date is valid
-    if (isNaN(date.getTime())) {
-        return t('time.invalid')
-    }
-
-    return new Intl.DateTimeFormat(getLocale(), {
-        day: '2-digit',
-        month: '2-digit',
-        year: '2-digit'
-    }).format(date)
 }
 
 export function roundTimeSeconds(unixStamp: number, ceil: boolean = false) {
@@ -81,15 +51,6 @@ export function durationString(ms: number) {
     const h = Math.floor(m / 60)
 
     return `${pad(h)}:${pad(m % 60)}`
-}
-
-export function daysAgo(unixStamp: number) {
-    const days = (new Date().setHours(0, 0, 0, 0) - unixStamp) / dayInMs
-    if (days < -1) return ''
-    if (days < 0) return t('time.today')
-    if (days < 1) return t('time.yesterday')
-    if (days < 7) return t('time.daysAgo', { date: Math.ceil(days) })
-    return t('time.onDate', { date: dateHumanized(unixStamp) })
 }
 
 // Extended Locale interface for getWeekInfo method
@@ -126,12 +87,11 @@ const nonIsoLocales = {
  * Returns week rules for the current or given locale.
  * Falls back to ISO: Monday (1) + minimalDays = 4.
  */
-export function getWeekInfo(): WeekInfo {
-    const resolvedLocale = getLocale()
+export function getWeekInfo(resolvedLocale: string): WeekInfo {
     try {
         const locale = new Intl.Locale(resolvedLocale) as ExtendedLocale
         const weekInfo = locale.getWeekInfo?.()
-        if (weekInfo) {
+        if (weekInfo?.minimalDays) {
             // spec: firstDay is 1–7 (Mon–Sun). Convert to 0–6 (Sun–Sat).
             return {
                 firstDay: weekInfo.firstDay % 7,
@@ -140,7 +100,7 @@ export function getWeekInfo(): WeekInfo {
         }
     } catch {}
 
-    if (nonIsoLocales[resolvedLocale.toLowerCase()]) {
+    if (resolvedLocale && nonIsoLocales[resolvedLocale.toLowerCase()]) {
         return nonIsoLocales[resolvedLocale.toLowerCase()]
     }
 
@@ -148,8 +108,8 @@ export function getWeekInfo(): WeekInfo {
     return { firstDay: 1, minimalDays: 4 }
 }
 
-const getStartOfWeek1 = (year) => {
-    const { firstDay, minimalDays } = getWeekInfo()
+export const getStartOfWeek1 = (year: number, locale: string) => {
+    const { firstDay, minimalDays } = getWeekInfo(locale)
 
     const jan1 = new Date(year, 0, 1)
     const daysInPreviousYear = (jan1.getDay() - firstDay + 7) % 7
@@ -164,49 +124,40 @@ const getStartOfWeek1 = (year) => {
     return start.setHours(0, 0, 0, 0) + minimalDaysOffset
 }
 
-export function getISOWeekNumber(unixStamp: number) {
+export function getISOWeekNumber(unixStamp: number, locale: string) {
     const date = new Date(unixStamp)
 
-    const startOfWeek1 = getStartOfWeek1(date.getFullYear())
-    const startOfWeek1NextYear = getStartOfWeek1(date.getFullYear() + 1)
+    const startOfWeek1 = getStartOfWeek1(date.getFullYear(), locale)
+    const startOfWeek1NextYear = getStartOfWeek1(date.getFullYear() + 1, locale)
     const weekNumber = Math.round((startOfWeek1NextYear - startOfWeek1) / weekInMs)
 
     return Math.ceil((unixStamp - startOfWeek1) / weekInMs) % weekNumber || weekNumber
 }
 
-export function getIsoWeekPeriod(y, n) {
-    const startOfWeek1 = getStartOfWeek1(y)
+export function getIsoWeekPeriod(y: number, n: number, locale: string) {
+    const startOfWeek1 = getStartOfWeek1(y, locale)
     const startOfWeekX = startOfWeek1 + (n - 1) * weekInMs
 
     return [new Date(startOfWeekX), new Date(startOfWeekX + weekInMs - 1)]
 }
 
-export function getIsoWeekPeriods(y) {
-    const weekNumber = getISOWeeks(y)
-
-    return Array(weekNumber)
-        .fill(0)
-        .map((_v, index) => ({ week: index + 1, period: getIsoWeekPeriod(y, index + 1) }))
-}
-
-export function getYearIsoWeeksPeriod(y) {
-    const startOfWeek1 = getStartOfWeek1(y)
-    const startOfWeek1NextYear = getStartOfWeek1(y + 1)
+export function getYearIsoWeeksPeriod(y: number, locale: string) {
+    const startOfWeek1 = getStartOfWeek1(y, locale)
+    const startOfWeek1NextYear = getStartOfWeek1(y + 1, locale)
 
     return [new Date(startOfWeek1), new Date(startOfWeek1NextYear - 1)]
 }
 
-export function getISOWeeks(y) {
-    const [start, end] = getYearIsoWeeksPeriod(y)
+export function getISOWeeks(y: number, locale: string) {
+    const [start, end] = getYearIsoWeeksPeriod(y, locale)
 
     return Math.round((end.getTime() - start.getTime()) / weekInMs)
 }
 
-export function getDaysShort() {
-    const { firstDay } = getWeekInfo()
-    const firstDayOfYear = getStartOfWeek1(2021)
-    return [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
-        const date = new Date(firstDayOfYear + dayOfWeek * dayInMs)
-        return { label: new Intl.DateTimeFormat(getLocale(), { weekday: 'short' }).format(date), index: (dayOfWeek + firstDay) % 7 }
-    })
+export function getIsoWeekPeriods(y: number, locale: string) {
+    const weekNumber = getISOWeeks(y, locale)
+
+    return Array(weekNumber)
+        .fill(0)
+        .map((_v, index) => ({ week: index + 1, period: getIsoWeekPeriod(y, index + 1, locale) }))
 }

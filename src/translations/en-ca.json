@@ -1,0 +1,9 @@
+{
+    "action.synchronize": "Synchronize",
+    "theme.diagramBarColor": "Diagram Bar Colour",
+    "theme.diagramOverhourColor": "Diagram Overhour Colour",
+    "theme.fontColor": "Font Colour",
+    "theme.linkColor": "Link Colour",
+    "theme.negativeColor": "Negative Colour",
+    "tooltip.syncFailed": "Last synchronization failed."
+}

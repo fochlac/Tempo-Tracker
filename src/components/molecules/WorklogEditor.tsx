@@ -3,7 +3,7 @@ import { useState } from 'preact/hooks'
 import styled from 'styled-components'
 import { useJiraWorklog } from '../../hooks/useWorklogs'
 import { useDispatch } from '../../utils/atom'
-import { dateString, durationString, formatDuration, timeString } from '../../utils/datetime'
+import { dateString, durationString, timeString } from '../../utils/datetime'
 import { compareValues } from '../../utils/helper'
 import { IconButton } from '../atoms/IconButton'
 import { Input } from '../atoms/Input'
@@ -11,7 +11,7 @@ import { TimeInput } from '../atoms/TimeInput'
 import { WorklogAtoms } from './Worklog'
 import { IssueSelector } from './IssueSelector'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const DateInput = styled(Input)`
     flex-shrink: 0;
@@ -27,6 +27,7 @@ const { WorklogEntry, WorklogBody, TimeRange, Duration } = WorklogAtoms
 const compareLog = compareValues(['start', 'end', 'issue.key'])
 
 export function WorklogEditor({ log: pureLog }) {
+    const { t } = useLocalized()
     const [log, setEdit] = useState({ ...pureLog, synced: false })
     const [isDirty, setDirty] = useState(false)
     const dispatch = useDispatch()
@@ -50,7 +51,7 @@ export function WorklogEditor({ log: pureLog }) {
     const onChangeDuration = (e) => {
         const { value } = e.target
         const duration = log.end - log.start
-        if (value !== formatDuration(duration, true)) {
+        if (value !== durationString(duration)) {
             setDirty(true)
             const [h, m] = value.split(':')
             const durationMs = (Number(h) * 60 + Number(m)) * 60 * 1000

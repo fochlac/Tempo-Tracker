@@ -2,7 +2,8 @@ import { useOptions } from '../../hooks/useOptions'
 import { timeString } from '../../utils/datetime'
 import { DestructiveButton } from '../atoms/Button'
 import { ConfirmDialog } from './ConfirmDialog'
-import { t, TranslationVars } from '../../translations/translate'
+import { TranslationVars } from '../../translations/locale'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 interface DeleteWorklogProps {
     open: boolean
@@ -12,6 +13,7 @@ interface DeleteWorklogProps {
 }
 export const DeleteWorklogDialog: React.FC<DeleteWorklogProps> = ({ open, onDelete, onClose, log }) => {
     const { data: options } = useOptions()
+    const { t } = useLocalized()
     const isDiscardAction = !!log.id && !log.synced
     const vars: TranslationVars = {
         startTime: timeString(log.start),

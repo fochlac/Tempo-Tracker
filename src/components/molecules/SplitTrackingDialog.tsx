@@ -8,7 +8,7 @@ import { Modal } from '../atoms/Modal'
 import { TimeInput } from '../atoms/TimeInput'
 import { DefaultText, H5, Label } from '../atoms/Typography'
 import { Input } from '../atoms/Input'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Row = styled.div`
     display: flex;
@@ -29,6 +29,7 @@ const Line = styled(DefaultText)`
 export const SplitTrackingDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { actions, data } = useTracking()
     const [end, setEnd] = useState(Date.now())
+    const { t } = useLocalized()
 
     const onChangeTime = (e) => {
         const { value } = e.target

@@ -3,7 +3,7 @@ import { Modal } from '../atoms/Modal'
 import { Button } from '../atoms/Button'
 import { ButtonBar } from '../atoms/ButtonBar'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 interface Props {
     open: boolean
@@ -14,6 +14,7 @@ interface Props {
 }
 
 export const ConfirmDialog: React.FC<Props> = ({ open, onClose, text, buttons, title }) => {
+    const { t } = useLocalized()
     useKeyBinding('Escape', onClose, !open)
 
     if (!open) return null

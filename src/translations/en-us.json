@@ -1,0 +1,12 @@
+{
+    "tooltip.noConnectionJira": "No connection to Jira instance – syncing and refresh not available.",
+    "tooltip.noConnectionJiraStatistics": "No connection to Jira instance – only cached statistics available.",
+    "action.synchronize": "Synchronize",
+    "dialog.activityGapText2": "Do you want to finalize the worklog entry as follows and resume tracking from when you returned at {{$returnTime}}?",
+    "theme.diagramBarColor": "Diagram Bar Color",
+    "theme.diagramOverhourColor": "Diagram Overhour Color",
+    "theme.fontColor": "Font Color",
+    "theme.linkColor": "Link Color",
+    "theme.negativeColor": "Negative Color",
+    "tooltip.syncFailed": "Last synchronization failed."
+}

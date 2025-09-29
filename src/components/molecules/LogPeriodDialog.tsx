@@ -13,7 +13,7 @@ import { v4 } from 'uuid'
 import { useOptions } from '../../hooks/useOptions'
 import { useJiraWorklog } from '../../hooks/useWorklogs'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Row = styled.div`
     display: flex;
@@ -41,11 +41,12 @@ const Line = styled(DefaultText)`
 
 const dayInMs = 24 * 60 * 60 * 1000
 export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+    const { t, locale } = useLocalized()
     const {
         data: { issues, days }
     } = useOptions()
     const [year, setYear] = useState(new Date().getFullYear())
-    const [week, setWeek] = useState(getISOWeekNumber(Date.now()))
+    const [week, setWeek] = useState(getISOWeekNumber(Date.now(), locale))
     const getRequiredSeconds = useGetRequiredSettings(year)
     const { actions } = useJiraWorklog()
 
@@ -86,8 +87,8 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
             if (newDate.getFullYear() !== year) {
                 setYear(newDate.getFullYear())
             }
-            if (getISOWeekNumber(newDate.getTime()) !== week) {
-                setWeek(getISOWeekNumber(newDate.getTime()))
+            if (getISOWeekNumber(newDate.getTime(), locale) !== week) {
+                setWeek(getISOWeekNumber(newDate.getTime(), locale))
             }
             const startDate = newDate.setHours(0, 0, 0, 0)
             setOptions({

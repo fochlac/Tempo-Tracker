@@ -108,6 +108,7 @@ interface Options {
     issues: Record<string, LocalIssue>
     issueOrder: string[]
     domain: string
+    locale: string | null
     user: string
     useJqlQuery: boolean
     jqlQuery: string

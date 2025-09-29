@@ -59,6 +59,7 @@ export const Label = styled.legend`
     color: var(--font);
     margin-bottom: 2px;
     font-weight: 600;
+    white-space: nowrap;
 `
 
 export const H6 = styled.h6`

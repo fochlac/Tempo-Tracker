@@ -4,7 +4,7 @@ import { Tooltip } from '../atoms/Tooltip'
 import { ImportOptionsAction } from './ImportOptionsAction'
 import { ActionLink } from '../atoms/ActionLink'
 import { saveAs } from 'file-saver'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const ImportExportBar = styled.div`
     font-size: 0.8rem;
@@ -19,6 +19,7 @@ const ExportLink = styled(ActionLink)`
 `
 
 export const OptionsImportExport: React.FC = () => {
+    const { t } = useLocalized()
     const { data: options } = useOptions()
 
     const onExportOptions = () =>

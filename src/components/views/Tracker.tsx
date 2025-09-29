@@ -7,7 +7,6 @@ import { useSelf } from '../../hooks/useSelf'
 import { useFetchJiraWorklog } from '../../hooks/useWorklogs'
 import { editIssueDuck } from '../../store/ducks/edit-issue'
 import { useSelector } from '../../utils/atom'
-import { dateHumanized } from '../../utils/datetime'
 import { ActionLink } from '../atoms/ActionLink'
 import { ProgressIndeterminate } from '../atoms/Progress'
 import { ErrorTooltipTop } from '../atoms/Tooltip'
@@ -24,7 +23,7 @@ import { useOptions } from 'src/hooks/useOptions'
 import { useJqlQueryResults } from 'src/hooks/useJqlQueryResult'
 import { openTab } from 'src/utils/browser'
 import { Conditional } from '../atoms/Conditional'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Body = styled.section`
     display: flex;
@@ -48,14 +47,18 @@ const ProgressWrapper = styled.div<{ $visible: boolean }>`
     visibility: ${({ $visible }) => ($visible ? 'visible' : 'hidden')};
 `
 
-const errorTooltips = {
-    TOKEN: () => t('tooltip.invalidToken'),
-    PERMISSION: () => t('tooltip.noPermissionJira'),
-    COOKIE_AUTH_MISSING: () => t('tooltip.noActiveJiraSession'),
-    DEFAULT: () => t('tooltip.noConnectionJira')
-}
-
 export const TrackerView: React.FC = () => {
+    const { formatDate, t } = useLocalized()
+    const errorTooltips = useMemo(
+        () => ({
+            TOKEN: () => t('tooltip.invalidToken'),
+            PERMISSION: () => t('tooltip.noPermissionJira'),
+            COOKIE_AUTH_MISSING: () => t('tooltip.noActiveJiraSession'),
+            DEFAULT: () => t('tooltip.noConnectionJira')
+        }),
+        [t]
+    )
+
     const worklog = useFetchJiraWorklog()
     const self = useSelf()
     const { data: options } = useOptions()
@@ -157,7 +160,7 @@ export const TrackerView: React.FC = () => {
                 {
                     worklogs?.reduce(
                         (acc, log) => {
-                            const date = dateHumanized(log.start)
+                            const date = formatDate(log.start)
                             if (acc.day.date !== date) {
                                 acc.list.push(<WorklogHeader date={date} key={date} />)
                                 acc.day.date = date

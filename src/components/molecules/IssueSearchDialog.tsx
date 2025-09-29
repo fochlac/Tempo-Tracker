@@ -7,7 +7,7 @@ import { H5, Label } from '../atoms/Typography'
 import { ProgressIndeterminate } from '../atoms/Progress'
 import { searchIssues } from '../../utils/api'
 import { FlexRow } from '../atoms/Layout'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const SearchFieldWrapper = styled.div`
     width: 100%;
@@ -49,6 +49,7 @@ interface Props {
 }
 
 export const IssueSearchDialog: React.FC<Props> = ({ onSelect, onCancel, title }) => {
+    const { t } = useLocalized()
     const [result, setResult] = useState<{ isLoading: boolean; data?: Issue[] }>(null)
     const [search, setSearch] = useState('')
     const currentSearch = useRef(search)

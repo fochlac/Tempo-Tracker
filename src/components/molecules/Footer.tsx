@@ -8,7 +8,7 @@ import { openTab } from '../../utils/browser'
 import { FlexRow } from '../atoms/Layout'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
 import { getUrlParam } from 'src/utils/url'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const FooterBar = styled.div`
     cursor: default;
@@ -24,6 +24,7 @@ const Text = styled.p`
 const githubUrl = 'https://github.com/fochlac/Tempo-Tracker'
 export function Footer() {
     const [show, setShow] = useState(!!getUrlParam('impressum') || false)
+    const { t } = useLocalized()
 
     useKeyBinding('Escape', () => setShow(false), !show)
 

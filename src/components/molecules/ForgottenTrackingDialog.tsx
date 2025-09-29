@@ -2,14 +2,13 @@ import { useEffect, useState } from 'preact/hooks'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { useTracking } from '../../hooks/useTracking'
-import { dateString, daysAgo, timeString } from '../../utils/datetime'
 import { Button } from '../atoms/Button'
 import { ButtonBar } from '../atoms/ButtonBar'
 import { Input } from '../atoms/Input'
 import { Modal } from '../atoms/Modal'
 import { TimeInput } from '../atoms/TimeInput'
 import { DefaultText, H5, Label } from '../atoms/Typography'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Row = styled.div`
     display: flex;
@@ -36,6 +35,7 @@ const Line = styled(DefaultText)`
 `
 
 export const ForgottenTrackingDialog: React.FC = () => {
+    const { t, formatDate, formatTime, formatRelativeTime } = useLocalized()
     const { actions, data } = useTracking()
     const [newWorklog, setNewWorklog] = useState<TemporaryWorklog>(null)
 
@@ -51,7 +51,7 @@ export const ForgottenTrackingDialog: React.FC = () => {
 
     const onChangeDate = (prop) => (e) => {
         const { value } = e.target
-        if (value !== dateString(newWorklog[prop])) {
+        if (value !== formatDate(newWorklog[prop])) {
             const [y, m, d] = value.split('-')
             const diff = new Date(newWorklog[prop]).setFullYear(y, m - 1, d) - newWorklog[prop]
 
@@ -63,7 +63,7 @@ export const ForgottenTrackingDialog: React.FC = () => {
     }
     const onChangeTime = (prop) => (e) => {
         const { value } = e.target
-        if (value !== timeString(newWorklog[prop])) {
+        if (value !== formatTime(newWorklog[prop])) {
             const [h, m] = value.split(':')
             setNewWorklog({
                 ...newWorklog,
@@ -79,32 +79,32 @@ export const ForgottenTrackingDialog: React.FC = () => {
                 <Line>
                     {t('dialog.activityGapText1', {
                         alias: data.issue.alias,
-                        lastActivity: daysAgo(data.lastHeartbeat),
-                        lastTime: timeString(data.lastHeartbeat)
+                        lastActivity: formatRelativeTime(data.lastHeartbeat),
+                        lastTime: formatTime(data.lastHeartbeat)
                     })}
                 </Line>
-                <Line>{t('dialog.activityGapText2', { returnTime: timeString(data.firstHeartbeat) })}</Line>
+                <Line>{t('dialog.activityGapText2', { returnTime: formatTime(data.firstHeartbeat) })}</Line>
                 <Row>
                     <Col>
                         <Label>{t('field.startTime')}</Label>
                         <DateInput
-                            max={dateString(newWorklog.end)}
+                            max={formatDate(newWorklog.end)}
                             type="date"
                             onChange={onChangeDate('start')}
-                            value={dateString(newWorklog.start)}
+                            value={formatDate(newWorklog.start)}
                         />
                     </Col>
                     <Col>
                         <Label> </Label>
-                        <TimeInput onChange={onChangeTime('start')} value={timeString(newWorklog.start)} />
+                        <TimeInput onChange={onChangeTime('start')} value={formatTime(newWorklog.start)} />
                     </Col>
                     <Col style={{ marginLeft: 'auto' }}>
                         <Label>{t('field.endTime')}</Label>
-                        <DateInput min={dateString(newWorklog.start)} type="date" onChange={onChangeDate('end')} value={dateString(newWorklog.end)} />
+                        <DateInput min={formatDate(newWorklog.start)} type="date" onChange={onChangeDate('end')} value={formatDate(newWorklog.end)} />
                     </Col>
                     <Col>
                         <Label> </Label>
-                        <TimeInput onChange={onChangeTime('end')} value={timeString(newWorklog.end)} />
+                        <TimeInput onChange={onChangeTime('end')} value={formatTime(newWorklog.end)} />
                     </Col>
                 </Row>
             </div>

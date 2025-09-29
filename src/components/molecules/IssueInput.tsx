@@ -12,7 +12,7 @@ import { verticalListSortingStrategy, useSortable, SortableContext } from '@dnd-
 import { CSS } from '@dnd-kit/utilities'
 import { DndContext } from '@dnd-kit/core'
 import { restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const InputList = styled.ul`
     width: 100%;
@@ -63,6 +63,7 @@ interface Props {
 }
 
 const IssueRow = ({ issue, setDelIssue, index }) => {
+    const { t } = useLocalized()
     const { data: options, actions } = useOptions()
     const { attributes, listeners, setNodeRef, transform, setActivatorNodeRef, active } = useSortable({
         id: issue.key,
@@ -108,6 +109,7 @@ const IssueRow = ({ issue, setDelIssue, index }) => {
 }
 
 export const IssueInput: React.FC<Props> = ({ disabled }) => {
+    const { t } = useLocalized()
     const { data: options, actions } = useOptions()
     const [open, setOpen] = useState(false)
     const [delIssue, setDelIssue] = useState<LocalIssue>(null)

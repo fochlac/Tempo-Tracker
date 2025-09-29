@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { useDispatch } from '../../utils/atom'
-import { dateHumanized, formatDuration, timeString } from '../../utils/datetime'
+import { timeString } from '../../utils/datetime'
 import { IconButton } from '../atoms/IconButton'
 import { Edit3, MessageSquare, Trash2, X } from 'preact-feather'
 import { Tooltip } from '../atoms/Tooltip'
@@ -9,8 +9,8 @@ import { useState } from 'preact/hooks'
 import { DeleteWorklogDialog } from './DeleteWorklogDialog'
 import { UploadIcon } from '../atoms/UploadIcon'
 import { useOptions } from '../../hooks/useOptions'
-import { t } from '../../translations/translate'
 import { InfoText } from '../atoms/Typography'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const WorklogEntry = styled.li<{ delete?: boolean }>`
     display: flex;
@@ -67,11 +67,12 @@ const Datum = styled.span`
 const Time = styled.span``
 
 const TimeRange = styled.span`
-    flex-basis: 150px;
+    flex-basis: 100px;
     text-align: end;
+    min-width: 85px;
 `
 const Duration = styled.span`
-    flex-basis: 100px;
+    flex-basis: 120px;
     text-align: end;
 `
 export const WorklogAtoms = {
@@ -85,6 +86,7 @@ export const WorklogAtoms = {
 }
 
 export function Worklog({ log, disableButtons, onDelete }) {
+    const { formatDate, formatDuration, t } = useLocalized()
     const { data: options } = useOptions()
     const dispatch = useDispatch()
     const [startDelete, setStartDelete] = useState(false)
@@ -100,7 +102,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
         <WorklogEntry delete={log.delete && !log.synced}>
             <WorklogBody>
                 <Datum>
-                    {dateHumanized(log.start)}
+                    {formatDate(log.start)}
                     {(!log.synced || log.syncTabId) && (
                         <Tooltip right content={t('message.queuedForSync')}>
                             <Icon style={{ marginLeft: 8 }} />
@@ -118,7 +120,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
                     <Time>{timeString(log.end)}</Time>
                 </TimeRange>
                 <Duration>
-                    <Time>{formatDuration(log.end - log.start, true)}</Time>
+                    <Time>{formatDuration(log.end - log.start, { s: true })}</Time>
                 </Duration>
                 <div style={{ marginLeft: 'auto' }}>
                     <IconButton

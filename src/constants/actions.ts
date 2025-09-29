@@ -36,7 +36,7 @@ export const ACTIONS = {
         create(startTime: number, endTime: number) {
             return { type: 'WORKDAY_SETUP', payload: { startTime, endTime } }
         },
-        response(success, workTimeInfo: { workTimes: WorkTimeInfo[], options: Options }) {
+        response(success, workTimeInfo: { workTimes: WorkTimeInfo[]; options: Options }) {
             return {
                 type: 'WORKDAY_SETUP',
                 payload: {
@@ -136,7 +136,7 @@ export const ACTIONS = {
         create() {
             return {
                 type: 'AWAIT_WORKDAY_PERMISSION',
-                payload: { }
+                payload: {}
             }
         },
         response(success: boolean) {

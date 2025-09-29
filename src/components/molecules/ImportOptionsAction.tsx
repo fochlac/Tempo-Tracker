@@ -4,7 +4,7 @@ import { useOptions } from '../../hooks/useOptions'
 import { readFile } from '../../utils/file'
 import { getOptions } from '../../utils/options'
 import { ActionLinkRaw } from '../atoms/ActionLink'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 import { DestructiveButton } from '../atoms/Button'
 import { ConfirmDialog } from './ConfirmDialog'
 
@@ -17,6 +17,7 @@ const HiddenInput = styled.input`
 `
 
 export function ImportOptionsAction() {
+    const { t } = useLocalized()
     const { data: options, actions } = useOptions()
     const fileSelectId = useId()
     const [importData, setImportData] = useState()

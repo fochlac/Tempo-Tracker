@@ -1,6 +1,6 @@
 import { Trash2 } from 'preact-feather'
 import { useStatisticsOptions } from '../../hooks/useStatisticsOptions'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 import { Button } from '../atoms/Button'
 import { IconButton } from '../atoms/IconButton'
 import { Input } from '../atoms/Input'
@@ -9,6 +9,7 @@ import { H6, Label } from '../atoms/Typography'
 
 export const WorkTimeExceptions: React.FC = () => {
     const { data: options, actions } = useStatisticsOptions()
+    const { t } = useLocalized()
 
     const updateExceptionKey = (key, index) => (e) => actions.mergeException(index, { [key]: Number(e.target.value) })
 

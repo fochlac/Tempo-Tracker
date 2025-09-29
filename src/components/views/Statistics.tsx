@@ -13,11 +13,10 @@ import { useSelf } from '../../hooks/useSelf'
 import { ErrorTooltip } from '../atoms/Tooltip'
 import { WifiOff } from 'preact-feather'
 import { ActionLink } from '../atoms/ActionLink'
-import { formatDuration } from '../../utils/datetime'
 import { useOptions } from 'src/hooks/useOptions'
 import { Conditional } from '../atoms/Conditional'
 import { ToggleButton } from '../atoms/Button'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Body = styled.div`
     display: flex;
@@ -35,6 +34,7 @@ const Title = styled(H6)`
 type ViewMode = 'week' | 'day'
 
 export const StatisticsView: React.FC = () => {
+    const { t, formatDuration } = useLocalized()
     const [viewMode, setViewMode] = useState<ViewMode>('week')
     const {
         data: { stats, year, unsyncedStats, yearWeeks, yearDays },
@@ -93,11 +93,11 @@ export const StatisticsView: React.FC = () => {
             <Block>
                 <Column>
                     <Label>{t('statistics.medianHoursLowest')}</Label>
-                    <Value>{lifeTimeMedianLow ? formatDuration(lifeTimeMedianLow * 1000, true, true) : <>&mdash;</>}</Value>
+                    <Value>{lifeTimeMedianLow ? formatDuration(lifeTimeMedianLow * 1000) : <>&mdash;</>}</Value>
                 </Column>
                 <Column>
                     <Label>{t('statistics.medianHoursHighest')}</Label>
-                    <Value>{lifeTimeMedianTop ? formatDuration(lifeTimeMedianTop * 1000, true, true) : <>&mdash;</>}</Value>
+                    <Value>{lifeTimeMedianTop ? formatDuration(lifeTimeMedianTop * 1000) : <>&mdash;</>}</Value>
                 </Column>
             </Block>
             <Conditional enable={isWebfleet}>
@@ -105,25 +105,17 @@ export const StatisticsView: React.FC = () => {
                 <Block>
                     <Column>
                         <Label>{t('statistics.overhours')}</Label>
-                        <Value>
-                            {overhourStats.totalDiffSeconds > 0 ? formatDuration(overhourStats?.totalDiffSeconds * 1000, true, true) : <>&mdash;</>}
-                        </Value>
+                        <Value>{overhourStats.totalDiffSeconds > 0 ? formatDuration(overhourStats?.totalDiffSeconds * 1000) : <>&mdash;</>}</Value>
                     </Column>
                     <Column>
                         <Label>{t('statistics.overhoursDecaying')}</Label>
                         <Value>
-                            {overhourStats.secondsInLastMonth > 0 ? (
-                                formatDuration(overhourStats?.secondsInLastMonth * 1000, true, true)
-                            ) : (
-                                <>&mdash;</>
-                            )}
+                            {overhourStats.secondsInLastMonth > 0 ? formatDuration(overhourStats?.secondsInLastMonth * 1000) : <>&mdash;</>}
                         </Value>
                     </Column>
                     <Column>
                         <Label>{t('statistics.overhoursLastWeek')}</Label>
-                        <Value>
-                            {overhourStats.secondsInLastWeek ? formatDuration(overhourStats?.secondsInLastWeek * 1000, true, true) : <>&mdash;</>}
-                        </Value>
+                        <Value>{overhourStats.secondsInLastWeek ? formatDuration(overhourStats?.secondsInLastWeek * 1000) : <>&mdash;</>}</Value>
                     </Column>
                 </Block>
             </Conditional>

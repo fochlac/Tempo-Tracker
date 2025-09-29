@@ -2,8 +2,8 @@ import { Themes } from 'src/constants/themes'
 import { AUTH_TYPES, THEMES, domainRegexp } from '../constants/constants'
 import { fetchIssueList } from './api'
 
-export function hasValidJiraSettings (rawOptions: Partial<Options>) {
-    const {instance, domain, token, authenticationType, user} = getOptions(rawOptions)
+export function hasValidJiraSettings(rawOptions: Partial<Options>) {
+    const { instance, domain, token, authenticationType, user } = getOptions(rawOptions)
     if (!['datacenter', 'cloud'].includes(instance) || !domain?.length || !user.length) {
         return false
     }
@@ -11,7 +11,7 @@ export function hasValidJiraSettings (rawOptions: Partial<Options>) {
     return token || (instance === 'datacenter' && authenticationType === 'COOKIE')
 }
 
-export function getOptions (options: Partial<Options>): Options {
+export function getOptions(options: Partial<Options>): Options {
     const {
         issues,
         domain,
@@ -29,6 +29,7 @@ export function getOptions (options: Partial<Options>): Options {
         email,
         instance,
         days,
+        locale,
         issueOrder,
         disableWorkdaySync,
         authenticationType
@@ -43,9 +44,7 @@ export function getOptions (options: Partial<Options>): Options {
         updatedDomain = `${protocol}${baseDomain}`
     }
 
-    const cleanIssues = Array.isArray(issues)
-        ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {})
-        : issues ?? {}
+    const cleanIssues = Array.isArray(issues) ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {}) : issues ?? {}
     const cleanIssueOrder = Array.isArray(issueOrder) ? issueOrder.filter((key) => cleanIssues[key]) : []
     const selectedTheme = THEMES[theme] ? theme : THEMES.DEFAULT
 
@@ -60,6 +59,7 @@ export function getOptions (options: Partial<Options>): Options {
             return issueOrder
         }, cleanIssueOrder),
         domain: updatedDomain ?? '',
+        locale: locale ?? null,
         user: user ?? '',
         jqlQuery: jqlQuery ?? '',
         useJqlQuery: useJqlQuery ?? false,

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'preact/hooks'
 import styled from 'styled-components'
-import { dateHumanized, durationString, formatDuration, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from '../../utils/datetime'
+import { durationString, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from '../../utils/datetime'
 import { TooltipTop } from '../atoms/Tooltip'
 import { DiagramNavigation } from './DiagramNavigation'
-import { t } from '../../translations/translate'
 import { Bar, BarLabel, BarTooltip, BarWrapper, Diagramm, MissingHours, OverHours, Time, TimeBar } from '../atoms/Diagram'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Duration = styled.legend`
     position: absolute;
@@ -26,8 +26,9 @@ interface Props {
     setYear: (year: number) => void
 }
 export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getRequiredSeconds, options, unsyncedStats, error }) => {
+    const { t, formatDuration, formatDate, locale } = useLocalized()
     const currentYear = new Date().getFullYear()
-    const [weekOffset, setWeekOffset] = useState(getISOWeeks(currentYear))
+    const [weekOffset, setWeekOffset] = useState(getISOWeeks(currentYear, locale))
     const isCurrentYear = year === currentYear
 
     const maxSeconds = Math.max(
@@ -36,7 +37,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
             : 0,
         (options.defaultHours + 1) * 60 * 60
     )
-    const weeknumber = stats && isCurrentYear ? getISOWeekNumber(Date.now()) : getISOWeeks(year)
+    const weeknumber = stats && isCurrentYear ? getISOWeekNumber(Date.now(), locale) : getISOWeeks(year, locale)
 
     useEffect(() => {
         setWeekOffset(weeknumber)
@@ -75,7 +76,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                     ))}
                 </TimeBar>
                 {!!stats &&
-                    getIsoWeekPeriods(year)
+                    getIsoWeekPeriods(year, locale)
                         .slice(0, weeknumber + 1)
                         .slice(Math.max(weekOffset - columns, 0), weekOffset)
                         .map(({ week, period }, index) => {
@@ -90,19 +91,19 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                                 <BarWrapper data-testid="bar-wrapper" key={index}>
                                     {showOver && seconds < hours && (
                                         <MissingHours style={{ height: `${((hours - seconds) / maxSeconds) * 100}%` }}>
-                                            <TooltipTop right={right} content={`-${formatDuration((hours - seconds) * 1000, true, true)}`} />
+                                            <TooltipTop right={right} content={`-${formatDuration((hours - seconds) * 1000)}`} />
                                         </MissingHours>
                                     )}
                                     <Bar data-testid="bar" key={week} style={{ height: `${(seconds / maxSeconds) * 100}%` }}>
                                         {showOver && seconds > hours && (
                                             <OverHours style={{ height: `${((seconds - hours) / seconds) * 100}%` }}>
-                                                <TooltipTop right={right} content={formatDuration((seconds - hours) * 1000, true, true)} />
+                                                <TooltipTop right={right} content={formatDuration((seconds - hours) * 1000)} />
                                             </OverHours>
                                         )}
                                         <Duration>{`${durationString(seconds * 1000)}`}</Duration>
                                         <BarLabel>
                                             <BarTooltip
-                                                content={`${dateHumanized(period[0].getTime())} - ${dateHumanized(period[1].getTime())}`}
+                                                content={`${formatDate(period[0].getTime())} - ${formatDate(period[1].getTime())}`}
                                                 right={right}
                                             >
                                                 {`00${week}`.slice(-2)}

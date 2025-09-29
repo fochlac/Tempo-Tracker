@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'preact/hooks'
-import { formatDuration, dateString } from '../../utils/datetime'
+import { dateString } from '../../utils/datetime'
 import { TooltipTop } from '../atoms/Tooltip'
 import { DiagramNavigation } from './DiagramNavigation'
-import { getLocale, t } from '../../translations/translate'
 import { Bar, BarLabel, BarWrapper, Diagramm, MissingHours, OverHours, Time, TimeBar } from '../atoms/Diagram'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 interface Props {
     stats: StatsMap
@@ -21,6 +21,7 @@ const getDailyRequiredSeconds = (date: Date, dailyHours: number): number => {
 }
 
 export const WorkTimeDailyDiagramm: React.FC<Props> = ({ stats, year, setYear, options, unsyncedStats, error }) => {
+    const { t, formatDate, DateTimeFormats, formatDuration } = useLocalized()
     const [month, setMonth] = useState(() => (year === new Date().getFullYear() ? new Date().getMonth() : 0))
 
     const isCurrentYear = year === new Date().getFullYear()
@@ -38,7 +39,7 @@ export const WorkTimeDailyDiagramm: React.FC<Props> = ({ stats, year, setYear, o
     const navigation = (
         <DiagramNavigation
             year={year}
-            month={new Date(year, month, 1).toLocaleString(getLocale(), { month: 'long' })}
+            month={formatDate(month, DateTimeFormats.monthName)}
             setYear={setYear}
             error={error}
             canScrollLeft={canScrollLeft}
@@ -49,8 +50,8 @@ export const WorkTimeDailyDiagramm: React.FC<Props> = ({ stats, year, setYear, o
             onLastClick={() => setMonth(maxMonth)}
             previousTitle={t('nav.previousMonth')}
             nextTitle={t('nav.nextMonth')}
-            firstTitle={new Date(year, 0, 1).toLocaleString(getLocale(), { month: 'long' })}
-            lastTitle={new Date(year, maxMonth, 1).toLocaleString(getLocale(), { month: 'long' })}
+            firstTitle={formatDate(0, DateTimeFormats.monthName)}
+            lastTitle={formatDate(maxMonth, DateTimeFormats.monthName)}
         />
     )
 
@@ -103,17 +104,14 @@ export const WorkTimeDailyDiagramm: React.FC<Props> = ({ stats, year, setYear, o
                             <BarWrapper data-testid="bar-wrapper" style={{ width: 12 }} key={dateKey}>
                                 {showOver && seconds < dailyRequiredSeconds && (
                                     <MissingHours style={{ height: `${((dailyRequiredSeconds - seconds) / maxSeconds) * 100}%` }}>
-                                        <TooltipTop
-                                            right={right}
-                                            content={`-${formatDuration((dailyRequiredSeconds - seconds) * 1000, true, true)}`}
-                                        />
+                                        <TooltipTop right={right} content={`-${formatDuration((dailyRequiredSeconds - seconds) * 1000)}`} />
                                     </MissingHours>
                                 )}
                                 <Bar data-testid="bar" style={{ height: `${(seconds / maxSeconds) * 100}%` }}>
-                                    <TooltipTop absolute right={right} content={formatDuration(seconds * 1000, true, true)} />
+                                    <TooltipTop absolute right={right} content={formatDuration(seconds * 1000)} />
                                     {showOver && seconds > dailyRequiredSeconds && (
                                         <OverHours style={{ height: `${((seconds - dailyRequiredSeconds) / seconds) * 100}%` }}>
-                                            <TooltipTop right={right} content={formatDuration((seconds - dailyRequiredSeconds) * 1000, true, true)} />
+                                            <TooltipTop right={right} content={formatDuration((seconds - dailyRequiredSeconds) * 1000)} />
                                         </OverHours>
                                     )}
                                     <BarLabel>{date.getDate()}</BarLabel>

@@ -16,7 +16,7 @@ import { H5 } from './atoms/Typography'
 import { ActionLink } from './atoms/ActionLink'
 import { sortAndAnalyzeWorkTimes } from 'src/utils/workday'
 import { CircularProgress } from './atoms/Progress'
-import { t } from '../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const Main = styled.aside<{ $collapsed?: boolean }>`
     position: absolute;
@@ -162,6 +162,7 @@ interface Props {
 }
 
 export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEntries, refresh, isInitializing, impressumUrl }) => {
+    const { t } = useLocalized()
     const [selected, setSelected] = useState<Set<string>>(
         () =>
             new Set(

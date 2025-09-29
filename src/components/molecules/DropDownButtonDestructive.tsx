@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { ChevronDown, ChevronUp } from 'preact-feather'
 import { DestructiveButton } from '../atoms/Button'
 import { useRef } from 'preact/hooks'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const ButtonWrapper = styled.div<{ open?: boolean }>`
     display: flex;
@@ -96,6 +96,7 @@ interface Props extends React.HTMLAttributes<HTMLButtonElement> {
 
 export const DropDownButtonDestructive: React.FC<Props> = ({ children, buttonList, ...props }) => {
     const [open, setOpen] = useState(false)
+    const { t } = useLocalized()
 
     const iconStyles = {
         display: 'block',

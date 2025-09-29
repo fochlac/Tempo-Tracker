@@ -6,7 +6,7 @@ import { Input, Textarea } from '../atoms/Input'
 import { FlexRow } from '../atoms/Layout'
 import { InfoText, Label } from '../atoms/Typography'
 import { IssueInput } from './IssueInput'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 import { JQL_TEMPLATES } from '../../constants/jql-templates'
 import { checkJql } from '../../utils/options'
 import { Option } from '../atoms/Option'
@@ -22,6 +22,7 @@ const TMPL_LINK = 'https://github.com/fochlac/Tempo-Tracker/blob/master/src/cons
 export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
     const { data: options, actions } = useOptions()
     const issueCache = useCache<'ISSUE_CACHE'>('ISSUE_CACHE', [])
+    const { t } = useLocalized()
 
     return (
         <>
@@ -74,7 +75,7 @@ export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
                             </option>
                             {Object.values(JQL_TEMPLATES).map((template) => (
                                 <option key={template.id} value={template.id}>
-                                    {template.name}
+                                    {t(template.name)}
                                 </option>
                             ))}
                         </Select>

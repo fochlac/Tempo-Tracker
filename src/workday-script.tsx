@@ -3,24 +3,19 @@ import { ACTIONS } from './constants/actions'
 import { WorkdayApi } from './utils/api/workday'
 import { triggerBackgroundAction } from './utils/background'
 import { Overlay } from './components/Overlay'
+import { LocaleProvider } from './translations/context'
 
 interface AppOptions {
-    workTimes?: WorkTimeInfo[],
-    insertWorkTime?: (startTime: number, endTime: number) => Promise<void|{ error: string; }>,
-    workdayEntries?: WorkdayEntry[],
-    isInitializing?: boolean,
+    workTimes?: WorkTimeInfo[]
+    insertWorkTime?: (startTime: number, endTime: number) => Promise<void | { error: string }>
+    workdayEntries?: WorkdayEntry[]
+    isInitializing?: boolean
     impressumUrl?: string
+    locale?: string
 }
 
 let entry
-function createApp ({
-    workTimes = [],
-    insertWorkTime,
-    workdayEntries = [],
-    isInitializing = false,
-    impressumUrl
-}: AppOptions = {}
-) {
+function createApp({ workTimes = [], locale, insertWorkTime, workdayEntries = [], isInitializing = false, impressumUrl }: AppOptions = {}) {
     if (!entry) {
         entry = document.createElement('div')
         document.body.appendChild(entry)
@@ -28,11 +23,16 @@ function createApp ({
     unmountComponentAtNode(entry)
 
     const refresh = () => workday()
-    render(<Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh, isInitializing, impressumUrl }} />, entry)
+    render(
+        <LocaleProvider locale={locale}>
+            <Overlay {...{ workTimes, insertWorkTime, workdayEntries, refresh, isInitializing, impressumUrl }} />
+        </LocaleProvider>,
+        entry
+    )
 }
 
 let isVisible = false
-async function workday () {
+async function workday() {
     const result = await WorkdayApi.getActiveWeek()
     if (!result) {
         unmountComponentAtNode(entry)
@@ -41,9 +41,12 @@ async function workday () {
     }
     isVisible = true
     const { startTime, endTime, entries: workdayEntries, insertWorkTime } = result
-    const { workTimeInfo: { workTimes }, impressumUrl } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
+    const {
+        workTimeInfo: { workTimes, options },
+        impressumUrl
+    } = await triggerBackgroundAction(ACTIONS.WORKDAY_SETUP, startTime, endTime)
 
-    createApp({ workTimes, insertWorkTime, workdayEntries, impressumUrl })
+    createApp({ workTimes, insertWorkTime, workdayEntries, impressumUrl, locale: options.locale })
 }
 
 let currentLocation = location.href

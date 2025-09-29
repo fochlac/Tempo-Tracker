@@ -10,7 +10,7 @@ import { TimeInput } from '../atoms/TimeInput'
 import { useOptions } from '../../hooks/useOptions'
 import { FlexColumn, FlexRow } from '../atoms/Layout'
 import { IssueSearchDialog } from './IssueSearchDialog'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 import { IssueSelector } from './IssueSelector'
 import { DropDownButtonDestructive } from './DropDownButtonDestructive'
 import { SplitTrackingDialog } from './SplitTrackingDialog'
@@ -44,6 +44,7 @@ const Duration = styled(Timer)`
 const CUSTOM_ISSUE = 'CUSTOM_ISSUE'
 
 export function TrackingSection({ hasError, issues }: { hasError: boolean; issues: LocalIssue[] }) {
+    const { t } = useLocalized()
     const { data: tracker, actions } = useTracking()
     const { data: options } = useOptions()
     const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
@@ -69,7 +70,7 @@ export function TrackingSection({ hasError, issues }: { hasError: boolean; issue
                     full: true
                 }
             ])
-    }, [issues, hasError])
+    }, [issues, hasError, t])
     const issueMap = useMemo(
         () =>
             issues.reduce((issueMap, issue) => {

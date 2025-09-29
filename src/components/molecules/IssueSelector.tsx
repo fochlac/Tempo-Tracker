@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks'
 import { useOptions } from '../../hooks/useOptions'
 import { IssueSearchDialog } from './IssueSearchDialog'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 import { useJqlQueryResults } from '../../hooks/useJqlQueryResult'
 import { useSelf } from '../../hooks/useSelf'
 
@@ -14,6 +14,7 @@ interface Props {
 }
 const SEARCH_ISSUE = 'searchIssue'
 export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, value, style, enableSearch }) => {
+    const { t } = useLocalized()
     const { data: options } = useOptions()
     const [searchActive, setSearchActive] = useState(false)
     const [localIssues, setLocalIssues] = useState([])

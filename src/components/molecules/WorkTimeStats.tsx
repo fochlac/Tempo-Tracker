@@ -1,5 +1,4 @@
-import { formatDuration } from '../../utils/datetime'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 import { Block, Column } from '../atoms/Layout'
 import { Label, Value } from '../atoms/Typography'
 
@@ -25,6 +24,8 @@ function average(values: number[]): number {
 }
 
 export const WorkTimeStats: React.FC<Props> = ({ total, weeks = [], days = [], getRequiredSeconds, dayStat }) => {
+    const { t, formatDuration } = useLocalized()
+
     const requiredSeconds = weeks.reduce((requiredSeconds, { week, year }) => {
         return requiredSeconds + getRequiredSeconds(year, week)
     }, 0)
@@ -37,25 +38,25 @@ export const WorkTimeStats: React.FC<Props> = ({ total, weeks = [], days = [], g
         <Block>
             <Column>
                 <Label>{t('label.totalHours')}</Label>
-                <Value>{total ? formatDuration(total * 1000, true, true) : <>&mdash;</>}</Value>
+                <Value>{total ? formatDuration(total * 1000) : <>&mdash;</>}</Value>
             </Column>
             <Column>
                 <Label>{t('label.requiredHours')}</Label>
-                <Value>{total ? formatDuration(requiredSeconds * 1000, true, true) : <>&mdash;</>}</Value>
+                <Value>{total ? formatDuration(requiredSeconds * 1000) : <>&mdash;</>}</Value>
             </Column>
             <Column>
                 <Label>{t('label.overhours')}</Label>
-                <Value>{overseconds > 0 ? formatDuration(overseconds * 1000, true, true) : <>&mdash;</>}</Value>
+                <Value>{overseconds > 0 ? formatDuration(overseconds * 1000) : <>&mdash;</>}</Value>
             </Column>
             {!dayStat ? (
                 <Column>
                     <Label>{t('stats.medianHoursWeek')}</Label>
-                    <Value>{total ? formatDuration(medianWeek * 1000, true, true) : <>&mdash;</>}</Value>
+                    <Value>{total ? formatDuration(medianWeek * 1000) : <>&mdash;</>}</Value>
                 </Column>
             ) : (
                 <Column>
                     <Label>{t('stats.avgHoursDay')}</Label>
-                    <Value>{averageDay ? formatDuration(averageDay * 1000, true, true) : <>&mdash;</>}</Value>
+                    <Value>{averageDay ? formatDuration(averageDay * 1000) : <>&mdash;</>}</Value>
                 </Column>
             )}
         </Block>

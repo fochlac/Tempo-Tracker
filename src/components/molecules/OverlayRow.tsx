@@ -1,11 +1,11 @@
-import { dateHumanized, timeString } from 'src/utils/datetime'
+import { timeString } from 'src/utils/datetime'
 import { Tooltip, TooltipTop } from '../atoms/Tooltip'
 import { Conditional } from '../atoms/Conditional'
 import styled from 'styled-components'
 import { AlertOctagon, Repeat } from 'preact-feather'
 import { isSynced } from 'src/utils/workday'
 import { Input } from '../atoms/Input'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const ListRow = styled.li`
     display: flex;
@@ -75,6 +75,7 @@ interface Props extends OverlayWorkLog {
 
 export const OverlayRow: React.FC<Props> = ({ workTime, conflicts, error, onClick, checked, disabled, top }) => {
     const TooltipComponent = top ? TooltipTop : Tooltip
+    const { t } = useLocalized()
 
     return (
         <TooltipComponent right key={workTime.id} content={error}>
@@ -110,12 +111,14 @@ interface HeaderProps {
 }
 
 export const OverlayHeaderRow: React.FC<HeaderProps> = ({ onChange, date, disabled, selected, sortedWorkTimes }) => {
+    const { formatDate } = useLocalized()
+
     const filteredTimes = sortedWorkTimes.filter(({ conflicts }) => !conflicts.length)
     const allSelected = filteredTimes.every(({ workTime }) => selected.has(workTime.id))
 
     return (
         <DateHeader onClick={onChange(filteredTimes)}>
-            <span>{dateHumanized(date)}</span>
+            <span>{formatDate(date)}</span>
             <Conditional enable={filteredTimes.length > 0}>
                 <Checkbox type="checkbox" disabled={disabled} checked={allSelected} />
             </Conditional>

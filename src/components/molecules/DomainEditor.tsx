@@ -3,7 +3,7 @@ import { useOptions } from '../../hooks/useOptions'
 import { Button } from '../atoms/Button'
 import { ErrorInfoText, H5, InfoText, Label } from '../atoms/Typography'
 import { Input } from '../atoms/Input'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 import { FlexColumn, FlexRow } from '../atoms/Layout'
 import { MandatoryStar } from '../atoms/MandatoryStar'
 import { Option } from '../atoms/Option'
@@ -26,6 +26,7 @@ const defaults = {
 const permissions = (isFirefox ? browser : chrome)?.permissions
 
 export function DomainEditor() {
+    const { t } = useLocalized()
     const { data: options, actions } = useOptions()
     const [edit, setEdit] = useState(false)
     const [domain, setDomain] = useState(options.domain || '')

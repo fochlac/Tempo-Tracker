@@ -4,11 +4,11 @@ import { Input } from '../atoms/Input'
 import { FlexRow } from '../atoms/Layout'
 import { InfoText, Label } from '../atoms/Typography'
 import { Option } from '../atoms/Option'
-import { THEMES } from 'src/constants/constants'
+import { LOCALES, THEMES } from 'src/constants/constants'
 import { Conditional } from '../atoms/Conditional'
 import { SectionHead } from '../views/Options'
 import { CustomThemeCssInput } from '../atoms/CustomThemeCssInput'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const isFirefox = navigator.userAgent.includes('Firefox')
 
@@ -34,9 +34,40 @@ const Grid = styled.div`
 
 export const AppOptionsSection: React.FC = () => {
     const { data: options, actions } = useOptions()
+    const { t, resolvedLocale, locale } = useLocalized()
+
+    const isResolvedLocale = LOCALES[resolvedLocale] || LOCALES[resolvedLocale.split('-')[0]]
 
     return (
         <>
+            <Option>
+                <Label>{t('label.localization')}</Label>
+                <Select onChange={(e) => actions.merge({ locale: e.target.value })}>
+                    {!isResolvedLocale && (
+                        <option selected={!options.locale} value={null}>
+                            {t('locale.en-default')}
+                        </option>
+                    )}
+                    <option selected={isResolvedLocale && locale.split('-')[0] === LOCALES.en} value={LOCALES.en}>
+                        {t('locale.en')}
+                    </option>
+                    <option selected={isResolvedLocale && locale === LOCALES['en-US']} value={LOCALES['en-US']}>
+                        {t('locale.en-US')}
+                    </option>
+                    <option selected={isResolvedLocale && locale === LOCALES['en-CA']} value={LOCALES['en-CA']}>
+                        {t('locale.en-CA')}
+                    </option>
+                    <option selected={isResolvedLocale && locale.split('-')[0] === LOCALES.de} value={LOCALES.de}>
+                        {t('locale.de')}
+                    </option>
+                    <option selected={isResolvedLocale && locale.split('-')[0] === LOCALES.fr} value={LOCALES.fr}>
+                        {t('locale.fr')}
+                    </option>
+                    <option selected={isResolvedLocale && locale === LOCALES['fr-CA']} value={LOCALES['fr-CA']}>
+                        {t('locale.fr-CA')}
+                    </option>
+                </Select>
+            </Option>
             <Option>
                 <Label>{t('label.hotkeys')}</Label>
                 <InfoText>

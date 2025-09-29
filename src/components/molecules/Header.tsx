@@ -12,7 +12,7 @@ import { ExternalLink } from 'preact-feather'
 import { openAsTab } from '../../utils/browser'
 import { WorkdayLink } from './WorkdayLink'
 import { hasValidJiraSettings } from 'src/utils/options'
-import { t } from '../../translations/translate'
+import { useLocalized } from 'src/hooks/useLocalized'
 
 const AppBar = styled.header`
     display: flex;
@@ -33,6 +33,7 @@ const ExpandIcon = styled(ExternalLink)`
 `
 
 export const Header: React.FC = () => {
+    const { t } = useLocalized()
     const view = useSelector(viewDuck.selector)
     const { data: options } = useOptions()
     const mandatoryOptions = hasValidJiraSettings(options)
