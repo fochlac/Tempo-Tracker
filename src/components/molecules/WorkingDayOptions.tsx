@@ -38,7 +38,7 @@ export function WorkingDayOption() {
             <Label>{t('label.workingDays')}</Label>
             <Row style={{ marginTop: 8 }}>
                 {getWeekDays().map(({ label, index }) => (
-                    <Col key={label} style={{ minWidth: 25, alignItems: 'center', marginRight: 2 }}>
+                    <Col key={label} style={{ minWidth: 25, alignItems: 'center', marginRight: 4 }}>
                         <Checkbox type="checkbox" checked={options.days.includes(index)} onChange={updateDay(index)} />
                         <Label>{label}</Label>
                     </Col>

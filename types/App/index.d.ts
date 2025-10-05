@@ -132,6 +132,7 @@ interface Options {
     email: string
     days: number[]
     instance: 'cloud' | 'datacenter'
+    offlineMode: boolean
 }
 
 interface StatsMap {
@@ -169,6 +170,7 @@ interface DataBase {
     options: Options
     idMap: Record<string, Issue>
     statsOptions: StatisticsOptions
+    offlineWorklogs: Worklog[]
 }
 
 interface Tracking {

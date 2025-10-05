@@ -12,14 +12,14 @@ import { useOptions } from '../../hooks/useOptions'
 import { InfoText } from '../atoms/Typography'
 import { useLocalized } from 'src/hooks/useLocalized'
 
-const WorklogEntry = styled.li<{ delete?: boolean }>`
+const WorklogEntry = styled.li<{ $delete?: boolean }>`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: stretch;
     margin-bottom: 5px;
     border-bottom: solid 1px var(--contrast-light);
-    text-decoration: ${(props) => (props.delete ? 'line-through' : 'none')};
+    text-decoration: ${(props) => (props.$delete ? 'line-through' : 'none')};
     padding-bottom: 6px;
 `
 const WorklogBody = styled.div`
@@ -99,7 +99,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
     const showComment = options.showComments
 
     return (
-        <WorklogEntry delete={log.delete && !log.synced}>
+        <WorklogEntry $delete={log.delete && !log.synced}>
             <WorklogBody>
                 <Datum>
                     {formatDate(log.start)}

@@ -4,7 +4,7 @@ import { v4 } from 'uuid'
 import { triggerBackgroundAction } from '../utils/background'
 import { ACTIONS } from '../constants/actions'
 
-export function useTracking () {
+export function useTracking ({onCreate}: {onCreate?: () => void} = {}) {
     const tracking = useDatabase<'tracking'>('tracking') || {}
     const worklog = useJiraWorklog()
     const updateTracking = useDatabaseUpdate('tracking')
@@ -47,6 +47,7 @@ export function useTracking () {
                 }
                 await updateTracking({ issue: null, start: null })
                 await triggerBackgroundAction(ACTIONS.UPDATE_BADGE)
+                if (typeof onCreate === 'function') onCreate()
             },
             async abort () {
                 await updateTracking({ issue: null, start: null })
@@ -69,6 +70,7 @@ export function useTracking () {
                     lastHeartbeat: null,
                     firstHeartbeat: null
                 }))
+                if (typeof onCreate === 'function') onCreate()
             }
         }
     }

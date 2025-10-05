@@ -34,9 +34,9 @@ const Line = styled(DefaultText)`
     text-align: left;
 `
 
-export const ForgottenTrackingDialog: React.FC = () => {
+export const ForgottenTrackingDialog = ({onCreate}: {onCreate?: () => void}):React.JSX.Element => {
     const { t, formatDate, formatTime, formatRelativeTime } = useLocalized()
-    const { actions, data } = useTracking()
+    const { actions, data } = useTracking({onCreate})
     const [newWorklog, setNewWorklog] = useState<TemporaryWorklog>(null)
 
     useEffect(() => {

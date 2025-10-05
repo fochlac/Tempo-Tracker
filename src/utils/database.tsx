@@ -30,6 +30,18 @@ interface CallbackRef {
     options: Record<string, DbListener<'options'>>
 }
 
+function compareValues(db: Partial<DataBase>, oldDb: Partial<DataBase>, key: keyof DataBase) {
+    if (key === 'updates' || key === 'tracking' || key === 'options') {
+        return JSON.stringify(db[key]) !== JSON.stringify(oldDb[key])
+    }
+    if (key === 'WORKLOG_CACHE' || key === 'STATS_CACHE') {
+        const newCache = db[key] as CacheObject<unknown>
+        const oldCache = oldDb[key] as CacheObject<unknown>
+        return newCache?.validUntil !== oldCache?.validUntil
+    }
+    return false
+}
+
 export function DBProvider({ children }) {
     const { Provider } = DBContext
     const [isLoading, setLoading] = useState(true)
@@ -48,7 +60,7 @@ export function DBProvider({ children }) {
                 const oldDb = currentDb.current
                 currentDb.current = db
                 Object.keys(callbacks.current).forEach((key: keyof CallbackRef) => {
-                    if (JSON.stringify(db[key]) !== JSON.stringify(oldDb[key])) {
+                    if (compareValues(db, oldDb, key)) {
                         Object.values(callbacks.current[key]).forEach((cb) => typeof cb === 'function' && cb(db[key]))
                     }
                 })
@@ -56,8 +68,18 @@ export function DBProvider({ children }) {
         }
 
         checkForUpdates().then(() => setLoading(false))
-        const interval = setInterval(() => checkForUpdates(), 1000)
-        return () => clearInterval(interval)
+        let abort = false
+        const poll = async () => {
+            if (abort) {
+                return
+            }
+            await checkForUpdates()
+            setTimeout(poll, 10)
+        }
+        poll()
+        return () => {
+            abort = true
+        }
     }, [currentDb])
 
     const dbHelpers: DbHelper = {

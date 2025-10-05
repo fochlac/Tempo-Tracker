@@ -26,12 +26,18 @@ const { WorklogEntry, WorklogBody, TimeRange, Duration } = WorklogAtoms
 
 const compareLog = compareValues(['start', 'end', 'issue.key'])
 
-export function WorklogEditor({ log: pureLog }) {
+export function WorklogEditor({ log: pureLog, onSubmit }: { log: Worklog | TemporaryWorklog; onSubmit: () => void }) {
     const { t } = useLocalized()
-    const [log, setEdit] = useState({ ...pureLog, synced: false })
+    const [log, setEdit] = useState({ ...pureLog, synced: false, comment: pureLog.comment || '' })
     const [isDirty, setDirty] = useState(false)
     const dispatch = useDispatch()
     const { actions } = useJiraWorklog()
+
+    // Ensure the issue has an alias property for LocalIssue compatibility
+    const issueWithAlias: LocalIssue = {
+        ...pureLog.issue,
+        alias: (pureLog.issue as LocalIssue).alias || `${pureLog.issue.key}: ${pureLog.issue.name}`
+    }
     useKeyBinding('Escape', () => {
         dispatch('resetEditIssue')
     })
@@ -78,12 +84,13 @@ export function WorklogEditor({ log: pureLog }) {
         }
     }
 
-    async function onSubmit() {
+    async function handleSubmit() {
         if (isDirty && compareLog(pureLog, log)) {
             await actions.queue(log)
         }
 
-        dispatch('resetEditIssue')
+        await dispatch('resetEditIssue')
+        if (typeof onSubmit === 'function') onSubmit()
     }
 
     return (
@@ -93,7 +100,7 @@ export function WorklogEditor({ log: pureLog }) {
                 <IssueSelector
                     enableSearch
                     value={log.issue.key}
-                    additionalIssues={[pureLog.issue]}
+                    additionalIssues={[issueWithAlias]}
                     style={{ margin: '2px 8px 0', maxWidth: 150, height: 20 }}
                     onChange={(issue) => {
                         setDirty(true)
@@ -109,7 +116,7 @@ export function WorklogEditor({ log: pureLog }) {
                     <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
                 </Duration>
                 <div style={{ marginLeft: 'auto' }}>
-                    <IconButton title={t('action.save')} onClick={onSubmit} style={{ marginLeft: 16 }}>
+                    <IconButton title={t('action.save')} onClick={handleSubmit} style={{ marginLeft: 16 }}>
                         <Check />
                     </IconButton>
                     <IconButton title={t('action.cancel')} onClick={() => dispatch('resetEditIssue')} style={{ marginLeft: 4 }}>

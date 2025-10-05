@@ -24,6 +24,7 @@ import { useJqlQueryResults } from 'src/hooks/useJqlQueryResult'
 import { openTab } from 'src/utils/browser'
 import { Conditional } from '../atoms/Conditional'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { ForgottenTrackingDialog } from '../molecules/ForgottenTrackingDialog'
 
 const Body = styled.section`
     display: flex;
@@ -71,6 +72,8 @@ export const TrackerView: React.FC = () => {
     const [showPeriodDialog, setShowPeriodDialog] = useState(false)
     const remoteIssues = useJqlQueryResults() as LocalIssue[]
 
+    const autosyncUpdate = () => !isFirefox && options.autosync && !self.error && startSync()
+
     const handleErrorClick = () => {
         if (self.error === 'PERMISSION') {
             requestPermission(options).then(() => self.refetch())
@@ -97,22 +100,24 @@ export const TrackerView: React.FC = () => {
 
     return (
         <Body>
-            <TrackingSection issues={issues} hasError={!!self.error} />
+            <TrackingSection issues={issues} hasError={!!self.error} onCreate={autosyncUpdate} />
             <H6 style={{ margin: '0 0 4px 8px', display: 'flex', width: 'calc(100% - 16px)' }}>
                 <span style={{ marginRight: 'auto' }}>{t('tracker.trackingHistory')}</span>
-                <Conditional enable={!self.error && !hasUnsyncedLog}>
-                    <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => worklog.forceFetch()}>
-                        {t('action.refresh')}
-                    </ActionLink>
-                </Conditional>
-                <Conditional enable={hasUnsyncedLog && !self.error}>
-                    <ActionLink
-                        disabled={!!editIssue.issue || self.error || (options.instance === 'cloud' && !options.ttToken?.length)}
-                        style={{ marginRight: 4, lineHeight: '16px' }}
-                        onClick={startSync}
-                    >
-                        {t('action.synchronize')}
-                    </ActionLink>
+                <Conditional enable={!options.offlineMode}>
+                    <Conditional enable={!self.error && !hasUnsyncedLog}>
+                        <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => worklog.forceFetch()}>
+                            {t('action.refresh')}
+                        </ActionLink>
+                    </Conditional>
+                    <Conditional enable={hasUnsyncedLog && !self.error}>
+                        <ActionLink
+                            disabled={!!editIssue.issue || self.error || (options.instance === 'cloud' && !options.ttToken?.length)}
+                            style={{ marginRight: 4, lineHeight: '16px' }}
+                            onClick={startSync}
+                        >
+                            {t('action.synchronize')}
+                        </ActionLink>
+                    </Conditional>
                 </Conditional>
                 <ActionLink disabled={!!editIssue.issue} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => setShowPeriodDialog(true)}>
                     {t('tracker.logMultiple')}
@@ -124,10 +129,12 @@ export const TrackerView: React.FC = () => {
                 >
                     {t('tracker.newEntry')}
                 </ActionLink>
-                <Conditional enable={!self.error && hasUnsyncedLog && hasError}>
-                    <ErrorTooltipTop content={t('tooltip.syncFailed')}>
-                        <AlertCircle size={16} style={{ color: 'var(--destructive)', marginTop: -2 }} />
-                    </ErrorTooltipTop>
+                <Conditional enable={!options.offlineMode}>
+                    <Conditional enable={!self.error && hasUnsyncedLog && hasError}>
+                        <ErrorTooltipTop content={t('tooltip.syncFailed')}>
+                            <AlertCircle size={16} style={{ color: 'var(--destructive)', marginTop: -2 }} />
+                        </ErrorTooltipTop>
+                    </Conditional>
                 </Conditional>
                 <Conditional enable={self.error}>
                     <ErrorTooltipTop content={offlineTooltip}>
@@ -155,7 +162,7 @@ export const TrackerView: React.FC = () => {
             <List style={{ minHeight: 440 - trackerRows * 32 }}>
                 <Conditional enable={!!newWorklog}>
                     {' '}
-                    <WorklogEditor log={newWorklog} />
+                    <WorklogEditor log={newWorklog} onSubmit={autosyncUpdate} />
                 </Conditional>
                 {
                     worklogs?.reduce(
@@ -167,11 +174,14 @@ export const TrackerView: React.FC = () => {
                             }
                             const id = log?.id || log?.tempId
                             if (editIssue?.issue === id) {
-                                acc.list.push(<WorklogEditor log={log} key={id} />)
+                                acc.list.push(<WorklogEditor log={log} key={id} onSubmit={autosyncUpdate} />)
                             } else {
                                 acc.list.push(
                                     <Worklog
-                                        onDelete={worklog.actions.delete}
+                                        onDelete={async (log, updateOnly) => {
+                                            await worklog.actions.delete(log, updateOnly)
+                                            if (!updateOnly) autosyncUpdate()
+                                        }}
                                         disableButtons={editIssue?.issue}
                                         log={log}
                                         key={log?.id || log?.tempId}
@@ -185,11 +195,15 @@ export const TrackerView: React.FC = () => {
                 }
             </List>
             <Conditional enable={showPeriodDialog}>
-                <LogPeriodDialog onClose={() => setShowPeriodDialog(false)} />
+                <LogPeriodDialog onClose={() => {
+                    setShowPeriodDialog(false)
+                    autosyncUpdate()
+                }} />
             </Conditional>
             <Conditional enable={Boolean(commentLog)}>
-                <CommentDialog log={commentLog} />
+                <CommentDialog log={commentLog} onSave={autosyncUpdate} />
             </Conditional>
+            <ForgottenTrackingDialog onCreate={autosyncUpdate} />
         </Body>
     )
 }

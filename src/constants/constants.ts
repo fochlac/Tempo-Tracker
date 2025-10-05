@@ -17,6 +17,7 @@ export const DB_KEYS: Record<string, DB_KEYS> = {
     TRACKING: 'tracking',
     UPDATE_QUEUE: 'updates',
     ID_MAP: 'idMap',
+    OFFLINE_WORKLOGS: 'offlineWorklogs',
     ...CACHE
 }
 

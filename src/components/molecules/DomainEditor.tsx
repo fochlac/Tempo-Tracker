@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks'
 import { useOptions } from '../../hooks/useOptions'
-import { Button } from '../atoms/Button'
+import { Button, DestructiveButton } from '../atoms/Button'
 import { ErrorInfoText, H5, InfoText, Label } from '../atoms/Typography'
 import { Input } from '../atoms/Input'
 import { useLocalized } from 'src/hooks/useLocalized'
@@ -11,11 +11,15 @@ import { Modal } from '../atoms/Modal'
 import { ButtonBar } from '../atoms/ButtonBar'
 import { fetchSelf } from '../../utils/api'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
-import { atlassianRegexp, domainRegexp } from '../../constants/constants'
+import { atlassianRegexp, domainRegexp, VIEWS } from '../../constants/constants'
 import { getDomains as getDomainsCloud } from 'src/utils/api/cloud-api'
 import { getDomains as getDomainsDataCenter } from 'src/utils/api/datacenter-api'
+import { isPopped } from 'src/utils/url'
+import { openAsTab } from 'src/utils/browser'
 
 const defaults = {
+    domain: null,
+    instance: null,
     token: '',
     ttToken: '',
     email: '',
@@ -28,7 +32,7 @@ const permissions = (isFirefox ? browser : chrome)?.permissions
 export function DomainEditor() {
     const { t } = useLocalized()
     const { data: options, actions } = useOptions()
-    const [edit, setEdit] = useState(false)
+    const [edit, setEdit] = useState(new URLSearchParams(window.location.search).get('edit') === '1')
     const [domain, setDomain] = useState(options.domain || '')
     const [error, setError] = useState(false)
     const [origins, setOrigins] = useState([])
@@ -40,6 +44,13 @@ export function DomainEditor() {
         permissions.getAll(({ origins }) => setOrigins(origins))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [options.domain])
+
+    const onReset = () => {
+        actions.merge({ ...defaults })
+        setDomain('')
+        setError(false)
+        setEdit(false)
+    }
 
     const onSave = () => {
         async function checkPermissions(newOptions: Partial<Options>) {
@@ -75,7 +86,7 @@ export function DomainEditor() {
         if (atlassianRegexp.test(domain.trim())) {
             const result = domain.trim().match(atlassianRegexp)
             const finalDomain = result[2]
-            const newOptions: Partial<Options> = { domain: `https://${finalDomain}`, instance: 'cloud', ...defaults }
+            const newOptions: Partial<Options> = { ...defaults, domain: `https://${finalDomain}`, instance: 'cloud' }
 
             return checkPermissions(newOptions)
                 .then(() => testUrl(newOptions))
@@ -105,7 +116,7 @@ export function DomainEditor() {
                         .slice(1)
                         .reduce(
                             (promise, domain) => promise.catch(() => testUrl({ domain, instance: 'datacenter' })),
-                            testUrl({ domain: possibleUrls[0], instance: 'datacenter', ...defaults })
+                            testUrl({ ...defaults, domain: possibleUrls[0], instance: 'datacenter' })
                         )
                 })
                 .catch(() => setError(true))
@@ -123,19 +134,25 @@ export function DomainEditor() {
     useKeyBinding('Enter', onSave)
 
     return (
-        <Option>
+        <Option style={{ minWidth: 'calc(50% - 32px)'}}>
             <Label>
                 {t('label.serverUrl')}
                 <MandatoryStar />
             </Label>
             <InfoText>{t('info.jiraServerUrl')}</InfoText>
             <FlexRow>
-                <Input readOnly value={options.domain || ''} style={{ width: '100%', marginRight: 16 }} />
-                <Button onClick={() => setEdit(true)}>{t('action.change')}</Button>
+                {!!options.domain && <Input readOnly value={options.domain || ''} style={{ width: '100%', marginRight: 16 }} />}
+                <Button onClick={() => {
+                    if (!isPopped()) {
+                        openAsTab(`${VIEWS.OPTIONS}&edit=1`)
+                    }
+                    setEdit(true)
+                }}>{options.domain ? t('action.change') : t('action.selectDomain')}</Button>
             </FlexRow>
             {edit && (
                 <Modal style={{ padding: 16, alignItems: 'stretch', width: 380, height: 'unset' }}>
-                    <H5>{t('dialog.changeServerUrl')}</H5>
+                    <H5>{options.domain ? t('dialog.changeServerUrl') : t('dialog.selectServerUrl')}</H5>
+                    <InfoText style={{ marginBottom: 8 }}>{t('info.domainSetup')}</InfoText>
                     <FlexColumn $align="flex-start">
                         <Label>
                             {t('label.serverUrl')}
@@ -155,6 +172,7 @@ export function DomainEditor() {
                     <ButtonBar style={{ marginTop: 24 }}>
                         <Button onClick={onClose}>{t('action.cancel')}</Button>
                         <Button onClick={onSave}>{t('action.save')}</Button>
+                        {!!options.domain && <DestructiveButton onClick={onReset}>{t('action.reset')}</DestructiveButton>}
                     </ButtonBar>
                 </Modal>
             )}

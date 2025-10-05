@@ -5,7 +5,6 @@ import { useOptions } from '../hooks/useOptions'
 import { viewDuck } from '../store/ducks/view'
 import { useDispatch, useSelector } from '../utils/atom'
 import { Footer } from './molecules/Footer'
-import { ForgottenTrackingDialog } from './molecules/ForgottenTrackingDialog'
 import { Header } from './molecules/Header'
 import { OptionsView } from './views/Options'
 import { StatisticsView } from './views/Statistics'
@@ -62,7 +61,6 @@ export const App: React.FC = () => {
         <Main>
             <CssVariables theme={theme} />
             <Header />
-            <ForgottenTrackingDialog />
             {view === VIEWS.TRACKER && <TrackerView />}
             {view === VIEWS.STATS && <StatisticsView />}
             {view === VIEWS.OPTIONS && <OptionsView />}

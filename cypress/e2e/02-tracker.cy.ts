@@ -34,7 +34,7 @@ describe('Tracking View - Tracking Area', () => {
                 callback({ payload: { success: true } })
             }
         })
-        cy.contains('form', 'Please select an issue').find('button').should('have.length', 7).contains('Test4').click()
+        cy.contains('form', 'Select an issue').find('button').should('have.length', 7).contains('Test4').click()
 
         cy.contains('form', 'Stop Tracking')
             .should('be.visible')
@@ -63,9 +63,9 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.contains('button', 'Stop Tracking').click()
 
-        cy.contains('p', 'Please select an issue').should('be.visible')
+        cy.contains('p', 'Select an issue to start tracking.').should('be.visible')
 
-        cy.contains('form', 'Please select an issue').contains('button', 'Test2').should('have.css', 'background-color', 'rgb(37, 37, 37)')
+        cy.contains('form', 'Select an issue').contains('button', 'Test2').should('have.css', 'background-color', 'rgb(37, 37, 37)')
 
         cy.contains('li', '17:00 - 17:05')
             .should('be.visible')
@@ -89,7 +89,7 @@ describe('Tracking View - Tracking Area', () => {
                 callback({ payload: { success: true } })
             }
         })
-        cy.contains('form', 'Please select an issue').find('button').should('have.length', 7).contains('Test4').click()
+        cy.contains('form', 'Select an issue').find('button').should('have.length', 7).contains('Test4').click()
 
         cy.contains('form', 'Stop Tracking').should('be.visible')
 
@@ -99,7 +99,7 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.contains('button', 'Stop Tracking').click()
 
-        cy.contains('p', 'Please select an issue').should('be.visible')
+        cy.contains('p', 'Select an issue to start tracking.').should('be.visible')
 
         cy.contains('li', '17:00 - 17:05')
             .should('be.visible')
@@ -166,7 +166,7 @@ describe('Tracking View - Tracking Area', () => {
             req.reply(res)
         })
 
-        cy.contains('form', 'Please select').should('be.visible').contains('button', 'Search Issue...').click()
+        cy.contains('form', 'Select').should('be.visible').contains('button', 'Search Issue...').click()
 
         cy.contains('dialog', 'Search Issue for Tracking').should('be.visible').find('input').type('searchtext')
 

@@ -16,7 +16,13 @@ export function useSelf() {
     const { data: externalOptions, actions } = useOptions()
 
     const checkDomainToken = async (override?: Partial<Options>) => {
-        const { token, domain, user, authenticationType, instance } = {...externalOptions, ...(override ?? {})}
+        const { token, domain, user, authenticationType, instance, offlineMode } = {...externalOptions, ...(override ?? {})}
+
+        if (offlineMode) {
+            setError(null)
+            setName('Offline User')
+            return
+        }
 
         const cookieAuth = instance === 'datacenter' && authenticationType === AUTH_TYPES.COOKIE
         if (domain.length && (token.length || cookieAuth)) {

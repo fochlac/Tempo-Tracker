@@ -24,6 +24,12 @@ export const InfoText = styled(DefaultText)`
     font-size: 12px;
     font-family: sans-serif;
 `
+export const InfoBox = styled(InfoText)`
+    padding: 8px;
+    border: var(--contrast-dark) solid 2px;
+    background: var(--background-off-strong);
+`
+
 export const ErrorInfoText = styled(InfoText)`
     height: 0;
     padding: 0;

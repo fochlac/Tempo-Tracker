@@ -14,6 +14,7 @@ import { useLocalized } from 'src/hooks/useLocalized'
 
 interface Props {
     log: TemporaryWorklog | Worklog
+    onSave?: () => void
 }
 
 const Title = styled(H5)`
@@ -24,7 +25,7 @@ const Title = styled(H5)`
     text-overflow: ellipsis;
 `
 
-export const CommentDialog: React.FC<Props> = ({ log }) => {
+export const CommentDialog: React.FC<Props> = ({ log, onSave }) => {
     const { t } = useLocalized()
     const { data: options } = useOptions()
     const dispatch = useDispatch()
@@ -40,13 +41,14 @@ export const CommentDialog: React.FC<Props> = ({ log }) => {
 
     useKeyBinding('Escape', () => hasChanges && dispatch('resetEditComment'))
 
-    const onSave = () => {
+    const handleSave = async() => {
         if (hasChanges) {
-            actions.queue({
+            await actions.queue({
                 ...log,
                 comment,
                 synced: false
             })
+            if (typeof onSave === 'function') onSave()
         }
         dispatch('resetEditComment')
     }
@@ -60,7 +62,7 @@ export const CommentDialog: React.FC<Props> = ({ log }) => {
             </div>
             <ButtonBar>
                 <Button onClick={() => dispatch('resetEditComment')}>{t('action.cancel')}</Button>
-                <Button onClick={onSave}>{t('action.save')}</Button>
+                <Button onClick={handleSave}>{t('action.save')}</Button>
             </ButtonBar>
         </Modal>
     )

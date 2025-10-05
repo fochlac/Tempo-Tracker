@@ -41,7 +41,8 @@ export const StatisticsView: React.FC = () => {
         actions: { setYear, getRequiredSeconds, refresh },
         loading
     } = useStatistics()
-    const { domain } = useOptions().data
+    const { data: appOptions } = useOptions()
+    const { domain } = appOptions
     const isWebfleet = domain?.includes('jira.ttt-sp.com')
     const self = useSelf()
 
@@ -65,9 +66,11 @@ export const StatisticsView: React.FC = () => {
                         {t('statistics.day')}
                     </ToggleButton>
                 </Block>
-                <ActionLink disabled={loading || self.error} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => refresh()}>
-                    {t('action.refresh')}
-                </ActionLink>
+                <Conditional enable={!appOptions.offlineMode}>
+                    <ActionLink disabled={loading || self.error} style={{ marginRight: 4, lineHeight: '16px' }} onClick={() => refresh()}>
+                        {t('action.refresh')}
+                    </ActionLink>
+                </Conditional>
                 {self.error && (
                     <ErrorTooltip style={{ paddingBottom: 2 }} content={t('tooltip.noConnectionJiraStatistics')}>
                         <WifiOff size={14} style={{ color: 'rgb(224, 4, 4)', marginTop: -2, marginBottom: -3 }} />

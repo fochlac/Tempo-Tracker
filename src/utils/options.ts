@@ -3,7 +3,13 @@ import { AUTH_TYPES, THEMES, domainRegexp } from '../constants/constants'
 import { fetchIssueList } from './api'
 
 export function hasValidJiraSettings(rawOptions: Partial<Options>) {
-    const { instance, domain, token, authenticationType, user } = getOptions(rawOptions)
+    const { instance, domain, token, authenticationType, user, offlineMode } = getOptions(rawOptions)
+
+    // In offline mode, we don't need Jira settings
+    if (offlineMode) {
+        return true
+    }
+
     if (!['datacenter', 'cloud'].includes(instance) || !domain?.length || !user.length) {
         return false
     }
@@ -32,7 +38,8 @@ export function getOptions(options: Partial<Options>): Options {
         locale,
         issueOrder,
         disableWorkdaySync,
-        authenticationType
+        authenticationType,
+        offlineMode
     } = options || {}
 
     // migration from old domain format
@@ -73,7 +80,8 @@ export function getOptions(options: Partial<Options>): Options {
         ttToken: ttToken ?? '',
         email: email ?? '',
         instance: instance ?? 'datacenter',
-        disableWorkdaySync: disableWorkdaySync ?? false
+        disableWorkdaySync: disableWorkdaySync ?? false,
+        offlineMode: offlineMode ?? false
     }
 }
 

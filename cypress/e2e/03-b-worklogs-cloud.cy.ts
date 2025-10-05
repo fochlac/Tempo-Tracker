@@ -27,7 +27,7 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
 
         cy.contains('dialog', 'Confirm Deletion')
-            .should('include.text', '08:00 till 16:00')
+            .should('include.text', '08:00–16:00')
             .should('include.text', 'Test2')
             .contains('button', 'Cancel')
             .should('be.visible')

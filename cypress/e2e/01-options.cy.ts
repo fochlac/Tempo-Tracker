@@ -48,7 +48,7 @@ describe('Options view & initial setup', () => {
         cy.startApp()
         cy.contains('main', 'Tempo-Tracker').should('be.visible')
 
-        cy.contains('form', 'Please select an issue to start tracking.').find('button').as('trackingButtons')
+        cy.contains('form', 'Select an issue to start tracking.').find('button').as('trackingButtons')
 
         cy.get('@trackingButtons').eq(0).should('contain.text', 'Test3')
         cy.get('@trackingButtons').eq(1).should('contain.text', 'Test4')
@@ -119,7 +119,7 @@ describe('Options view & initial setup', () => {
         cy.contains('h6', 'Authentication').should('be.visible')
         cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(247, 248, 251)')
 
-        cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', '')
+        cy.contains('div', 'Server Url').find('input').should('not.exist')
 
         cy.contains('div', 'Personal Access Token').should('not.exist')
         cy.contains('div', 'Email Address').should('not.exist')
@@ -127,12 +127,12 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Tempo API Token').should('not.exist')
         cy.contains('div', 'User').should('not.exist')
 
-        cy.contains('div', 'Server Url').contains('button', 'Change').should('be.visible').click()
+        cy.contains('div', 'Server Url').contains('button', 'Select Domain').should('be.visible').click()
 
         const serverUrl = `${serverDomain}/rest`
-        cy.contains('dialog', 'Change Server Url').find('input').type(serverUrl, { delay: 100 }).invoke('attr', 'error').should('be.undefined')
+        cy.contains('dialog', 'Setup Server Url').find('input').type(serverUrl, { delay: 100 }).invoke('attr', 'error').should('be.undefined')
 
-        cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
+        cy.contains('dialog', 'Setup Server Url').contains('button', 'Save').click()
 
         cy.get('@myself.all').should('have.length', 1)
         cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', serverDomain)
@@ -276,7 +276,7 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Tracked Issues').contains('li', 'ARCHTE-6').find('button').click()
 
         cy.get('.modal')
-            .contains('dialog', 'Confirm Removal')
+            .contains('dialog', 'Remove this item?')
             .should('be.visible')
             .should('contain.text', 'ARCHTE-6')
             .contains('button', 'Delete')
@@ -350,7 +350,7 @@ describe('Options view & initial setup', () => {
         cy.contains('h6', 'Authentication').should('be.visible')
         cy.contains('main', 'Tempo-Tracker').should('have.css', 'background-color', 'rgb(247, 248, 251)')
 
-        cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', '')
+        cy.contains('div', 'Server Url').find('input').should('not.exist')
 
         cy.contains('div', 'Personal Access Token').should('not.exist')
         cy.contains('div', 'Email Address').should('not.exist')
@@ -358,19 +358,19 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Tempo API Token').should('not.exist')
         cy.contains('div', 'User').should('not.exist')
 
-        cy.contains('div', 'Server Url').contains('button', 'Change').should('be.visible').click()
+        cy.contains('div', 'Server Url').contains('button', 'Select Domain').should('be.visible').click()
 
         const serverUrl = 'https://jira.atlassian.com/rest'
         const serverDomain = 'https://jira.atlassian.com'
-        cy.contains('dialog', 'Change Server Url')
+        cy.contains('dialog', 'Setup Server Url')
             .find('input')
             .type(serverUrl, { delay: 100 })
             .closest('div')
             .as('inputDiv')
-            .contains('Unable to find the Jira API with the provided domain.')
+            .contains('Could not find a Jira instance for this domain.')
             .should('not.exist')
 
-        cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
+        cy.contains('dialog', 'Setup Server Url').contains('button', 'Save').click()
 
         cy.get('@myself.all').should('have.length', 1)
         cy.contains('div', 'Server Url').find('input').should('be.visible').should('have.value', serverDomain)
@@ -485,7 +485,7 @@ describe('Options view & initial setup', () => {
         cy.contains('div', 'Tracked Issues').contains('li', 'ARCHTE-6').find('button').click()
 
         cy.get('.modal')
-            .contains('dialog', 'Confirm Removal')
+            .contains('dialog', 'Remove this item?')
             .should('be.visible')
             .should('contain.text', 'ARCHTE-6')
             .contains('button', 'Delete')
@@ -575,7 +575,7 @@ describe('Options view & initial setup', () => {
             .should('be.visible')
             .closest('div')
             .as('inputDiv')
-            .contains('Unable to find the Jira API with the provided domain.')
+            .contains('Could not find a Jira instance for this domain.')
             .should('exist')
 
         cy.contains('dialog', 'Change Server Url')
@@ -584,7 +584,7 @@ describe('Options view & initial setup', () => {
             .type(serverUrl, { delay: 100 })
             .closest('div')
             .as('inputDiv')
-            .contains('Unable to find the Jira API with the provided domain.')
+            .contains('Could not find a Jira instance for this domain.')
             .should('not.exist')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()
@@ -641,7 +641,7 @@ describe('Options view & initial setup', () => {
             .clear()
             .type(serverUrl, { delay: 100 })
             .closest('div')
-            .contains('Unable to find the Jira API with the provided domain.')
+            .contains('Could not find a Jira instance for this domain.')
             .should('not.exist')
 
         cy.contains('dialog', 'Change Server Url').contains('button', 'Save').click()

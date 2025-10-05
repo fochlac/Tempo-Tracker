@@ -52,7 +52,7 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
                         {issue.alias || `${issue.key}: ${issue.name}`}
                     </option>
                 ))}
-                {enableSearch && (
+                {enableSearch && !options.offlineMode && (
                     <option value={SEARCH_ISSUE} disabled={self.error} selected={searchActive}>
                         {t('placeholder.searchIssue')}
                     </option>

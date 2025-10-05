@@ -43,34 +43,39 @@ const Duration = styled(Timer)`
 
 const CUSTOM_ISSUE = 'CUSTOM_ISSUE'
 
-export function TrackingSection({ hasError, issues }: { hasError: boolean; issues: LocalIssue[] }) {
+export function TrackingSection({ hasError, issues, onCreate }: { hasError: boolean; issues: LocalIssue[]; onCreate: () => void }) {
     const { t } = useLocalized()
-    const { data: tracker, actions } = useTracking()
+    const { data: tracker, actions } = useTracking({onCreate})
     const { data: options } = useOptions()
     const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
     const [splitTrackingDialogVisible, showSplitTrackingDialog] = useState(false)
 
     const optionList: ToggleBarOption[] = useMemo(() => {
-        return issues
-            .map(
-                (issue) =>
-                    ({
-                        value: issue.id,
-                        name: issue.alias || issue.key,
-                        title: `${issue.key}: ${issue.name}`,
-                        color: issue.color
-                    }) as ToggleBarOption
-            )
-            .concat([
-                {
-                    value: CUSTOM_ISSUE,
-                    name: t('placeholder.searchIssue'),
-                    color: undefined,
-                    disabled: hasError,
-                    full: true
-                }
-            ])
-    }, [issues, hasError, t])
+        const issueOptions = issues.map(
+            (issue) =>
+                ({
+                    value: issue.id,
+                    name: issue.alias || issue.key,
+                    title: `${issue.key}: ${issue.name}`,
+                    color: issue.color
+                }) as ToggleBarOption
+        )
+
+        // Don't show search button in offline mode
+        if (options.offlineMode) {
+            return issueOptions
+        }
+
+        return issueOptions.concat([
+            {
+                value: CUSTOM_ISSUE,
+                name: t('placeholder.searchIssue'),
+                color: undefined,
+                disabled: hasError,
+                full: true
+            }
+        ])
+    }, [issues, hasError, t, options.offlineMode])
     const issueMap = useMemo(
         () =>
             issues.reduce((issueMap, issue) => {
