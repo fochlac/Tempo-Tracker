@@ -73,6 +73,7 @@
     "info.jqlAutoSelect": "Sélectionner automatiquement les tickets basés sur une requête JQL personnalisée.",
     "info.jqlExtendTemplates": "Vous pouvez étendre les modèles disponibles ou créer les vôtres :",
     "info.jqlQueryInstructions": "Vous pouvez configurer une requête JQL personnalisée pour ajouter automatiquement à votre liste de tickets créés manuellement. Cela ajoutera des tickets jusqu'à un total de 15 tickets.",
+    "info.betaLocale": "Cette locale est traduite automatiquement et peut ne pas être optimale. Si vous avez des améliorations, veuillez ouvrir un ticket de localisation avec vos suggestions.",
     "issue.noTrackedIssues": "Aucun ticket suivi.",
     "jql.recentAssigned": "Tickets récemment assignés",
     "label.advancedIssueSelection": "Sélection avancée des tickets",
@@ -117,6 +118,7 @@
     "link.customJqlQuery": "Voir la documentation.",
     "link.impressum": "Mentions légales",
     "link.reportIssue": "Signaler un problème",
+    "link.suggestTranslation": "Suggérer une traduction",
     "link.templateList": "Lien Github.",
     "loading.generic": "Chargement...",
     "message.conflictingWorklog": "Conflit de saisie de temps détecté.",
@@ -229,5 +231,7 @@
     "locale.fr-CA": "Français (CA)",
     "locale.fr": "Français",
     "locale.en-default": "Autre (Anglais)",
-    "locale.de": "Allemand"
+    "locale.de": "Allemand",
+    "locale.es": "Espagnol",
+    "locale.pl": "Polonais"
 }

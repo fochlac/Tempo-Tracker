@@ -73,6 +73,7 @@
     "info.jqlAutoSelect": "Automatically select issues based on a custom JQL query.",
     "info.jqlExtendTemplates": "You can extend the available templates or create your own:",
     "info.jqlQueryInstructions": "You can set up a custom JQL-query to automatically add to your manually created issue list. This will add issues up to a total of 15 issues.",
+    "info.betaLocale": "This locale is machine translated and may not be optimal. If you have any improvements, please open a localization ticket with your suggestions.",
     "issue.noTrackedIssues": "No tracked issues.",
     "jql.recentAssigned": "Recently assigned Issues",
     "label.advancedIssueSelection": "Advanced Issue Selection",
@@ -117,6 +118,7 @@
     "link.customJqlQuery": "See Documentation.",
     "link.impressum": "Impressum",
     "link.reportIssue": "Report Issue",
+    "link.suggestTranslation": "Suggest Translation",
     "link.templateList": "Github Link.",
     "loading.generic": "Loading...",
     "message.conflictingWorklog": "Conflicting worklog detected.",
@@ -229,5 +231,7 @@
     "locale.fr-CA": "French (CA)",
     "locale.fr": "French",
     "locale.en-default": "Other (English)",
-    "locale.de": "German"
+    "locale.de": "German",
+    "locale.es": "Spanish",
+    "locale.pl": "Polish"
 }

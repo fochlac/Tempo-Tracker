@@ -43,5 +43,7 @@ export const LOCALES = {
     'en-CA': 'en-CA',
     fr: 'fr',
     'fr-CA': 'fr-CA',
-    de: 'de'
+    de: 'de',
+    es: 'es',
+    pl: 'pl'
 } as const

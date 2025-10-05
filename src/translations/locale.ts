@@ -4,6 +4,8 @@ import enUsJson from './en-us.json'
 import deJson from './de.json'
 import frJson from './fr.json'
 import frCaJson from './fr-ca.json'
+import esJson from './es.json'
+import plJson from './pl.json'
 import { LOCALES } from 'src/constants/constants'
 
 export interface TranslationVars {
@@ -20,7 +22,9 @@ const bundles: Record<string, Record<string, string>> = {
     [LOCALES.en]: enJson,
     [LOCALES.fr]: frJson,
     [LOCALES['fr-CA']]: frCaJson,
-    [LOCALES.de]: deJson
+    [LOCALES.de]: deJson,
+    [LOCALES.es]: esJson,
+    [LOCALES.pl]: plJson
 }
 
 export function resolveLocale(locale?: string): string {

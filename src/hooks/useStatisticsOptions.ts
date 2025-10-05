@@ -1,6 +1,8 @@
 import { DB_KEYS } from '../constants/constants'
 import { useDatabase, useDatabaseUpdate } from '../utils/database'
 import { getISOWeekNumber } from '../utils/datetime'
+import { resolveLocale } from '../translations/locale'
+import { useOptions } from './useOptions'
 
 const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
     return {
@@ -26,13 +28,15 @@ const defaultStatisticsOptions: StatisticsOptions = {
 export function useStatisticsOptions() {
     const options: StatisticsOptions = useDatabase<'statsOptions'>('statsOptions') || defaultStatisticsOptions
     const updateOptions = useDatabaseUpdate(DB_KEYS.STATS_OPTIONS)
+    const { data: appOptions } = useOptions()
+    const locale = resolveLocale(appOptions.locale)
 
     return {
         data: normalizeStatisticsOptions(options),
         actions: {
             async addException() {
                 const year = new Date().getFullYear()
-                const week = getISOWeekNumber(Date.now())
+                const week = getISOWeekNumber(Date.now(), locale)
                 const update = {
                     ...options,
                     exceptions: [

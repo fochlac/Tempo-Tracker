@@ -7,6 +7,7 @@ import { useSafeState } from './useSafeState'
 import { useStatisticsOptions } from './useStatisticsOptions'
 import { useWorklogUpdates } from './useWorklogs'
 import { useOptions } from './useOptions'
+import { useLocaleContext } from 'src/translations/context'
 
 const emptyStats = {
     days: {},
@@ -16,6 +17,7 @@ const emptyStats = {
 }
 
 function useUnsyncedLogStatistics(): Record<string, StatsMap> {
+    const locale = useLocaleContext()
     const { updates, originals } = useWorklogUpdates()
 
     const updateStatChanges: Record<string, StatsMap> = useMemo(
@@ -23,7 +25,7 @@ function useUnsyncedLogStatistics(): Record<string, StatsMap> {
             updates.reduce((updateStatChanges, log) => {
                 const logYear = new Date(log.start).getFullYear()
                 const day = dateString(log.start)
-                const weekNumber = getISOWeekNumber(log.start)
+                const weekNumber = getISOWeekNumber(log.start, locale)
                 const month = new Date(log.start).getMonth() + 1
                 if (!updateStatChanges[logYear]) {
                     updateStatChanges[logYear] = createWorkMap(logYear)
@@ -47,13 +49,14 @@ function useUnsyncedLogStatistics(): Record<string, StatsMap> {
 
                 return updateStatChanges
             }, {}),
-        [updates, originals]
+        [updates, originals, locale]
     )
 
     return updateStatChanges
 }
 
 export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: number) {
+    const locale = useLocaleContext()
     const options = useStatisticsOptions()
     const {
         data: { days }
@@ -61,7 +64,7 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
     const { exceptions, defaultHours } = options.data
 
     const getRequiredSeconds = useMemo(() => {
-        const currentWeek = getISOWeekNumber(Date.now())
+        const currentWeek = getISOWeekNumber(Date.now(), locale)
         const currentYear = new Date().getFullYear()
         const currentDay = new Date().getDay()
         const { workdays, passedWorkdays } = Array(7)
@@ -88,7 +91,7 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
         const years = Array.from({ length: (endYear ?? new Date().getFullYear()) - startYear + 1 }, (_v, idx) => startYear + idx)
 
         const yearWeekHourMap = years.reduce((map, year) => {
-            const weeknumber = getISOWeeks(year)
+            const weeknumber = getISOWeeks(year, locale)
             const yearExceptions = exceptions.filter((exception) => exception.startYear <= year && exception.endYear >= year).reverse()
 
             const weekHourMap = Array(weeknumber)
@@ -111,7 +114,7 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
 
         return (year: number, week: number, skipModifier?: boolean) =>
             modifier(year, week, skipModifier) * (yearWeekHourMap[year]?.[week] ?? defaultHours) * 60 * 60
-    }, [startYear, endYear, exceptions, defaultHours, days])
+    }, [startYear, endYear, exceptions, defaultHours, days, locale])
 
     return getRequiredSeconds
 }

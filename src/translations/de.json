@@ -73,6 +73,7 @@
     "info.jqlAutoSelect": "Vorgänge automatisch auf Basis einer benutzerdefinierten JQL-Abfrage auswählen.",
     "info.jqlExtendTemplates": "Sie können die vorhandenen Vorlagen erweitern oder eigene erstellen:",
     "info.jqlQueryInstructions": "Sie können eine benutzerdefinierte JQL-Abfrage einrichten, um automatisch Ihrer Liste manuell erstellter Vorgänge hinzuzufügen. Dies fügt Vorgänge bis zu einer Gesamtzahl von 15 hinzu.",
+    "info.betaLocale": "Diese Lokalisierung wurde maschinell übersetzt und ist möglicherweise nicht optimal. Wenn Sie Verbesserungen haben, öffnen Sie bitte ein Lokalisierungs-Ticket mit Ihren Vorschlägen.",
     "issue.noTrackedIssues": "Keine verfolgte Vorgänge.",
     "jql.recentAssigned": "Kürzlich zugewiesene Vorgänge",
     "label.advancedIssueSelection": "Erweiterte Vorgangsauswahl",
@@ -117,6 +118,7 @@
     "link.customJqlQuery": "Siehe Dokumentation.",
     "link.impressum": "Impressum",
     "link.reportIssue": "Problem melden",
+    "link.suggestTranslation": "Übersetzung vorschlagen",
     "link.templateList": "Github-Link.",
     "loading.generic": "Lädt...",
     "message.conflictingWorklog": "Konflikt mit Zeiterfassung erkannt.",
@@ -229,5 +231,7 @@
     "locale.fr-CA": "Französisch (CA)",
     "locale.fr": "Französisch",
     "locale.en-default": "Unbekannt (Englisch)",
-    "locale.de": "Deutsch"
+    "locale.de": "Deutsch",
+    "locale.es": "Spanisch",
+    "locale.pl": "Polnisch"
 }

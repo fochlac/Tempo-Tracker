@@ -9,6 +9,8 @@ import { Conditional } from '../atoms/Conditional'
 import { SectionHead } from '../views/Options'
 import { CustomThemeCssInput } from '../atoms/CustomThemeCssInput'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { ActionLink } from '../atoms/ActionLink'
+import { openTab } from 'src/utils/browser'
 
 const isFirefox = navigator.userAgent.includes('Firefox')
 
@@ -38,8 +40,26 @@ export const AppOptionsSection: React.FC = () => {
 
     const isResolvedLocale = LOCALES[resolvedLocale] || LOCALES[resolvedLocale.split('-')[0]]
 
+    // Define beta locales (locales that are machine translated)
+    const isBetaLocale = [LOCALES.fr, LOCALES.es, LOCALES.pl].find((betaLocale) => betaLocale === locale.split('-')[0])
+
     return (
         <>
+            <Conditional enable={!!isBetaLocale}>
+                <InfoText style={{ marginBottom: 8, padding: 8, background: 'var(--contrast-lightest)', borderRadius: 4 }}>
+                    {t('info.betaLocale')}{' '}
+                    <ActionLink
+                        onClick={() =>
+                            openTab({
+                                url: 'https://github.com/fochlac/Tempo-Tracker/issues/new?template=translation_improvement.md',
+                                active: true
+                            })
+                        }
+                    >
+                        {t('link.suggestTranslation')}
+                    </ActionLink>
+                </InfoText>
+            </Conditional>
             <Option>
                 <Label>{t('label.localization')}</Label>
                 <Select onChange={(e) => actions.merge({ locale: e.target.value })}>
@@ -60,11 +80,17 @@ export const AppOptionsSection: React.FC = () => {
                     <option selected={isResolvedLocale && locale.split('-')[0] === LOCALES.de} value={LOCALES.de}>
                         {t('locale.de')}
                     </option>
+                    <option selected={isResolvedLocale && locale.split('-')[0] === LOCALES.es} value={LOCALES.es}>
+                        {t('locale.es')}
+                    </option>
                     <option selected={isResolvedLocale && locale.split('-')[0] === LOCALES.fr} value={LOCALES.fr}>
                         {t('locale.fr')}
                     </option>
                     <option selected={isResolvedLocale && locale === LOCALES['fr-CA']} value={LOCALES['fr-CA']}>
                         {t('locale.fr-CA')}
+                    </option>
+                    <option selected={isResolvedLocale && locale.split('-')[0] === LOCALES.pl} value={LOCALES.pl}>
+                        {t('locale.pl')}
                     </option>
                 </Select>
             </Option>

@@ -2,6 +2,7 @@ import { getPermission } from '../browser'
 import { DB } from '../data-layer'
 import { dateString, getISOWeekNumber, getYearIsoWeeksPeriod } from '../datetime'
 import { getOptions, hasValidJiraSettings } from '../options'
+import { resolveLocale } from 'src/translations/locale'
 import * as cloudApi from './cloud-api'
 import * as datacenterApi from './datacenter-api'
 
@@ -111,7 +112,9 @@ export const createWorkMap = (year) => ({
 })
 
 export async function fetchWorkStatistics (year: number = new Date().getFullYear()): Promise<StatsMap> {
-    const [start, end] = getYearIsoWeeksPeriod(year)
+    const options = getOptions(await DB.get('options'))
+    const locale = resolveLocale(options.locale)
+    const [start, end] = getYearIsoWeeksPeriod(year, locale)
 
     const worklogs = await fetchWorklogs(start.getTime(), end.getTime(), undefined, true)
     const workMap = createWorkMap(year)
@@ -121,7 +124,7 @@ export async function fetchWorkStatistics (year: number = new Date().getFullYear
 
     return worklogs.reduce((workMap, log) => {
         const day = dateString(log.start)
-        const weekNumber = getISOWeekNumber(log.start)
+        const weekNumber = getISOWeekNumber(log.start, locale)
         const month = new Date(log.start).getMonth() + 1
         const timeSpentSeconds = (log.end - log.start) / 1000
 
