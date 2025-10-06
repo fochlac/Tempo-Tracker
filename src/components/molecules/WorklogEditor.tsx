@@ -33,11 +33,6 @@ export function WorklogEditor({ log: pureLog, onSubmit }: { log: Worklog | Tempo
     const dispatch = useDispatch()
     const { actions } = useJiraWorklog()
 
-    // Ensure the issue has an alias property for LocalIssue compatibility
-    const issueWithAlias: LocalIssue = {
-        ...pureLog.issue,
-        alias: (pureLog.issue as LocalIssue).alias || `${pureLog.issue.key}: ${pureLog.issue.name}`
-    }
     useKeyBinding('Escape', () => {
         dispatch('resetEditIssue')
     })
@@ -100,7 +95,7 @@ export function WorklogEditor({ log: pureLog, onSubmit }: { log: Worklog | Tempo
                 <IssueSelector
                     enableSearch
                     value={log.issue.key}
-                    additionalIssues={[issueWithAlias]}
+                    additionalIssues={[log.issue as LocalIssue]}
                     style={{ margin: '2px 8px 0', maxWidth: 150, height: 20 }}
                     onChange={(issue) => {
                         setDirty(true)

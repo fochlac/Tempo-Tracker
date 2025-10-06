@@ -86,23 +86,12 @@ describe('Statistics View - Tracking Area', () => {
         cy.contains('div', 'Median Hours (Week)').find('p').should('contain.text', '40h 00m')
         cy.contains('div', 'Overhours').find('p').should('contain.text', '10h 00m')
 
-        cy.get('@getWorklogs.all').should('have.length', 6)
-        cy.get('@getWorklogs.6')
-            .its('request.body')
-            .should('deep.equal', {
-                from: '2019-12-30',
-                to: '2021-01-03',
-                worker: ['testid']
-            })
         cy.removeUnsyncedWorklog('123456789')
-        cy.get('@getWorklogs.all').should('have.length', 7)
-        cy.get('@getWorklogs.7')
-            .its('request.body')
-            .should('deep.equal', {
-                from: '2019-12-30',
-                to: '2021-01-03',
-                worker: ['testid']
-            })
+
+        cy.contains('div', 'Total Hours').find('p').should('contain.text', '40h 00m')
+        cy.contains('div', 'Required Hours').find('p').should('contain.text', '35h 00m')
+        cy.contains('div', 'Median Hours (Week)').find('p').should('contain.text', '40h 00m')
+        cy.contains('div', 'Overhours').find('p').should('contain.text', '5h 00m')
 
         cy.contains('button', 'Day').should('exist').click()
 
