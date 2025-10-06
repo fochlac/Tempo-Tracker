@@ -1,5 +1,6 @@
 import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
 import { defaultOptions } from '../support/data'
+import locale from '../../src/translations/en.json'
 
 describe('Tracking View - Worklog Entries - Cloud Api', () => {
     beforeEach(() => {
@@ -26,10 +27,10 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
 
-        cy.contains('dialog', 'Confirm Deletion')
+        cy.contains('dialog', locale['dialog.confirmDeletion'])
             .should('include.text', '08:00–16:00')
             .should('include.text', 'Test2')
-            .contains('button', 'Cancel')
+            .contains('button', locale['action.cancel'])
             .should('be.visible')
             .click()
 
@@ -42,7 +43,7 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
 
-        cy.contains('dialog', 'Confirm Deletion').contains('button', 'Delete').click()
+        cy.contains('dialog', locale['dialog.confirmDeletion']).contains('button', locale['action.delete']).click()
 
         cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.nested.property', 'issue.key', 'TE-12')
         cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.property', 'delete', true)
@@ -56,7 +57,7 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Discard Changes"]').click()
 
-        cy.contains('dialog', 'Confirm Discard').contains('button', 'Undo Delete').click()
+        cy.contains('dialog', locale['dialog.confirmDiscard']).contains('button', locale['action.undoDelete']).click()
 
         cy.get('li')
             .filter(':contains(08/10/20)')

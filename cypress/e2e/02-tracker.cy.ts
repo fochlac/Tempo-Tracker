@@ -1,6 +1,7 @@
 import { CACHE_STORE, DATABASE_NAME, DB_KEYS } from '../../src/constants/constants'
 import { issueBody, issues } from '../fixtures/issues'
 import { defaultOptions } from '../support/data'
+import locale from '../../src/translations/en.json'
 
 describe('Tracking View - Tracking Area', () => {
     it('should show all entries', () => {
@@ -13,7 +14,7 @@ describe('Tracking View - Tracking Area', () => {
                 callback({ payload: { success: true } })
             }
         })
-        cy.contains('main', 'Tempo-Tracker').should('be.visible')
+        cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.wait('@getWorklogs')
         cy.get('@clock').invoke('tick', 1000)
         cy.contains('li', 'Test5').should('be.visible')
@@ -36,34 +37,34 @@ describe('Tracking View - Tracking Area', () => {
         })
         cy.contains('form', 'Select an issue').find('button').should('have.length', 7).contains('Test4').click()
 
-        cy.contains('form', 'Stop Tracking')
+        cy.contains('form', locale['hotkey.stopTracking'])
             .should('be.visible')
             .contains('button', 'Test4')
             .should('have.css', 'background-color', 'rgb(15, 15, 15)')
 
-        cy.contains('form', 'Stop Tracking').find('option:selected').should('have.text', 'Test4')
+        cy.contains('form', locale['hotkey.stopTracking']).find('option:selected').should('have.text', 'Test4')
 
-        cy.contains('form', 'Stop Tracking').find('input[type="date"]').should('have.value', '2020-10-08')
+        cy.contains('form', locale['hotkey.stopTracking']).find('input[type="date"]').should('have.value', '2020-10-08')
 
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '17')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').first().should('have.value', '17')
 
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
 
-        cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '0m')
+        cy.contains('form', locale['hotkey.stopTracking']).find('time').should('contain.text', '0m')
 
         cy.get('@clock').invoke('tick', 300000)
 
-        cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '5m')
+        cy.contains('form', locale['hotkey.stopTracking']).find('time').should('contain.text', '5m')
 
-        cy.contains('form', 'Stop Tracking').find('select').select('Test2')
+        cy.contains('form', locale['hotkey.stopTracking']).find('select').select('Test2')
 
-        cy.contains('form', 'Stop Tracking').contains('button', 'Test2').should('have.css', 'background-color', 'rgb(15, 15, 15)')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('button', 'Test2').should('have.css', 'background-color', 'rgb(15, 15, 15)')
 
-        cy.contains('form', 'Stop Tracking').contains('button', 'Test4').should('have.css', 'background-color', 'rgb(37, 37, 37)')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('button', 'Test4').should('have.css', 'background-color', 'rgb(37, 37, 37)')
 
-        cy.contains('button', 'Stop Tracking').click()
+        cy.contains('button', locale['hotkey.stopTracking']).click()
 
-        cy.contains('p', 'Select an issue to start tracking.').should('be.visible')
+        cy.contains('p', locale['message.selectIssueToTrack']).should('be.visible')
 
         cy.contains('form', 'Select an issue').contains('button', 'Test2').should('have.css', 'background-color', 'rgb(37, 37, 37)')
 
@@ -91,15 +92,15 @@ describe('Tracking View - Tracking Area', () => {
         })
         cy.contains('form', 'Select an issue').find('button').should('have.length', 7).contains('Test4').click()
 
-        cy.contains('form', 'Stop Tracking').should('be.visible')
+        cy.contains('form', locale['hotkey.stopTracking']).should('be.visible')
 
-        cy.contains('form', 'Stop Tracking').find('textarea[placeholder="Comment"]').should('have.value', '').type('Some Comment', { delay: 80 })
+        cy.contains('form', locale['hotkey.stopTracking']).find('textarea[placeholder="Comment"]').should('have.value', '').type('Some Comment', { delay: 80 })
 
         cy.get('@clock').invoke('tick', 300000)
 
-        cy.contains('button', 'Stop Tracking').click()
+        cy.contains('button', locale['hotkey.stopTracking']).click()
 
-        cy.contains('p', 'Select an issue to start tracking.').should('be.visible')
+        cy.contains('p', locale['message.selectIssueToTrack']).should('be.visible')
 
         cy.contains('li', '17:00 - 17:05')
             .should('be.visible')
@@ -125,7 +126,7 @@ describe('Tracking View - Tracking Area', () => {
                 callback({ payload: { success: true } })
             }
         })
-        cy.contains('main', 'Tempo-Tracker').should('be.visible')
+        cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.wait('@getWorklogs')
         cy.get('@clock').invoke('tick', 1000)
         cy.contains('li', 'TE-12').should('be.visible')
@@ -146,7 +147,7 @@ describe('Tracking View - Tracking Area', () => {
                 callback({ payload: { success: true } })
             }
         })
-        cy.contains('main', 'Tempo-Tracker').should('be.visible')
+        cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.wait('@getWorklogs')
         cy.get('@clock').invoke('tick', 1000)
 
@@ -171,7 +172,7 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('dialog', 'Search Issue for Tracking').should('be.visible').find('input').type('searchtext')
 
         cy.contains('dialog', 'Search Issue for Tracking').contains('li', 'Unpaid leave').click()
-        cy.contains('form', 'Stop Tracking').find('option:selected').should('contain.text', 'ARCHTE-6')
+        cy.contains('form', locale['hotkey.stopTracking']).find('option:selected').should('contain.text', 'ARCHTE-6')
     })
 
     it('should handle forgotten tracking', () => {
@@ -198,7 +199,7 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.startApp()
 
-        cy.contains('main', 'Tempo-Tracker').should('be.visible')
+        cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.wait('@getWorklogs')
         cy.get('@clock').invoke('tick', 1000)
 
@@ -207,7 +208,7 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', 'today')
             .should('contain.text', '12:30')
             .should('contain.text', '13:50')
-            .contains('button', 'Create Worklog')
+            .contains('button', locale['action.createWorklog'])
             .click()
 
         cy.get('li:has([data-content="Queued for synchronisation."])')
@@ -217,10 +218,10 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', '08:00 - 12:30')
             .should('contain.text', '4h 30m')
 
-        cy.contains('form', 'Stop Tracking').find('option:selected').should('have.text', 'Test7')
-        cy.contains('form', 'Stop Tracking').find('input[type="date"]').should('have.value', '2020-10-08')
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '50')
+        cy.contains('form', locale['hotkey.stopTracking']).find('option:selected').should('have.text', 'Test7')
+        cy.contains('form', locale['hotkey.stopTracking']).find('input[type="date"]').should('have.value', '2020-10-08')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').first().should('have.value', '13')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').eq(1).should('have.value', '50')
     })
 
     it('should discard gap when selected', () => {
@@ -246,7 +247,7 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.startApp()
 
-        cy.contains('main', 'Tempo-Tracker').should('be.visible')
+        cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.wait('@getWorklogs')
         cy.get('@clock').invoke('tick', 1000)
 
@@ -255,15 +256,15 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', 'today')
             .should('contain.text', '12:30')
             .should('contain.text', '13:50')
-            .contains('button', 'Ignore Gap')
+            .contains('button', locale['action.ignoreGap'])
             .click()
 
         cy.get('li:has([data-content="Queued for synchronisation."])').should('have.length', 0)
 
-        cy.contains('form', 'Stop Tracking').find('option:selected').should('have.text', 'Test7')
-        cy.contains('form', 'Stop Tracking').find('input[type="date"]').should('have.value', '2020-10-08')
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '08')
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
+        cy.contains('form', locale['hotkey.stopTracking']).find('option:selected').should('have.text', 'Test7')
+        cy.contains('form', locale['hotkey.stopTracking']).find('input[type="date"]').should('have.value', '2020-10-08')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').first().should('have.value', '08')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
     })
 
     it('should be possible to split trackings', () => {
@@ -286,22 +287,22 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.startApp()
 
-        cy.contains('form', 'Stop Tracking')
+        cy.contains('form', locale['hotkey.stopTracking'])
             .should('be.visible')
             .contains('button', 'Test7')
             .should('have.css', 'background-color', 'rgb(15, 15, 15)')
 
-        cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
-        cy.contains('div', 'Stop Tracking').contains('button', 'Split').should('be.visible').click()
+        cy.contains('div', locale['hotkey.stopTracking']).find('[aria-label="Open Button List"]').should('be.visible').click()
+        cy.contains('div', locale['hotkey.stopTracking']).contains('button', locale['action.splitTracking']).should('be.visible').click()
 
-        cy.contains('dialog', 'Split Active Worklog').should('be.visible').contains('08:00')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Issue').find('input').should('have.value', 'Test7')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Start Time').find('input').eq(0).should('have.value', '08')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(0).type('13:00')
-        cy.contains('dialog', 'Split Active Worklog').contains('button', 'Split').click()
+        cy.contains('dialog', locale['dialog.splitTracking']).should('be.visible').contains('08:00')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.issue']).find('input').should('have.value', 'Test7')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.startTime']).find('input').eq(0).should('have.value', '08')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.startTime']).find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(0).should('have.value', '17')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(0).type('13:00')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('button', locale['action.splitTracking']).click()
 
         cy.get('li:has([data-content="Queued for synchronisation."])')
             .should('have.length', 1)
@@ -310,38 +311,38 @@ describe('Tracking View - Tracking Area', () => {
             .should('contain.text', '08:00 - 13:00')
             .should('contain.text', '5h 00m')
 
-        cy.contains('form', 'Stop Tracking')
+        cy.contains('form', locale['hotkey.stopTracking'])
             .should('be.visible')
             .contains('button', 'Test7')
             .should('have.css', 'background-color', 'rgb(15, 15, 15)')
 
-        cy.contains('form', 'Stop Tracking').find('option:selected').should('have.text', 'Test7')
-        cy.contains('form', 'Stop Tracking').find('input[type="date"]').should('have.value', '2020-10-08')
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
-        cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '4h 00m')
+        cy.contains('form', locale['hotkey.stopTracking']).find('option:selected').should('have.text', 'Test7')
+        cy.contains('form', locale['hotkey.stopTracking']).find('input[type="date"]').should('have.value', '2020-10-08')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').first().should('have.value', '13')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
+        cy.contains('form', locale['hotkey.stopTracking']).find('time').should('contain.text', '4h 00m')
 
-        cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
-        cy.contains('div', 'Stop Tracking').contains('button', 'Split').should('be.visible').click()
-        cy.contains('dialog', 'Split Active Worklog').should('be.visible').contains('13:00')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Issue').find('input').should('have.value', 'Test7')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Start Time').find('input').eq(0).should('have.value', '13')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'Start Time').find('input').eq(1).should('have.value', '00')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(0).should('have.value', '17')
-        cy.contains('dialog', 'Split Active Worklog').contains('div', 'End Time').find('input').eq(1).should('have.value', '00')
-        cy.contains('dialog', 'Split Active Worklog').contains('button', 'Cancel').click()
+        cy.contains('div', locale['hotkey.stopTracking']).find('[aria-label="Open Button List"]').should('be.visible').click()
+        cy.contains('div', locale['hotkey.stopTracking']).contains('button', locale['action.splitTracking']).should('be.visible').click()
+        cy.contains('dialog', locale['dialog.splitTracking']).should('be.visible').contains('13:00')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.issue']).find('input').should('have.value', 'Test7')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.startTime']).find('input').eq(0).should('have.value', '13')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.startTime']).find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(0).should('have.value', '17')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', locale['dialog.splitTracking']).contains('button', locale['action.cancel']).click()
 
         cy.get('li:has([data-content="Queued for synchronisation."])').should('have.length', 1)
 
-        cy.contains('form', 'Stop Tracking').should('be.visible')
+        cy.contains('form', locale['hotkey.stopTracking']).should('be.visible')
 
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').first().should('have.value', '13')
-        cy.contains('form', 'Stop Tracking').contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
-        cy.contains('form', 'Stop Tracking').find('time').should('contain.text', '4h 00m')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').first().should('have.value', '13')
+        cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
+        cy.contains('form', locale['hotkey.stopTracking']).find('time').should('contain.text', '4h 00m')
 
-        cy.contains('div', 'Stop Tracking').find('[aria-label="Open Button List"]').should('be.visible').click()
+        cy.contains('div', locale['hotkey.stopTracking']).find('[aria-label="Open Button List"]').should('be.visible').click()
 
-        cy.contains('div', 'Stop Tracking').contains('button', 'Discard').should('be.visible').click()
-        cy.contains('form', 'Stop Tracking').should('not.exist')
+        cy.contains('div', locale['hotkey.stopTracking']).contains('button', locale['action.discardTracking']).should('be.visible').click()
+        cy.contains('form', locale['hotkey.stopTracking']).should('not.exist')
     })
 })

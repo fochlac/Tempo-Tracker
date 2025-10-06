@@ -1,4 +1,5 @@
 import { Sickness, UnpaidLeave, issueBody, issues } from '../fixtures/issues'
+import locale from '../../src/translations/en.json'
 
 function validateWorklogTimeInput(row, index, value1, value2) {
     row.find('fieldset').eq(index).as('timeInput')
@@ -35,10 +36,10 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
 
-        cy.contains('dialog', 'Confirm Deletion')
+        cy.contains('dialog', locale['dialog.confirmDeletion'])
             .should('include.text', '08:00–16:00')
             .should('include.text', 'Test2')
-            .contains('button', 'Cancel')
+            .contains('button', locale['action.cancel'])
             .should('be.visible')
             .click()
 
@@ -51,7 +52,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
 
-        cy.contains('dialog', 'Confirm Deletion').contains('button', 'Delete').click()
+        cy.contains('dialog', locale['dialog.confirmDeletion']).contains('button', locale['action.delete']).click()
 
         cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.nested.property', 'issue.key', 'TE-12')
         cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.property', 'delete', true)
@@ -65,7 +66,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Discard Changes"]').click()
 
-        cy.contains('dialog', 'Confirm Discard').contains('button', 'Undo Delete').click()
+        cy.contains('dialog', locale['dialog.confirmDiscard']).contains('button', locale['action.undoDelete']).click()
 
         cy.get('li')
             .filter(':contains(08/10/20)')
@@ -91,7 +92,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').find('textarea').should('have.value', '').type('testcomment', { delay: 50 })
 
-        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', 'Cancel').click()
+        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', locale['action.cancel']).click()
 
         cy.get('li')
             .filter(':contains(08/10/20)')
@@ -104,7 +105,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').find('textarea').should('have.value', '').type('testcomment', { delay: 50 })
 
-        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', 'Save').click()
+        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', locale['action.save']).click()
 
         cy.get('li')
             .filter(':contains(08/10/20)')
@@ -119,7 +120,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').find('textarea').should('have.value', 'testcomment')
 
-        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', 'Cancel').click()
+        cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').contains('button', locale['action.cancel']).click()
         cy.contains('dialog', 'Comment for Test2, 08:00 till 16:00').should('not.exist')
 
         cy.getUnsyncedWorklogs().should('have.length', 1).invoke('pop').should('have.property', 'comment', 'testcomment')
@@ -227,7 +228,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.get('li').filter(':contains(09/10/20)').filter(':contains(Test4)').find('button[title="Discard Changes"]').click()
 
-        cy.contains('dialog', 'Confirm').should('contain.text', 'Discard changes for worklog').contains('button', 'Discard Changes').click()
+        cy.contains('dialog', 'Confirm').should('contain.text', 'Discard changes for worklog').contains('button', locale['action.discardChanges']).click()
 
         cy.get('li').filter(':contains(09/10/20)').filter(':contains(Test4)').should('have.length', 0)
 

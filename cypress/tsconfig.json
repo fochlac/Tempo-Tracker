@@ -3,7 +3,9 @@
         "target": "es5",
         "lib": ["es5", "dom"],
         "jsx": "react-jsx",
-        "types": ["cypress", "node"]
+        "types": ["cypress", "node"],
+        "resolveJsonModule": true,
+        "esModuleInterop": true
     },
     "include": ["**/*.ts", "**/*.tsx", "../types/**/*.d.ts"]
 }

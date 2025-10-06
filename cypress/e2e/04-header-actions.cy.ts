@@ -1,3 +1,5 @@
+import locale from '../../src/translations/en.json'
+
 describe('Tracking View - Header Actions', () => {
     it('should be possible to refresh', () => {
         cy.networkMocks()
@@ -14,7 +16,7 @@ describe('Tracking View - Header Actions', () => {
 
         cy.get('section figure').should('not.be.visible')
         cy.intercept({ url: 'https://jira.test.com/rest/tempo-timesheets/4/worklogs/search', times: 1 }, { delay: 1000, body: [] }).as('search')
-        cy.contains('h6', 'Tracking History').contains('a', 'Refresh').should('be.visible').click()
+        cy.contains('h6', locale['tracker.trackingHistory']).contains('a', locale['action.refresh']).should('be.visible').click()
         cy.get('section figure').should('be.visible')
         cy.get('@search.all').should('have.length', 1)
     })
@@ -30,7 +32,7 @@ describe('Tracking View - Header Actions', () => {
             }
         })
         cy.get('form input[type="date"]').should('not.exist')
-        cy.contains('h6', 'Tracking History').contains('a', 'New Entry').click()
+        cy.contains('h6', locale['tracker.trackingHistory']).contains('a', locale['tracker.newEntry']).click()
         cy.get('form input[type="date"]').should('be.visible')
 
         cy.get('form input[type="date"]').should('have.value', '2020-10-08')
@@ -64,27 +66,27 @@ describe('Tracking View - Header Actions', () => {
             }
         })
 
-        cy.contains('h6', 'Tracking History').contains('a', 'Log Multiple').click()
+        cy.contains('h6', locale['tracker.trackingHistory']).contains('a', locale['tracker.logMultiple']).click()
 
-        cy.contains('dialog', 'Log Time for Multiple Days')
+        cy.contains('dialog', locale['dialog.logPeriodMultipleDays'])
             .should('be.visible')
-            .contains('div', 'First Day')
+            .contains('div', locale['field.firstDay'])
             .find('input')
             .should('have.value', '2020-10-08')
 
-        cy.contains('dialog', 'Log Time for Multiple Days')
-            .contains('div', 'Last Day')
+        cy.contains('dialog', locale['dialog.logPeriodMultipleDays'])
+            .contains('div', locale['field.lastDay'])
             .find('input')
             .should('have.value', '2020-10-09')
             .type('2020-10-11')
 
-        cy.contains('dialog', 'Log Time for Multiple Days').contains('div', 'Issue').find('select').select('Test4')
+        cy.contains('dialog', locale['dialog.logPeriodMultipleDays']).contains('div', locale['field.issue']).find('select').select('Test4')
 
-        cy.contains('dialog', 'Log Time for Multiple Days').contains('div', 'Hours Per Day').find('input').eq(0).should('have.value', '08').type('5')
+        cy.contains('dialog', locale['dialog.logPeriodMultipleDays']).contains('div', locale['field.hoursPerDay']).find('input').eq(0).should('have.value', '08').type('5')
 
-        cy.contains('dialog', 'Log Time for Multiple Days').contains('div', 'Hours Per Day').find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', locale['dialog.logPeriodMultipleDays']).contains('div', locale['field.hoursPerDay']).find('input').eq(1).should('have.value', '00')
 
-        cy.contains('dialog', 'Log Time for Multiple Days').contains('button', 'Create Worklogs').click()
+        cy.contains('dialog', locale['dialog.logPeriodMultipleDays']).contains('button', locale['action.createWorklogs']).click()
 
         cy.get('li:has([data-content="Queued for synchronisation."])')
             .should('have.length', 2)
@@ -125,12 +127,12 @@ describe('Tracking View - Header Actions', () => {
         })
 
         cy.startApp()
-        cy.contains('main', 'Tempo-Tracker').should('be.visible')
+        cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.get('li:has([data-content="Queued for synchronisation."])').should('have.length', 1)
-        cy.contains('h6', 'Tracking History').contains('a', 'Refresh').should('not.exist')
+        cy.contains('h6', locale['tracker.trackingHistory']).contains('a', locale['action.refresh']).should('not.exist')
         cy.window().its('messages').should('not.exist')
 
-        cy.contains('h6', 'Tracking History').contains('a', 'Synchronise').should('be.visible').click()
+        cy.contains('h6', locale['tracker.trackingHistory']).contains('a', locale['action.synchronize']).should('be.visible').click()
 
         cy.window().its('messages').should('have.length', 1)
         cy.window().its('messages.0').should('have.a.property', 'type', 'FLUSH_UPDATES')
