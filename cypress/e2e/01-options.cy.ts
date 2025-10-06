@@ -716,6 +716,7 @@ describe('Options view & initial setup', () => {
 
     it('should react to indexedDB-changes', () => {
         cy.contains('main', locale['header.tempoTracker']).should('have.css', 'background-color', 'rgb(247, 248, 251)')
+        cy.wait(100)
         cy.setOptions({
             autosync: false,
             domain: 'https://jira.test.com/rest',
