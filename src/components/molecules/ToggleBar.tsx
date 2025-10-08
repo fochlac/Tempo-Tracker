@@ -81,6 +81,8 @@ export const ToggleBar: React.FC<Props> = ({ options, unselect, defaultValue, va
         }
     }
 
+    if (!options || options.length === 0) return null
+
     const rowLength = 5
     const rowNumber = Math.ceil((options.length + 1) / rowLength)
     const realRowLength = (options.length + 1) / rowNumber

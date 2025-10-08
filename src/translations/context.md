@@ -66,7 +66,6 @@
 - **info.firefoxSyncWarning**: "For Firefox this setting is always inactive. Due to browser restrictions it is neccesary to open jira in a new tab and use that tab for synchronization." - Firefox-specific warning text
 - **info.hotkeysList**: "Following Hotkeys are registered:" - text introducing the hotkeys table
 - **info.issueTrackingInstructions**: "Please add all issues you want to use for time tracking. You can set an alias for each issue." - instruction text for issue tracking setup
-- **info.jiraServerUrl**: "Url of your Jira server." - help text explaining server URL input field
 - **info.jqlAutoSelect**: "Automatically select issues based on a custom JQL query." - description for JQL auto-selection feature
 - **info.jqlExtendTemplates**: "You can extend the available templates or create your own:" - text about extending JQL templates
 - **info.jqlQueryInstructions**: "You can set up a custom JQL-query to automatically add to your manually created issue list. This will add issues up to a total of 15 issues." - instruction text for JQL query setup

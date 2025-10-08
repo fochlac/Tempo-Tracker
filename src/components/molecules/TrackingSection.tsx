@@ -189,7 +189,7 @@ export function TrackingSection({ hasError, issues, onCreate }: { hasError: bool
                             )}
                         </FlexColumn>
                     ) : (
-                        <DefaultText style={{ margin: '0 auto' }}>{t('message.selectIssueToTrack')}</DefaultText>
+                        <DefaultText style={{ margin: '0 auto' }}>{t(optionList.length ? 'message.selectIssueToTrack' : 'message.noIssueToTrack')}</DefaultText>
                     ))}
             </Tracker>
         </Header>

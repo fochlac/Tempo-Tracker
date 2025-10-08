@@ -161,7 +161,7 @@ export const OptionsView: React.FC = () => {
                 <OptionsImportExport />
             </JiraHead>
             <Conditional enable={!domain.length && !options.offlineMode}>
-                <InfoBoxAlt style={{ marginTop: 12 }}>{t('options.selectConnectionMode')}</InfoBoxAlt>
+                <InfoBoxAlt style={{ marginTop: 12, marginRight: 8 }}>{t('options.selectConnectionMode')}</InfoBoxAlt>
             </Conditional>
             <div style={{
                 display: 'flex',
@@ -173,7 +173,6 @@ export const OptionsView: React.FC = () => {
                 <Conditional enable={!domain.length}>
                     <Option style={{ minWidth: 'calc(50% - 32px)'}}>
                         <Label>{t('label.offlineMode')}</Label>
-                        <InfoText>{t('info.offlineModeDesc')}</InfoText>
                         <FlexRow $justify="flex-start">
                             <Input
                                 style={{ margin: '0 6px' }}

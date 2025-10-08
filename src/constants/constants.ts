@@ -4,12 +4,12 @@ export const VIEWS: Record<string, VIEWS> = {
     OPTIONS: 'options'
 }
 
-export const CACHE: Record<string, CACHE> = {
+export const CACHE = {
     WORKLOG_CACHE: 'WORKLOG_CACHE',
     STATS_CACHE: 'STATS_CACHE',
     LIFETIME_STATS_CACHE: 'LIFETIME_STATS_CACHE',
     ISSUE_CACHE: 'ISSUE_CACHE'
-}
+} as const
 
 export const DB_KEYS: Record<string, DB_KEYS> = {
     OPTIONS: 'options',

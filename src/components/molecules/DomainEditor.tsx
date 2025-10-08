@@ -11,11 +11,12 @@ import { Modal } from '../atoms/Modal'
 import { ButtonBar } from '../atoms/ButtonBar'
 import { fetchSelf } from '../../utils/api'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
-import { atlassianRegexp, domainRegexp, VIEWS } from '../../constants/constants'
+import { atlassianRegexp, CACHE, domainRegexp, VIEWS } from '../../constants/constants'
 import { getDomains as getDomainsCloud } from 'src/utils/api/cloud-api'
 import { getDomains as getDomainsDataCenter } from 'src/utils/api/datacenter-api'
 import { isPopped } from 'src/utils/url'
 import { openAsTab } from 'src/utils/browser'
+import { useCache } from 'src/hooks/useCache'
 
 const defaults = {
     domain: null,
@@ -32,10 +33,32 @@ const permissions = (isFirefox ? browser : chrome)?.permissions
 export function DomainEditor() {
     const { t } = useLocalized()
     const { data: options, actions } = useOptions()
-    const [edit, setEdit] = useState(new URLSearchParams(window.location.search).get('edit') === '1')
+    const logCache = useCache(CACHE.WORKLOG_CACHE, [])
+    const statsCache = useCache(CACHE.STATS_CACHE, [])
+    const fullStatsCache = useCache(CACHE.LIFETIME_STATS_CACHE, [])
+    const issueCache = useCache(CACHE.ISSUE_CACHE, [])
+    const shouldEdit = new URLSearchParams(window.location.search).get('edit') === '1'
+    const [edit, setEdit] = useState(shouldEdit)
     const [domain, setDomain] = useState(options.domain || '')
     const [error, setError] = useState(false)
     const [origins, setOrigins] = useState([])
+
+    const resetCaches = async () => {
+        await Promise.all([
+            logCache.resetCache(),
+            statsCache.resetCache(),
+            fullStatsCache.resetCache(),
+            issueCache.resetCache()
+        ])
+    }
+
+    useEffect(() => {
+        if (shouldEdit) {
+            const url = new URL(window.location.href)
+            url.searchParams.delete('edit')
+            window.history.replaceState({}, document.title, url.toString())
+        }
+    }, [shouldEdit])
 
     useEffect(() => {
         if (!edit && domain !== options.domain) {
@@ -50,6 +73,7 @@ export function DomainEditor() {
         setDomain('')
         setError(false)
         setEdit(false)
+        resetCaches()
     }
 
     const onSave = () => {
@@ -79,6 +103,7 @@ export function DomainEditor() {
                     }
                     newOptions.user = result.user
                     actions.merge(newOptions)
+                    resetCaches()
                     setEdit(false)
                 })
         }
@@ -139,7 +164,6 @@ export function DomainEditor() {
                 {t('label.serverUrl')}
                 <MandatoryStar />
             </Label>
-            <InfoText>{t('info.jiraServerUrl')}</InfoText>
             <FlexRow>
                 {!!options.domain && <Input readOnly value={options.domain || ''} style={{ width: '100%', marginRight: 16 }} />}
                 <Button onClick={() => {
