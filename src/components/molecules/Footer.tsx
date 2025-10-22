@@ -26,10 +26,10 @@ export function Footer() {
     const [show, setShow] = useState(!!getUrlParam('impressum') || false)
     const { t } = useLocalized()
 
-    useKeyBinding('Escape', () => setShow(false), !show)
+    const ref = useKeyBinding<HTMLDivElement>('Escape', () => setShow(false), false, !show)
 
     return (
-        <FooterBar>
+        <FooterBar ref={ref}>
             <ActionLink onClick={() => openTab({ url: githubUrl, active: true })} style={{ margin: 0 }}>
                 <Github size={16} style={{ margin: '0 2px -4px 0' }} />
                 {t('nav.github')}

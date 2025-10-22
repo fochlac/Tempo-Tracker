@@ -1,4 +1,4 @@
-import { createPortal } from 'preact/compat'
+import React, { createPortal, forwardRef } from 'preact/compat'
 import styled from 'styled-components'
 
 const Dialog = styled.dialog`
@@ -36,12 +36,13 @@ const Overlay = styled.div`
 `
 interface Props {
     style?: React.CSSProperties;
+    children: React.ReactNode;
 }
-export const Modal: React.FC<Props> = ({ children, style }) => {
+export const Modal = forwardRef<HTMLElement, Props>(({ children, style }, ref) => {
     return createPortal(
         <Overlay>
-            <Dialog open style={style}>{children}</Dialog>
+            <Dialog open style={style} ref={ref}>{children}</Dialog>
         </Overlay>,
         document.querySelector('.modal')
     )
-}
+})

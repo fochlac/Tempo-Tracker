@@ -10,7 +10,7 @@ import { Option } from '../atoms/Option'
 import { Modal } from '../atoms/Modal'
 import { ButtonBar } from '../atoms/ButtonBar'
 import { fetchSelf } from '../../utils/api'
-import { useKeyBinding } from '../../hooks/useKeyBinding'
+import { useCombindedRefs, useKeyBinding } from '../../hooks/useKeyBinding'
 import { atlassianRegexp, CACHE, domainRegexp, VIEWS } from '../../constants/constants'
 import { getDomains as getDomainsCloud } from 'src/utils/api/cloud-api'
 import { getDomains as getDomainsDataCenter } from 'src/utils/api/datacenter-api'
@@ -155,11 +155,13 @@ export function DomainEditor() {
         setEdit(false)
     }
 
-    useKeyBinding('Escape', onClose)
-    useKeyBinding('Enter', onSave)
+    const ref = useCombindedRefs<HTMLDivElement>(
+        useKeyBinding('Escape', onClose, false),
+        useKeyBinding('Enter', onSave, false)
+    )
 
     return (
-        <Option style={{ minWidth: 'calc(50% - 32px)'}}>
+        <Option ref={ref} style={{ minWidth: 'calc(50% - 32px)'}}>
             <Label>
                 {t('label.serverUrl')}
                 <MandatoryStar />

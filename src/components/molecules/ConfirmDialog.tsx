@@ -15,12 +15,12 @@ interface Props {
 
 export const ConfirmDialog: React.FC<Props> = ({ open, onClose, text, buttons, title }) => {
     const { t } = useLocalized()
-    useKeyBinding('Escape', onClose, !open)
+    const ref = useKeyBinding('Escape', onClose, false, !open)
 
     if (!open) return null
 
     return (
-        <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>
+        <Modal ref={ref} style={{ width: 400, minHeight: 180, height: 'unset' }}>
             <H5>{title}</H5>
             <DefaultText style={{ textAlign: 'center', marginBottom: 16 }}>{text}</DefaultText>
             <ButtonBar>

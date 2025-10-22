@@ -50,7 +50,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     const getRequiredSeconds = useGetRequiredSettings(year)
     const { actions } = useJiraWorklog()
 
-    useKeyBinding('Escape', onClose)
+    const ref = useKeyBinding('Escape', onClose, false)
 
     const [options, setOptions] = useState({
         issue: Object.values(issues)?.[0],
@@ -156,7 +156,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
 
     return (
-        <Modal style={{ width: 320, minHeight: 180, height: 'unset' }}>
+        <Modal ref={ref} style={{ width: 320, minHeight: 180, height: 'unset' }}>
             <H5>{t('dialog.logPeriodMultipleDays')}</H5>
             <div style={{ padding: '0 8px', marginBottom: 8, width: '100%' }}>
                 <Line>{t('dialog.logDetails')}</Line>

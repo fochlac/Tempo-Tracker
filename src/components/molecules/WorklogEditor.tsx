@@ -33,9 +33,9 @@ export function WorklogEditor({ log: pureLog, onSubmit }: { log: Worklog | Tempo
     const dispatch = useDispatch()
     const { actions } = useJiraWorklog()
 
-    useKeyBinding('Escape', () => {
+    const ref = useKeyBinding('Escape', () => {
         dispatch('resetEditIssue')
-    })
+    }, false)
     const onChange = (key) => (e) => {
         const { value } = e.target
         if (value !== timeString(log[key])) {
@@ -89,7 +89,7 @@ export function WorklogEditor({ log: pureLog, onSubmit }: { log: Worklog | Tempo
     }
 
     return (
-        <WorklogEntry>
+        <WorklogEntry ref={ref}>
             <WorklogBody as="form" onSubmit={(e) => e.preventDefault()}>
                 <DateInput type="date" onChange={onChangeDate} value={dateString(log.start)} />
                 <IssueSelector

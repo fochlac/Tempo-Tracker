@@ -39,7 +39,7 @@ export const CommentDialog: React.FC<Props> = ({ log, onSave }) => {
 
     const hasChanges = log.comment !== comment
 
-    useKeyBinding('Escape', () => hasChanges && dispatch('resetEditComment'))
+    const ref = useKeyBinding('Escape', () => hasChanges && dispatch('resetEditComment'), false)
 
     const handleSave = async() => {
         if (hasChanges) {
@@ -54,7 +54,7 @@ export const CommentDialog: React.FC<Props> = ({ log, onSave }) => {
     }
 
     return (
-        <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>
+        <Modal ref={ref} style={{ width: 400, minHeight: 180, height: 'unset' }}>
             <Title title={title}>{title}</Title>
             <div style={{ textAlign: 'center', marginBottom: 16, width: '100%', padding: '0 8px' }}>
                 <Label>{t('dialog.comment')}</Label>
