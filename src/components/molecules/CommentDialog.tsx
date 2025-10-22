@@ -1,16 +1,17 @@
 import { H5, Label } from '../atoms/Typography'
-import { Modal } from '../atoms/Modal'
+
 import { Button } from '../atoms/Button'
 import { ButtonBar } from '../atoms/ButtonBar'
-import { useKeyBinding } from '../../hooks/useKeyBinding'
-import { useOptions } from '../../hooks/useOptions'
-import { useDispatch } from '../../utils/atom'
-import { timeString } from '../../utils/datetime'
-import { useState } from 'preact/hooks'
-import { useJiraWorklog } from '../../hooks/useWorklogs'
+import { Modal } from '../atoms/Modal'
 import { Textarea } from '../atoms/Input'
 import styled from 'styled-components'
+import { timeString } from '../../utils/datetime'
+import { useDispatch } from '../../utils/atom'
+import { useJiraWorklog } from '../../hooks/useWorklogs'
+import { useKeyBinding } from '../../hooks/useKeyBinding'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { useOptions } from '../../hooks/useOptions'
+import { useState } from 'preact/hooks'
 
 interface Props {
     log: TemporaryWorklog | Worklog
@@ -39,7 +40,7 @@ export const CommentDialog: React.FC<Props> = ({ log, onSave }) => {
 
     const hasChanges = log.comment !== comment
 
-    const ref = useKeyBinding('Escape', () => hasChanges && dispatch('resetEditComment'), false)
+    useKeyBinding('Escape', () => hasChanges && dispatch('resetEditComment'), true)
 
     const handleSave = async() => {
         if (hasChanges) {
@@ -54,7 +55,7 @@ export const CommentDialog: React.FC<Props> = ({ log, onSave }) => {
     }
 
     return (
-        <Modal ref={ref} style={{ width: 400, minHeight: 180, height: 'unset' }}>
+        <Modal style={{ width: 400, minHeight: 180, height: 'unset' }}>
             <Title title={title}>{title}</Title>
             <div style={{ textAlign: 'center', marginBottom: 16, width: '100%', padding: '0 8px' }}>
                 <Label>{t('dialog.comment')}</Label>

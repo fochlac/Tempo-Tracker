@@ -1,14 +1,15 @@
-import { ActionLink } from '../atoms/ActionLink'
-import { H5, H6 } from '../atoms/Typography'
-import styled from 'styled-components'
-import { useState } from 'preact/hooks'
-import { Modal } from '../atoms/Modal'
 import { Github, X } from 'preact-feather'
-import { openTab } from '../../utils/browser'
+import { H5, H6 } from '../atoms/Typography'
+
+import { ActionLink } from '../atoms/ActionLink'
 import { FlexRow } from '../atoms/Layout'
-import { useKeyBinding } from '../../hooks/useKeyBinding'
+import { Modal } from '../atoms/Modal'
 import { getUrlParam } from 'src/utils/url'
+import { openTab } from '../../utils/browser'
+import styled from 'styled-components'
+import { useKeyBinding } from '../../hooks/useKeyBinding'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { useState } from 'preact/hooks'
 
 const FooterBar = styled.div`
     cursor: default;
@@ -26,10 +27,10 @@ export function Footer() {
     const [show, setShow] = useState(!!getUrlParam('impressum') || false)
     const { t } = useLocalized()
 
-    const ref = useKeyBinding<HTMLDivElement>('Escape', () => setShow(false), false, !show)
+    useKeyBinding('Escape', () => setShow(false), true, !show)
 
     return (
-        <FooterBar ref={ref}>
+        <FooterBar>
             <ActionLink onClick={() => openTab({ url: githubUrl, active: true })} style={{ margin: 0 }}>
                 <Github size={16} style={{ margin: '0 2px -4px 0' }} />
                 {t('nav.github')}

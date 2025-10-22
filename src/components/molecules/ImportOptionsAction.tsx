@@ -1,12 +1,13 @@
 import { useId, useState } from 'preact/hooks'
-import styled from 'styled-components'
-import { useOptions } from '../../hooks/useOptions'
-import { readFile } from '../../utils/file'
-import { getOptions } from '../../utils/options'
+
 import { ActionLinkRaw } from '../atoms/ActionLink'
-import { useLocalized } from 'src/hooks/useLocalized'
-import { DestructiveButton } from '../atoms/Button'
 import { ConfirmDialog } from './ConfirmDialog'
+import { DestructiveButton } from '../atoms/Button'
+import { getOptions } from '../../utils/options'
+import { readFile } from '../../utils/file'
+import styled from 'styled-components'
+import { useLocalized } from 'src/hooks/useLocalized'
+import { useOptions } from '../../hooks/useOptions'
 
 const HiddenInput = styled.input`
     visibility: 'hidden';
@@ -32,6 +33,8 @@ export function ImportOptionsAction() {
                 if (options.domain === importData.domain) {
                     importData.token = options.token
                     importData.user = options.user
+                    importData.ttToken = options.ttToken
+                    importData.email = options.email
                 }
                 setImportData(importData)
             } else {

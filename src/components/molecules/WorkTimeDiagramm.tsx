@@ -32,7 +32,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
     const isCurrentYear = year === currentYear
 
     const maxSeconds = Math.max(
-        stats
+        stats?.weeks
             ? (Math.ceil(Object.values(stats.weeks).reduce((highest, current) => (current > highest ? current : highest), 0) / 60 / 60) + 1) * 60 * 60
             : 0,
         (options.defaultHours + 1) * 60 * 60
@@ -75,7 +75,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                         </Time>
                     ))}
                 </TimeBar>
-                {!!stats &&
+                {!!stats?.weeks &&
                     getIsoWeekPeriods(year, locale)
                         .slice(0, weeknumber + 1)
                         .slice(Math.max(weekOffset - columns, 0), weekOffset)

@@ -1,19 +1,20 @@
+import { DefaultText, H5, Label } from '../atoms/Typography'
+import { dateString, durationString, getISOWeekNumber } from '../../utils/datetime'
 import { useEffect, useState } from 'preact/hooks'
-import styled from 'styled-components'
-import { dateString, getISOWeekNumber, durationString } from '../../utils/datetime'
+
 import { Button } from '../atoms/Button'
 import { ButtonBar } from '../atoms/ButtonBar'
 import { Input } from '../atoms/Input'
+import { IssueSelector } from './IssueSelector'
 import { Modal } from '../atoms/Modal'
 import { TimeInput } from '../atoms/TimeInput'
-import { DefaultText, H5, Label } from '../atoms/Typography'
+import styled from 'styled-components'
 import { useGetRequiredSettings } from '../../hooks/useStatistics'
-import { IssueSelector } from './IssueSelector'
-import { v4 } from 'uuid'
-import { useOptions } from '../../hooks/useOptions'
 import { useJiraWorklog } from '../../hooks/useWorklogs'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { useOptions } from '../../hooks/useOptions'
+import { v4 } from 'uuid'
 
 const Row = styled.div`
     display: flex;
@@ -50,7 +51,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     const getRequiredSeconds = useGetRequiredSettings(year)
     const { actions } = useJiraWorklog()
 
-    const ref = useKeyBinding('Escape', onClose, false)
+    useKeyBinding('Escape', onClose, true)
 
     const [options, setOptions] = useState({
         issue: Object.values(issues)?.[0],
@@ -156,7 +157,7 @@ export const LogPeriodDialog: React.FC<{ onClose: () => void }> = ({ onClose }) 
     }
 
     return (
-        <Modal ref={ref} style={{ width: 320, minHeight: 180, height: 'unset' }}>
+        <Modal style={{ width: 320, minHeight: 180, height: 'unset' }}>
             <H5>{t('dialog.logPeriodMultipleDays')}</H5>
             <div style={{ padding: '0 8px', marginBottom: 8, width: '100%' }}>
                 <Line>{t('dialog.logDetails')}</Line>

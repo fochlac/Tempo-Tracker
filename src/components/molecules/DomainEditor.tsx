@@ -1,22 +1,23 @@
-import { useEffect, useState } from 'preact/hooks'
-import { useOptions } from '../../hooks/useOptions'
 import { Button, DestructiveButton } from '../atoms/Button'
+import { CACHE, VIEWS, atlassianRegexp, domainRegexp } from '../../constants/constants'
 import { ErrorInfoText, H5, InfoText, Label } from '../atoms/Typography'
-import { Input } from '../atoms/Input'
-import { useLocalized } from 'src/hooks/useLocalized'
 import { FlexColumn, FlexRow } from '../atoms/Layout'
-import { MandatoryStar } from '../atoms/MandatoryStar'
-import { Option } from '../atoms/Option'
-import { Modal } from '../atoms/Modal'
+import { useEffect, useState } from 'preact/hooks'
+
 import { ButtonBar } from '../atoms/ButtonBar'
+import { Input } from '../atoms/Input'
+import { MandatoryStar } from '../atoms/MandatoryStar'
+import { Modal } from '../atoms/Modal'
+import { Option } from '../atoms/Option'
 import { fetchSelf } from '../../utils/api'
-import { useCombindedRefs, useKeyBinding } from '../../hooks/useKeyBinding'
-import { atlassianRegexp, CACHE, domainRegexp, VIEWS } from '../../constants/constants'
 import { getDomains as getDomainsCloud } from 'src/utils/api/cloud-api'
 import { getDomains as getDomainsDataCenter } from 'src/utils/api/datacenter-api'
 import { isPopped } from 'src/utils/url'
 import { openAsTab } from 'src/utils/browser'
 import { useCache } from 'src/hooks/useCache'
+import { useKeyBinding } from '../../hooks/useKeyBinding'
+import { useLocalized } from 'src/hooks/useLocalized'
+import { useOptions } from '../../hooks/useOptions'
 
 const defaults = {
     domain: null,
@@ -77,6 +78,11 @@ export function DomainEditor() {
     }
 
     const onSave = () => {
+        if (!edit || domain.trim() === options.domain) {
+            onClose()
+            return
+        }
+
         async function checkPermissions(newOptions: Partial<Options>) {
             if (isFirefox) return true
             const domains = newOptions.instance === 'cloud' ? getDomainsCloud(newOptions) : getDomainsDataCenter(newOptions)
@@ -155,13 +161,11 @@ export function DomainEditor() {
         setEdit(false)
     }
 
-    const ref = useCombindedRefs<HTMLDivElement>(
-        useKeyBinding('Escape', onClose, false),
-        useKeyBinding('Enter', onSave, false)
-    )
+    useKeyBinding('Escape', onClose, true, !edit)
+    const saveRef = useKeyBinding('Enter', onSave, false, !edit)
 
     return (
-        <Option ref={ref} style={{ minWidth: 'calc(50% - 32px)'}}>
+        <Option style={{ minWidth: 'calc(50% - 32px)'}}>
             <Label>
                 {t('label.serverUrl')}
                 <MandatoryStar />
@@ -185,6 +189,7 @@ export function DomainEditor() {
                             <MandatoryStar />
                         </Label>
                         <Input
+                            ref={saveRef}
                             $error={error}
                             style={{ width: '100%', marginBottom: 4 }}
                             value={domain}
