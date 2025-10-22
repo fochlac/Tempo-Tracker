@@ -1,8 +1,9 @@
-import { useEffect } from 'preact/hooks'
 import { fetchSelf, hasPermissions } from '../utils/api'
-import { useSafeState } from './useSafeState'
+
+import { AUTH_TYPES } from '../constants/constants'
+import { useEffect } from 'preact/hooks'
 import { useOptions } from './useOptions'
-import { AUTH_TYPES } from 'src/constants/constants'
+import { useSafeState } from './useSafeState'
 
 const cacheInfo = {
     id: null,

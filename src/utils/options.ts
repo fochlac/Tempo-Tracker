@@ -1,5 +1,6 @@
-import { Themes } from 'src/constants/themes'
 import { AUTH_TYPES, THEMES, domainRegexp } from '../constants/constants'
+
+import { Themes } from '../constants/themes'
 import { fetchIssueList } from './api'
 
 export function hasValidJiraSettings(rawOptions: Partial<Options>) {
