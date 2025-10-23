@@ -1,5 +1,5 @@
-import { defaultOptions } from '../support/data'
 import { ACTIONS } from '../../src/constants/actions'
+import { defaultOptions } from '../support/data'
 
 describe('Service Worker - Datacenter API', () => {
     it('should register menus and listener, trigger no heartbeat and update badge', () => {
@@ -521,7 +521,9 @@ describe('Service Worker - Datacenter API', () => {
         cy.startSw()
         cy.wait(100)
         cy.window().then((win) => {
-            win.chrome.permissions.contains = () => { return Promise.resolve(false) }
+            win.chrome.permissions.contains = () => {
+                return Promise.resolve(false)
+            }
         })
         cy.window().then((win) => {
             console.log(win.chrome.permissions.contains)

@@ -1,6 +1,6 @@
-import { act, renderHook } from '@testing-library/preact'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { renderHook } from '@testing-library/preact'
 import { usePrevious } from '../usePrevious'
 
 describe('usePrevious', () => {
@@ -144,7 +144,6 @@ describe('usePrevious', () => {
     it('should work with complex objects', () => {
         const complex1 = { nested: { value: 1 }, array: [1, 2] }
         const complex2 = { nested: { value: 2 }, array: [3, 4] }
-        
         const { result, rerender } = renderHook(
             ({ value }) => usePrevious(value),
             { initialProps: { value: complex1 } }
