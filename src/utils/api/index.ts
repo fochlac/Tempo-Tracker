@@ -11,14 +11,14 @@ declare global {
     type PathGenerator = (params: unknown) => string
 
     interface PathDefinition {
-        url: string | PathGenerator;
-        type?: 'JIRA' | 'TEMPO';
+        url: string | PathGenerator
+        type?: 'JIRA' | 'TEMPO'
     }
 
     interface Self {
-        user: string;
-        displayName: string;
-        emailAddress: string;
+        user: string
+        displayName: string
+        emailAddress: string
     }
 }
 
@@ -32,13 +32,13 @@ function getApi(options: Options) {
     return options.instance === 'cloud' ? cloudApi : datacenterApi
 }
 
-export async function hasPermissions () {
-    const options = await DB.get('options') as Options
+export async function hasPermissions() {
+    const options = (await DB.get('options')) as Options
     const api = getApi(options)
     return api.checkPermissions(options).catch(() => false)
 }
 
-export async function requestPermission (options) {
+export async function requestPermission(options) {
     if (options.offlineMode) {
         return Promise.resolve(true)
     }
@@ -46,9 +46,9 @@ export async function requestPermission (options) {
     return getPermission({ origins: api.getDomains(options) })
 }
 
-export async function fetchSelf (customOptions?: Partial<Options>, useCredentials?: boolean) {
+export async function fetchSelf(customOptions?: Partial<Options>, useCredentials?: boolean) {
     const options = {
-        ...(await DB.get('options') as Options),
+        ...((await DB.get('options')) as Options),
         ...(customOptions || {})
     }
     if (options.offlineMode || options.domain) {
@@ -58,16 +58,16 @@ export async function fetchSelf (customOptions?: Partial<Options>, useCredential
     return Promise.reject('Missing options.')
 }
 
-export async function fetchIssueList () {
+export async function fetchIssueList() {
     const options = getOptions(await DB.get('options'))
-    if (!hasValidJiraSettings(options) || !options.useJqlQuery && !options.jqlQuery?.length) {
+    if (!hasValidJiraSettings(options) || (!options.useJqlQuery && !options.jqlQuery?.length)) {
         return Promise.reject('Missing options.')
     }
     const api = getApi(options)
     return api.fetchIssues(options, options.jqlQuery, 15)
 }
 
-export async function searchIssues (searchString): Promise<Issue[]> {
+export async function searchIssues(searchString): Promise<Issue[]> {
     const options = getOptions(await DB.get('options'))
     if (options.offlineMode) {
         return Promise.resolve([])
@@ -81,34 +81,34 @@ export async function searchIssues (searchString): Promise<Issue[]> {
     return api.fetchIssues(options, jql)
 }
 
-export async function fetchAllWorklogs (opts?: Options): Promise<Worklog[]> {
+export async function fetchAllWorklogs(opts?: Options): Promise<Worklog[]> {
     const endDate = Date.now() + 1000 * 60 * 60 * 24 * 6
     const startDate = Date.now() - 1000 * 60 * 60 * 24 * 6
     return fetchWorklogs(startDate, endDate, opts)
 }
 
-export async function fetchWorklogs (startDate: number, endDate: number, opts?: Options, simpleMapping?: boolean): Promise<Worklog[]> {
+export async function fetchWorklogs(startDate: number, endDate: number, opts?: Options, simpleMapping?: boolean): Promise<Worklog[]> {
     const options = opts || getOptions(await DB.get('options'))
     if (!hasValidJiraSettings(options)) return Promise.reject('Missing options.')
     const api = getApi(options)
     return api.fetchWorklogs(startDate, endDate, options, simpleMapping)
 }
 
-export async function writeWorklog (worklog: Partial<Worklog>, opts?: Options): Promise<Worklog> {
+export async function writeWorklog(worklog: Partial<Worklog>, opts?: Options): Promise<Worklog> {
     const options = opts || getOptions(await DB.get('options'))
     if (!hasValidJiraSettings(options)) return Promise.reject('Missing options.')
     const api = getApi(options)
     return api.writeWorklog(worklog, options)
 }
 
-export async function updateWorklog (worklog: Partial<Worklog>, opts?: Options): Promise<Worklog> {
+export async function updateWorklog(worklog: Partial<Worklog>, opts?: Options): Promise<Worklog> {
     const options = opts || getOptions(await DB.get('options'))
     if (!hasValidJiraSettings(options)) return Promise.reject('Missing options.')
     const api = getApi(options)
     return api.updateWorklog(worklog, options)
 }
 
-export async function deleteWorklog ({ id }: Partial<Worklog>, opts?: Options): Promise<void> {
+export async function deleteWorklog({ id }: Partial<Worklog>, opts?: Options): Promise<void> {
     const options = opts || getOptions(await DB.get('options'))
     if (!hasValidJiraSettings(options)) return Promise.reject('Missing options.')
 
@@ -125,7 +125,7 @@ export const createWorkMap = (year) => ({
     total: 0
 })
 
-export async function fetchWorkStatistics (year: number = new Date().getFullYear()): Promise<StatsMap> {
+export async function fetchWorkStatistics(year: number = new Date().getFullYear()): Promise<StatsMap> {
     const options = getOptions(await DB.get('options'))
     const locale = resolveLocale(options.locale)
     const [start, end] = getYearIsoWeeksPeriod(year, locale)
@@ -140,6 +140,7 @@ export async function fetchWorkStatistics (year: number = new Date().getFullYear
         const day = dateString(log.start)
         const weekNumber = getISOWeekNumber(log.start, locale)
         const month = new Date(log.start).getMonth() + 1
+        console.log(day, weekNumber, month, log.start, new Date(log.start))
         const timeSpentSeconds = (log.end - log.start) / 1000
 
         workMap.days[day] = (workMap.days[day] || 0) + timeSpentSeconds

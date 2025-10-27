@@ -124,21 +124,47 @@ export const getStartOfWeek1 = (year: number, locale: string) => {
     return start.setHours(0, 0, 0, 0) + minimalDaysOffset
 }
 
+// Helper to calculate day difference avoiding DST issues
+function getDaysDifference(fromTimestamp: number, toTimestamp: number): number {
+    const fromDate = new Date(fromTimestamp)
+    const toDate = new Date(toTimestamp)
+
+    // Set both to UTC midnight to avoid DST issues
+    const fromUTC = Date.UTC(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate())
+    const toUTC = Date.UTC(toDate.getFullYear(), toDate.getMonth(), toDate.getDate())
+
+    return Math.floor((toUTC - fromUTC) / dayInMs)
+}
+
 export function getISOWeekNumber(unixStamp: number, locale: string) {
     const date = new Date(unixStamp)
+    const year = date.getFullYear()
+    const startOfWeek1 = getStartOfWeek1(year, locale)
 
-    const startOfWeek1 = getStartOfWeek1(date.getFullYear(), locale)
-    const startOfWeek1NextYear = getStartOfWeek1(date.getFullYear() + 1, locale)
-    const weekNumber = Math.round((startOfWeek1NextYear - startOfWeek1) / weekInMs)
+    // If the date is before week 1 of this year, it last week of the previous year
+    if (unixStamp < startOfWeek1) {
+        return getISOWeeks(year - 1, locale)
+    }
 
-    return Math.ceil((unixStamp - startOfWeek1) / weekInMs) % weekNumber || weekNumber
+    // If the date is at or after week 1 of next year, it is the first week of the next year
+    if (unixStamp >= getStartOfWeek1(year + 1, locale)) {
+        return 1
+    }
+
+    const daysDiff = getDaysDifference(startOfWeek1, unixStamp)
+    return Math.floor(daysDiff / 7) + 1
 }
 
 export function getIsoWeekPeriod(y: number, n: number, locale: string) {
     const startOfWeek1 = getStartOfWeek1(y, locale)
-    const startOfWeekX = startOfWeek1 + (n - 1) * weekInMs
+    const startOfWeekX = new Date(startOfWeek1 + (n - 1) * weekInMs + 10 * hourInMs).setHours(0, 0, 0, 0)
 
-    return [new Date(startOfWeekX), new Date(startOfWeekX + weekInMs - 1)]
+    const startDate = new Date(startOfWeekX)
+    const endDate = new Date(startDate)
+    endDate.setDate(startDate.getDate() + 6)
+    endDate.setHours(23, 59, 59, 999)
+
+    return [startDate, endDate]
 }
 
 export function getYearIsoWeeksPeriod(y: number, locale: string) {
