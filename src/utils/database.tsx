@@ -94,12 +94,12 @@ export function DBProvider({ children }) {
             delete callbacks.current[key][id]
         },
         updateData: async (key, value) => {
+            Object.values(callbacks.current[key as keyof CallbackRef]).forEach((cb) => cb(value))
             if (typeof value === 'function') {
                 await DB.update(key, value)
             } else {
                 await DB.set(key, value)
             }
-            Object.values(callbacks.current[key as keyof CallbackRef]).forEach((cb) => cb(value))
         },
         checkUpdate: async (key: DB_KEYS) => {
             const value = await DB.get(key)

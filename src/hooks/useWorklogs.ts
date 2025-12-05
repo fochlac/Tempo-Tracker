@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { usePersitentFetch } from './usePersitedFetch'
 
-import { fetchAllWorklogs, fetchSelf } from '../utils/api'
-import { useEffect, useMemo } from 'preact/hooks'
+import { fetchAllWorklogs, fetchSelf, fetchWorklogs } from '../utils/api'
+import { useEffect, useMemo, useState } from 'preact/hooks'
 import { CACHE } from '../constants/constants'
 import { useCache } from './useCache'
 import { useDatabase, useDatabaseUpdate } from '../utils/database'
@@ -125,10 +125,40 @@ export function useFetchJiraWorklog() {
         worklogResult = usePersitentFetch<'WORKLOG_CACHE'>(fetchAllWorklogs, CACHE.WORKLOG_CACHE, [])
     }
 
+    const [loadingMore, setLoadingMore] = useState(false)
+    const [fetchedUntil, setFetchedUntil] = useState(Date.now() - 1000 * 60 * 60 * 24 * 30)
+    const [lastFetchCount, setLastFetchCount] = useState<number | null>(null)
+
+    const loadMore = async () => {
+        if (loadingMore || !worklogResult.updateData) return
+        setLoadingMore(true)
+        try {
+            const endDate = fetchedUntil
+            const startDate = endDate - 1000 * 60 * 60 * 24 * 30
+            const newLogs = await fetchWorklogs(startDate, endDate)
+
+            const currentData = worklogResult.data || []
+            const existingIds = new Set(currentData.map(l => l.id))
+            const uniqueNewLogs = newLogs.filter(l => !existingIds.has(l.id))
+
+            if (uniqueNewLogs.length > 0) {
+                await worklogResult.updateData((data) => {
+                    return [...(data || []), ...uniqueNewLogs]
+                })
+            }
+            setLastFetchCount(uniqueNewLogs.length)
+            setFetchedUntil(startDate)
+        } finally {
+            setLoadingMore(false)
+        }
+    }
+
     return {
         ...worklogResult,
         data,
-        actions
+        actions,
+        loadMore,
+        loadingMore,
+        lastFetchCount
     }
 }
-

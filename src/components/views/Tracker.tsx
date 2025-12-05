@@ -1,5 +1,5 @@
 import { AlertCircle, WifiOff } from 'preact-feather'
-import { useMemo, useState } from 'preact/hooks'
+import { useMemo, useState, useRef, useEffect } from 'preact/hooks'
 import styled from 'styled-components'
 import { useInsertWorklog } from '../../hooks/useInsertWorklog'
 import { useLogSync } from '../../hooks/useLogSync'
@@ -36,6 +36,7 @@ const List = styled.ul`
     padding: 0 8px;
     list-style: none;
     overflow-y: auto;
+    overflow-x: hidden;
     height: 100%;
     min-height: 350px;
 `
@@ -71,6 +72,22 @@ export const TrackerView: React.FC = () => {
     const { newWorklog, createNewWorklog } = useInsertWorklog()
     const [showPeriodDialog, setShowPeriodDialog] = useState(false)
     const remoteIssues = useJqlQueryResults() as LocalIssue[]
+    const { loadMore, loadingMore, lastFetchCount } = worklog
+    const loaderRef = useRef(null)
+
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !loadingMore && lastFetchCount !== 0) {
+                loadMore()
+            }
+        }, { threshold: 0.1 })
+
+        if (loaderRef.current) {
+            observer.observe(loaderRef.current)
+        }
+
+        return () => observer.disconnect()
+    }, [loaderRef, loadMore, loadingMore, lastFetchCount])
 
     const autosyncUpdate = () => !isFirefox && options.autosync && !self.error && startSync()
 
@@ -156,7 +173,7 @@ export const TrackerView: React.FC = () => {
                     </ErrorTooltipTop>
                 </Conditional>
             </H6>
-            <ProgressWrapper $visible={worklog.loading}>
+            <ProgressWrapper $visible={worklog.loading || loadingMore}>
                 <ProgressIndeterminate />
             </ProgressWrapper>
             <List style={{ minHeight: 440 - trackerRows * 32 }}>
@@ -193,6 +210,9 @@ export const TrackerView: React.FC = () => {
                         { list: [], day: { date: null, sum: 0 } }
                     ).list
                 }
+                <div ref={loaderRef} style={{ height: 40, margin: 10, textAlign: 'center', width: '100%' }}>
+                    <ActionLink disabled={loadingMore} onClick={loadMore}>{t('action.loadMore')}</ActionLink>
+                </div>
             </List>
             <Conditional enable={showPeriodDialog}>
                 <LogPeriodDialog onClose={() => {

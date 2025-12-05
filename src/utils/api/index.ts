@@ -82,8 +82,8 @@ export async function searchIssues(searchString): Promise<Issue[]> {
 }
 
 export async function fetchAllWorklogs(opts?: Options): Promise<Worklog[]> {
-    const endDate = Date.now() + 1000 * 60 * 60 * 24 * 6
-    const startDate = Date.now() - 1000 * 60 * 60 * 24 * 6
+    const endDate = Date.now() + 1000 * 60 * 60 * 24 * 30
+    const startDate = Date.now() - 1000 * 60 * 60 * 24 * 30
     return fetchWorklogs(startDate, endDate, opts)
 }
 

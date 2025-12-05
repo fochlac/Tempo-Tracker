@@ -15,6 +15,7 @@
     "action.export": "Exportar",
     "action.ignoreGap": "Ignorar intervalo",
     "action.login": "Iniciar sesión",
+    "action.loadMore": "Cargar más",
     "action.overwriteSettings": "Sobrescribir configuración",
     "action.refresh": "Actualizar",
     "action.reset": "Restablecer",

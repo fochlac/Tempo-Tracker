@@ -27,6 +27,7 @@ export const defaultOptions: Options = {
     token: 'testtoken',
     instance: 'datacenter',
     email: '',
+    offlineMode: false,
     ttToken: '',
     useJqlQuery: false,
     showComments: false,

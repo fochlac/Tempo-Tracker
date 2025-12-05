@@ -15,6 +15,7 @@
     "action.export": "Export",
     "action.ignoreGap": "Ignore Gap",
     "action.login": "Login",
+    "action.loadMore": "Load More",
     "action.overwriteSettings": "Overwrite Settings",
     "action.refresh": "Refresh",
     "action.reset": "Reset",
