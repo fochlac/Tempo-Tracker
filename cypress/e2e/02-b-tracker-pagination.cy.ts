@@ -62,7 +62,7 @@ describe('Tracking View - Pagination', () => {
         // Verify initial fetch count
         cy.get('@getWorklogsFiltered.all').then((calls) => {
             const initialCount = calls.length
-            expect(initialCount).to.be.at.least(1)
+            cy.wrap(initialCount).should('be.at.least', 1)
 
             // Consume any unconsumed calls (we already waited for one)
             for (let i = 1; i < initialCount; i++) {
@@ -77,11 +77,11 @@ describe('Tracking View - Pagination', () => {
             cy.wait('@getWorklogsFiltered').then((interception) => {
                 // Verify request parameters
                 const { from, to } = interception.request.body
-                expect(from).to.exist
-                expect(to).to.exist
+                cy.wrap(from).should('exist')
+                cy.wrap(to).should('exist')
 
                 // Verify response contains data
-                expect(interception.response.body).to.have.length.gt(0)
+                cy.wrap(interception.response.body).should('have.length.gt', 0)
 
                 // Advance time to allow DB polling to pick up the changes
                 // cy.get('@clock').invoke('tickAsync', 1000)

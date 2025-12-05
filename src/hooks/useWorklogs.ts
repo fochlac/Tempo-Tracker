@@ -138,8 +138,8 @@ export function useFetchJiraWorklog() {
             const newLogs = await fetchWorklogs(startDate, endDate)
 
             const currentData = worklogResult.data || []
-            const existingIds = new Set(currentData.map(l => l.id))
-            const uniqueNewLogs = newLogs.filter(l => !existingIds.has(l.id))
+            const existingIds = new Set(currentData.map((l) => l.id))
+            const uniqueNewLogs = newLogs.filter((l) => !existingIds.has(l.id))
 
             if (uniqueNewLogs.length > 0) {
                 await worklogResult.updateData((data) => {
