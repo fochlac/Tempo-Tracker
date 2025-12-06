@@ -8,7 +8,7 @@ export const viewDuck = {
         [ATOM_KEY]: getUrlParam('view') || VIEWS.TRACKER
     },
     actions: {
-        setView ({set}, view) {
+        setView({ set }, view) {
             if (Object.values(VIEWS).includes(view)) {
                 set({ [ATOM_KEY]: view })
             }

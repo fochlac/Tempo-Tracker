@@ -16,7 +16,7 @@ const ListRow = styled.li`
     cursor: pointer;
     align-items: center;
 `
-const Row = styled(ListRow)<{ $error: boolean }>`
+const Row = styled(ListRow)<{ $error: boolean; $synced: boolean; $conflict: boolean }>`
     padding: 4px 8px 0 8px;
     ${(props) => (props['$error'] ? 'border-left: solid 2px var(--destructive);' : '')}
     ${(props) => (props['$error'] ? 'background-color: var(--destructive-lightest);' : '')}

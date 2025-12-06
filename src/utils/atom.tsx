@@ -3,20 +3,16 @@ import { useContext, useCallback, useState, useRef, useEffect } from 'preact/hoo
 
 const AtomContext = createContext(undefined)
 
-export function Provider ({ children, atom }) {
+export function Provider({ children, atom }) {
     const { Provider } = AtomContext
-    return (
-        <Provider value={{ atom }}>
-            {children}
-        </Provider>
-    )
+    return <Provider value={{ atom }}>{children}</Provider>
 }
 
-function isObject (obj) {
+function isObject(obj) {
     return typeof obj === 'object' && Object.prototype.toString.call(obj) === '[object Object]'
 }
 
-function differ (mappedProps, nextMappedProps) {
+function differ(mappedProps, nextMappedProps) {
     if (mappedProps === nextMappedProps) {
         return false
     }
@@ -35,17 +31,17 @@ function differ (mappedProps, nextMappedProps) {
     return false
 }
 
-export function useActions () {
+export function useActions() {
     const { atom } = useContext(AtomContext)
     return atom.actions
 }
 
-export function useDispatch () {
+export function useDispatch() {
     const { atom } = useContext(AtomContext)
     return atom.dispatch
 }
 
-function invoke (ref) {
+function invoke(ref) {
     if (ref.current) {
         ref.current()
         ref.current = null
@@ -54,7 +50,7 @@ function invoke (ref) {
 
 let i = 0
 const nextOrder = () => ++i
-export function useSelector<T extends ((...args) => unknown)>(selectorFn: T) {
+export function useSelector<T extends (...args) => unknown>(selectorFn: T) {
     const { atom } = useContext(AtomContext)
 
     if (!atom) {
@@ -92,7 +88,7 @@ export function useSelector<T extends ((...args) => unknown)>(selectorFn: T) {
 
         onChange()
 
-        function onChange () {
+        function onChange() {
             if (didUnobserve) return
 
             invoke(cancelUpdate)
@@ -106,7 +102,7 @@ export function useSelector<T extends ((...args) => unknown)>(selectorFn: T) {
             })
         }
 
-        return function destroy () {
+        return function destroy() {
             didUnobserve = true
             unobserve()
             invoke(cancelUpdate)
@@ -116,7 +112,7 @@ export function useSelector<T extends ((...args) => unknown)>(selectorFn: T) {
     return mappedProps.current as ReturnType<T>
 }
 
-function getRequestAnimationFrame () {
+function getRequestAnimationFrame() {
     if (typeof window === 'undefined') {
         return (callback) => callback()
     }
@@ -125,29 +121,24 @@ function getRequestAnimationFrame () {
         return setTimeout(callback, 16)
     }
 
-    return (
-        window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        polyfill
-    )
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || polyfill
 }
 
-function getCancelAnimationFrame () {
+function getCancelAnimationFrame() {
     if (typeof window === 'undefined') {
         return () => {}
     }
     return window.cancelAnimationFrame || window.mozCancelAnimationFrame || clearTimeout || (() => {})
 }
 
-function raf (fn) {
+function raf(fn) {
     const requestAnimationFrame = getRequestAnimationFrame()
     const cancelAnimationFrame = getCancelAnimationFrame()
 
     let requested = false
     let reqId
 
-    return function rafed (...args) {
+    return function rafed(...args) {
         if (!requested) {
             requested = true
             reqId = requestAnimationFrame(() => {
@@ -158,7 +149,7 @@ function raf (fn) {
             })
         }
 
-        return function cancel () {
+        return function cancel() {
             cancelAnimationFrame(reqId)
             requested = false
         }

@@ -101,7 +101,7 @@ export const IssueSearchDialog: React.FC<Props> = ({ onSelect, onCancel, title }
             </FlexRow>
             <SearchFieldWrapper>
                 <Label>{t('dialog.issueSearch')}</Label>
-                <Input ref={searchInput} style={{ width: '100%' }} value={search} onChange={(e) => setSearch(e.target.value || '')} />
+                <Input ref={searchInput} style={{ width: '100%' }} value={search} onChange={(e) => setSearch(e.currentTarget.value || '')} />
                 {result?.isLoading && <ProgressIndeterminate />}
             </SearchFieldWrapper>
             <SearchResultList>

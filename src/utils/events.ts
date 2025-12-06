@@ -16,4 +16,3 @@ export function stopPropagation(fn?: (e) => void) {
         }
     }
 }
-

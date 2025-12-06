@@ -4,7 +4,7 @@ import { DB_KEYS } from '../constants/constants'
 import { DB } from './data-layer'
 import { v4 } from 'uuid'
 import { FlexRow } from '../components/atoms/Layout'
-import { useLocalized } from 'src/hooks/useLocalized'
+import { useLocalized } from '../hooks/useLocalized'
 
 const DBContext = createContext<Partial<DbHelper>>({})
 

@@ -4,13 +4,7 @@ describe('Tracking View - Header Actions', () => {
     it('should be possible to refresh', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
 
         cy.contains('li', 'Test2').should('be.visible')
 
@@ -24,13 +18,7 @@ describe('Tracking View - Header Actions', () => {
     it('should be possible to create a new log', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.get('form input[type="date"]').should('not.exist')
         cy.contains('h6', locale['tracker.trackingHistory']).contains('a', locale['tracker.newEntry']).click()
         cy.get('form input[type="date"]').should('be.visible')
@@ -58,13 +46,7 @@ describe('Tracking View - Header Actions', () => {
     it('should be possible to bulk create logs', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
 
         cy.contains('h6', locale['tracker.trackingHistory']).contains('a', locale['tracker.logMultiple']).click()
 
@@ -82,9 +64,18 @@ describe('Tracking View - Header Actions', () => {
 
         cy.contains('dialog', locale['dialog.logPeriodMultipleDays']).contains('div', locale['field.issue']).find('select').select('Test4')
 
-        cy.contains('dialog', locale['dialog.logPeriodMultipleDays']).contains('div', locale['field.hoursPerDay']).find('input').eq(0).should('have.value', '08').type('5')
+        cy.contains('dialog', locale['dialog.logPeriodMultipleDays'])
+            .contains('div', locale['field.hoursPerDay'])
+            .find('input')
+            .eq(0)
+            .should('have.value', '08')
+            .type('5')
 
-        cy.contains('dialog', locale['dialog.logPeriodMultipleDays']).contains('div', locale['field.hoursPerDay']).find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', locale['dialog.logPeriodMultipleDays'])
+            .contains('div', locale['field.hoursPerDay'])
+            .find('input')
+            .eq(1)
+            .should('have.value', '00')
 
         cy.contains('dialog', locale['dialog.logPeriodMultipleDays']).contains('button', locale['action.createWorklogs']).click()
 
@@ -101,18 +92,7 @@ describe('Tracking View - Header Actions', () => {
     it('should synchronize if unsynced logs exist', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        const callbacks = []
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                const index = callbacks.length
-                callbacks.push(() => {
-                    callback({ payload: { success: true } })
-                    callbacks[index] = undefined
-                })
-            }
-        })
+        cy.mockSendMessage(true)
 
         cy.injectUnsyncedWorklog({
             tempId: '123456789',

@@ -12,14 +12,13 @@ export function toWorktimeInfo(options: Options): (log: TemporaryWorklog) => Wor
         name: options.issues[log.issue.key]?.alias || `${log.issue.key}: ${log.issue.name}`
     })
 }
-export async function getTrackedTimes(startDate: number, endDate: number): Promise<{ workTimes: WorkTimeInfo[], options: Options }> {
+export async function getTrackedTimes(startDate: number, endDate: number): Promise<{ workTimes: WorkTimeInfo[]; options: Options }> {
     const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
     let logs
     if (isFirefox) {
-        const cache = await DB.get(DB_KEYS.WORKLOG_CACHE) as CacheObject<Worklog[]>
+        const cache = (await DB.get(DB_KEYS.WORKLOG_CACHE)) as CacheObject<Worklog[]>
         logs = cache?.data ?? []
-    }
-    else {
+    } else {
         logs = await fetchWorklogs(startDate, endDate)
     }
     const queue = ((await DB.get(DB_KEYS.UPDATE_QUEUE)) || []) as TemporaryWorklog[]

@@ -1,12 +1,12 @@
-import Log = Cypress.Log;
+import Log = Cypress.Log
 import { isIDBObjectStore } from './helpers'
 import { createDatabaseConnection } from './open-database'
 
-type StoreOperation = keyof Pick<IDBObjectStore, 'getAllKeys' | 'getAll'>;
+type StoreOperation = keyof Pick<IDBObjectStore, 'getAllKeys' | 'getAll'>
 type ConsolePropObject = {
-  result?: unknown;
-  error?: Error;
-};
+    result?: unknown
+    error?: Error
+}
 
 /**
  * List keys in store
@@ -21,9 +21,7 @@ type ConsolePropObject = {
 export function keys(store: IDBObjectStore): Cypress.Chainable<IDBValidKey[]> {
     const { log, consoleProps } = createMetadataLog('keys')
     if (!isIDBObjectStore(store)) {
-        const error = new Error(
-            'You tried to use the \'keys\' method without calling \'getObjectStore\' first'
-        )
+        const error = new Error("You tried to use the 'keys' method without calling 'getObjectStore' first")
         consoleProps.error = error
         log.error(error).end()
         throw error
@@ -57,9 +55,7 @@ export function keys(store: IDBObjectStore): Cypress.Chainable<IDBValidKey[]> {
 export function entries<T = unknown>(store: IDBObjectStore): Cypress.Chainable<T[]> {
     const { log, consoleProps } = createMetadataLog('entries')
     if (!isIDBObjectStore(store)) {
-        const error = new Error(
-            'You tried to use the \'entries\' method without calling \'getObjectStore\' first'
-        )
+        const error = new Error("You tried to use the 'entries' method without calling 'getObjectStore' first")
         consoleProps.error = error
         log.error(error).end()
         throw error
@@ -80,15 +76,9 @@ export function entries<T = unknown>(store: IDBObjectStore): Cypress.Chainable<T
     )
 }
 
-function getMetadata<T>(
-    db: IDBDatabase,
-    store: IDBObjectStore,
-    operation: StoreOperation
-): Promise<T[]> {
+function getMetadata<T>(db: IDBDatabase, store: IDBObjectStore, operation: StoreOperation): Promise<T[]> {
     return new Promise((resolve, reject) => {
-        const request: IDBRequest = db
-            .transaction(store.name, 'readwrite')
-            .objectStore(store.name)[operation]()
+        const request: IDBRequest = db.transaction(store.name, 'readwrite').objectStore(store.name)[operation]()
         request.onerror = (e) => {
             db.close()
             reject(e)
@@ -103,8 +93,8 @@ function getMetadata<T>(
 }
 
 function createMetadataLog(operation: 'keys' | 'entries'): {
-  log: Log;
-  consoleProps: ConsolePropObject;
+    log: Log
+    consoleProps: ConsolePropObject
 } {
     const consoleProps: ConsolePropObject = {}
     const log = Cypress.log({

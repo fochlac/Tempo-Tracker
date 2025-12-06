@@ -52,7 +52,7 @@ export const StatisticsView: React.FC = () => {
         data: { lifeTimeTotal, yearWeeksLifetime, lifeTimeMedianTop, lifeTimeMedianLow, overhourStats }
     } = useLifetimeStatistics(loading ? {} : { stats, year })
 
-    const updateOptionKey = (key) => (e) => actions.merge({ [key]: Number(e.target.value) })
+    const updateOptionKey = (key) => (e) => actions.merge({ [key]: Number(e.currentTarget.value) })
 
     return (
         <Body>

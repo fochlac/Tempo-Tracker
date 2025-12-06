@@ -11,11 +11,8 @@ function createObjectStoreInternal(
 
     if (isExistingStore) {
         store = database.transaction(storeName, 'readwrite').objectStore(storeName)
-    }
-    else {
-        store = options
-            ? database.createObjectStore(storeName, options)
-            : database.createObjectStore(storeName)
+    } else {
+        store = options ? database.createObjectStore(storeName, options) : database.createObjectStore(storeName)
     }
 
     return new Promise<IDBObjectStore>((resolve, reject) => {
@@ -72,25 +69,16 @@ export function createObjectStore(
         autoEnd: false
     })
     if (!isIDBDatabase(existingDatabase)) {
-        error = new Error(
-            'You tried to use the \'getObjectStore\' method without calling \'openIndexedDb\' first'
-        )
+        error = new Error("You tried to use the 'getObjectStore' method without calling 'openIndexedDb' first")
         log.error(error).end()
         throw error
     }
 
-    const objectStoreDb = isExistingStore
-        ? Promise.resolve(existingDatabase)
-        : createVersionUpdateDatabaseConnection(existingDatabase)
+    const objectStoreDb = isExistingStore ? Promise.resolve(existingDatabase) : createVersionUpdateDatabaseConnection(existingDatabase)
     return cy.wrap(
         objectStoreDb
             .then((versionUpdateDatabase: IDBDatabase) =>
-                createObjectStoreInternal(
-                    versionUpdateDatabase,
-                    storeName,
-                    options || null,
-                    isExistingStore
-                )
+                createObjectStoreInternal(versionUpdateDatabase, storeName, options || null, isExistingStore)
             )
             .then((store) => {
                 log.end()

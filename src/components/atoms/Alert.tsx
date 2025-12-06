@@ -42,11 +42,7 @@ export const Alert: React.FC<{ text: string; style? }> = ({ text, style }) => {
     )
 }
 
-export const InfoBox: React.FC<{ text: string; className?: string; onClick?: () => void }> = ({
-    text,
-    onClick,
-    className
-}) => {
+export const InfoBox: React.FC<{ text: string; className?: string; onClick?: () => void }> = ({ text, onClick, className }) => {
     return (
         <InfoBoxWrapper onClick={onClick} className={className}>
             <StyledInfo />

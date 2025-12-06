@@ -5,13 +5,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should register menus and listener, trigger no heartbeat and update badge', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.window()
@@ -45,13 +39,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should trigger heartbeat and update badge on init if tracking exists', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.setTracking({
             issue: { key: 'Test-1', id: 'id', name: 'Name', alias: 'Alias', color: 'testcolor' },
             start: new Date('2020-10-08T14:00:00.000Z').getTime()
@@ -60,11 +48,7 @@ describe('Service Worker - Datacenter API', () => {
 
         cy.window().its('chrome.badge.backgroundColor').should('equal', 'testcolor')
         cy.window().its('chrome.badge.text').should('equal', '1:00')
-        cy.window()
-            .its('chrome.badge.title')
-            .should('include', 'Alias')
-            .should('include', '1:00')
-            .should('include', 'Tempo Tracker')
+        cy.window().its('chrome.badge.title').should('include', 'Alias').should('include', '1:00').should('include', 'Tempo Tracker')
 
         cy.getTracking()
             .its('heartbeat')
@@ -75,13 +59,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should create gap if heartbeat exists and has gap of more than 30 min', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.setTracking({
             issue: { key: 'Test-1', id: 'id', name: 'Name', alias: 'Alias', color: 'testcolor' },
             start: new Date('2020-10-08T14:00:00.000Z').getTime(),
@@ -107,13 +85,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should register alarm', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.window()
@@ -126,13 +98,7 @@ describe('Service Worker - Datacenter API', () => {
     it('should react to an alarm when having an active tracking', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.injectUnsyncedWorklog({
             tempId: '123456789',
             start: new Date('2020-10-07 08:00').getTime(),
@@ -187,13 +153,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.injectUnsyncedWorklog({
@@ -220,7 +180,7 @@ describe('Service Worker - Datacenter API', () => {
 
         cy.wait('@insertWorklog')
         cy.get('@insertWorklog.1').its('request.body').should('deep.equal', {
-            originId: null,
+            originId: -1,
             worker: 'testid',
             comment: 'comment',
             started: '2020-10-07 08:00:00.0',
@@ -229,9 +189,7 @@ describe('Service Worker - Datacenter API', () => {
         })
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
-        cy.getWorklogCache().its('data').should('have.length', 1)
-            .its(0)
-            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data').should('have.length', 1).its(0).should('have.property', 'start', 1602050400000)
         cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
@@ -244,13 +202,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.injectUnsyncedWorklog({
@@ -294,9 +246,7 @@ describe('Service Worker - Datacenter API', () => {
         })
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
-        cy.getWorklogCache().its('data').should('have.length', 1)
-            .its(0)
-            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data').should('have.length', 1).its(0).should('have.property', 'start', 1602050400000)
         cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
@@ -309,13 +259,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
         const unsyncedLog = {
             id: '123456789',
@@ -376,9 +320,7 @@ describe('Service Worker - Datacenter API', () => {
         })
         cy.get('@moveWorklog.all').should('have.length', 0)
         cy.getUnsyncedWorklogs().should('have.length', 0)
-        cy.getWorklogCache().its('data').should('have.length', 1)
-            .its(0)
-            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data').should('have.length', 1).its(0).should('have.property', 'start', 1602050400000)
         cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
@@ -391,13 +333,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.injectUnsyncedWorklog({
@@ -436,13 +372,7 @@ describe('Service Worker - Datacenter API', () => {
             },
             true
         )
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.injectUnsyncedWorklog({
@@ -468,23 +398,13 @@ describe('Service Worker - Datacenter API', () => {
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
 
-        cy.window()
-            .its('chrome.messages')
-            .should('have.length', 1)
-            .its('0.message')
-            .should('deep.equal', ACTIONS.FLUSH_UPDATES.response(true))
+        cy.window().its('chrome.messages').should('have.length', 1).its('0.message').should('deep.equal', ACTIONS.FLUSH_UPDATES.response(true))
     })
 
     it('should update badge on UPDATE_BADGE message', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.window().its('chrome.badge.backgroundColor').should('equal', '#028A0F')
@@ -502,31 +422,20 @@ describe('Service Worker - Datacenter API', () => {
 
         cy.window().its('chrome.badge.backgroundColor').should('equal', 'testcolor')
         cy.window().its('chrome.badge.text').should('equal', '1:00')
-        cy.window()
-            .its('chrome.badge.title')
-            .should('include', 'Alias')
-            .should('include', '1:00')
-            .should('include', 'Tempo Tracker')
+        cy.window().its('chrome.badge.title').should('include', 'Alias').should('include', '1:00').should('include', 'Tempo Tracker')
 
-        cy.window()
-            .its('chrome.messages')
-            .should('have.length', 1)
-            .its('0.message')
-            .should('deep.equal', ACTIONS.UPDATE_BADGE.response(true))
+        cy.window().its('chrome.messages').should('have.length', 1).its('0.message').should('deep.equal', ACTIONS.UPDATE_BADGE.response(true))
     })
 
     it('should wait for workday permissions on  AWAIT_WORKDAY_PERMISSION message', () => {
         cy.networkMocks()
-        cy.openWithOptions({...defaultOptions, disableWorkdaySync: true}, true)
+        cy.openWithOptions({ ...defaultOptions, disableWorkdaySync: true }, true)
         cy.startSw()
         cy.wait(100)
         cy.window().then((win) => {
             win.chrome.permissions.contains = () => {
                 return Promise.resolve(false)
             }
-        })
-        cy.window().then((win) => {
-            console.log(win.chrome.permissions.contains)
         })
         cy.sendMessage(ACTIONS.AWAIT_WORKDAY_PERMISSION.create())
 
@@ -540,14 +449,16 @@ describe('Service Worker - Datacenter API', () => {
         })
         cy.wait(600)
         cy.window().its('chrome.scripting.scripts').should('have.length', 1)
-        cy.window().its('chrome.scripting.scripts.0').should('deep.equal', {
-            id: 'workday-script',
-            js: ['workday-script.js'],
-            persistAcrossSessions: true,
-            matches: ['https://wd5.myworkday.com/*'],
-            runAt: 'document_start',
-            allFrames: true
-        })
+        cy.window()
+            .its('chrome.scripting.scripts.0')
+            .should('deep.equal', {
+                id: 'workday-script',
+                js: ['workday-script.js'],
+                persistAcrossSessions: true,
+                matches: ['https://wd5.myworkday.com/*'],
+                runAt: 'document_start',
+                allFrames: true
+            })
         cy.getOptions().should('have.property', 'disableWorkdaySync', false)
     })
 
@@ -561,27 +472,20 @@ describe('Service Worker - Datacenter API', () => {
             start: new Date('2020-10-08T14:00:00.000Z').getTime()
         })
 
-        cy.window()
-            .its('chrome.commandListeners')
-            .as('hotkeyListeners')
-            .should('have.length', 1)
+        cy.window().its('chrome.commandListeners').as('hotkeyListeners').should('have.length', 1)
 
-        cy.window()
-            .its('chrome.commandListeners').invoke(0, 'stop_tracking')
+        cy.window().its('chrome.commandListeners').invoke(0, 'stop_tracking')
 
         cy.getTracking().should('deep.equal', { issue: null, start: null })
 
-        cy.window()
-            .its('chrome.commandListeners').invoke(0, 'start_tracking_1')
+        cy.window().its('chrome.commandListeners').invoke(0, 'start_tracking_1')
 
         cy.getTracking().its('issue.alias').should('equal', 'Test2')
 
-        cy.window()
-            .its('chrome.commandListeners').invoke(0, 'start_tracking_2')
+        cy.window().its('chrome.commandListeners').invoke(0, 'start_tracking_2')
         cy.getTracking().its('issue.alias').should('equal', 'TE3: a very long testname 3')
 
-        cy.window()
-            .its('chrome.commandListeners').invoke(0, 'start_tracking_3')
+        cy.window().its('chrome.commandListeners').invoke(0, 'start_tracking_3')
         cy.getTracking().its('issue.alias').should('equal', 'Test4')
     })
 })

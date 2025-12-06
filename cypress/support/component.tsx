@@ -4,7 +4,9 @@ import { Themes } from '../../src/constants/themes'
 import { createTheme } from '../../src/utils/theme'
 
 declare global {
-    interface Window { isFirefox: boolean }
+    interface Window {
+        isFirefox: boolean
+    }
 }
 
 window.isFirefox = false
@@ -14,6 +16,7 @@ Cypress.Commands.add('mount', (component, options = {}) => {
         <>
             <CssVariables theme={createTheme(Themes.DARK)} />
             {component}
-        </>
-        , options)
+        </>,
+        options
+    )
 })

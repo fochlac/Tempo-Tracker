@@ -52,7 +52,9 @@ export const App: React.FC = () => {
     const theme = useMemo(() => {
         try {
             return createTheme(themeObject)
-        } catch (e) {}
+        } catch {
+            // Fallback to default theme if custom theme is invalid
+        }
         return createTheme(Themes.DEFAULT)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [...Object.values(themeObject)])

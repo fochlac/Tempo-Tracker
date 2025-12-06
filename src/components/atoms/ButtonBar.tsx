@@ -7,11 +7,11 @@ export const ButtonBar = styled.nav`
     justify-content: flex-end;
     width: 100%;
 
-    &> button {
+    & > button {
         margin-right: 8px;
         margin-left: 0;
     }
-    &> button:last-child {
+    & > button:last-child {
         margin-right: 0;
     }
 `

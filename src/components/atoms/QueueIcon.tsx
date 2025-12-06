@@ -36,10 +36,12 @@ const White = styled.div`
     margin: 0 5px;
 `
 
-export function QueueIcon ({ style }) {
-    return <Wrapper style={style}>
-        <Arrow size={14} />
-        <White />
-        <Box size={16} />
-    </Wrapper>
+export function QueueIcon({ style }) {
+    return (
+        <Wrapper style={style}>
+            <Arrow size={14} />
+            <White />
+            <Box size={16} />
+        </Wrapper>
+    )
 }

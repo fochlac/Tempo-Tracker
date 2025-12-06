@@ -10,12 +10,14 @@ const defaultState = {
 export const editCommentDuck = {
     defaultState,
     actions: {
-        setEditComment ({set}, {issue}) {
-            set({ [ATOM_KEY]: {
-                issue
-            } })
+        setEditComment({ set }, { issue }) {
+            set({
+                [ATOM_KEY]: {
+                    issue
+                }
+            })
         },
-        resetEditComment ({set}) {
+        resetEditComment({ set }) {
             set(defaultState)
         }
     },

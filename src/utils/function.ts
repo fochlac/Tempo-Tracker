@@ -1,5 +1,4 @@
-
-export function runOnce (fn) {
+export function runOnce(fn) {
     let hasRun = false
     return (...args) => {
         if (!hasRun) {
@@ -9,6 +8,6 @@ export function runOnce (fn) {
     }
 }
 
-export function invert (fn) {
+export function invert(fn) {
     return (...args) => !fn(...args)
 }

@@ -26,13 +26,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
     it('should be possible to delete logs and to cancel deletion for unsynced logs', () => {
         cy.networkMocks()
         cy.openWithCookieOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Delete Worklog"]').click()
 
@@ -80,13 +74,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
     it('should be possible to edit comments for worklogs', () => {
         cy.networkMocks()
         cy.openWithCookieOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title*="Edit Comment"]').click()
 
@@ -131,13 +119,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
     it('should be possible to start edit worklogs and cancel without persisted changes', () => {
         cy.networkMocks()
         cy.openWithCookieOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
 
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Edit Worklog"]').click()
 
@@ -172,13 +154,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
     it('should be possible to edit worklogs', () => {
         cy.networkMocks()
         cy.openWithCookieOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Edit Worklog"]').click()
 
         cy.get('li:has(input[type="date"])').as('activeRow').should('have.length', 1)
@@ -228,7 +204,10 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
 
         cy.get('li').filter(':contains(09/10/20)').filter(':contains(Test4)').find('button[title="Discard Changes"]').click()
 
-        cy.contains('dialog', 'Confirm').should('contain.text', 'Discard changes for worklog').contains('button', locale['action.discardChanges']).click()
+        cy.contains('dialog', 'Confirm')
+            .should('contain.text', 'Discard changes for worklog')
+            .contains('button', locale['action.discardChanges'])
+            .click()
 
         cy.get('li').filter(':contains(09/10/20)').filter(':contains(Test4)').should('have.length', 0)
 
@@ -246,13 +225,7 @@ describe('Tracking View - Worklog Entries - Datacenter Api - cookieAuth', () => 
     it('should be possible to search for worklog during edit', () => {
         cy.networkMocks()
         cy.openWithCookieOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.get('li').filter(':contains(08/10/20)').filter(':contains(Test2)').find('button[title="Edit Worklog"]').click()
 
         cy.get('li:has(input[type="date"])').as('activeRow').should('have.length', 1)

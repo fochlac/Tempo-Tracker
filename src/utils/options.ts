@@ -52,7 +52,7 @@ export function getOptions(options: Partial<Options>): Options {
         updatedDomain = `${protocol}${baseDomain}`
     }
 
-    const cleanIssues = Array.isArray(issues) ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {}) : issues ?? {}
+    const cleanIssues = Array.isArray(issues) ? issues.reduce((obj, i) => ({ ...obj, [i]: '' }), {}) : (issues ?? {})
     const cleanIssueOrder = Array.isArray(issueOrder) ? issueOrder.filter((key) => cleanIssues[key]) : []
     const selectedTheme = THEMES[theme] ? theme : THEMES.DEFAULT
 

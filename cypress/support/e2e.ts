@@ -18,6 +18,7 @@ declare global {
             mount(jsx: unknown): void
 
             fakeTimers(now: number)
+            mockSendMessage(withDelayedCallbacks?: boolean): void
             sendMessage(action: Action)
             startApp()
             startSw()
@@ -38,13 +39,12 @@ declare global {
 
         interface ApplicationWindow {
             chrome: {
-                runtime: { sendMessage?: (message: unknown, callback: (status: unknown) => void) => void },
-                // eslint-disable-next-line @typescript-eslint/ban-types
-                messageListeners: Function[],
+                runtime: { sendMessage?: (message: unknown, callback: (status: unknown) => void) => void }
+                messageListeners: ((...args: unknown[]) => unknown)[]
                 permissions: {
                     contains: (options: unknown, cb: (granted: boolean) => void) => void
                 }
-            },
+            }
             messages: unknown[]
         }
     }

@@ -75,19 +75,24 @@ export const TrackerView: React.FC = () => {
     const { loadMore, loadingMore, lastFetchCount } = worklog
     const loaderRef = useRef(null)
 
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !loadingMore && lastFetchCount !== 0) {
-                loadMore()
-            }
-        }, { threshold: 0.1 })
+    const loaderVisible = !!loaderRef.current
 
-        if (loaderRef.current) {
-            observer.observe(loaderRef.current)
-        }
+    useEffect(() => {
+        if (!loaderVisible || !loaderRef.current) return
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && !loadingMore && lastFetchCount !== 0) {
+                    loadMore()
+                }
+            },
+            { threshold: 0.1 }
+        )
+        
+        observer.observe(loaderRef.current)
 
         return () => observer.disconnect()
-    }, [loaderRef, loadMore, loadingMore, lastFetchCount])
+    }, [loaderRef, loadMore, loadingMore, lastFetchCount, loaderVisible])
 
     const autosyncUpdate = () => !isFirefox && options.autosync && !self.error && startSync()
 
@@ -210,15 +215,21 @@ export const TrackerView: React.FC = () => {
                         { list: [], day: { date: null, sum: 0 } }
                     ).list
                 }
-                <div ref={loaderRef} style={{ height: 40, margin: 10, textAlign: 'center', width: '100%' }}>
-                    <ActionLink disabled={loadingMore} onClick={loadMore}>{t('action.loadMore')}</ActionLink>
-                </div>
+                {!worklog.loading && (
+                    <div ref={loaderRef} style={{ height: 40, margin: 10, textAlign: 'center', width: '100%' }}>
+                        <ActionLink disabled={loadingMore} onClick={loadMore}>
+                            {t('action.loadMore')}
+                        </ActionLink>
+                    </div>
+                )}
             </List>
             <Conditional enable={showPeriodDialog}>
-                <LogPeriodDialog onClose={() => {
-                    setShowPeriodDialog(false)
-                    autosyncUpdate()
-                }} />
+                <LogPeriodDialog
+                    onClose={() => {
+                        setShowPeriodDialog(false)
+                        autosyncUpdate()
+                    }}
+                />
             </Conditional>
             <Conditional enable={Boolean(commentLog)}>
                 <CommentDialog log={commentLog} onSave={autosyncUpdate} />

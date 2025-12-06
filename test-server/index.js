@@ -108,12 +108,17 @@ httpServer.listen(3000, () => {
 })
 
 // Start the HTTPS server
-const sslCert = selfsigned.generate(null, { days: 1, keySize: 4096, algorithm: 'sha256' }) // Certificate valid for 1 day
-const sslOptions = {
-    key: sslCert.private,
-    cert: sslCert.cert
+async function startHttpsServer() {
+
+    const sslCert = await selfsigned.generate(null, { days: 1, keySize: 4096, algorithm: 'sha256' }) // Certificate valid for 1 day
+    const sslOptions = {
+        key: sslCert.private,
+        cert: sslCert.cert
+    }
+    const httpsServer = https.createServer(sslOptions, app)
+    httpsServer.listen(3443, () => {
+        console.log('HTTPS server running on: https://localhost:3443/')
+    })
 }
-const httpsServer = https.createServer(sslOptions, app)
-httpsServer.listen(3443, () => {
-    console.log('HTTPS server running on: https://localhost:3443/')
-})
+
+startHttpsServer()

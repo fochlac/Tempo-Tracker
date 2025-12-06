@@ -12,13 +12,7 @@ describe('Service Worker - Cloud API', () => {
             },
             true
         )
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.injectUnsyncedWorklog({
@@ -51,9 +45,7 @@ describe('Service Worker - Cloud API', () => {
         cy.wait(100)
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
-        cy.getWorklogCache().its('data').should('have.length', 1)
-            .its(0)
-            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data').should('have.length', 1).its(0).should('have.property', 'start', 1602050400000)
         cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
@@ -67,13 +59,7 @@ describe('Service Worker - Cloud API', () => {
             },
             true
         )
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.injectUnsyncedWorklog({
@@ -107,9 +93,7 @@ describe('Service Worker - Cloud API', () => {
         cy.wait(100)
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
-        cy.getWorklogCache().its('data').should('have.length', 1)
-            .its(0)
-            .should('have.property', 'start', 1602050400000)
+        cy.getWorklogCache().its('data').should('have.length', 1).its(0).should('have.property', 'start', 1602050400000)
         cy.getWorklogCache().its('data.0').should('have.property', 'end', 1602064800000)
     })
 
@@ -123,13 +107,7 @@ describe('Service Worker - Cloud API', () => {
             },
             true
         )
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.startSw()
 
         cy.injectUnsyncedWorklog({
@@ -157,10 +135,6 @@ describe('Service Worker - Cloud API', () => {
 
         cy.getUnsyncedWorklogs().should('have.length', 0)
 
-        cy.window()
-            .its('chrome.messages')
-            .should('have.length', 1)
-            .its('0.message')
-            .should('deep.equal', ACTIONS.FLUSH_UPDATES.response(true))
+        cy.window().its('chrome.messages').should('have.length', 1).its('0.message').should('deep.equal', ACTIONS.FLUSH_UPDATES.response(true))
     })
 })

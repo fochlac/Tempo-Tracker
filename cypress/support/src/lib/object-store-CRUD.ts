@@ -26,7 +26,7 @@ type ConsolePropObject = {
 export function readItem<T = unknown>(store: unknown, key: IDBValidKey | IDBKeyRange): Cypress.Chainable<T> {
     const { log, consoleProps } = createCRUDLog('read', key)
     if (!isIDBObjectStore(store)) {
-        const error = new Error('You tried to use the \'readItem\' method without calling \'getObjectStore\' first')
+        const error = new Error("You tried to use the 'readItem' method without calling 'getObjectStore' first")
         consoleProps.error = error
         log.error(error).end()
         throw error
@@ -62,7 +62,7 @@ export function readItem<T = unknown>(store: unknown, key: IDBValidKey | IDBKeyR
 export function deleteItem(store: IDBObjectStore, key: IDBValidKey): Cypress.Chainable<IDBObjectStore> {
     const { log, consoleProps } = createCRUDLog('delete', key)
     if (!isIDBObjectStore(store)) {
-        const error = new Error('You tried to use the \'deleteItem\' method without calling \'getObjectStore\' first')
+        const error = new Error("You tried to use the 'deleteItem' method without calling 'getObjectStore' first")
         consoleProps.error = error
         log.error(error).end()
         throw error
@@ -169,7 +169,10 @@ function makeCreateUpdateDeleteRequest<T, O = undefined>(
             .transaction(store.name, 'readwrite')
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            .objectStore(store.name)[operation](...commandArguments)
+            .objectStore(store.name)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            [operation](commandArguments[0], commandArguments[1])
         request.onerror = (e) => {
             db.close()
             reject(e)
@@ -183,7 +186,10 @@ function makeCreateUpdateDeleteRequest<T, O = undefined>(
     })
 }
 
-function createCRUDLog(operation: SetItemOperation | ReadDeleteOperation, key: IDBValidKey | IDBKeyRange | null): { log: Log; consoleProps: ConsolePropObject } {
+function createCRUDLog(
+    operation: SetItemOperation | ReadDeleteOperation,
+    key: IDBValidKey | IDBKeyRange | null
+): { log: Log; consoleProps: ConsolePropObject } {
     const consoleProps: ConsolePropObject = {
         key: key || 'no key provided'
     }

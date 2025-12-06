@@ -43,7 +43,6 @@ describe('useLocalized', () => {
 
         // Mock translate function to return the key with some basic translations
         mockTranslate.mockImplementation((key: string, vars?: Record<string, string>) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const translations: Record<string, string> = {
                 'time.invalid': 'Invalid time',
                 'time.today': 'Today',

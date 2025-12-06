@@ -11,7 +11,7 @@ const Dialog = styled.dialog`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    
+
     ::-webkit-scrollbar-thumb {
         background: var(--contrast-light);
     }
@@ -35,13 +35,15 @@ const Overlay = styled.div`
     align-items: center;
 `
 interface Props {
-    style?: React.CSSProperties;
-    children: React.ReactNode;
+    style?: React.CSSProperties
+    children: React.ReactNode
 }
-export const Modal = forwardRef<HTMLElement, Props>(({ children, style }, ref) => {
+export const Modal = forwardRef<HTMLDialogElement, Props>(({ children, style }, ref) => {
     return createPortal(
         <Overlay>
-            <Dialog open style={style} ref={ref}>{children}</Dialog>
+            <Dialog open style={style} ref={ref}>
+                {children}
+            </Dialog>
         </Overlay>,
         document.querySelector('.modal')
     )

@@ -26,7 +26,7 @@ export function WorkingDayOption() {
     const { data: options, actions } = useOptions()
 
     const updateDay = (day) => (e) => {
-        if (e.target.checked) {
+        if (e.currentTarget.checked) {
             actions.merge({ days: [day].concat(options.days) })
         } else {
             actions.merge({ days: options.days.filter((v) => v !== day) })

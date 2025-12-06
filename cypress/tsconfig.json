@@ -1,11 +1,35 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "lib": ["es5", "dom"],
+        "target": "es2015",
+        "lib": ["es2015", "dom"],
         "jsx": "react-jsx",
-        "types": ["cypress", "node"],
+        "jsxImportSource": "preact",
+        "baseUrl": "..",
+        "moduleResolution": "node",
+        "paths": {
+            "react": ["./node_modules/preact/compat/"],
+            "react-dom": ["./node_modules/preact/compat/"],
+            "src/*": ["./src/*"]
+        },
+        "types": ["node", "chrome", "firefox-webext-browser"],
         "resolveJsonModule": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "downlevelIteration": true,
+        "typeRoots": [
+            "../node_modules/@types",
+            "../node_modules/cypress",
+            "../types"
+        ]
     },
-    "include": ["**/*.ts", "**/*.tsx", "../types/**/*.d.ts"]
+    "include": [
+        "./fixtures/*.ts",
+        "./support/*.ts",
+        "./support/*.tsx",
+        "./component/*.tsx",
+        "./e2e/*.ts",
+        "../types/**/*.d.ts"
+    ],
+    "exclude": ["node_modules", "./support/src/**/*"]
 }

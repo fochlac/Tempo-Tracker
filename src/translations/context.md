@@ -55,7 +55,7 @@
 - **header.tempoTracker**: "Tempo-Tracker" - main application title in header
 - **hotkey.ctrlShift0**: "CTRL+SHIFT+0" - key combination for stop tracking
 - **hotkey.ctrlShift1**: "CTRL+SHIFT+1" - key combination for first issue tracking
-- **hotkey.ctrlShift2**: "CTRL+SHIFT+2" - key combination for second issue tracking  
+- **hotkey.ctrlShift2**: "CTRL+SHIFT+2" - key combination for second issue tracking
 - **hotkey.ctrlShift3**: "CTRL+SHIFT+3" - key combination for third issue tracking
 - **hotkey.stopTracking**: "Stop Tracking" - table header for stop tracking hotkey
 - **hotkey.trackFirstIssue**: "Track First Issue" - table header for first issue tracking hotkey
@@ -95,7 +95,7 @@
 - **legal.copyright**: "Copyright" - legal section header
 - **legal.copyrightText1**: Legal text about German copyright law and usage permissions
 - **legal.copyrightText2**: Legal text about private use limitations and unauthorized use violations
-- **legal.linksAccountability**: "Accountability for links" - legal section header  
+- **legal.linksAccountability**: "Accountability for links" - legal section header
 - **legal.linksText1**: Legal disclaimer about external link responsibility
 - **legal.linksText2**: Legal text about link removal policy
 - **legal.personalData**: "Use of Your Personal Data" - privacy section header
@@ -131,7 +131,7 @@
 - **nav.previous**: "Previous" - generic previous button for navigation controls (DiagramNavigation)
 - **nav.previousMonth**: "Previous month" - tooltip for navigation to previous month in daily diagram
 - **nav.previousWeeks**: "Previous weeks" - tooltip for navigation to previous weeks in weekly diagram
-- **nav.statistics**: "Statistics" - navigation link to statistics view  
+- **nav.statistics**: "Statistics" - navigation link to statistics view
 - **nav.tracker**: "Tracker" - navigation link to tracker view
 - **options.accessToken**: "Access Token" - option label in authentication method dropdown
 - **options.appOptions**: "App Options" - section header for general application settings

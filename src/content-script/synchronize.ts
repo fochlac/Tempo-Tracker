@@ -3,7 +3,7 @@ import { triggerBackgroundAction } from '../utils/background'
 import { deleteWorklog, fetchAllWorklogs, updateWorklog, writeWorklog } from '../utils/api'
 import { syncTemplate } from './sync-template'
 
-function renderOverlay (queue: TemporaryWorklog[]) {
+function renderOverlay(queue: TemporaryWorklog[]) {
     const div = document.createElement('div')
     div.classList.add('tempo_tracker_sync-overlay')
     div.innerHTML = syncTemplate
@@ -13,18 +13,18 @@ function renderOverlay (queue: TemporaryWorklog[]) {
     document.documentElement.append(div)
 
     return {
-        setProgress (index: number) {
+        setProgress(index: number) {
             progress.innerHTML = `${index} of ${queue.length} completed`
-            bar.value = Math.round((index) / queue.length * 100)
+            bar.value = Math.round((index / queue.length) * 100)
         },
-        removeOverlay () {
+        removeOverlay() {
             div.remove()
         }
     }
 }
 
 let isSyncing = false
-async function synchronize (queue: TemporaryWorklog[], setProgress, options) {
+async function synchronize(queue: TemporaryWorklog[], setProgress, options) {
     isSyncing = true
     const stack = [...queue]
     setProgress(0)
@@ -39,20 +39,17 @@ async function synchronize (queue: TemporaryWorklog[], setProgress, options) {
                 if (log.tempId) {
                     const newLog = await writeWorklog(log, options)
                     result = { ...newLog, tempId: log.tempId }
-                }
-                else if (log.id && log.delete) {
+                } else if (log.id && log.delete) {
                     await deleteWorklog(log, options)
                     result = log
                     deleted = true
-                }
-                else if (log.id) {
+                } else if (log.id) {
                     result = await updateWorklog(log, options)
                 }
                 console.info(`Synchronized log item: ${JSON.stringify(log)}`)
                 await triggerBackgroundAction(ACTIONS.QUEUE_ITEM_SYNCHRONIZED, result, deleted)
             }
-        }
-        catch (e) {
+        } catch (e) {
             console.info(`Error while synchronizing log item: ${JSON.stringify(log)}`)
             await triggerBackgroundAction(ACTIONS.UNRESERVE_QUEUE_ITEM, log)
             console.log(e)
@@ -62,14 +59,14 @@ async function synchronize (queue: TemporaryWorklog[], setProgress, options) {
     isSyncing = false
 }
 
-async function fetchWorklogs (options) {
+async function fetchWorklogs(options) {
     isSyncing = true
     const worklogs = await fetchAllWorklogs(options)
     await triggerBackgroundAction(ACTIONS.STORE_RECENT_WORKLOGS, worklogs)
     isSyncing = false
 }
 
-export async function checkWorklogQueue (options) {
+export async function checkWorklogQueue(options) {
     const shouldClose = new URLSearchParams(location.search).get('__tt-close') === 'true'
     if (isSyncing) {
         return
@@ -84,15 +81,13 @@ export async function checkWorklogQueue (options) {
             if (forceFetch) {
                 await fetchWorklogs(options)
             }
-        }
-        finally {
+        } finally {
             removeOverlay()
             if (typeof window !== 'undefined' && shouldClose) {
                 window.close()
             }
         }
-    }
-    else if (Date.now() - Number(sessionStorage.getItem('tempo-tracker-last-fetch') || 0) > 1000 * 60 * 5) {
+    } else if (Date.now() - Number(sessionStorage.getItem('tempo-tracker-last-fetch') || 0) > 1000 * 60 * 5) {
         sessionStorage.setItem('tempo-tracker-last-fetch', String(Date.now()))
         fetchWorklogs(options)
     }

@@ -8,14 +8,11 @@ describe('Statistics View - Tracking Area', () => {
         cy.fakeTimers(baseDate.getTime() + dayInMs)
         cy.setOptions(defaultOptions)
         cy.startApp()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
+        cy.get('@getWorklogs.all').should('have.length', 1)
         cy.contains('header', locale['header.tempoTracker']).should('be.visible').contains('a', locale['nav.statistics']).should('be.exist').click()
+
+        cy.get('@getWorklogs.all').should('have.length', 2)
 
         cy.contains('div[style]', '40:00').should('exist').find('span[style]').should('not.exist')
         cy.contains('div[style]', '40:00').should('exist').contains('legend', '41').should('exist')
@@ -58,7 +55,11 @@ describe('Statistics View - Tracking Area', () => {
             .should('have.css', 'background-color', 'rgba(0, 0, 0, 0)')
             .should('have.css', 'color', 'rgb(241, 241, 241)')
 
-        cy.contains('h6', locale['statistics.weeklyHours']).contains('a', locale['action.refresh']).should('exist').should('have.css', 'color', 'rgb(88, 163, 253)').click()
+        cy.contains('h6', locale['statistics.weeklyHours'])
+            .contains('a', locale['action.refresh'])
+            .should('exist')
+            .should('have.css', 'color', 'rgb(88, 163, 253)')
+            .click()
 
         cy.get('@getWorklogs.all').should('have.length', 5)
         cy.get('@getWorklogs.5')
@@ -169,13 +170,7 @@ describe('Statistics View - Tracking Area', () => {
         cy.setOptions(defaultOptions)
         cy.startApp()
 
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.contains('header', locale['header.tempoTracker']).should('be.visible').contains('a', locale['nav.statistics']).should('be.exist').click()
 
         cy.contains('div', locale['label.totalHours']).find('p').should('contain.text', '40h 00m')

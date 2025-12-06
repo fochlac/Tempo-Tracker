@@ -29,6 +29,8 @@ export function useFetchData<D>(fetchFunction: () => Promise<D>, initialData?: D
     }, [])
 
     return {
-        data, error, loading
+        data,
+        error,
+        loading
     }
 }

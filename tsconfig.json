@@ -15,15 +15,19 @@
             "react": ["./node_modules/preact/compat/"],
             "react-dom": ["./node_modules/preact/compat/"]
         },
-        "typeRoots": ["node_modules/@types", "node_modules/cypress/types", "./types", "node_modules/web-ext-types/global"]
+        "noEmit": true,
+        "types": ["chrome", "firefox-webext-browser"],
+        "typeRoots": [
+            "node_modules/@types",
+            "./types",
+            "node_modules/cypress/types"
+        ]
     },
     "include": [
         "./src/**/*.jsx",
         "./src/**/*.js",
         "./src/**/*.tsx",
         "./src/**/*.ts",
-        "./types",
-        "node_modules/web-ext-types/global",
-        "cypress/component/ConfirmDialog.spec.tsx"
+        "./types"
     ]
 }

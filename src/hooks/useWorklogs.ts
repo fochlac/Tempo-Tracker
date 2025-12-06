@@ -45,7 +45,10 @@ export function useJiraWorklog() {
     const data = useMemo(() => {
         const updateMap = {}
         queue?.forEach((log) => log.id && (updateMap[log.id] = true))
-        return [].concat(queue, logs?.filter((log) => !updateMap[log.id]))
+        return [].concat(
+            queue,
+            logs?.filter((log) => !updateMap[log.id])
+        )
     }, [queue, logs])
 
     return {
@@ -55,11 +58,9 @@ export function useJiraWorklog() {
             async delete(worklog, updateOnly = false) {
                 if (worklog.tempId) {
                     await updateQueue(queue.filter((log) => log.tempId !== worklog.tempId))
-                }
-                else if (worklog.id && updateOnly) {
+                } else if (worklog.id && updateOnly) {
                     await updateQueue(queue.filter((log) => log.id !== worklog.id))
-                }
-                else if (worklog.id) {
+                } else if (worklog.id) {
                     await updateQueue(queue.filter((log) => log.id !== worklog.id).concat([{ ...worklog, synced: false, delete: true }]))
                 }
             },
@@ -87,8 +88,7 @@ export function useFetchJiraWorklog() {
         const fetchLogsFF = async (force?: boolean) => {
             try {
                 await fetchSelf()
-            }
-            catch (e) {
+            } catch {
                 return
             }
             if (!force && validUntil > Date.now()) {
@@ -100,15 +100,14 @@ export function useFetchJiraWorklog() {
                     return
                 }
             }
-            options.actions.merge({ forceFetch: true })
-                .then(async () => {
-                    const url = options.data.domain.split('/rest')[0]
-                    tab = await browser?.tabs?.create({ url: `${url}/secure/Dashboard.jspa?__tt-close=true`, active: false })
-                    while (await checkTabExistence(tab.id)) {
-                        await new Promise((resolve) => setTimeout(() => resolve(null), 1000))
-                    }
-                    tab = null
-                })
+            options.actions.merge({ forceFetch: true }).then(async () => {
+                const url = options.data.domain.split('/rest')[0]
+                tab = await browser?.tabs?.create({ url: `${url}/secure/Dashboard.jspa?__tt-close=true`, active: false })
+                while (await checkTabExistence(tab.id)) {
+                    await new Promise((resolve) => setTimeout(() => resolve(null), 1000))
+                }
+                tab = null
+            })
         }
 
         useEffect(() => {
@@ -120,8 +119,7 @@ export function useFetchJiraWorklog() {
             loading: false,
             forceFetch: () => fetchLogsFF(true)
         }
-    }
-    else {
+    } else {
         worklogResult = usePersitentFetch<'WORKLOG_CACHE'>(fetchAllWorklogs, CACHE.WORKLOG_CACHE, [])
     }
 
@@ -148,6 +146,8 @@ export function useFetchJiraWorklog() {
             }
             setLastFetchCount(uniqueNewLogs.length)
             setFetchedUntil(startDate)
+        } catch (e) {
+            console.error(e)
         } finally {
             setLoadingMore(false)
         }

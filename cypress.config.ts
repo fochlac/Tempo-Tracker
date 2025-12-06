@@ -1,13 +1,13 @@
 import { defineConfig } from 'cypress'
-import {createEsbuildDevServer} from 'cypress-devserver-esbuild'
-import * as alias from 'esbuild-plugin-alias'
+import { createEsbuildDevServer } from 'cypress-devserver-esbuild'
+import alias from 'esbuild-plugin-alias'
 
 export default defineConfig({
     e2e: {},
     component: {
         devServer: createEsbuildDevServer({
             logLevel: 'info',
-            outdir: 'dist/',
+            outdir: 'dist-cypress/',
             bundle: true,
             sourcemap: true,
             target: 'chrome90',
@@ -15,11 +15,11 @@ export default defineConfig({
             jsxFragment: 'Fragment',
             inject: ['./build/helmet.js'],
             plugins: [
-                /* @ts-expect-error-next-line */
                 alias({
                     react: require.resolve('./node_modules/preact/compat'),
                     'react-dom/test-utils': require.resolve('./node_modules/preact/test-utils'),
                     'react-dom': require.resolve('./node_modules/preact/compat'),
+                    'react-dom/client': require.resolve('./node_modules/preact/compat/client'),
                     'react/jsx-runtime': require.resolve('./node_modules/preact/jsx-runtime')
                 })
             ]

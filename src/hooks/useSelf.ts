@@ -17,7 +17,7 @@ export function useSelf() {
     const { data: externalOptions, actions } = useOptions()
 
     const checkDomainToken = async (override?: Partial<Options>) => {
-        const { token, domain, user, authenticationType, instance, offlineMode } = {...externalOptions, ...(override ?? {})}
+        const { token, domain, user, authenticationType, instance, offlineMode } = { ...externalOptions, ...(override ?? {}) }
 
         if (offlineMode) {
             setError(null)
@@ -55,18 +55,15 @@ export function useSelf() {
                     return
                 }
                 setError('DEFAULT')
-            }
-            catch (e) {
+            } catch (e) {
                 if (cacheInfo.id !== id) return
                 if (e?.status === 401) {
                     setError(cookieAuth ? 'COOKIE_AUTH_MISSING' : 'TOKEN')
-                }
-                else {
+                } else {
                     setError('DEFAULT')
                 }
             }
-        }
-        else {
+        } else {
             setError('DEFAULT')
         }
     }

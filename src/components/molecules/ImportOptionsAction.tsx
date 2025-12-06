@@ -40,7 +40,7 @@ export function ImportOptionsAction() {
             } else {
                 actions.set(getOptions(importData))
             }
-            e.target.value = ''
+            e.currentTarget.value = ''
         }
     }
 

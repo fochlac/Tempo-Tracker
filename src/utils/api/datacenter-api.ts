@@ -71,7 +71,7 @@ const createWorklogPayload = (options: Options, worklog: Partial<TemporaryWorklo
     const { end, start, issue, id, comment } = worklog
     const seconds = Math.round((end - start) / 1000)
     return {
-        originId: Number(id) ?? -1,
+        originId: id?.length ? Number(id) : -1,
         worker: options.user,
         comment: comment || null,
         started: `${dateString(start)} ${timeStringFull(start)}`,

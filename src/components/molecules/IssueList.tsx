@@ -69,20 +69,20 @@ const IssueRow: React.FC<IssueRowProps> = ({ issue, setDelIssue, index, showColo
     const handleAliasChange = (issueKey) => (e) => {
         const newIssues = {
             ...options.issues,
-            [issueKey]: { ...options.issues[issueKey], alias: e.target.value }
+            [issueKey]: { ...options.issues[issueKey], alias: e.currentTarget.value }
         }
         actions.merge({ issues: newIssues })
     }
     const handleColorChange = (issueKey) => (e) => {
         const newIssues = {
             ...options.issues,
-            [issueKey]: { ...options.issues[issueKey], color: e.target.value }
+            [issueKey]: { ...options.issues[issueKey], color: e.currentTarget.value }
         }
         actions.merge({ issues: newIssues })
     }
 
     return (
-        <IssueRowWrapper ref={setNodeRef} {...attributes} style={{ transform: CSS.Transform.toString(transform) }}>
+        <IssueRowWrapper ref={setNodeRef} {...(attributes as { role: 'option' })} style={{ transform: CSS.Transform.toString(transform) }}>
             <DragWrapper {...listeners} ref={setActivatorNodeRef}>
                 <DragHandle />
             </DragWrapper>

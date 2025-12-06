@@ -10,9 +10,7 @@ import { setDatabaseInternal } from './alias-setup'
  *
  * @returns IDBDatabase
  */
-export function createVersionUpdateDatabaseConnection(
-    openDatabase: IDBDatabase
-): Promise<IDBDatabase> {
+export function createVersionUpdateDatabaseConnection(openDatabase: IDBDatabase): Promise<IDBDatabase> {
     let error: Event | undefined
     let databaseVersion: number
     const databaseName = openDatabase.name

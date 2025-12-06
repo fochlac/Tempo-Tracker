@@ -10,6 +10,7 @@ describe('Options view & initial setup', () => {
 
     beforeEach(() => {
         cy.intercept(`${serverDomain}**/*`, (req) => req.reply(404))
+        cy.intercept('POST', `${serverDomain}/rest/tempo-timesheets/4/worklogs/search`, []).as('getWorklogsFiltered')
         cy.intercept(serverDomain, (req) => req.reply('<http><body>content</body></http>', { 'Content-Type': 'text/html; charset=UTF-8' }))
         cy.origin(serverDomain, { args: { domain: serverDomain.replace('https://jira.', '') } }, ({ domain }) => {
             cy.visit('/')
@@ -140,11 +141,13 @@ describe('Options view & initial setup', () => {
         cy.contains('dialog', locale['dialog.selectServerUrl']).contains('button', locale['action.save']).click()
 
         cy.get('@myself.all').should('have.length', 1)
-        cy.contains('div', locale['label.serverUrl']).find('input').should('be.visible').should('have.value', serverDomain)
+        cy.contains('div', locale['label.serverUrl']).find('input').as('serverUrlInput')
+        cy.get('@serverUrlInput').should('be.visible').should('have.value', serverDomain)
 
         cy.getOptions().its('domain').should('equal', serverDomain)
 
-        cy.contains('div', locale['options.personalAccessToken']).find('input').should('be.visible').should('have.value', '')
+        cy.contains('div', locale['options.personalAccessToken']).find('input').as('tokenInput')
+        cy.get('@tokenInput').should('be.visible').should('have.value', '')
 
         cy.contains('div', locale['options.user']).should('be.visible')
 
@@ -160,7 +163,7 @@ describe('Options view & initial setup', () => {
         })
 
         const testtoken = 'testtoken123'
-        cy.contains('div', locale['options.personalAccessToken']).find('input').type(testtoken, { delay: 100 }).should('have.value', testtoken)
+        cy.get('@tokenInput').type(testtoken, { delay: 100 }).should('have.value', testtoken)
 
         cy.get('@clock').invoke('tick', 2000)
 
@@ -169,7 +172,8 @@ describe('Options view & initial setup', () => {
         cy.get('@myself.2').its('request.headers').should('have.property', 'authorization', `Bearer ${testtoken}`)
         cy.get('@myself.2').its('request.headers').should('not.have.property', 'cookie', 'test=cookie')
 
-        cy.contains('div', locale['options.user']).click().find('input').should('have.value', 'Testuser (test1)')
+        cy.contains('div', locale['options.user']).click().find('input').as('userInput')
+        cy.get('@userInput').should('have.value', 'Testuser (test1)')
 
         cy.wait(100)
 
@@ -180,8 +184,8 @@ describe('Options view & initial setup', () => {
         cy.intercept('https://jira.test.com/rest/api/2/myself', { displayName: 'Testuser', key: 'test1' }).as('myself2')
 
         cy.contains('div', locale['options.authenticationMethod']).find('select').select(locale['options.cookie'])
-        cy.contains('div', locale['options.user']).find('input').should('have.value', 'Testuser ()')
-        cy.contains('div', locale['options.user']).find('input').should('have.value', 'Testuser (test1)')
+        cy.get('@userInput').should('have.value', 'Testuser ()')
+        cy.get('@userInput').should('have.value', 'Testuser (test1)')
 
         cy.get('@myself2.all').should('have.length', 1)
         cy.get('@myself2.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
@@ -191,7 +195,7 @@ describe('Options view & initial setup', () => {
 
         cy.contains('button', locale['options.refreshUserInfo']).click()
 
-        cy.contains('div', locale['options.user']).find('input').should('have.value', 'Testuser (test3)')
+        cy.get('@userInput').should('have.value', 'Testuser (test3)')
 
         cy.get('@myself2.all').should('have.length', 2)
         cy.get('@myself2.2').its('request.headers').should('have.property', 'cookie', 'test=cookie')
@@ -251,19 +255,20 @@ describe('Options view & initial setup', () => {
         cy.get('@pickerAll.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
         cy.get('@pickerAll.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
 
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('li', 'ARCHTE-6').should('be.visible')
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('li', 'TE-12').should('be.visible')
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).find('li').should('have.length', 2)
+        cy.get('.modal').contains('dialog', locale['action.addIssue']).as('addIssueDialog')
+        cy.get('@addIssueDialog').contains('li', 'ARCHTE-6').should('be.visible')
+        cy.get('@addIssueDialog').contains('li', 'TE-12').should('be.visible')
+        cy.get('@addIssueDialog').find('li').should('have.length', 2)
 
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('div', locale['dialog.issueSearch']).find('input').type('2')
+        cy.get('@addIssueDialog').contains('div', locale['dialog.issueSearch']).find('input').type('2')
 
         cy.get('@picker.1').its('request.headers').should('have.property', 'cookie', 'test=cookie')
         cy.get('@picker.1').its('request.headers').should('not.have.property', 'authorization', `Bearer ${testtoken}`)
 
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).find('li').should('have.length', 1)
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('li', 'ARCHTE-6').should('not.exist')
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('li', 'TE-12').should('be.visible').click()
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).should('not.exist')
+        cy.get('@addIssueDialog').find('li').should('have.length', 1)
+        cy.get('@addIssueDialog').contains('li', 'ARCHTE-6').should('not.exist')
+        cy.get('@addIssueDialog').contains('li', 'TE-12').should('be.visible').click()
+        cy.get('@addIssueDialog').should('not.exist')
 
         cy.contains('div', locale['label.trackedIssues']).find('li').should('have.length', 1)
         cy.contains('div', locale['label.trackedIssues'])
@@ -323,22 +328,23 @@ describe('Options view & initial setup', () => {
 
         cy.getOptions().its('useJqlQuery').should('equal', true)
 
-        cy.contains('div', locale['label.customJqlQuery']).should('be.visible').find('textarea').type('test123', { delay: 100 })
+        cy.contains('div', locale['label.customJqlQuery']).as('jqlQueryDiv')
+        cy.get('@jqlQueryDiv').should('be.visible').find('textarea').type('test123', { delay: 100 })
 
         cy.intercept('https://jira.test.com/rest/api/2/search?*', []).as('search2')
 
-        cy.contains('div', locale['label.customJqlQuery']).contains('a', locale['action.testQuery']).click()
+        cy.get('@jqlQueryDiv').contains('a', locale['action.testQuery']).click()
         cy.wait('@search2').its('request.url').should('contain', 'jql=test123')
 
-        cy.contains('div', locale['label.customJqlQuery'])
+        cy.get('@jqlQueryDiv')
             .find('select')
             .should('be.visible')
             .should('contain.text', locale['label.jqlTemplates'])
             .select(locale['jql.recentAssigned'])
 
-        cy.contains('div', locale['label.customJqlQuery']).should('be.visible').find('textarea').should('contain.value', 'assignee was currentUser()')
+        cy.get('@jqlQueryDiv').should('be.visible').find('textarea').should('contain.value', 'assignee was currentUser()')
 
-        cy.contains('div', locale['label.customJqlQuery']).contains('a', locale['action.testQuery']).click()
+        cy.get('@jqlQueryDiv').contains('a', locale['action.testQuery']).click()
 
         cy.wait('@search2').its('request.url').should('contain', 'jql=assignee+was+currentUser')
 
@@ -413,10 +419,14 @@ describe('Options view & initial setup', () => {
         cy.getOptions().its('email').should('equal', 'test@test.com')
 
         cy.contains('div', locale['options.personalAccessToken']).should('not.exist')
-        cy.contains('div', locale['options.emailAddress']).should('exist').find('input').should('be.visible').should('have.value', 'test@test.com')
-        cy.contains('div', locale['options.apiToken']).should('exist').first().find('input').should('be.visible').should('have.value', '')
-        cy.contains('div', locale['options.tempoApiToken']).should('exist').find('input').should('be.visible').should('have.value', '')
-        cy.contains('div', locale['options.user']).should('exist').find('input').should('be.visible').should('have.value', 'test1')
+        cy.contains('div', locale['options.emailAddress']).find('input').as('emailInput')
+        cy.get('@emailInput').should('be.visible').should('have.value', 'test@test.com')
+        cy.contains('div', locale['options.apiToken']).first().find('input').as('apiTokenInput')
+        cy.get('@apiTokenInput').should('be.visible').should('have.value', '')
+        cy.contains('div', locale['options.tempoApiToken']).find('input').as('ttTokenInput')
+        cy.get('@ttTokenInput').should('be.visible').should('have.value', '')
+        cy.contains('div', locale['options.user']).find('input').as('userInput')
+        cy.get('@userInput').should('be.visible').should('have.value', 'test1')
 
         cy.contains('div', locale['options.apiToken']).first().contains('a', locale['options.generateApiToken']).should('be.visible').click()
 
@@ -433,7 +443,7 @@ describe('Options view & initial setup', () => {
         })
 
         const testtoken = 'testtoken123'
-        cy.contains('div', locale['options.apiToken']).first().find('input').type(testtoken, { delay: 100 }).should('have.value', testtoken)
+        cy.get('@apiTokenInput').type(testtoken, { delay: 100 }).should('have.value', testtoken)
 
         cy.get('@clock').invoke('tick', 2000)
 
@@ -441,12 +451,13 @@ describe('Options view & initial setup', () => {
 
         cy.get('@myself.2').its('request.headers').should('have.property', 'authorization', 'Basic dGVzdEB0ZXN0LmNvbTp0ZXN0dG9rZW4xMjM=')
 
-        cy.contains('div', locale['options.user']).click().find('input').should('have.value', 'Testuser (test1)')
+        cy.contains('div', locale['options.user']).click()
+        cy.get('@userInput').should('have.value', 'Testuser (test1)')
 
         cy.getOptions().its('token').should('equal', testtoken)
 
         const testTTtoken = 'testTT123'
-        cy.contains('div', locale['options.tempoApiToken']).find('input').type(testTTtoken, { delay: 100 }).should('have.value', testTTtoken)
+        cy.get('@ttTokenInput').type(testTTtoken, { delay: 100 }).should('have.value', testTTtoken)
 
         cy.getOptions().its('ttToken').should('equal', testTTtoken)
 
@@ -499,15 +510,16 @@ describe('Options view & initial setup', () => {
             .find('input')
             .type('TE-1', { delay: 100 })
 
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('li', 'ARCHTE-6').should('be.visible')
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('li', 'TE-12').should('be.visible')
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).find('li').should('have.length', 2)
+        cy.get('.modal').contains('dialog', locale['action.addIssue']).as('addIssueDialog')
+        cy.get('@addIssueDialog').contains('li', 'ARCHTE-6').should('be.visible')
+        cy.get('@addIssueDialog').contains('li', 'TE-12').should('be.visible')
+        cy.get('@addIssueDialog').find('li').should('have.length', 2)
 
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('div', locale['dialog.issueSearch']).find('input').type('2')
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).find('li').should('have.length', 1)
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('li', 'ARCHTE-6').should('not.exist')
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).contains('li', 'TE-12').should('be.visible').click()
-        cy.get('.modal').contains('dialog', locale['action.addIssue']).should('not.exist')
+        cy.get('@addIssueDialog').contains('div', locale['dialog.issueSearch']).find('input').type('2')
+        cy.get('@addIssueDialog').find('li').should('have.length', 1)
+        cy.get('@addIssueDialog').contains('li', 'ARCHTE-6').should('not.exist')
+        cy.get('@addIssueDialog').contains('li', 'TE-12').should('be.visible').click()
+        cy.get('@addIssueDialog').should('not.exist')
 
         cy.contains('div', locale['label.trackedIssues']).find('li').should('have.length', 1)
         cy.contains('div', locale['label.trackedIssues'])
@@ -621,14 +633,15 @@ describe('Options view & initial setup', () => {
         const badServerUrl = 'https://jira.nonexistent.com/rest'
         const serverUrl = 'https://jira.atlassian.com/rest'
         const serverDomain = 'https://jira.atlassian.com'
-        cy.contains('dialog', locale['dialog.changeServerUrl']).find('input').clear().type(badServerUrl, { delay: 100 })
+        cy.contains('dialog', locale['dialog.changeServerUrl']).as('changeServerDialog')
+        cy.get('@changeServerDialog').find('input').clear().type(badServerUrl, { delay: 100 })
 
-        cy.contains('dialog', locale['dialog.changeServerUrl']).contains('button', locale['action.save']).click()
+        cy.get('@changeServerDialog').contains('button', locale['action.save']).click()
 
         cy.wait('@myselfBad')
         cy.wait(100)
 
-        cy.contains('dialog', locale['dialog.changeServerUrl'])
+        cy.get('@changeServerDialog')
             .find('input')
             .should('be.visible')
             .closest('div')
@@ -636,7 +649,7 @@ describe('Options view & initial setup', () => {
             .contains(locale['error.domainNotFound'])
             .should('exist')
 
-        cy.contains('dialog', locale['dialog.changeServerUrl'])
+        cy.get('@changeServerDialog')
             .find('input')
             .clear()
             .type(serverUrl, { delay: 100 })
@@ -645,9 +658,9 @@ describe('Options view & initial setup', () => {
             .contains(locale['error.domainNotFound'])
             .should('not.exist')
 
-        cy.contains('dialog', locale['dialog.changeServerUrl']).contains('button', locale['action.save']).click()
+        cy.get('@changeServerDialog').contains('button', locale['action.save']).click()
 
-        cy.contains('dialog', locale['dialog.changeServerUrl']).should('not.exist')
+        cy.get('@changeServerDialog').should('not.exist')
 
         cy.getOptions().its('user').should('equal', 'test1-cloud')
         cy.getOptions().its('token').should('equal', '')
@@ -694,7 +707,8 @@ describe('Options view & initial setup', () => {
         const serverUrl = 'https://jira.test.com/rest'
         const serverDomain = 'https://jira.test.com'
 
-        cy.contains('dialog', locale['dialog.changeServerUrl'])
+        cy.contains('dialog', locale['dialog.changeServerUrl']).as('changeServerDialog')
+        cy.get('@changeServerDialog')
             .find('input')
             .clear()
             .type(serverUrl, { delay: 100 })
@@ -702,9 +716,9 @@ describe('Options view & initial setup', () => {
             .contains(locale['error.domainNotFound'])
             .should('not.exist')
 
-        cy.contains('dialog', locale['dialog.changeServerUrl']).contains('button', locale['action.save']).click()
+        cy.get('@changeServerDialog').contains('button', locale['action.save']).click()
 
-        cy.contains('dialog', locale['dialog.changeServerUrl']).should('not.exist')
+        cy.get('@changeServerDialog').should('not.exist')
 
         cy.getOptions().its('user').should('equal', 'test1-datacenter')
         cy.getOptions().its('token').should('equal', '')
@@ -788,33 +802,40 @@ describe('Options view & initial setup', () => {
         cy.contains('div', locale['theme.diagramBarColor']).find('input').first().should('have.value', Themes.DEFAULT.diagramm)
         cy.contains('div', locale['theme.diagramOverhourColor']).find('input').first().should('have.value', Themes.DEFAULT.diagrammGreen)
 
-        cy.contains('div', locale['theme.background']).find('input').first().clear().type('gree')
-        cy.contains('div', locale['theme.background']).find('input').first().should('have.value', 'gree')
+        cy.contains('div', locale['theme.background']).find('input').first().as('background')
+        cy.get('@background').clear()
+        cy.get('@background').type('gree')
+        cy.get('@background').should('have.value', 'gree')
         cy.contains('div', locale['theme.background']).find('input').eq(1).should('have.value', '#f7f8fb')
         cy.get('main').should('have.css', 'background-color', 'rgb(247, 248, 251)')
-        cy.contains('div', locale['theme.background']).find('input').first().type('n')
+        cy.get('@background').type('n')
         cy.get('main').should('have.css', 'background-color', 'rgb(0, 128, 0)')
         cy.contains('div', locale['theme.background']).find('input').eq(1).should('have.value', '#008000')
 
-        cy.contains('div', locale['theme.fontColor']).find('input').first().clear().type('#ff')
-        cy.contains('div', locale['theme.fontColor']).find('input').first().should('have.value', '#ff')
+        cy.contains('div', locale['theme.fontColor']).find('input').first().as('fontColor')
+        cy.get('@fontColor').clear().type('#ff')
+        cy.get('@fontColor').should('have.value', '#ff')
         cy.contains('div', locale['theme.fontColor']).find('input').eq(1).should('have.value', '#1b1928')
         cy.get('main').should('have.css', 'color', 'rgb(27, 25, 40)')
-        cy.contains('div', locale['theme.fontColor']).find('input').first().type('0')
+        cy.get('@fontColor').type('0')
         cy.contains('div', locale['theme.fontColor']).find('input').eq(1).should('have.value', '#ffff00')
         cy.get('main').should('have.css', 'color', 'rgb(255, 255, 0)')
 
-        cy.contains('div', locale['theme.linkColor']).find('input').first().clear().type('#f')
-        cy.contains('div', locale['theme.linkColor']).find('input').first().should('have.value', '#f')
+        cy.contains('div', locale['theme.linkColor']).find('input').first().as('linkColor')
+        cy.get('@linkColor').clear().type('#f')
+        cy.get('@linkColor').should('have.value', '#f')
         cy.contains('div', locale['theme.linkColor']).find('input').eq(1).should('have.value', '#1e6bf7')
         cy.get('a').should('have.css', 'color', 'rgb(30, 107, 247)')
-        cy.contains('div', locale['theme.linkColor']).find('input').first().type('00')
+        cy.get('@linkColor').type('00')
         cy.get('a').should('have.css', 'color', 'rgb(255, 0, 0)')
         cy.contains('div', locale['theme.linkColor']).find('input').eq(1).should('have.value', '#ff0000')
 
-        cy.contains('div', locale['theme.negativeColor']).find('input').first().clear().type('#fafa00')
-        cy.contains('div', locale['theme.diagramBarColor']).find('input').first().clear().type('#fa0000')
-        cy.contains('div', locale['theme.diagramOverhourColor']).find('input').first().clear().type('#fa00fa')
+        cy.contains('div', locale['theme.negativeColor']).find('input').first().as('negativeColor')
+        cy.get('@negativeColor').clear().type('#fafa00')
+        cy.contains('div', locale['theme.diagramBarColor']).find('input').first().as('diagramBarColor')
+        cy.get('@diagramBarColor').clear().type('#fa0000')
+        cy.contains('div', locale['theme.diagramOverhourColor']).find('input').first().as('diagramOverhourColor')
+        cy.get('@diagramOverhourColor').clear().type('#fa00fa')
 
         cy.getOptions().its('customTheme').should('deep.equal', {
             background: '#008000',

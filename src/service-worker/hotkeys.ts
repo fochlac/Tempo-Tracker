@@ -4,14 +4,11 @@ import { v4 } from 'uuid'
 import { updateBadgeTitle } from './badge'
 import { getOptions } from 'src/utils/options'
 
-async function stopTracking () {
-    const [
-        { issue, start },
-        queue = []
-    ] = await Promise.all([
-        DB.get(DB_KEYS.TRACKING),
-        DB.get(DB_KEYS.UPDATE_QUEUE)
-    ]) as [Tracking, TemporaryWorklog[]]
+async function stopTracking() {
+    const [{ issue, start }, queue = []] = (await Promise.all([DB.get(DB_KEYS.TRACKING), DB.get(DB_KEYS.UPDATE_QUEUE)])) as [
+        Tracking,
+        TemporaryWorklog[]
+    ]
     if (!issue?.id) {
         return
     }
@@ -23,7 +20,7 @@ async function stopTracking () {
     await DB.set(DB_KEYS.TRACKING, { issue: null, start: null })
 }
 
-async function startTracking (issue: LocalIssue) {
+async function startTracking(issue: LocalIssue) {
     await stopTracking()
     await DB.set(DB_KEYS.TRACKING, { issue, start: Date.now() })
     await updateBadgeTitle()

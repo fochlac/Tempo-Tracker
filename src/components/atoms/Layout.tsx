@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const FlexRow = styled.div<{$justify?: string, $align?: string; $flip?: number}>`
+export const FlexRow = styled.div<{ $justify?: string; $align?: string; $flip?: number }>`
     display: flex;
     flex-direction: row;
     justify-content: ${({ $justify = 'space-between' }) => $justify};
@@ -11,7 +11,7 @@ export const FlexRow = styled.div<{$justify?: string, $align?: string; $flip?: n
     }
 `
 
-export const FlexColumn = styled.div<{$justify?: string, $align?: string; $flip?: number}>`
+export const FlexColumn = styled.div<{ $justify?: string; $align?: string; $flip?: number }>`
     display: flex;
     flex-direction: column;
     justify-content: ${({ $justify = 'space-between' }) => $justify};

@@ -2,7 +2,7 @@ import { getPermission } from '../browser'
 import { DB } from '../data-layer'
 import { dateString, getISOWeekNumber, getYearIsoWeeksPeriod } from '../datetime'
 import { getOptions, hasValidJiraSettings } from '../options'
-import { resolveLocale } from 'src/translations/locale'
+import { resolveLocale } from '../../translations/locale'
 import * as cloudApi from './cloud-api'
 import * as datacenterApi from './datacenter-api'
 import * as offlineApi from './offline-api'
@@ -82,7 +82,7 @@ export async function searchIssues(searchString): Promise<Issue[]> {
 }
 
 export async function fetchAllWorklogs(opts?: Options): Promise<Worklog[]> {
-    const endDate = Date.now() + 1000 * 60 * 60 * 24 * 30
+    const endDate = Date.now() + 1000 * 60 * 60 * 24 * 6
     const startDate = Date.now() - 1000 * 60 * 60 * 24 * 30
     return fetchWorklogs(startDate, endDate, opts)
 }
@@ -140,7 +140,6 @@ export async function fetchWorkStatistics(year: number = new Date().getFullYear(
         const day = dateString(log.start)
         const weekNumber = getISOWeekNumber(log.start, locale)
         const month = new Date(log.start).getMonth() + 1
-        console.log(day, weekNumber, month, log.start, new Date(log.start))
         const timeSpentSeconds = (log.end - log.start) / 1000
 
         workMap.days[day] = (workMap.days[day] || 0) + timeSpentSeconds

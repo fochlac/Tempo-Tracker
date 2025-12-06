@@ -1,11 +1,11 @@
-import React = require('react')
+import React from 'react'
 import styled from 'styled-components'
 import { preventDefault } from '../../utils/events'
 
 interface ActionLinkRawProps {
-    $disabled?: boolean;
-    $small?: boolean;
-    $error?: boolean;
+    $disabled?: boolean
+    $small?: boolean
+    $error?: boolean
 }
 
 export const ActionLinkRaw = styled.a<ActionLinkRawProps>`
@@ -32,15 +32,14 @@ export const ActionLinkRaw = styled.a<ActionLinkRawProps>`
 `
 
 export const ActionLink: React.FC<{
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onClick?: (e: Event) => void
     disabled?: boolean
     small?: boolean
     error?: boolean
-    title?: string;
+    title?: string
     style?: React.CSSProperties
-    as?: string | React.ComponentType<unknown>;
-    for?: string;
+    as?: string | React.ComponentType<unknown>
+    for?: string
 }> = ({ onClick, disabled, as, small, error, ...props }) => {
     return (
         <ActionLinkRaw

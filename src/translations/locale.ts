@@ -6,7 +6,7 @@ import frJson from './fr.json'
 import frCaJson from './fr-ca.json'
 import esJson from './es.json'
 import plJson from './pl.json'
-import { LOCALES } from 'src/constants/constants'
+import { LOCALES } from '../constants/constants'
 
 export interface TranslationVars {
     count?: number | string
@@ -32,7 +32,9 @@ export function resolveLocale(locale?: string): string {
         if (locale && new Intl.Locale(locale)) {
             return locale
         }
-    } catch {}
+    } catch {
+        // expected error
+    }
     try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (window as any)?.testLocale || new Intl.DateTimeFormat().resolvedOptions().locale || DEFAULT_LOCALE

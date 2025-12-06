@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
 interface FetchResult<D = unknown> {
     loading: boolean
     error?: Error
@@ -210,9 +208,9 @@ interface DbHelper {
 type DbListener<K extends DB_KEYS> = (dataSlice: DataBase[K]) => void
 
 interface Window {
-    webkitRequestAnimationFrame: Function
-    mozRequestAnimationFrame: Function
-    mozCancelAnimationFrame: Function
+    webkitRequestAnimationFrame: (callback: FrameRequestCallback) => number
+    mozRequestAnimationFrame: (callback: FrameRequestCallback) => number
+    mozCancelAnimationFrame: (handle: number) => void
     __tempoTracker: {
         tracking: Tracking
         issues: LocalIssue[]

@@ -35,8 +35,7 @@ async function registerScript() {
                 }
             ])
         }
-    }
-    catch (e) {
+    } catch (e) {
         console.error(e)
     }
 }
@@ -81,8 +80,7 @@ export const sortAndAnalyzeWorkTimes = (
                         const diff = conflict ? conflict.workTime.end - workTime.start : -1
                         if (diff >= 0 && diff <= 60000) {
                             workTime.start = conflict.workTime.end + 1000
-                        }
-                        else if (diff > 60000) {
+                        } else if (diff > 60000) {
                             conflicts.push(workTimeList[index - 1].workTime)
                         }
                     }

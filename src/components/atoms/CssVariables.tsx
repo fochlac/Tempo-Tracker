@@ -2,7 +2,7 @@ import { createGlobalStyle } from 'styled-components'
 
 export const CssVariables = createGlobalStyle`
     :root {
-        ${({theme}) => Object.keys(theme).reduce((styles, prop) => `${styles}\n${prop}: ${theme[prop]};`, '')}
+        ${({ theme }) => Object.keys(theme).reduce((styles, prop) => `${styles}\n${prop}: ${theme[prop]};`, '')}
     }
 
     html {

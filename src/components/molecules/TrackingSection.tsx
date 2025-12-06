@@ -45,7 +45,7 @@ const CUSTOM_ISSUE = 'CUSTOM_ISSUE'
 
 export function TrackingSection({ hasError, issues, onCreate }: { hasError: boolean; issues: LocalIssue[]; onCreate: () => void }) {
     const { t } = useLocalized()
-    const { data: tracker, actions } = useTracking({onCreate})
+    const { data: tracker, actions } = useTracking({ onCreate })
     const { data: options } = useOptions()
     const [customIssueDialogVisible, showCustomIssueDialog] = useState(false)
     const [splitTrackingDialogVisible, showSplitTrackingDialog] = useState(false)
@@ -182,14 +182,16 @@ export function TrackingSection({ hasError, issues, onCreate }: { hasError: bool
                                     <Textarea
                                         placeholder={t('placeholder.comment')}
                                         style={{ height: 31, marginLeft: 3 }}
-                                        onChange={(e) => actions.updateComment(e.target.value)}
+                                        onChange={(e) => actions.updateComment(e.currentTarget.value)}
                                         value={tracker.comment}
                                     />
                                 </FlexRow>
                             )}
                         </FlexColumn>
                     ) : (
-                        <DefaultText style={{ margin: '0 auto' }}>{t(optionList.length ? 'message.selectIssueToTrack' : 'message.noIssueToTrack')}</DefaultText>
+                        <DefaultText style={{ margin: '0 auto' }}>
+                            {t(optionList.length ? 'message.selectIssueToTrack' : 'message.noIssueToTrack')}
+                        </DefaultText>
                     ))}
             </Tracker>
         </Header>

@@ -5,6 +5,7 @@ import { ButtonBar } from '../atoms/ButtonBar'
 import { Modal } from '../atoms/Modal'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { type JSX } from 'preact/jsx-runtime'
 
 interface Props {
     open: boolean

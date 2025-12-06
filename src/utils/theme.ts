@@ -1,13 +1,6 @@
 import { darken, getLuminance, lighten, mix } from 'polished'
 
-export const createTheme = ({
-    link,
-    font,
-    background,
-    destructive,
-    diagramm,
-    diagrammGreen
-}) => {
+export const createTheme = ({ link, font, background, destructive, diagramm, diagrammGreen }) => {
     const contrast = mix(0.5, font, background)
     const fontDisabled = mix(0.8, font, background)
     const button = mix(0.1, font, background)

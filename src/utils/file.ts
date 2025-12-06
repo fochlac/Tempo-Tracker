@@ -1,4 +1,4 @@
-function text (file: File):Promise<string> {
+function text(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = (event) => resolve(event.target.result as string)
@@ -7,7 +7,7 @@ function text (file: File):Promise<string> {
     })
 }
 
-async function json (file: File) {
+async function json(file: File) {
     const data = await text(file)
     return JSON.parse(data)
 }

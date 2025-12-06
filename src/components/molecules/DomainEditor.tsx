@@ -45,12 +45,7 @@ export function DomainEditor() {
     const [origins, setOrigins] = useState([])
 
     const resetCaches = async () => {
-        await Promise.all([
-            logCache.resetCache(),
-            statsCache.resetCache(),
-            fullStatsCache.resetCache(),
-            issueCache.resetCache()
-        ])
+        await Promise.all([logCache.resetCache(), statsCache.resetCache(), fullStatsCache.resetCache(), issueCache.resetCache()])
     }
 
     useEffect(() => {
@@ -162,22 +157,26 @@ export function DomainEditor() {
     }
 
     useKeyBinding('Escape', onClose, true, !edit)
-    const saveRef = useKeyBinding('Enter', onSave, false, !edit)
+    const saveRef = useKeyBinding<HTMLInputElement>('Enter', onSave, false, !edit)
 
     return (
-        <Option style={{ minWidth: 'calc(50% - 32px)'}}>
+        <Option style={{ minWidth: 'calc(50% - 32px)' }}>
             <Label>
                 {t('label.serverUrl')}
                 <MandatoryStar />
             </Label>
             <FlexRow>
                 {!!options.domain && <Input readOnly value={options.domain || ''} style={{ width: '100%', marginRight: 16 }} />}
-                <Button onClick={() => {
-                    if (!isPopped()) {
-                        openAsTab(`${VIEWS.OPTIONS}&edit=1`)
-                    }
-                    setEdit(true)
-                }}>{options.domain ? t('action.change') : t('action.selectDomain')}</Button>
+                <Button
+                    onClick={() => {
+                        if (!isPopped()) {
+                            openAsTab(`${VIEWS.OPTIONS}&edit=1`)
+                        }
+                        setEdit(true)
+                    }}
+                >
+                    {options.domain ? t('action.change') : t('action.selectDomain')}
+                </Button>
             </FlexRow>
             {edit && (
                 <Modal style={{ padding: 16, alignItems: 'stretch', width: 380, height: 'unset' }}>
@@ -194,7 +193,7 @@ export function DomainEditor() {
                             style={{ width: '100%', marginBottom: 4 }}
                             value={domain}
                             onChange={(e) => {
-                                setDomain(e.target.value)
+                                setDomain(e.currentTarget.value)
                                 setError(false)
                             }}
                         />

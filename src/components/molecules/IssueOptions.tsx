@@ -39,7 +39,7 @@ export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
                         style={{ margin: '0 6px' }}
                         type="checkbox"
                         checked={options.useJqlQuery}
-                        onChange={(e) => actions.merge({ useJqlQuery: e.target.checked })}
+                        onChange={(e) => actions.merge({ useJqlQuery: e.currentTarget.checked })}
                     />
                     <Label>{t('label.enabled')}</Label>
                 </FlexRow>
@@ -56,7 +56,7 @@ export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
                     </InfoText>
                     <Textarea
                         onChange={(e) => {
-                            actions.merge({ jqlQuery: e.target.value })
+                            actions.merge({ jqlQuery: e.currentTarget.value })
                             issueCache.resetCache()
                         }}
                         value={options.jqlQuery}
@@ -65,8 +65,8 @@ export const IssueOptions: React.FC<{ valid: boolean }> = ({ valid }) => {
                         <Select
                             style={{ marginTop: 4 }}
                             onChange={(e) => {
-                                actions.merge({ jqlQuery: JQL_TEMPLATES[e.target.value]?.template })
-                                e.target.value = ''
+                                actions.merge({ jqlQuery: JQL_TEMPLATES[e.currentTarget.value]?.template })
+                                e.currentTarget.value = ''
                                 issueCache.resetCache()
                             }}
                         >

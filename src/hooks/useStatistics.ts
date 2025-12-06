@@ -85,8 +85,9 @@ export function useGetRequiredSecondsForPeriod(startYear: number, endYear?: numb
         const modifier = (year: number, week: number, skipModifier?: boolean) =>
             !skipModifier && year === currentYear && week === currentWeek ? passedWorkdays / workdays : 1
 
-        if (!exceptions.length)
-        { return (year: number, week: number, skipModifier?: boolean) => modifier(year, week, skipModifier) * defaultHours * 60 * 60 }
+        if (!exceptions.length) {
+            return (year: number, week: number, skipModifier?: boolean) => modifier(year, week, skipModifier) * defaultHours * 60 * 60
+        }
 
         const years = Array.from({ length: (endYear ?? new Date().getFullYear()) - startYear + 1 }, (_v, idx) => startYear + idx)
 

@@ -42,7 +42,7 @@ export const CommentDialog: React.FC<Props> = ({ log, onSave }) => {
 
     useKeyBinding('Escape', () => hasChanges && dispatch('resetEditComment'), true)
 
-    const handleSave = async() => {
+    const handleSave = async () => {
         if (hasChanges) {
             await actions.queue({
                 ...log,
@@ -59,7 +59,7 @@ export const CommentDialog: React.FC<Props> = ({ log, onSave }) => {
             <Title title={title}>{title}</Title>
             <div style={{ textAlign: 'center', marginBottom: 16, width: '100%', padding: '0 8px' }}>
                 <Label>{t('dialog.comment')}</Label>
-                <Textarea onChange={(e) => setComment(e.target.value)} value={comment} />
+                <Textarea onChange={(e) => setComment(e.currentTarget.value)} value={comment} />
             </div>
             <ButtonBar>
                 <Button onClick={() => dispatch('resetEditComment')}>{t('action.cancel')}</Button>

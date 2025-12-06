@@ -34,10 +34,10 @@ export const IssueSelector: React.FC<Props> = ({ onChange, additionalIssues, val
     )
 
     const handleChange = (e) => {
-        if (e.target.value === SEARCH_ISSUE) {
+        if (e.currentTarget.value === SEARCH_ISSUE) {
             setSearchActive(true)
         } else {
-            const issue = issues.find((i) => i.key === e.target.value) || null
+            const issue = issues.find((i) => i.key === e.currentTarget.value) || null
             onChange(issue)
         }
     }

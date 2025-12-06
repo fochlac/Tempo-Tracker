@@ -131,19 +131,21 @@ export const OptionsView: React.FC = () => {
     }
 
     const showError = Boolean(error && !ignoreError && error === 'DEFAULT' && domain.length && storedToken.length)
-    const handleAuthTypeChange = async (e) => {
-        if (AUTH_TYPES[e.target.value]) {
-            await actions.merge({ authenticationType: e.target.value, user: '' })
-            await refetch({ authenticationType: e.target.value, user: '' })
+    const handleAuthTypeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.currentTarget?.value
+        if (AUTH_TYPES[value]) {
+            await actions.merge({ authenticationType: value as keyof AUTHENTICATION_TYPE, user: '' })
+            await refetch({ authenticationType: value as keyof AUTHENTICATION_TYPE, user: '' })
         }
     }
 
     const showOtherOptions = Boolean(
-        domain.length && (instance === 'datacenter' ? storedToken.length || authenticationType === 'COOKIE' : storedToken.length && email.length) || options.offlineMode
+        (domain.length && (instance === 'datacenter' ? storedToken.length || authenticationType === 'COOKIE' : storedToken.length && email.length)) ||
+        options.offlineMode
     )
 
     const onChangeWorkdaySync = async (event) => {
-        const checked = event?.target?.checked
+        const checked = event?.currentTarget?.checked
         let granted = false
         if (checked) {
             granted = await Workday.requestPermission()
@@ -165,22 +167,23 @@ export const OptionsView: React.FC = () => {
             <Conditional enable={!domain.length && !options.offlineMode}>
                 <InfoBoxAlt style={{ marginTop: 12, marginRight: 8 }}>{t('options.selectConnectionMode')}</InfoBoxAlt>
             </Conditional>
-            <div style={{
-                display: 'flex',
-                flexDirection: !domain.length && !options.offlineMode ? 'row' : 'column',
-                gap: 8,
-                justifyContent: !domain.length && !options.offlineMode ? 'center' : 'flex-start'
-            }}>
-
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: !domain.length && !options.offlineMode ? 'row' : 'column',
+                    gap: 8,
+                    justifyContent: !domain.length && !options.offlineMode ? 'center' : 'flex-start'
+                }}
+            >
                 <Conditional enable={!domain.length}>
-                    <Option style={{ minWidth: 'calc(50% - 32px)'}}>
+                    <Option style={{ minWidth: 'calc(50% - 32px)' }}>
                         <Label>{t('label.offlineMode')}</Label>
                         <FlexRow $justify="flex-start">
                             <Input
                                 style={{ margin: '0 6px' }}
                                 type="checkbox"
                                 checked={options.offlineMode}
-                                onChange={(e) => actions.merge({ offlineMode: e.target.checked, autosync: e.target.checked })}
+                                onChange={(e) => actions.merge({ offlineMode: e.currentTarget.checked, autosync: e.currentTarget.checked })}
                             />
                             <Label>{t('label.enabled')}</Label>
                         </FlexRow>
@@ -305,7 +308,7 @@ export const OptionsView: React.FC = () => {
                                 style={{ marginBottom: 4 }}
                                 $error={showError || (error === 'TOKEN' && !ignoreError)}
                                 value={email}
-                                onChange={(e) => actions.merge({ email: e.target.value })}
+                                onChange={(e) => actions.merge({ email: e.currentTarget.value })}
                             />
                             {error === 'TOKEN' && !ignoreError && <ErrorInfoText>{t('options.invalidTokenOrEmail')}</ErrorInfoText>}
                         </Option>
@@ -330,7 +333,10 @@ export const OptionsView: React.FC = () => {
                                 <ErrorInfoText>{t('options.invalidTokenOrEmail')}</ErrorInfoText>
                             </Conditional>
                             <Conditional enable={Boolean(!options.token?.length || (error === 'TOKEN' && !ignoreError))}>
-                                <ActionLink style={{ height: 6, marginTop: -2, marginLeft: 0 }} onClick={() => openTab({ url: ATL_API_LINK, active: true })}>
+                                <ActionLink
+                                    style={{ height: 6, marginTop: -2, marginLeft: 0 }}
+                                    onClick={() => openTab({ url: ATL_API_LINK, active: true })}
+                                >
                                     {t('options.generateApiToken')}
                                 </ActionLink>
                             </Conditional>
@@ -385,7 +391,7 @@ export const OptionsView: React.FC = () => {
                             style={{ margin: '0 6px' }}
                             type="checkbox"
                             checked={options.showComments}
-                            onChange={(e) => actions.merge({ showComments: e.target.checked })}
+                            onChange={(e) => actions.merge({ showComments: e.currentTarget.checked })}
                         />
                         <Label>{t('label.enabled')}</Label>
                     </FlexRow>
@@ -399,7 +405,7 @@ export const OptionsView: React.FC = () => {
                                 type="checkbox"
                                 disabled={isFirefox}
                                 checked={isFirefox ? false : options.autosync}
-                                onChange={(e) => actions.merge({ autosync: e.target.checked })}
+                                onChange={(e) => actions.merge({ autosync: e.currentTarget.checked })}
                             />
                             <Label>{t('label.enabled')}</Label>
                         </FlexRow>

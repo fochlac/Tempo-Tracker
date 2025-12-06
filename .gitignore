@@ -4,6 +4,8 @@ firebase-credentials.json
 db
 images
 dist
+dist-cypress
 dist_ff
 extension_*.zip
 credentials.json
+cypress/screenshots

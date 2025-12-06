@@ -2,9 +2,12 @@ import { ACTIONS } from '../constants/actions'
 
 const controller = chrome || browser
 
-export const triggerBackgroundAction = <R extends ActionDefinition>(actionDefinition: R, ...params: Parameters<R['create']>): Promise<ReturnType<R['response']>['payload']> => {
+export const triggerBackgroundAction = <R extends ActionDefinition>(
+    actionDefinition: R,
+    ...params: Parameters<R['create']>
+): Promise<ReturnType<R['response']>['payload']> => {
     return new Promise((resolve, reject) => {
-        const action = actionDefinition.create(...params as unknown[])
+        const action = actionDefinition.create(...(params as unknown[]))
         if (controller?.runtime?.sendMessage) {
             const errTimer = setTimeout(() => {
                 reject(ACTIONS[action.type].response(false, 'Action timed out after 60 seconds.'))
@@ -13,24 +16,21 @@ export const triggerBackgroundAction = <R extends ActionDefinition>(actionDefini
                 clearTimeout(errTimer)
                 if (response.payload.success) {
                     resolve(response.payload as ReturnType<R['response']>['payload'])
-                }
-                else {
+                } else {
                     reject(response.payload)
                 }
             }
             if (isFirefox) {
                 browser.runtime.sendMessage(action).then(callback)
-            }
-            else {
+            } else {
                 chrome.runtime.sendMessage(action, callback)
             }
-        }
-        else {
+        } else {
             reject(ACTIONS[action.type].response(false, 'Could not send message.'))
         }
     })
 }
-export function checkTabExistence (tabId) {
+export function checkTabExistence(tabId) {
     return new Promise((resolve) => {
         controller.tabs.get(tabId, () => {
             if (controller.runtime.lastError) {

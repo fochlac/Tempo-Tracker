@@ -16,37 +16,29 @@ export function setDatabaseInternal(databaseName: string, database: IDBDatabase)
     DATABASES.set(databaseName, database)
 }
 
-type IDBItemType = 'store' | 'database';
+type IDBItemType = 'store' | 'database'
 
-export function asStore(subject: unknown, alias: string): Cypress.Chainable<IDBObjectStore>;
-export function asStore(subject: unknown, alias: string): Cypress.Chainable<IDBDatabase>;
-export function asStore(
-    subject: unknown,
-    alias: string
-): Cypress.Chainable<IDBDatabase> | Cypress.Chainable<IDBObjectStore> {
+export function asStore(subject: unknown, alias: string): Cypress.Chainable<IDBObjectStore>
+export function asStore(subject: unknown, alias: string): Cypress.Chainable<IDBDatabase>
+export function asStore(subject: unknown, alias: string): Cypress.Chainable<IDBDatabase> | Cypress.Chainable<IDBObjectStore> {
     if (isIDBObjectStore(subject)) {
         STORES.set(alias, subject)
         return cy.wrap(subject)
-    }
-    else if (isIDBDatabase(subject)) {
+    } else if (isIDBDatabase(subject)) {
         DATABASE_ALIASES.set(alias, subject.name)
         DATABASES.set(subject.name, subject)
         return cy.wrap(subject)
     }
-    const error = new Error(
-        '\'asStore\' was passed a subject that is neither an IDBObjectStore nor an IDBDatabase.'
-    )
+    const error = new Error("'asStore' was passed a subject that is neither an IDBObjectStore nor an IDBDatabase.")
     throw error
 }
 
 export const getDatabase = getIDBItem('database')
 export const getStore = getIDBItem('store')
 
-function getIDBItem(type: 'store'): (alias: string) => Cypress.Chainable<IDBObjectStore>;
-function getIDBItem(type: 'database'): (alias: string) => Cypress.Chainable<IDBDatabase>;
-function getIDBItem(
-    type: IDBItemType
-): (alias: string) => Cypress.Chainable<IDBObjectStore> | Cypress.Chainable<IDBDatabase> {
+function getIDBItem(type: 'store'): (alias: string) => Cypress.Chainable<IDBObjectStore>
+function getIDBItem(type: 'database'): (alias: string) => Cypress.Chainable<IDBDatabase>
+function getIDBItem(type: IDBItemType): (alias: string) => Cypress.Chainable<IDBObjectStore> | Cypress.Chainable<IDBDatabase> {
     const map = type === 'store' ? STORES : DATABASE_ALIASES
     return (alias: string) => {
         const log = Cypress.log({

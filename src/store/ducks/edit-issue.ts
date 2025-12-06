@@ -10,12 +10,14 @@ const defaultState = {
 export const editIssueDuck = {
     defaultState,
     actions: {
-        setEditIssue ({set}, {issue}) {
-            set({ [ATOM_KEY]: {
-                issue
-            } })
+        setEditIssue({ set }, { issue }) {
+            set({
+                [ATOM_KEY]: {
+                    issue
+                }
+            })
         },
-        resetEditIssue ({set}) {
+        resetEditIssue({ set }) {
             set(defaultState)
         }
     },

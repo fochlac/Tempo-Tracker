@@ -98,7 +98,9 @@ export function getWeekInfo(resolvedLocale: string): WeekInfo {
                 minimalDays: weekInfo.minimalDays ?? 4
             }
         }
-    } catch {}
+    } catch {
+        console.error('Failed to get week info for locale:', resolvedLocale)
+    }
 
     if (resolvedLocale && nonIsoLocales[resolvedLocale.toLowerCase()]) {
         return nonIsoLocales[resolvedLocale.toLowerCase()]

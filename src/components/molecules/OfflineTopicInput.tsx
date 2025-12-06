@@ -55,7 +55,7 @@ export const OfflineTopicInput: React.FC<Props> = ({ disabled }) => {
                 <Input
                     style={{ flex: 1 }}
                     value={newTopicName}
-                    onChange={(e) => setNewTopicName(e.target.value)}
+                    onChange={(e) => setNewTopicName(e.currentTarget.value)}
                     placeholder={t('placeholder.topicName')}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') addTopic()

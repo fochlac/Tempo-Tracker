@@ -62,8 +62,7 @@ const headers = (options: Options, url: URLS) => {
     let Authorization
     if (PATHS[url].type === JIRA) {
         Authorization = `Basic ${btoa(`${options.email}:${options.token}`)}`
-    }
-    else if (PATHS[url].type === TEMPO) {
+    } else if (PATHS[url].type === TEMPO) {
         Authorization = `Bearer ${options.ttToken}`
     }
 

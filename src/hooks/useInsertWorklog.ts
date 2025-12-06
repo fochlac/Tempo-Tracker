@@ -6,11 +6,11 @@ import { v4 } from 'uuid'
 import { usePrevious } from './usePrevious'
 import { useJqlQueryResults } from './useJqlQueryResult'
 
-export function useInsertWorklog () {
+export function useInsertWorklog() {
     const dispatch = useDispatch()
     const editIssue = useSelector(editIssueDuck.selector)
     const remoteIssues = useJqlQueryResults() as LocalIssue[]
-    const {data: options} = useOptions()
+    const { data: options } = useOptions()
     const [newWorklog, setNewWorklog] = useState<TemporaryWorklog>(null)
     const previousIssue = usePrevious(editIssue.issue)
     const defaultIssue = Object.values(options.issues).concat(remoteIssues)[0]

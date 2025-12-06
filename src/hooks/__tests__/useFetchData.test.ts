@@ -18,7 +18,7 @@ describe('useFetchData', () => {
     it('should return initial state with loading true', async () => {
         mockFetchFunction.mockResolvedValue({ data: 'test' })
 
-        const { result } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         expect(result.current.loading).toBe(true)
         expect(result.current.data).toBeUndefined()
@@ -34,7 +34,7 @@ describe('useFetchData', () => {
         const initialData = { id: 1, name: 'test' }
         mockFetchFunction.mockResolvedValue({ data: 'test' })
 
-        const { result } = renderHook(() => useFetchData(mockFetchFunction, initialData))
+        const { result } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>, initialData))
 
         expect(result.current.loading).toBe(true)
         expect(result.current.data).toBe(initialData)
@@ -50,7 +50,7 @@ describe('useFetchData', () => {
         const mockData = { id: 1, name: 'success' }
         mockFetchFunction.mockResolvedValue(mockData)
 
-        const { result } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         expect(result.current.loading).toBe(true)
 
@@ -69,7 +69,7 @@ describe('useFetchData', () => {
         const mockError = new Error('Fetch failed')
         mockFetchFunction.mockRejectedValue(mockError)
 
-        const { result } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         expect(result.current.loading).toBe(true)
 
@@ -89,7 +89,7 @@ describe('useFetchData', () => {
         const mockError = new Error('Fetch failed')
         mockFetchFunction.mockRejectedValue(mockError)
 
-        const { result } = renderHook(() => useFetchData(mockFetchFunction, initialData))
+        const { result } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>, initialData))
 
         expect(result.current.loading).toBe(true)
         expect(result.current.data).toBe(initialData)
@@ -106,11 +106,9 @@ describe('useFetchData', () => {
 
     it('should not update state if component unmounts during fetch', async () => {
         const mockData = { id: 1, name: 'success' }
-        mockFetchFunction.mockImplementation(() =>
-            new Promise((resolve) => setTimeout(() => resolve(mockData), 100))
-        )
+        mockFetchFunction.mockImplementation(() => new Promise((resolve) => setTimeout(() => resolve(mockData), 100)))
 
-        const { result, unmount } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result, unmount } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         expect(result.current.loading).toBe(true)
 
@@ -133,7 +131,7 @@ describe('useFetchData', () => {
         const stringData = 'test string'
         mockFetchFunction.mockResolvedValue(stringData)
 
-        const { result: stringResult } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result: stringResult } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         await act(async () => {
             await new Promise((resolve) => setTimeout(resolve, 0))
@@ -145,7 +143,7 @@ describe('useFetchData', () => {
         const numberData = 42
         mockFetchFunction.mockResolvedValue(numberData)
 
-        const { result: numberResult } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result: numberResult } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         await act(async () => {
             await new Promise((resolve) => setTimeout(resolve, 0))
@@ -157,7 +155,7 @@ describe('useFetchData', () => {
         const arrayData = [1, 2, 3]
         mockFetchFunction.mockResolvedValue(arrayData)
 
-        const { result: arrayResult } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result: arrayResult } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         await act(async () => {
             await new Promise((resolve) => setTimeout(resolve, 0))
@@ -169,7 +167,7 @@ describe('useFetchData', () => {
         const objectData = { key: 'value' }
         mockFetchFunction.mockResolvedValue(objectData)
 
-        const { result: objectResult } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result: objectResult } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         await act(async () => {
             await new Promise((resolve) => setTimeout(resolve, 0))
@@ -182,7 +180,7 @@ describe('useFetchData', () => {
         // Test with null
         mockFetchFunction.mockResolvedValue(null)
 
-        const { result: nullResult } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result: nullResult } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         await act(async () => {
             await new Promise((resolve) => setTimeout(resolve, 0))
@@ -193,7 +191,7 @@ describe('useFetchData', () => {
         // Test with undefined
         mockFetchFunction.mockResolvedValue(undefined)
 
-        const { result: undefinedResult } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result: undefinedResult } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         await act(async () => {
             await new Promise((resolve) => setTimeout(resolve, 0))
@@ -205,7 +203,7 @@ describe('useFetchData', () => {
     it('should only call fetch function once on mount', async () => {
         mockFetchFunction.mockResolvedValue({ data: 'test' })
 
-        const { result } = renderHook(() => useFetchData(mockFetchFunction))
+        const { result } = renderHook(() => useFetchData(mockFetchFunction as () => Promise<unknown>))
 
         await act(async () => {
             await new Promise((resolve) => setTimeout(resolve, 0))

@@ -1,4 +1,3 @@
-
 import { defaultOptions, getNextCloudWorklogId, getNextWorklogId, issues, worklogs, worklogsCloud } from './data'
 
 Cypress.Commands.add('networkMocks', (domain = defaultOptions.domain) => {

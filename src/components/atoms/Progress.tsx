@@ -60,7 +60,7 @@ export const CircularProgress = styled(Loader)`
         animation-delay: -0.2s;
     }
     & > line:nth-child(4) {
-        animation-delay: -1.0s;
+        animation-delay: -1s;
     }
     & > line:nth-child(5) {
         animation-delay: -0.4s;

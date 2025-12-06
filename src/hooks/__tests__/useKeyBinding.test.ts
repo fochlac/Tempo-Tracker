@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useCombindedRefs, useKeyBinding } from '../useKeyBinding'
 
 describe('useKeyBinding', () => {
-    let mockCallback: ReturnType<typeof vi.fn>
+    let mockCallback: () => void
     let addEventListenerSpy: ReturnType<typeof vi.spyOn>
     let removeEventListenerSpy: ReturnType<typeof vi.spyOn>
 
@@ -96,7 +96,7 @@ describe('useKeyBinding', () => {
         // Mock the ref element and set it on the ref
         const mockElement = { contains: vi.fn(() => true) } as unknown as HTMLElement
         act(() => {
-            (result.current as RefObject<HTMLElement>).current = mockElement
+            ;(result.current as RefObject<HTMLElement>).current = mockElement
         })
 
         // Create a mock event with target inside the element
@@ -123,7 +123,7 @@ describe('useKeyBinding', () => {
         // Mock the ref element and set it on the ref
         const mockElement = { contains: vi.fn(() => false) } as unknown as HTMLElement
         act(() => {
-            (result.current as RefObject<HTMLElement>).current = mockElement
+            ;(result.current as RefObject<HTMLElement>).current = mockElement
         })
 
         // Create a mock event with target outside the element
@@ -151,7 +151,7 @@ describe('useCombindedRefs', () => {
         const mockElement = document.createElement('div')
 
         act(() => {
-            (result.current as RefCallback<HTMLElement>)(mockElement)
+            ;(result.current as RefCallback<HTMLElement>)(mockElement)
         })
 
         expect(ref1).toHaveBeenCalledWith(mockElement)
@@ -168,7 +168,7 @@ describe('useCombindedRefs', () => {
         const mockElement = document.createElement('div')
 
         act(() => {
-            (result.current as RefCallback<HTMLElement>)(mockElement)
+            ;(result.current as RefCallback<HTMLElement>)(mockElement)
         })
 
         expect(ref1).toHaveBeenCalledWith(mockElement)
@@ -183,7 +183,7 @@ describe('useCombindedRefs', () => {
         const mockElement = document.createElement('div')
 
         act(() => {
-            (result.current as RefCallback<HTMLElement>)(mockElement)
+            ;(result.current as RefCallback<HTMLElement>)(mockElement)
         })
 
         expect(ref1.current).toBe(mockElement)
@@ -198,7 +198,7 @@ describe('useCombindedRefs', () => {
         const mockElement = document.createElement('div')
 
         act(() => {
-            (result.current as RefCallback<HTMLElement>)(mockElement)
+            ;(result.current as RefCallback<HTMLElement>)(mockElement)
         })
 
         expect(functionRef).toHaveBeenCalledWith(mockElement)
@@ -214,7 +214,7 @@ describe('useCombindedRefs', () => {
         const mockElement = document.createElement('div')
 
         act(() => {
-            (result.current as RefCallback<HTMLElement>)(mockElement)
+            ;(result.current as RefCallback<HTMLElement>)(mockElement)
         })
 
         expect(ref1).toHaveBeenCalledWith(mockElement)
@@ -230,7 +230,7 @@ describe('useCombindedRefs', () => {
         const mockElement = document.createElement('div')
 
         act(() => {
-            (result.current as RefCallback<HTMLElement>)(mockElement)
+            ;(result.current as RefCallback<HTMLElement>)(mockElement)
         })
 
         expect(ref1).toHaveBeenCalledWith(mockElement)
@@ -244,7 +244,7 @@ describe('useCombindedRefs', () => {
         // Should not throw
         expect(() => {
             act(() => {
-                (result.current as RefCallback<HTMLElement>)(mockElement)
+                ;(result.current as RefCallback<HTMLElement>)(mockElement)
             })
         }).not.toThrow()
     })
@@ -256,7 +256,7 @@ describe('useCombindedRefs', () => {
         // Should not throw
         expect(() => {
             act(() => {
-                (result.current as RefCallback<HTMLElement>)(mockElement)
+                ;(result.current as RefCallback<HTMLElement>)(mockElement)
             })
         }).not.toThrow()
     })

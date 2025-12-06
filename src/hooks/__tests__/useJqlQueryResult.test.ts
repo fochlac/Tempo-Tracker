@@ -114,11 +114,7 @@ describe('useJqlQueryResults', () => {
 
         // Should return all 20 issues since limit is 15 - 0 = 15, but we have 20 issues
         expect(result.current).toEqual(mockIssues.slice(0, 15))
-        expect(mockUsePersitentFetch).toHaveBeenCalledWith(
-            expect.any(Function),
-            'ISSUE_CACHE',
-            []
-        )
+        expect(mockUsePersitentFetch).toHaveBeenCalledWith(expect.any(Function), 'ISSUE_CACHE', [])
     })
 
     it('should return limited issues based on local issues count', () => {
@@ -316,11 +312,7 @@ describe('useJqlQueryResults', () => {
     it('should call usePersitentFetch with correct parameters', () => {
         renderHook(() => useJqlQueryResults())
 
-        expect(mockUsePersitentFetch).toHaveBeenCalledWith(
-            expect.any(Function),
-            'ISSUE_CACHE',
-            []
-        )
+        expect(mockUsePersitentFetch).toHaveBeenCalledWith(expect.any(Function), 'ISSUE_CACHE', [])
     })
 
     it('should handle persistent fetch with loading state', () => {

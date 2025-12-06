@@ -21,11 +21,14 @@ Cypress.Commands.add('openWithOptions', (options = defaultOptions, skipStartApp 
     }
 })
 Cypress.Commands.add('openWithCookieOptions', (options, skipStartApp) => {
-    cy.openWithOptions({
-        ...defaultOptions,
-        token: '',
-        authenticationType: 'COOKIE'
-    }, skipStartApp)
+    cy.openWithOptions(
+        {
+            ...defaultOptions,
+            token: '',
+            authenticationType: 'COOKIE'
+        },
+        skipStartApp
+    )
 })
 
 Cypress.Commands.add('startApp', () => {
@@ -55,71 +58,58 @@ Cypress.Commands.add('sendMessage', (message) => {
 })
 
 Cypress.Commands.add('setOptions', (options) => {
-    cy.openIndexedDb(DATABASE_NAME)
-        .createObjectStore(CACHE_STORE)
-        .updateItem(DB_KEYS.OPTIONS, options)
+    cy.openIndexedDb(DATABASE_NAME).createObjectStore(CACHE_STORE).updateItem(DB_KEYS.OPTIONS, options)
 })
 
 Cypress.Commands.add('getOptions', () => {
-    return cy.openIndexedDb(DATABASE_NAME)
+    return cy
+        .openIndexedDb(DATABASE_NAME)
         .createObjectStore(CACHE_STORE)
         .readItem(DB_KEYS.OPTIONS)
         .then((options) => cy.wrap(options))
 })
 
 Cypress.Commands.add('injectUnsyncedWorklog', (worklog) => {
-    cy.openIndexedDb(DATABASE_NAME)
-        .createObjectStore(CACHE_STORE).asStore('Store')
+    cy.openIndexedDb(DATABASE_NAME).createObjectStore(CACHE_STORE).asStore('Store')
 
     cy.getStore('@Store')
         .readItem(DB_KEYS.UPDATE_QUEUE)
         .then((queue: TemporaryWorklog[]) => {
             const newQueue = [...(queue || []), worklog]
-            return cy.getStore('@Store')
-                .updateItem(DB_KEYS.UPDATE_QUEUE, newQueue)
+            return cy.getStore('@Store').updateItem(DB_KEYS.UPDATE_QUEUE, newQueue)
         })
 })
 Cypress.Commands.add('removeUnsyncedWorklog', (worklogId) => {
-    cy.openIndexedDb(DATABASE_NAME)
-        .createObjectStore(CACHE_STORE).asStore('Store')
+    cy.openIndexedDb(DATABASE_NAME).createObjectStore(CACHE_STORE).asStore('Store')
 
     cy.getStore('@Store')
         .readItem(DB_KEYS.UPDATE_QUEUE)
         .then((queue: TemporaryWorklog[]) => {
             const newQueue = (queue || []).filter((worklog) => worklog.tempId !== worklogId && worklog.id !== worklogId)
-            return cy.getStore('@Store')
-                .updateItem(DB_KEYS.UPDATE_QUEUE, newQueue)
+            return cy.getStore('@Store').updateItem(DB_KEYS.UPDATE_QUEUE, newQueue)
         })
 })
 
 Cypress.Commands.add('getWorklogCache', () => {
-    cy.openIndexedDb(DATABASE_NAME)
-        .createObjectStore(CACHE_STORE).asStore('Store')
+    cy.openIndexedDb(DATABASE_NAME).createObjectStore(CACHE_STORE).asStore('Store')
 
-    return cy.getStore('@Store')
-        .readItem(DB_KEYS.WORKLOG_CACHE)
+    return cy.getStore('@Store').readItem(DB_KEYS.WORKLOG_CACHE)
 })
 
 Cypress.Commands.add('getUnsyncedWorklogs', () => {
-    cy.openIndexedDb(DATABASE_NAME)
-        .createObjectStore(CACHE_STORE).asStore('Store')
+    cy.openIndexedDb(DATABASE_NAME).createObjectStore(CACHE_STORE).asStore('Store')
 
-    return cy.getStore('@Store')
-        .readItem(DB_KEYS.UPDATE_QUEUE)
+    return cy.getStore('@Store').readItem(DB_KEYS.UPDATE_QUEUE)
 })
 
 Cypress.Commands.add('getTracking', () => {
-    cy.openIndexedDb(DATABASE_NAME)
-        .createObjectStore(CACHE_STORE).asStore('Store')
+    cy.openIndexedDb(DATABASE_NAME).createObjectStore(CACHE_STORE).asStore('Store')
 
-    return cy.getStore('@Store')
-        .readItem(DB_KEYS.TRACKING)
+    return cy.getStore('@Store').readItem(DB_KEYS.TRACKING)
 })
 
 Cypress.Commands.add('setTracking', (tracking: Tracking) => {
-    cy.openIndexedDb(DATABASE_NAME)
-        .createObjectStore(CACHE_STORE).asStore('Store')
+    cy.openIndexedDb(DATABASE_NAME).createObjectStore(CACHE_STORE).asStore('Store')
 
-    return cy.getStore('@Store')
-        .updateItem(DB_KEYS.TRACKING, tracking)
+    return cy.getStore('@Store').updateItem(DB_KEYS.TRACKING, tracking)
 })

@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-concat */
 import { Overlay } from '../../src/components/Overlay'
 import { toWorktimeInfo } from '../../src/service-worker/workday'
 import { toLocalWorklog } from '../../src/utils/api/datacenter-api'

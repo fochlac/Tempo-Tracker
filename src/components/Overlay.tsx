@@ -210,7 +210,9 @@ export const Overlay: React.FC<Props> = ({ insertWorkTime, workTimes, workdayEnt
         setLoading(true)
         try {
             await refresh()
-        } catch (e) {}
+        } catch {
+            // Silently fail if refresh fails
+        }
     }
 
     const onChange = (workTimes = []) => {

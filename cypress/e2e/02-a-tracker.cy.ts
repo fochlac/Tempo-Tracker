@@ -8,11 +8,11 @@ describe('Tracking View - Tracking Area', () => {
         cy.networkMocks()
         cy.openWithOptions()
         cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
+            win.chrome.runtime.sendMessage = ((message, callback) => {
                 win.messages = win.messages || []
                 win.messages.push(message)
                 callback({ payload: { success: true } })
-            }
+            }) as typeof chrome.runtime.sendMessage
         })
         cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.wait('@getWorklogs')
@@ -28,13 +28,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should start and stop tracking', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.contains('form', 'Select an issue').find('button').should('have.length', 7).contains('Test4').click()
 
         cy.contains('form', locale['hotkey.stopTracking'])
@@ -83,18 +77,15 @@ describe('Tracking View - Tracking Area', () => {
             ...defaultOptions,
             showComments: true
         })
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.contains('form', 'Select an issue').find('button').should('have.length', 7).contains('Test4').click()
 
         cy.contains('form', locale['hotkey.stopTracking']).should('be.visible')
 
-        cy.contains('form', locale['hotkey.stopTracking']).find('textarea[placeholder="Comment"]').should('have.value', '').type('Some Comment', { delay: 80 })
+        cy.contains('form', locale['hotkey.stopTracking'])
+            .find('textarea[placeholder="Comment"]')
+            .should('have.value', '')
+            .type('Some Comment', { delay: 80 })
 
         cy.get('@clock').invoke('tick', 300000)
 
@@ -119,13 +110,7 @@ describe('Tracking View - Tracking Area', () => {
             token: defaultOptions.token,
             user: 'testid'
         })
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.wait('@getWorklogs')
         cy.get('@clock').invoke('tick', 1000)
@@ -140,13 +125,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should open search issue dialog when clicking search issue button', () => {
         cy.networkMocks()
         cy.openWithOptions()
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
         cy.contains('main', locale['header.tempoTracker']).should('be.visible')
         cy.wait('@getWorklogs')
         cy.get('@clock').invoke('tick', 1000)
@@ -178,13 +157,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should handle forgotten tracking', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
 
         cy.wait(100)
         cy.openIndexedDb(DATABASE_NAME)
@@ -227,13 +200,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should discard gap when selected', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
 
         cy.openIndexedDb(DATABASE_NAME)
             .createObjectStore(CACHE_STORE)
@@ -270,13 +237,7 @@ describe('Tracking View - Tracking Area', () => {
     it('should be possible to split trackings', () => {
         cy.networkMocks()
         cy.openWithOptions(undefined, true)
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
 
         cy.openIndexedDb(DATABASE_NAME)
             .createObjectStore(CACHE_STORE)
@@ -297,8 +258,16 @@ describe('Tracking View - Tracking Area', () => {
 
         cy.contains('dialog', locale['dialog.splitTracking']).should('be.visible').contains('08:00')
         cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.issue']).find('input').should('have.value', 'Test7')
-        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.startTime']).find('input').eq(0).should('have.value', '08')
-        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.startTime']).find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', locale['dialog.splitTracking'])
+            .contains('div', locale['field.startTime'])
+            .find('input')
+            .eq(0)
+            .should('have.value', '08')
+        cy.contains('dialog', locale['dialog.splitTracking'])
+            .contains('div', locale['field.startTime'])
+            .find('input')
+            .eq(1)
+            .should('have.value', '00')
         cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(0).should('have.value', '17')
         cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(1).should('have.value', '00')
         cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(0).type('13:00')
@@ -322,12 +291,22 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
         cy.contains('form', locale['hotkey.stopTracking']).find('time').should('contain.text', '4h 00m')
 
-        cy.contains('div', locale['hotkey.stopTracking']).find('[aria-label="Open Button List"]').should('be.visible').click()
+        cy.contains('div', locale['hotkey.stopTracking']).find('[aria-label="Open Button List"]').as('listButton')
+        cy.get('@listButton').should('be.visible')
+        cy.get('@listButton').click()
         cy.contains('div', locale['hotkey.stopTracking']).contains('button', locale['action.splitTracking']).should('be.visible').click()
         cy.contains('dialog', locale['dialog.splitTracking']).should('be.visible').contains('13:00')
         cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.issue']).find('input').should('have.value', 'Test7')
-        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.startTime']).find('input').eq(0).should('have.value', '13')
-        cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.startTime']).find('input').eq(1).should('have.value', '00')
+        cy.contains('dialog', locale['dialog.splitTracking'])
+            .contains('div', locale['field.startTime'])
+            .find('input')
+            .eq(0)
+            .should('have.value', '13')
+        cy.contains('dialog', locale['dialog.splitTracking'])
+            .contains('div', locale['field.startTime'])
+            .find('input')
+            .eq(1)
+            .should('have.value', '00')
         cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(0).should('have.value', '17')
         cy.contains('dialog', locale['dialog.splitTracking']).contains('div', locale['field.endTime']).find('input').eq(1).should('have.value', '00')
         cy.contains('dialog', locale['dialog.splitTracking']).contains('button', locale['action.cancel']).click()
@@ -340,7 +319,8 @@ describe('Tracking View - Tracking Area', () => {
         cy.contains('form', locale['hotkey.stopTracking']).contains('fieldset', ':').find('input').eq(1).should('have.value', '00')
         cy.contains('form', locale['hotkey.stopTracking']).find('time').should('contain.text', '4h 00m')
 
-        cy.contains('div', locale['hotkey.stopTracking']).find('[aria-label="Open Button List"]').should('be.visible').click()
+        cy.get('@listButton').should('be.visible')
+        cy.get('@listButton').click()
 
         cy.contains('div', locale['hotkey.stopTracking']).contains('button', locale['action.discardTracking']).should('be.visible').click()
         cy.contains('form', locale['hotkey.stopTracking']).should('not.exist')

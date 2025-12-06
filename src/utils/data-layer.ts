@@ -70,8 +70,7 @@ const createTransaction = async (name, mode) => {
 const indexedDBStorage = (name: string) => {
     const get = (key: keyof DataBase) => createTransaction(name, ACCESS_MODES.READ_ONLY).then((store) => store.get(key))
 
-    const set = (key: keyof DataBase, value: any) =>
-        createTransaction(name, ACCESS_MODES.READ_WRITE).then((store) => store.set(key, value))
+    const set = (key: keyof DataBase, value: any) => createTransaction(name, ACCESS_MODES.READ_WRITE).then((store) => store.set(key, value))
 
     const update = <T = any>(key: keyof DataBase, updater: (originalValue: T) => T) =>
         createTransaction(name, ACCESS_MODES.READ_WRITE).then((store) => store.update(key, updater))

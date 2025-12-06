@@ -11,7 +11,7 @@ export const WorkTimeExceptions: React.FC = () => {
     const { data: options, actions } = useStatisticsOptions()
     const { t } = useLocalized()
 
-    const updateExceptionKey = (key, index) => (e) => actions.mergeException(index, { [key]: Number(e.target.value) })
+    const updateExceptionKey = (key, index) => (e) => actions.mergeException(index, { [key]: Number(e.currentTarget.value) })
 
     return (
         <>

@@ -11,15 +11,14 @@ import { handleHotKey } from './service-worker/hotkeys'
 import { Workday } from './utils/workday'
 import { getTrackedTimes } from './service-worker/workday'
 
-const controller = typeof chrome !== 'undefined' && chrome || typeof browser !== 'undefined' && browser
+const controller = (typeof chrome !== 'undefined' && chrome) || (typeof browser !== 'undefined' && browser)
 
 function contextClick(info) {
     const { menuItemId } = info
 
     if (menuItemId === 'open-webapp') {
         openAsTab(VIEWS.TRACKER)
-    }
-    else if (menuItemId === 'open-webapp-options') {
+    } else if (menuItemId === 'open-webapp-options') {
         openAsTab(VIEWS.OPTIONS)
     }
 }
@@ -38,8 +37,7 @@ if (!isFirefox) {
         })
     })
     chrome.contextMenus.onClicked.addListener(contextClick)
-}
-else {
+} else {
     browser.runtime.onInstalled.addListener(() => {
         browser.menus.create({
             id: 'open-webapp',
@@ -70,8 +68,7 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
                 await flushQueueRecursive()
                 console.log('flush done')
             }
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e)
         }
         if (!options?.disableWorkdaySync) {
@@ -81,15 +78,13 @@ controller.alarms.onAlarm.addListener(async (alarm) => {
         try {
             console.log('badge')
             await updateBadgeTitle()
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e)
         }
         try {
             console.log('heart')
             await heartbeat()
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e)
         }
     }
@@ -103,8 +98,7 @@ async function getSetupInfo() {
 
 if (!isFirefox) {
     chrome.commands.onCommand.addListener(handleHotKey)
-}
-else {
+} else {
     browser.commands.onCommand.addListener(handleHotKey)
 }
 
@@ -225,17 +219,14 @@ controller.runtime.onMessage.addListener((request, sender, sendResponseRaw) => {
 })
 
 updateBadgeTitle()
-heartbeat();
-
-(async function () {
+heartbeat()
+;(async function () {
     try {
         const options = getOptions(await DB.get(DB_KEYS.OPTIONS))
         if (!options?.disableWorkdaySync) {
             await Workday.registerScript()
         }
-    }
-    catch (e) {
+    } catch (e) {
         console.log(e)
     }
 })()
-

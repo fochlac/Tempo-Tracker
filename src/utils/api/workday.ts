@@ -25,37 +25,39 @@ const changeSummary = (id) =>
 function extractActionButton(day) {
     const children = day && day.widget === 'calendarEntryDayInfo' && day.children
     const commandButtons = children && children.find((child) => child.widget === 'commandButtonList')?.children
-    return commandButtons && commandButtons.find(
-        (child) => child.widget === 'commandButton' && child.propertyName === 'nyw:Calendar_Entry_Day_Info'
-    ) || null
+    return (
+        (commandButtons &&
+            commandButtons.find((child) => child.widget === 'commandButton' && child.propertyName === 'nyw:Calendar_Entry_Day_Info')) ||
+        null
+    )
 }
 const dateKey = (value) => dateString(fromWorkdayMoment(value))
 
 interface Moment {
     value?: {
-        Y: string;
-        M: string;
-        D: string;
-        H: string;
-        m: string;
-        s: string;
-        f: string;
-    };
-    dateTimePrecision: string;
+        Y: string
+        M: string
+        D: string
+        H: string
+        m: string
+        s: string
+        f: string
+    }
+    dateTimePrecision: string
 }
 interface CalendarEntry {
-    widget: string;
-    timedEvent: boolean;
+    widget: string
+    timedEvent: boolean
     editButton: {
         children: {
-            widget: string;
-            uri: string;
-            propertyName: string;
-        }[];
-    };
-    endMoment: Moment;
-    startMoment: Moment;
-    propertyName: string;
+            widget: string
+            uri: string
+            propertyName: string
+        }[]
+    }
+    endMoment: Moment
+    startMoment: Moment
+    propertyName: string
 }
 
 function extractWorkTimeInfos(entryListWidgets?: CalendarEntry[]): WorkdayEntry[] {
@@ -95,9 +97,7 @@ async function insertWorkTime(startTime: number, endTime: number, sessionSecureT
             .filter((child) => child.widget === 'fieldSet')
             .flatMap((widget) => widget.children)
             .find((child) => child.propertyName === 'wd:Out_Time').id
-        const okButtonId = children
-            .find((child) => child.widget === 'mutexButtonBar')
-            .children?.[0]?.mutex?.id
+        const okButtonId = children.find((child) => child.widget === 'mutexButtonBar').children?.[0]?.mutex?.id
 
         const body_in = {
             _flowExecutionKey,
@@ -142,8 +142,7 @@ async function insertWorkTime(startTime: number, endTime: number, sessionSecureT
         if (result?.widget === 'changeSummary' && result.unassociatedErrorNodes?.length) {
             return { error: result.unassociatedErrorNodes[0].message || 'Unknown Error.' }
         }
-    }
-    catch (e) {
+    } catch (e) {
         console.error(e)
         return { error: 'Unknown Error.' }
     }
@@ -181,8 +180,7 @@ const getActiveWeek = async () => {
             endTime,
             entries
         }
-    }
-    catch (e) {
+    } catch (e) {
         console.log(e)
         return null
     }

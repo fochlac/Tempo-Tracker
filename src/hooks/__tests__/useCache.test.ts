@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DB } from '../../utils/data-layer'
 import { useCache } from '../useCache'
-import { useDatabase } from '../../utils/database'
+import { useDatabase, useDatabaseUpdate } from '../../utils/database'
 import { useSafeState } from '../useSafeState'
 
 // Mock dependencies
@@ -14,6 +14,8 @@ vi.mock('../../utils/data-layer', () => ({
 }))
 
 vi.mock('../../utils/database', () => ({
+    ...vi.importActual('../../utils/database'),
+    useDatabaseUpdate: vi.fn(() => vi.fn()),
     useDatabase: vi.fn()
 }))
 
@@ -25,6 +27,7 @@ describe('useCache', () => {
     const mockDB = vi.mocked(DB)
     const mockUseDatabase = vi.mocked(useDatabase)
     const mockUseSafeState = vi.mocked(useSafeState)
+    const mockUseDatabaseUpdate = vi.mocked(useDatabaseUpdate)
 
     const mockSetMemoryCache = vi.fn()
     const mockCache = {
@@ -43,6 +46,9 @@ describe('useCache', () => {
 
         // Mock DB.set to resolve
         mockDB.set.mockResolvedValue(undefined)
+
+        // Mock useDatabaseUpdate to return a function
+        mockUseDatabaseUpdate.mockImplementation((key) => (value) => mockDB.set(key, value) as Promise<void>)
     })
 
     afterEach(() => {
@@ -113,7 +119,7 @@ describe('useCache', () => {
 
     it('should handle updateData with null dbData', async () => {
         const initialData = []
-        const updateFunction = vi.fn((data) => data ? [...data, 'newItem'] : ['newItem'])
+        const updateFunction = vi.fn((data) => (data ? [...data, 'newItem'] : ['newItem']))
 
         // Mock useDatabase to return null
         mockUseDatabase.mockReturnValue(null)
@@ -133,7 +139,7 @@ describe('useCache', () => {
 
     it('should handle updateData with undefined cache', async () => {
         const initialData = []
-        const updateFunction = vi.fn((data) => data ? [...data, 'newItem'] : ['newItem'])
+        const updateFunction = vi.fn((data) => (data ? [...data, 'newItem'] : ['newItem']))
 
         // Mock useSafeState to return undefined cache
         mockUseSafeState.mockReturnValue([undefined, mockSetMemoryCache])
@@ -197,9 +203,7 @@ describe('useCache', () => {
                 await result.current.setCache(newCache)
                 expect(false).toBe(true)
             } catch (error) {
-                // eslint-disable-next-line jest/no-conditional-expect
                 expect(error).toBeInstanceOf(Error)
-                // eslint-disable-next-line jest/no-conditional-expect
                 expect(error.message).toBe('Database error')
             }
         })
@@ -222,9 +226,7 @@ describe('useCache', () => {
                 await result.current.resetCache()
                 expect(false).toBe(true)
             } catch (error) {
-                // eslint-disable-next-line jest/no-conditional-expect
                 expect(error).toBeInstanceOf(Error)
-                // eslint-disable-next-line jest/no-conditional-expect
                 expect(error.message).toBe('Database error')
             }
         })
@@ -247,9 +249,7 @@ describe('useCache', () => {
                 await result.current.updateData(updateFunction)
                 expect(false).toBe(true)
             } catch (error) {
-                // eslint-disable-next-line jest/no-conditional-expect
                 expect(error).toBeInstanceOf(Error)
-                // eslint-disable-next-line jest/no-conditional-expect
                 expect(error.message).toBe('Database error')
             }
         })
@@ -257,7 +257,7 @@ describe('useCache', () => {
         expect(updateFunction).toHaveBeenCalledWith(mockCache.data)
         expect(mockSetMemoryCache).toHaveBeenCalledWith({
             ...mockCache,
-            data: ['item1', 'item2', 'errorItem']
+            data: ['item1', 'item2']
         })
     })
 

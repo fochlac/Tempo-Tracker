@@ -44,7 +44,7 @@ export const AppOptionsSection: React.FC = () => {
         <>
             <Option>
                 <Label>{t('label.localization')}</Label>
-                <Select onChange={(e) => actions.merge({ locale: e.target.value })}>
+                <Select onChange={(e) => actions.merge({ locale: e.currentTarget.value })}>
                     {!isResolvedLocale && (
                         <option selected={!options.locale} value={null}>
                             {t('locale.en-default')}
@@ -93,7 +93,7 @@ export const AppOptionsSection: React.FC = () => {
             </Conditional>
             <Option>
                 <Label>{t('label.theme')}</Label>
-                <Select onChange={(e) => actions.merge({ theme: e.target.value })}>
+                <Select onChange={(e: React.ChangeEvent<HTMLSelectElement>) => actions.merge({ theme: e.currentTarget.value as keyof THEMES })}>
                     <option selected={options.theme === THEMES.DEFAULT} value={THEMES.DEFAULT}>
                         {t('theme.lightDefault')}
                     </option>
@@ -118,21 +118,25 @@ export const AppOptionsSection: React.FC = () => {
             </Conditional>
             <SectionHead>{t('label.hotkeys')}</SectionHead>
             <Option>
-                <InfoText>
+                <InfoText as="div">
                     <p>{t('info.hotkeysList')}</p>
                     <Table>
-                        <tr>
-                            <HeadCell>{t('hotkey.stopTracking')}</HeadCell>
-                            <HeadCell>{t('hotkey.trackFirstIssue')}</HeadCell>
-                            <HeadCell>{t('hotkey.trackSecondIssue')}</HeadCell>
-                            <HeadCell>{t('hotkey.trackThirdIssue')}</HeadCell>
-                        </tr>
-                        <tr>
-                            <Cell>{t('hotkey.ctrlShift0')}</Cell>
-                            <Cell>{t('hotkey.ctrlShift1')}</Cell>
-                            <Cell>{t('hotkey.ctrlShift2')}</Cell>
-                            <Cell>{t('hotkey.ctrlShift3')}</Cell>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <HeadCell>{t('hotkey.stopTracking')}</HeadCell>
+                                <HeadCell>{t('hotkey.trackFirstIssue')}</HeadCell>
+                                <HeadCell>{t('hotkey.trackSecondIssue')}</HeadCell>
+                                <HeadCell>{t('hotkey.trackThirdIssue')}</HeadCell>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <Cell>{t('hotkey.ctrlShift0')}</Cell>
+                                <Cell>{t('hotkey.ctrlShift1')}</Cell>
+                                <Cell>{t('hotkey.ctrlShift2')}</Cell>
+                                <Cell>{t('hotkey.ctrlShift3')}</Cell>
+                            </tr>
+                        </tbody>
                     </Table>
                 </InfoText>
             </Option>

@@ -8,7 +8,8 @@ import { Input } from '../atoms/Input'
 import { Modal } from '../atoms/Modal'
 import { TimeInput } from '../atoms/TimeInput'
 import { DefaultText, H5, Label } from '../atoms/Typography'
-import { useLocalized } from 'src/hooks/useLocalized'
+import { useLocalized } from '../../hooks/useLocalized'
+import { dateString } from '../../utils/datetime'
 
 const Row = styled.div`
     display: flex;
@@ -34,20 +35,20 @@ const Line = styled(DefaultText)`
     text-align: left;
 `
 
-export const ForgottenTrackingDialog = ({onCreate}: {onCreate?: () => void}):React.JSX.Element => {
+export const ForgottenTrackingDialog = ({ onCreate }: { onCreate?: () => void }): React.JSX.Element => {
     const { t, formatDate, formatTime, formatRelativeTime } = useLocalized()
-    const { actions, data } = useTracking({onCreate})
+    const { actions, data } = useTracking({ onCreate })
     const [newWorklog, setNewWorklog] = useState<TemporaryWorklog>(null)
 
+    const { issue, start, lastHeartbeat } = data
     useEffect(() => {
-        if (data.issue && data.lastHeartbeat) {
-            const { issue, start } = data
-            setNewWorklog({ issue, start, end: data.lastHeartbeat, synced: false, tempId: v4() })
+        if (issue && lastHeartbeat) {
+            setNewWorklog({ issue, start, end: lastHeartbeat, synced: false, tempId: v4() })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data.issue?.id, data.lastHeartbeat])
+    }, [issue?.id, lastHeartbeat, start])
 
-    if (!data.issue || !data.lastHeartbeat || !newWorklog) return null
+    if (!issue || !lastHeartbeat || !newWorklog) return null
 
     const onChangeDate = (prop) => (e) => {
         const { value } = e.target
@@ -88,10 +89,10 @@ export const ForgottenTrackingDialog = ({onCreate}: {onCreate?: () => void}):Rea
                     <Col>
                         <Label>{t('field.startTime')}</Label>
                         <DateInput
-                            max={formatDate(newWorklog.end)}
+                            max={dateString(newWorklog.end)}
                             type="date"
                             onChange={onChangeDate('start')}
-                            value={formatDate(newWorklog.start)}
+                            value={dateString(newWorklog.start)}
                         />
                     </Col>
                     <Col>
@@ -100,7 +101,7 @@ export const ForgottenTrackingDialog = ({onCreate}: {onCreate?: () => void}):Rea
                     </Col>
                     <Col style={{ marginLeft: 'auto' }}>
                         <Label>{t('field.endTime')}</Label>
-                        <DateInput min={formatDate(newWorklog.start)} type="date" onChange={onChangeDate('end')} value={formatDate(newWorklog.end)} />
+                        <DateInput min={dateString(newWorklog.start)} type="date" onChange={onChangeDate('end')} value={dateString(newWorklog.end)} />
                     </Col>
                     <Col>
                         <Label> </Label>

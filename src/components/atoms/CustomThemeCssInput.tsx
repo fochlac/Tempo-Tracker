@@ -11,12 +11,13 @@ const InputGrid = styled.div`
     grid-template-columns: calc(100% - 24px) 20px;
     justify-content: space-between;
 `
-function parseColor(raw: string, full?:boolean): string|void {
-    let color = null
+function parseColor(raw: string, full?: boolean): string {
+    let color = ''
     try {
         color = rgb(parseToRgb(raw))
+    } catch {
+        // Invalid color format
     }
-    catch (e) {}
 
     if (full && color.length === 4 && color.startsWith('#')) {
         return `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
@@ -24,7 +25,7 @@ function parseColor(raw: string, full?:boolean): string|void {
     return color
 }
 
-export const CustomThemeCssInput: React.FC<{ label: string; field: keyof Options['customTheme'] }> = ({label, field}) => {
+export const CustomThemeCssInput: React.FC<{ label: string; field: keyof Options['customTheme'] }> = ({ label, field }) => {
     const { data: options, actions } = useOptions()
     const currentValue = useRef(options.customTheme[field])
     const [value, setValue] = useState(options.customTheme[field])
@@ -34,29 +35,28 @@ export const CustomThemeCssInput: React.FC<{ label: string; field: keyof Options
         currentValue.current = options.customTheme[field]
     }
     const onChangeColor = (e) => {
-        setValue(e.target.value)
+        setValue(e.currentTarget.value)
 
         try {
-            const color = parseColor(e.target.value)
+            const color = parseColor(e.currentTarget.value)
             if (color) {
-                actions.merge({ customTheme: { ...options.customTheme, [field]: color } })
+                actions.merge({ customTheme: { ...options.customTheme, [field]: color || null } })
             }
+        } catch {
+            // Invalid color format
         }
-        catch (e) {}
     }
 
     return (
         <Option>
             <Label>{label}</Label>
             <InputGrid>
-                <Input
-                    onChange={onChangeColor}
-                    value={value} />
+                <Input onChange={onChangeColor} value={value} />
 
                 <Input
                     type="color"
                     style={{ width: 20, marginRight: 8 }}
-                    value={parseColor(options.customTheme[field], true)}
+                    value={parseColor(options.customTheme[field], true) as string}
                     onChange={onChangeColor}
                 />
             </InputGrid>

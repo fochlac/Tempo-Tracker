@@ -307,9 +307,7 @@ describe('useInsertWorklog', () => {
                 await result.current.createNewWorklog()
                 expect(false).toBe(true)
             } catch (error) {
-                // eslint-disable-next-line jest/no-conditional-expect
                 expect(error).toBeInstanceOf(Error)
-                // eslint-disable-next-line jest/no-conditional-expect
                 expect(error.message).toBe('Dispatch error')
             }
         })

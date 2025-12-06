@@ -66,7 +66,7 @@ export const DiagramNavigation: React.FC<Props> = ({
                     value={year}
                     max={currentYear}
                     step={1}
-                    onChange={(e) => setYear(Number(e.target.value))}
+                    onChange={(e) => setYear(Number(e.currentTarget.value))}
                 />
             </Block>
             <Column style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>

@@ -10,17 +10,11 @@ describe('Tracking View - Worklog Entries - Cloud Api', () => {
             instance: 'cloud',
             domain: 'https://jira.atlassian.org'
         })
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = (message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                callback({ payload: { success: true } })
-            }
-        })
+        cy.mockSendMessage()
     })
 
     it('should be possible to delete logs and to cancel deletion for unsynced logs', () => {
-        cy.get('@getWorklogs.1').its('request.query').should('have.a.property', 'from', '2020-10-02')
+        cy.get('@getWorklogs.1').its('request.query').should('have.a.property', 'from', '2020-09-08')
         cy.get('@getWorklogs.1').its('request.query').should('have.a.property', 'to', '2020-10-14')
         cy.get('@getWorklogs.1').its('request.query').should('have.a.property', 'limit', '10000')
         cy.get('@getWorklogs.1').its('request.url').should('include', 'user/testid')

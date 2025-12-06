@@ -41,13 +41,13 @@ export function useLocalized(): LocalizedHook {
 
         const dateFormatterFactory =
             (defaultFormat) =>
-                (unixStamp?: number | Date | string, options: Intl.DateTimeFormatOptions = defaultFormat) => {
-                    const date = new Date(unixStamp)
+            (unixStamp?: number | Date | string, options: Intl.DateTimeFormatOptions = defaultFormat) => {
+                const date = new Date(unixStamp)
 
-                    if (isNaN(date.getTime())) return t('time.invalid')
+                if (isNaN(date.getTime())) return t('time.invalid')
 
-                    return new Intl.DateTimeFormat(locale, options).format(date)
-                }
+                return new Intl.DateTimeFormat(locale, options).format(date)
+            }
         const formatDate = dateFormatterFactory(DateTimeFormats.defaultDate)
 
         const weekInfo = getWeekInfo(locale)

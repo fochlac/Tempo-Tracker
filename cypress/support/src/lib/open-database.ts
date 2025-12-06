@@ -11,14 +11,9 @@
  * @throws {Error} If the connections fails to open.
  */
 
-export function createDatabaseConnection(
-    databaseName: string,
-    versionConfiguredByUser?: number
-): Promise<IDBDatabase> {
+export function createDatabaseConnection(databaseName: string, versionConfiguredByUser?: number): Promise<IDBDatabase> {
     const request: IDBOpenDBRequest =
-        versionConfiguredByUser != null
-            ? window.indexedDB.open(databaseName, versionConfiguredByUser)
-            : window.indexedDB.open(databaseName)
+        versionConfiguredByUser != null ? window.indexedDB.open(databaseName, versionConfiguredByUser) : window.indexedDB.open(databaseName)
     return new Promise<IDBDatabase>((resolve, reject) => {
         request.onerror = (e: Event) => {
             reject(e)
@@ -44,10 +39,7 @@ export function createDatabaseConnection(
  * @returns Promise<IDBDatabase>
  * @throws {Error} If the connections fails to open.
  */
-export function openIndexedDb(
-    databaseName: string,
-    version?: number
-): Cypress.Chainable<IDBDatabase> {
+export function openIndexedDb(databaseName: string, version?: number): Cypress.Chainable<IDBDatabase> {
     let error: Error | undefined
     let databaseVersion: number
     const log = Cypress.log({
