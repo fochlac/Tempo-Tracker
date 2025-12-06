@@ -88,7 +88,7 @@ export const TrackerView: React.FC = () => {
             },
             { threshold: 0.1 }
         )
-        
+
         observer.observe(loaderRef.current)
 
         return () => observer.disconnect()

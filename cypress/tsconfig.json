@@ -17,19 +17,8 @@
         "noEmit": true,
         "skipLibCheck": true,
         "downlevelIteration": true,
-        "typeRoots": [
-            "../node_modules/@types",
-            "../node_modules/cypress",
-            "../types"
-        ]
+        "typeRoots": ["../node_modules/@types", "../node_modules/cypress", "../types"]
     },
-    "include": [
-        "./fixtures/*.ts",
-        "./support/*.ts",
-        "./support/*.tsx",
-        "./component/*.tsx",
-        "./e2e/*.ts",
-        "../types/**/*.d.ts"
-    ],
+    "include": ["./fixtures/*.ts", "./support/*.ts", "./support/*.tsx", "./component/*.tsx", "./e2e/*.ts", "../types/**/*.d.ts"],
     "exclude": ["node_modules", "./support/src/**/*"]
 }

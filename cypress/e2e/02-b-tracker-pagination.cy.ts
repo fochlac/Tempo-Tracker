@@ -52,13 +52,13 @@ describe('Tracking View - Pagination', () => {
         date25DaysAgo.setDate(date25DaysAgo.getDate() - 25)
         const dateString25 = date25DaysAgo.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }) // DD/MM/YY
         cy.contains('li', dateString25).should('exist')
-        
+
         // Logs from 60 days ago should NOT be visible yet
         const dateString60 = date60DaysAgo.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })
         cy.contains('li', dateString60).should('not.exist')
 
         cy.contains('li', dateString25).scrollIntoView().should('be.visible')
-        
+
         cy.wait('@getWorklogsFiltered')
 
         cy.contains('li', dateString60).should('exist')
@@ -86,7 +86,7 @@ describe('Tracking View - Pagination', () => {
         cy.contains(locale['action.loadMore']).should('exist')
 
         cy.contains('li', '08/10/20').should('exist')
-        
+
         cy.contains('li', dateString60).should('be.visible')
     })
 })

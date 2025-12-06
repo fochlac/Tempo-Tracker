@@ -13,23 +13,21 @@ Cypress.Commands.add('fakeTimers', (now: number) => {
 })
 
 Cypress.Commands.add('mockSendMessage', (withDelayedCallbacks = false) => {
-
-        const callbacks: (() => void)[] = []
-        cy.window().then((win) => {
-            win.chrome.runtime.sendMessage = ((message, callback) => {
-                win.messages = win.messages || []
-                win.messages.push(message)
-                const index = callbacks.length
-                if (withDelayedCallbacks) {
-                    callbacks.push(() => {
-                        callback({ payload: { success: true } })
-                        callbacks[index] = undefined
-                    })
-                }
-                else {
+    const callbacks: (() => void)[] = []
+    cy.window().then((win) => {
+        win.chrome.runtime.sendMessage = ((message, callback) => {
+            win.messages = win.messages || []
+            win.messages.push(message)
+            const index = callbacks.length
+            if (withDelayedCallbacks) {
+                callbacks.push(() => {
                     callback({ payload: { success: true } })
-                }
-            }) as typeof chrome.runtime.sendMessage
-        })
-        cy.wrap(callbacks).as('sendMessageCallbacks')
+                    callbacks[index] = undefined
+                })
+            } else {
+                callback({ payload: { success: true } })
+            }
+        }) as typeof chrome.runtime.sendMessage
+    })
+    cy.wrap(callbacks).as('sendMessageCallbacks')
 })
