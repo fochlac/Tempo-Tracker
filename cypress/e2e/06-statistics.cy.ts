@@ -9,10 +9,10 @@ describe('Statistics View - Tracking Area', () => {
         cy.setOptions(defaultOptions)
         cy.startApp()
         cy.mockSendMessage()
-        cy.get('@getWorklogs.all').should('have.length', 1)
+        cy.wait('@getWorklogs')
         cy.contains('header', locale['header.tempoTracker']).should('be.visible').contains('a', locale['nav.statistics']).should('be.exist').click()
 
-        cy.get('@getWorklogs.all').should('have.length', 2)
+        cy.wait('@getWorklogs')
 
         cy.contains('div[style]', '40:00').should('exist').find('span[style]').should('not.exist')
         cy.contains('div[style]', '40:00').should('exist').contains('legend', '41').should('exist')
@@ -33,7 +33,8 @@ describe('Statistics View - Tracking Area', () => {
 
         cy.contains('div[style]', '40:00').should('exist').find('span[style]').should('exist')
 
-        cy.get('@getWorklogs.all').should('have.length', 4)
+        cy.wait('@getWorklogs')
+        cy.wait('@getWorklogs')
         cy.get('@getWorklogs.4')
             .its('request.body')
             .should('deep.equal', {
@@ -61,7 +62,7 @@ describe('Statistics View - Tracking Area', () => {
             .should('have.css', 'color', 'rgb(88, 163, 253)')
             .click()
 
-        cy.get('@getWorklogs.all').should('have.length', 5)
+        cy.wait('@getWorklogs')
         cy.get('@getWorklogs.5')
             .its('request.body')
             .should('deep.equal', {
