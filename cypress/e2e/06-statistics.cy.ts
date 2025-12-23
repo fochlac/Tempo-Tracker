@@ -200,4 +200,50 @@ describe('Statistics View - Tracking Area', () => {
         cy.contains('div', locale['stats.medianHoursWeek']).find('p').should('contain.text', '40h 00m')
         cy.contains('div', locale['label.overhours']).find('p').should('contain.text', '10h 00m')
     })
+
+    it('should show six month overhours for webfleet domain', () => {
+        const webfleetDomain = 'https://jira.ttt-sp.com'
+        cy.networkMocks(webfleetDomain)
+        cy.open()
+        cy.fakeTimers(baseDate.getTime() + dayInMs)
+        cy.setOptions({ ...defaultOptions, domain: webfleetDomain })
+        cy.startApp()
+        cy.mockSendMessage()
+        cy.wait('@getWorklogs')
+
+        cy.contains('header', locale['header.tempoTracker']).should('be.visible').contains('a', locale['nav.statistics']).should('be.exist').click()
+
+        // Wait for lifetime statistics to load (second worklogs fetch for year stats)
+        cy.wait('@getWorklogs')
+
+        // Overhour statistics section should be visible for webfleet domain
+        cy.contains('h6', locale['statistics.overhourStatistics']).should('exist')
+
+        // Check that basic overhour stats are shown
+        cy.contains('div', locale['statistics.overhours']).should('exist')
+        cy.contains('div', locale['statistics.overhoursDecaying']).should('exist')
+        cy.contains('div', locale['statistics.overhoursLastWeek']).should('exist')
+
+        // Check that six month overhours legend contains date range (Label renders as <legend>)
+        // The date format depends on locale, so we check for pattern with numbers and separators
+        cy.contains('legend', /Overhours \(\d.*–.*\d\)/).should('exist')
+
+        // Check future weeks offset input exists with default value
+        cy.contains('div', locale['statistics.futureWeeksOffset']).find('input[type="number"]').should('have.value', '0')
+    })
+
+    it('should not show overhour statistics for non-webfleet domain', () => {
+        cy.networkMocks()
+        cy.open()
+        cy.fakeTimers(baseDate.getTime() + dayInMs)
+        cy.setOptions(defaultOptions) // Uses https://jira.test.com
+        cy.startApp()
+        cy.mockSendMessage()
+
+        cy.contains('header', locale['header.tempoTracker']).should('be.visible').contains('a', locale['nav.statistics']).should('be.exist').click()
+
+        // Overhour statistics section should NOT be visible for non-webfleet domain
+        cy.contains('h6', locale['statistics.overhourStatistics']).should('not.exist')
+        cy.contains('div', locale['statistics.futureWeeksOffset']).should('not.exist')
+    })
 })

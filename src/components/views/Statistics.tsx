@@ -128,7 +128,10 @@ export const StatisticsView: React.FC = () => {
                     <Column>
                         <Label>
                             {sixMonthOverhours
-                                ? t('statistics.overhoursInLastSixMonth', { startDate: sixMonthOverhours.startDateStr, endDate: sixMonthOverhours.endDateStr })
+                                ? t('statistics.overhoursInLastSixMonth', {
+                                      startDate: sixMonthOverhours.startDateStr,
+                                      endDate: sixMonthOverhours.endDateStr
+                                  })
                                 : t('statistics.overhoursInLastSixMonth', { startDate: '–', endDate: '–' })}
                         </Label>
                         <Value>{sixMonthOverhours ? formatDuration(sixMonthOverhours.totalSeconds * 1000) : <>&mdash;</>}</Value>

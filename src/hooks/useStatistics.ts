@@ -357,7 +357,13 @@ export function useSixMonthOverhours(futureWeeksOffset: number = 0) {
         }
 
         // Format dates for display
-        const formatDate = (d: Date) => d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: '2-digit' })
+        const formatDate = (d: Date) => {
+            try {
+                return d.toLocaleDateString(locale || 'en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })
+            } catch {
+                return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })
+            }
+        }
 
         return {
             totalSeconds,
