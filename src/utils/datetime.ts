@@ -157,6 +157,25 @@ export function getISOWeekNumber(unixStamp: number, locale: string) {
     return Math.floor(daysDiff / 7) + 1
 }
 
+export function getISOWeekAndYear(unixStamp: number, locale: string): { week: number; year: number } {
+    const date = new Date(unixStamp)
+    const year = date.getFullYear()
+    const startOfWeek1 = getStartOfWeek1(year, locale)
+
+    // If the date is before week 1 of this year, it's last week of the previous year
+    if (unixStamp < startOfWeek1) {
+        return { week: getISOWeeks(year - 1, locale), year: year - 1 }
+    }
+
+    // If the date is at or after week 1 of next year, it is the first week of the next year
+    if (unixStamp >= getStartOfWeek1(year + 1, locale)) {
+        return { week: 1, year: year + 1 }
+    }
+
+    const daysDiff = getDaysDifference(startOfWeek1, unixStamp)
+    return { week: Math.floor(daysDiff / 7) + 1, year }
+}
+
 export function getIsoWeekPeriod(y: number, n: number, locale: string) {
     const startOfWeek1 = getStartOfWeek1(y, locale)
     const startOfWeekX = new Date(startOfWeek1 + (n - 1) * weekInMs + 10 * hourInMs).setHours(0, 0, 0, 0)

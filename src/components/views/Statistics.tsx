@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { useState } from 'preact/hooks'
-import { useGetRequiredSecondsForPeriod, useLifetimeStatistics, useStatistics } from '../../hooks/useStatistics'
+import { useGetRequiredSecondsForPeriod, useLifetimeStatistics, useStatistics, useSixMonthOverhours } from '../../hooks/useStatistics'
 import { useStatisticsOptions } from '../../hooks/useStatisticsOptions'
 import { Input } from '../atoms/Input'
 import { Block, Column } from '../atoms/Layout'
@@ -45,12 +45,15 @@ export const StatisticsView: React.FC = () => {
     const { domain } = appOptions
     const isWebfleet = domain?.includes('jira.ttt-sp.com')
     const self = useSelf()
+    const [sixMonthOffset, setSixMonthOffset] = useState(0)
 
     const { data: options, actions } = useStatisticsOptions()
     const getRequiredSecondsPeriod = useGetRequiredSecondsForPeriod(options.lifetimeYear)
     const {
         data: { lifeTimeTotal, yearWeeksLifetime, lifeTimeMedianTop, lifeTimeMedianLow, overhourStats }
     } = useLifetimeStatistics(loading ? {} : { stats, year })
+
+    const sixMonthOverhours = useSixMonthOverhours(sixMonthOffset)
 
     const updateOptionKey = (key) => (e) => actions.merge({ [key]: Number(e.currentTarget.value) })
 
@@ -119,6 +122,27 @@ export const StatisticsView: React.FC = () => {
                     <Column>
                         <Label>{t('statistics.overhoursLastWeek')}</Label>
                         <Value>{overhourStats.secondsInLastWeek ? formatDuration(overhourStats?.secondsInLastWeek * 1000) : <>&mdash;</>}</Value>
+                    </Column>
+                </Block>
+                <Block>
+                    <Column>
+                        <Label>
+                            {sixMonthOverhours
+                                ? t('statistics.overhoursInLastSixMonth', { startDate: sixMonthOverhours.startDateStr, endDate: sixMonthOverhours.endDateStr })
+                                : t('statistics.overhoursInLastSixMonth', { startDate: '–', endDate: '–' })}
+                        </Label>
+                        <Value>{sixMonthOverhours ? formatDuration(sixMonthOverhours.totalSeconds * 1000) : <>&mdash;</>}</Value>
+                    </Column>
+                    <Column style={{ flexBasis: '50%' }}>
+                        <Label>{t('statistics.futureWeeksOffset')}</Label>
+                        <Input
+                            type="number"
+                            value={sixMonthOffset}
+                            min={0}
+                            max={52}
+                            step={1}
+                            onChange={(e) => setSixMonthOffset(Number(e.currentTarget.value))}
+                        />
                     </Column>
                 </Block>
             </Conditional>

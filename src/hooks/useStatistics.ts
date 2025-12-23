@@ -1,10 +1,12 @@
+/* eslint-disable max-lines */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { CACHE } from '../constants/constants'
-import { dateString, getISOWeekNumber, getISOWeeks } from '../utils/datetime'
+import { dateString, getISOWeekAndYear, getISOWeekNumber, getISOWeeks, getIsoWeekPeriod } from '../utils/datetime'
 import { createWorkMap, fetchWorkStatistics } from '../utils/api'
 import { usePersitentFetch } from './usePersitedFetch'
 import { useSafeState } from './useSafeState'
 import { useStatisticsOptions } from './useStatisticsOptions'
+import { useCache } from './useCache'
 import { useWorklogUpdates } from './useWorklogs'
 import { useOptions } from './useOptions'
 import { useLocaleContext } from 'src/translations/context'
@@ -300,4 +302,69 @@ export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: 
         },
         loading
     }
+}
+
+export function useSixMonthOverhours(futureWeeksOffset: number = 0) {
+    const locale = useLocaleContext()
+    const {
+        data: { lifetimeYear }
+    } = useStatisticsOptions()
+    const getRequiredSeconds = useGetRequiredSecondsForPeriod(lifetimeYear)
+    const { cache } = useCache(CACHE.LIFETIME_STATS_CACHE, {})
+
+    return useMemo(() => {
+        const lifetimeData = cache?.data ?? {}
+        if (Object.keys(lifetimeData).length === 0) return null
+
+        const current = getISOWeekAndYear(Date.now(), locale)
+
+        // Calculate window end date (current week start + offset weeks)
+        const [currentWeekStart] = getIsoWeekPeriod(current.year, current.week, locale)
+        const endDate = new Date(currentWeekStart)
+        endDate.setDate(endDate.getDate() + futureWeeksOffset * 7)
+        const end = getISOWeekAndYear(endDate.getTime(), locale)
+
+        // Calculate window start: 6 months back from end date
+        const startDate = new Date(endDate)
+        startDate.setMonth(startDate.getMonth() - 6)
+        const start = getISOWeekAndYear(startDate.getTime(), locale)
+
+        // Sum up diffs for all weeks in window (up to current week)
+        let totalSeconds = 0
+        let year = start.year
+        let week = start.week
+        let weeksInYear = getISOWeeks(year, locale)
+
+        while (year < end.year || (year === end.year && week <= end.week)) {
+            const workedSeconds = lifetimeData[year]?.weeks?.[week]
+
+            // Skip weeks with no data if we haven't started accumulating yet (user started later)
+            if (workedSeconds !== undefined || totalSeconds !== 0) {
+                const required = getRequiredSeconds(year, week)
+                totalSeconds += (workedSeconds ?? 0) - required
+            }
+
+            // Stop after current week (future weeks have 0 diff)
+            if (year > current.year || (year === current.year && week >= current.week)) break
+
+            // Move to next week
+            week++
+            if (week > weeksInYear) {
+                year++
+                week = 1
+                weeksInYear = getISOWeeks(year, locale)
+            }
+        }
+
+        // Format dates for display
+        const formatDate = (d: Date) => d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: '2-digit' })
+
+        return {
+            totalSeconds,
+            windowStart: start,
+            windowEnd: end,
+            startDateStr: formatDate(startDate),
+            endDateStr: formatDate(endDate)
+        }
+    }, [cache, futureWeeksOffset, getRequiredSeconds, locale])
 }
