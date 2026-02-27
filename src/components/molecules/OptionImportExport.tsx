@@ -5,6 +5,7 @@ import { ImportOptionsAction } from './ImportOptionsAction'
 import { ActionLink } from '../atoms/ActionLink'
 import { saveAs } from 'file-saver'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { useStatisticsOptions } from 'src/hooks/useStatisticsOptions'
 
 const ImportExportBar = styled.div`
     font-size: 0.8rem;
@@ -21,12 +22,25 @@ const ExportLink = styled(ActionLink)`
 export const OptionsImportExport: React.FC = () => {
     const { t } = useLocalized()
     const { data: options } = useOptions()
+    const { data: statsOptions } = useStatisticsOptions()
 
     const onExportOptions = () =>
         saveAs(
-            new Blob([JSON.stringify({ ...options, token: '', user: '', ttToken: '', email: '' }, null, 4)], {
-                type: 'application/json;charset=utf-8'
-            }),
+            new Blob(
+                [
+                    JSON.stringify(
+                        {
+                            options: { ...options, token: '', user: '', ttToken: '', email: '' },
+                            statsOptions
+                        },
+                        null,
+                        4
+                    )
+                ],
+                {
+                    type: 'application/json;charset=utf-8'
+                }
+            ),
             'tempo-tracker.options.json'
         )
 

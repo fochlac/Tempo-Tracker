@@ -1,4 +1,5 @@
 - **action.addException**: "Add Exception" button - adds new work time override period
+- **action.addCorrection**: "Add Correction" button - adds a new overhour correction event
 - **action.addIssue**: "Add Issue" button - opens issue selection dialog
 - **action.cancel**: Generic "Cancel" button - appears in all confirmation dialogs and forms to dismiss without saving
 - **action.change**: "Change" button - generic button for changing settings or values
@@ -74,7 +75,9 @@
 - **label.advancedIssueSelection**: "Advanced Issue Selection" - header for JQL query section
 - **label.automaticSynchronization**: "Automatic Synchronization" - header for auto-sync option
 - **label.customJqlQuery**: "Custom JQL Query" - label for JQL query input
+- **label.deltaSeconds**: "Delta Seconds" - label for correction amount in seconds
 - **label.enabled**: "enabled" - generic label for checkbox/toggle states
+- **label.effectiveDate**: "Effective Date" - label for correction event date
 - **label.extendedComments**: "Extended Comments" - header for extended comments option
 - **label.finalWeek**: "Final Week" - label for final week input in work-time overrides
 - **label.finalYear**: "Final Year" - label for final year input in work-time overrides
@@ -147,6 +150,7 @@
 - **placeholder.comment**: "Comment" - placeholder text for comment input fields
 - **placeholder.searchIssue**: "Search Issue..." - placeholder text for issue search inputs
 - **section.customTheme**: "Custom Theme" - section for custom theme configuration
+- **section.overhourCorrections**: "Overhour Corrections" - section for date-bound overhour correction events
 - **section.worktimeOverrides**: "Work-time Overrides" - section for custom work schedule exceptions
 - **statistics.day**: "Day" - short label for day-based view toggle
 - **statistics.medianHoursHighest**: "Median Hours (Highest)" - label for highest quarterly median hours statistic
@@ -170,7 +174,7 @@
 - **theme.negativeColor**: "Negative Color" - theme setting for negative values color
 - **time.today**: "today" - relative time indicator for today
 - **time.yesterday**: "yesterday" - relative time indicator for yesterday
-- **tooltip.exportContent**: "This export contains the issue list and the server url. The personal access token and the username are not included in the export." - tooltip explaining what's included in settings export (OptionImportExport)
+- **tooltip.exportContent**: "This export contains app and statistics settings (including work-time overrides and overhour corrections). The personal access token and username are not included." - tooltip explaining what's included in settings export (OptionImportExport)
 - **tooltip.fillMandatoryOptions**: "Please fill all mandatory options." - tooltip when mandatory fields are missing
 - **tracker.logMultiple**: "Log Multiple" - button text for logging time across multiple days/periods
 - **tracker.newEntry**: "New Entry" - button text for creating a new worklog entry

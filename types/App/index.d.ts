@@ -148,6 +148,7 @@ interface StatisticsOptions {
     defaultDailyHours: number
     lifetimeYear: number
     exceptions: HourException[]
+    corrections: WeekCorrectionMap
 }
 
 interface HourException {
@@ -157,6 +158,8 @@ interface HourException {
     endWeek: number
     hours: number
 }
+
+type WeekCorrectionMap = Record<string, number>
 
 interface DataBase {
     LIFETIME_STATS_CACHE: CacheObject<LifeTimeStatsMap>

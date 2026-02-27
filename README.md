@@ -4,8 +4,8 @@
 
 ## Build
 
- 1) `npm i`
- 2) `npm run build` for prod build or `npm run start` for dev build
+1.  `npm i`
+2.  `npm run build` for prod build or `npm run start` for dev build
 
 ## Release
 
@@ -21,5 +21,13 @@ Releases are done via the following commands:
 To run the cypress tests first run `npm run test:server`, then `npm run cypress:open`.
 Or use the shortcut `npm run test:open`.
 
+## Import / Export
+
+- Export includes both general app options and statistics options.
+- Statistics options include work-time override periods and overhour correction events.
+- Legacy import files without `statsOptions` still work; missing statistics fields are reset to defaults.
+- Overhour corrections are applied only to statistic windows that include each correction date.
+
 ## CI
+
 https://app.circleci.com/pipelines/github/fochlac/Tempo-Tracker

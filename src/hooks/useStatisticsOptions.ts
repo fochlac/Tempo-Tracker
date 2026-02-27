@@ -1,8 +1,20 @@
 import { DB_KEYS } from '../constants/constants'
 import { useDatabase, useDatabaseUpdate } from '../utils/database'
-import { getISOWeekNumber } from '../utils/datetime'
+import { getISOWeekAndYear, getISOWeekNumber } from '../utils/datetime'
 import { resolveLocale } from '../translations/locale'
 import { useOptions } from './useOptions'
+
+const normalizeCorrections = (corrections: StatisticsOptions['corrections']): StatisticsOptions['corrections'] => {
+    const rawCorrections = corrections && typeof corrections === 'object' ? corrections : {}
+
+    return Object.entries(rawCorrections).reduce((map, [weekKey, deltaSeconds]) => {
+        const value = Number(deltaSeconds)
+        if (Number.isFinite(value)) {
+            map[weekKey] = value
+        }
+        return map
+    }, {})
+}
 
 const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
     return {
@@ -15,7 +27,8 @@ const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
             endYear: Number(e.endYear),
             endWeek: Number(e.endWeek),
             hours: Number(e.hours)
-        }))
+        })),
+        corrections: normalizeCorrections(rawOptions.corrections)
     }
 }
 
@@ -23,7 +36,8 @@ const defaultStatisticsOptions: StatisticsOptions = {
     defaultHours: 40,
     defaultDailyHours: 8,
     lifetimeYear: new Date().getFullYear(),
-    exceptions: []
+    exceptions: [],
+    corrections: {}
 }
 export function useStatisticsOptions() {
     const options: StatisticsOptions = useDatabase<'statsOptions'>('statsOptions') || defaultStatisticsOptions
@@ -70,15 +84,66 @@ export function useStatisticsOptions() {
                 }
                 await updateOptions(update)
             },
-            async set(newOptions) {
-                await updateOptions(newOptions)
-            },
-            async merge(newOptions: Partial<StatisticsOptions>) {
+            async addCorrection() {
+                const { year, week } = getISOWeekAndYear(Date.now(), locale)
+                const key = `${year}-${week}`
+
+                if (options.corrections?.[key] !== undefined) {
+                    return
+                }
+
                 const update = {
                     ...options,
-                    ...newOptions
+                    corrections: { ...(options.corrections ?? {}), [key]: 0 }
                 }
                 await updateOptions(update)
+            },
+            async deleteCorrection(weekKey: string) {
+                const corrections = { ...(options.corrections ?? {}) }
+                delete corrections[weekKey]
+                await updateOptions({ ...options, corrections })
+            },
+            async setCorrection(weekKey: string, deltaSeconds: number) {
+                const update = {
+                    ...options,
+                    corrections: { ...(options.corrections ?? {}), [weekKey]: deltaSeconds }
+                }
+                await updateOptions(update)
+            },
+            async renameCorrectionKey(oldWeekKey: string, newWeekKey: string) {
+                if (oldWeekKey === newWeekKey || options.corrections?.[newWeekKey] !== undefined) {
+                    return
+                }
+                const corrections = { ...(options.corrections ?? {}) }
+
+                corrections[newWeekKey] = options.corrections[oldWeekKey]
+                delete corrections[oldWeekKey]
+
+                await updateOptions({ ...options, corrections })
+            },
+            async setCorrections(corrections: StatisticsOptions['corrections']) {
+                const update = {
+                    ...options,
+                    corrections: normalizeCorrections(corrections)
+                }
+                await updateOptions(update)
+            },
+            async set(newOptions) {
+                const update = normalizeStatisticsOptions({
+                    ...defaultStatisticsOptions,
+                    ...(newOptions || {})
+                } as StatisticsOptions)
+                await updateOptions(update)
+            },
+            async merge(newOptions: Partial<StatisticsOptions>) {
+                const update = normalizeStatisticsOptions({
+                    ...options,
+                    ...newOptions
+                } as StatisticsOptions)
+                await updateOptions(update)
+            },
+            async reset() {
+                await updateOptions(defaultStatisticsOptions)
             }
         }
     }

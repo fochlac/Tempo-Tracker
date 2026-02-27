@@ -8,6 +8,7 @@ import { readFile } from '../../utils/file'
 import styled from 'styled-components'
 import { useLocalized } from 'src/hooks/useLocalized'
 import { useOptions } from '../../hooks/useOptions'
+import { useStatisticsOptions } from 'src/hooks/useStatisticsOptions'
 
 const HiddenInput = styled.input`
     visibility: 'hidden';
@@ -20,25 +21,38 @@ const HiddenInput = styled.input`
 export function ImportOptionsAction() {
     const { t } = useLocalized()
     const { data: options, actions } = useOptions()
+    const { actions: statisticsActions } = useStatisticsOptions()
     const fileSelectId = useId()
-    const [importData, setImportData] = useState()
+    const [importData, setImportData] = useState<{ options: Partial<Options>; statsOptions?: Partial<StatisticsOptions> } | null>(null)
+
+    const resolveOptions = (importData) => importData?.options ?? importData
+
     const onImportOptions = async (e) => {
         const file = e?.target?.files?.[0]
         if (file) {
             const importData = await readFile.json(file)
-            if (!importData.domain?.length && !importData.issues?.length) {
+            const optionsData = resolveOptions(importData)
+            if (!optionsData?.domain?.length && !optionsData?.issues?.length) {
                 throw new Error('Invalid Data.')
             }
             if (options.domain.length && options.token.length) {
-                if (options.domain === importData.domain) {
-                    importData.token = options.token
-                    importData.user = options.user
-                    importData.ttToken = options.ttToken
-                    importData.email = options.email
+                if (options.domain === optionsData.domain) {
+                    optionsData.token = options.token
+                    optionsData.user = options.user
+                    optionsData.ttToken = options.ttToken
+                    optionsData.email = options.email
                 }
-                setImportData(importData)
+                setImportData({
+                    options: optionsData,
+                    statsOptions: importData?.statsOptions
+                })
             } else {
-                actions.set(getOptions(importData))
+                actions.set(getOptions(optionsData))
+                if (importData?.statsOptions) {
+                    statisticsActions.set(importData.statsOptions)
+                } else {
+                    statisticsActions.reset()
+                }
             }
             e.currentTarget.value = ''
         }
@@ -58,7 +72,16 @@ export function ImportOptionsAction() {
                 buttons={
                     <DestructiveButton
                         onClick={() => {
-                            actions.set(getOptions(importData))
+                            if (!importData) {
+                                return
+                            }
+                            const optionsData = resolveOptions(importData)
+                            actions.set(getOptions(optionsData))
+                            if (importData?.statsOptions) {
+                                statisticsActions.set(importData.statsOptions)
+                            } else {
+                                statisticsActions.reset()
+                            }
                             setImportData(null)
                         }}
                     >

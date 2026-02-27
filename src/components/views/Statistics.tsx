@@ -8,6 +8,7 @@ import { H6, Label, Value } from '../atoms/Typography'
 import { WorkTimeDiagramm } from '../molecules/WorkTimeDiagramm'
 import { WorkTimeDailyDiagramm } from '../molecules/WorkTimeDailyDiagramm'
 import { WorkTimeExceptions } from '../molecules/WorkTimeExceptions'
+import { WorkTimeCorrections } from '../molecules/WorkTimeCorrections'
 import { WorkTimeStats } from '../molecules/WorkTimeStats'
 import { useSelf } from '../../hooks/useSelf'
 import { ErrorTooltip } from '../atoms/Tooltip'
@@ -91,7 +92,7 @@ export const StatisticsView: React.FC = () => {
                 days={yearDays}
                 weeks={yearWeeks}
                 total={(stats?.total ?? 0) + (unsyncedStats?.total ?? 0) / 1000}
-                getRequiredSeconds={(year, week) => getRequiredSeconds(week)}
+                getRequiredSeconds={(_year, week) => getRequiredSeconds(week)}
             />
             <H6>{t('statistics.statisticsSince', { year: options.lifetimeYear })}</H6>
             <WorkTimeStats weeks={yearWeeksLifetime} total={lifeTimeTotal} getRequiredSeconds={getRequiredSecondsPeriod} />
@@ -121,7 +122,7 @@ export const StatisticsView: React.FC = () => {
                     </Column>
                     <Column>
                         <Label>{t('statistics.overhoursLastWeek')}</Label>
-                        <Value>{overhourStats.secondsInLastWeek ? formatDuration(overhourStats?.secondsInLastWeek * 1000) : <>&mdash;</>}</Value>
+                        <Value>{overhourStats.secondsInLastWeek > 0 ? formatDuration(overhourStats?.secondsInLastWeek * 1000) : <>&mdash;</>}</Value>
                     </Column>
                 </Block>
                 <Block>
@@ -134,7 +135,13 @@ export const StatisticsView: React.FC = () => {
                                   })
                                 : t('statistics.overhoursInLastSixMonth', { startDate: '–', endDate: '–' })}
                         </Label>
-                        <Value>{sixMonthOverhours ? formatDuration(sixMonthOverhours.totalSeconds * 1000) : <>&mdash;</>}</Value>
+                        <Value>
+                            {sixMonthOverhours && sixMonthOverhours.totalSeconds > 0 ? (
+                                formatDuration(sixMonthOverhours.totalSeconds * 1000)
+                            ) : (
+                                <>&mdash;</>
+                            )}
+                        </Value>
                     </Column>
                     <Column style={{ flexBasis: '50%' }}>
                         <Label>{t('statistics.futureWeeksOffset')}</Label>
@@ -189,6 +196,7 @@ export const StatisticsView: React.FC = () => {
                 </Column>
                 <Column />
             </Block>
+            <WorkTimeCorrections />
             <WorkTimeExceptions />
         </Body>
     )

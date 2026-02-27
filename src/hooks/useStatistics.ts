@@ -187,7 +187,7 @@ export function useStatistics() {
 
 export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: StatsMap }) {
     const {
-        data: { lifetimeYear }
+        data: { lifetimeYear, corrections }
     } = useStatisticsOptions()
     const { data, updateData, loading, forceFetch } = usePersitentFetch<'LIFETIME_STATS_CACHE'>(
         async () => {
@@ -241,9 +241,9 @@ export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: 
     }, [data, lifetimeYear])
 
     const overhourStats: { totalDiffSeconds: number; secondsInLastWeek: number; secondsInLastMonth: number } = useMemo(() => {
-        const sorted = [...yearWeeksLifetime].sort((a, b) => `${a.year}-${a.week}`.localeCompare(`${b.year}-${b.week}`))
+        const sorted = [...yearWeeksLifetime].sort((a, b) => a.year - b.year || a.week - b.week)
         const resolvedLastHalfYear = sorted.reduce((array, { year, week, workedSeconds }, index) => {
-            let currentDiff = workedSeconds - getRequiredSeconds(year, week)
+            let currentDiff = workedSeconds - getRequiredSeconds(year, week) - (corrections[`${year}-${week}`] ?? 0)
             for (let x = 0; x < index; x++) {
                 const oldWeek = array[x]
                 if (currentDiff === 0 || !oldWeek) {
@@ -278,7 +278,7 @@ export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: 
             },
             { totalDiffSeconds: 0, secondsInLastWeek: 0, secondsInLastMonth: 0 }
         )
-    }, [yearWeeksLifetime, getRequiredSeconds])
+    }, [yearWeeksLifetime, getRequiredSeconds, corrections])
 
     const lifeTimeTotal = useMemo(() => {
         const years = Array.from({ length: new Date().getFullYear() - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx)
@@ -307,7 +307,7 @@ export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: 
 export function useSixMonthOverhours(futureWeeksOffset: number = 0) {
     const locale = useLocaleContext()
     const {
-        data: { lifetimeYear }
+        data: { lifetimeYear, corrections }
     } = useStatisticsOptions()
     const getRequiredSeconds = useGetRequiredSecondsForPeriod(lifetimeYear)
     const { cache } = useCache(CACHE.LIFETIME_STATS_CACHE, {})
@@ -341,7 +341,7 @@ export function useSixMonthOverhours(futureWeeksOffset: number = 0) {
             // Skip weeks with no data if we haven't started accumulating yet (user started later)
             if (workedSeconds !== undefined || totalSeconds !== 0) {
                 const required = getRequiredSeconds(year, week)
-                totalSeconds += (workedSeconds ?? 0) - required
+                totalSeconds += (workedSeconds ?? 0) - required - (corrections[`${year}-${week}`] ?? 0)
             }
 
             // Stop after current week (future weeks have 0 diff)
@@ -372,5 +372,5 @@ export function useSixMonthOverhours(futureWeeksOffset: number = 0) {
             startDateStr: formatDate(startDate),
             endDateStr: formatDate(endDate)
         }
-    }, [cache, futureWeeksOffset, getRequiredSeconds, locale])
+    }, [cache, futureWeeksOffset, getRequiredSeconds, locale, corrections])
 }
