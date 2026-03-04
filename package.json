@@ -1,7 +1,7 @@
 {
     "name": "jira-log-time",
     "version": "3.12.0",
-    "description": "Code repo for [Jira Log Time](https://chrome.google.com/webstore/detail/jira-log-time/peboekgeiffcaddndeonkmkledekeegl) chrome plugin.",
+    "description": "Code repo for [Jira Log Time](https://chromewebstore.google.com/detail/jira-log-time/peboekgeiffcaddndeonkmkledekeegl) chrome plugin.",
     "main": "jira-api.js",
     "scripts": {
         "start": "node build/esbuild.js",
