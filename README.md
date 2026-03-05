@@ -1,4 +1,4 @@
-[Chrome Extension](https://chrome.google.com/webstore/detail/tempo-tracker/gcicdbcmacjeaepmfkibdbhickbdiafj)
+[Chrome Extension](https://chromewebstore.google.com/detail/tempo-tracker/gcicdbcmacjeaepmfkibdbhickbdiafj)
 [Edge Extension](https://microsoftedge.microsoft.com/addons/detail/tempotracker/bagmlbondklkiomfpeicbgmnbibadbck)
 [Firefox Extension](https://addons.mozilla.org/en-US/firefox/addon/tempo-tracker/)
 

@@ -1,8 +1,7 @@
 {
-    "name": "jira-log-time",
+    "name": "tempo-tracker",
     "version": "3.12.0",
-    "description": "Code repo for [Jira Log Time](https://chrome.google.com/webstore/detail/jira-log-time/peboekgeiffcaddndeonkmkledekeegl) chrome plugin.",
-    "main": "jira-api.js",
+    "description": "Code repo for [Tempo Tracker](https://chromewebstore.google.com/detail/tempo-tracker/gcicdbcmacjeaepmfkibdbhickbdiafj) chrome plugin.",
     "scripts": {
         "start": "node build/esbuild.js",
         "build": "node build/esbuild.prod.js && node build/zip-files.js",
@@ -24,14 +23,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/fochlac/jira-log-time.git"
+        "url": "git+https://github.com/fochlac/tempo-tracker.git"
     },
     "author": "",
     "license": "GPL-3.0-or-later",
     "bugs": {
-        "url": "https://github.com/fochlac/jira-log-time/issues"
+        "url": "https://github.com/fochlac/tempo-tracker/issues"
     },
-    "homepage": "https://github.com/fochlac/jira-log-time#readme",
+    "homepage": "https://github.com/fochlac/tempo-tracker#readme",
     "lint-staged": {
         "*.{ts,tsx,js,jsx}": [
             "eslint --fix",
