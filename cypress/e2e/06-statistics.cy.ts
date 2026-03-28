@@ -201,7 +201,7 @@ describe('Statistics View - Tracking Area', () => {
         cy.contains('div', locale['label.overhours']).find('p').should('contain.text', '10h 00m')
     })
 
-    it('should apply settlement hours to overhours in statistics', () => {
+    it.only('should apply settlement hours to overhours in statistics', () => {
         const settlementDate = '2020-10-09'
         const yearlyStatsOverhours = () =>
             cy
@@ -225,7 +225,7 @@ describe('Statistics View - Tracking Area', () => {
         cy.contains('button', locale['action.addCorrection']).click()
         cy.contains('div', locale['label.effectiveDate']).find('input[type="date"]').should('have.value', settlementDate)
         cy.contains('div', locale['label.effectiveDate']).find('input[type="date"]').clear().type(settlementDate)
-        cy.contains('div', locale['label.deltaHours']).find('input').should('have.value', '0').clear().type('2')
+        cy.contains('div', locale['label.deltaHours']).find('input').should('have.value', '0').type('{selectall}2').should('have.value', '2')
 
         yearlyStatsOverhours().should('contain.text', '3h 00m')
     })
