@@ -1,22 +1,13 @@
 import { DB_KEYS } from '../constants/constants'
 import { useDatabase, useDatabaseUpdate } from '../utils/database'
-import { getISOWeekAndYear, getISOWeekNumber } from '../utils/datetime'
+import { dateString, getISOWeekNumber } from '../utils/datetime'
+import { normalizeSettlementDate, normalizeSettlements } from '../utils/settlements'
 import { resolveLocale } from '../translations/locale'
 import { useOptions } from './useOptions'
 
-const normalizeCorrections = (corrections: StatisticsOptions['corrections']): StatisticsOptions['corrections'] => {
-    const rawCorrections = corrections && typeof corrections === 'object' ? corrections : {}
+type RawStatisticsOptions = Partial<StatisticsOptions> & { corrections?: WeekCorrectionMap }
 
-    return Object.entries(rawCorrections).reduce((map, [weekKey, deltaSeconds]) => {
-        const value = Number(deltaSeconds)
-        if (Number.isFinite(value)) {
-            map[weekKey] = value
-        }
-        return map
-    }, {})
-}
-
-const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
+const normalizeStatisticsOptions = (rawOptions: RawStatisticsOptions, locale: string): StatisticsOptions => {
     return {
         defaultHours: Number(rawOptions.defaultHours ?? defaultStatisticsOptions.defaultHours),
         defaultDailyHours: Number(rawOptions.defaultDailyHours ?? defaultStatisticsOptions.defaultDailyHours),
@@ -28,7 +19,7 @@ const normalizeStatisticsOptions = (rawOptions: StatisticsOptions) => {
             endWeek: Number(e.endWeek),
             hours: Number(e.hours)
         })),
-        corrections: normalizeCorrections(rawOptions.corrections)
+        settlements: normalizeSettlements(rawOptions.settlements, locale, rawOptions.corrections)
     }
 }
 
@@ -37,24 +28,25 @@ const defaultStatisticsOptions: StatisticsOptions = {
     defaultDailyHours: 8,
     lifetimeYear: new Date().getFullYear(),
     exceptions: [],
-    corrections: {}
+    settlements: []
 }
 export function useStatisticsOptions() {
-    const options: StatisticsOptions = useDatabase<'statsOptions'>('statsOptions') || defaultStatisticsOptions
+    const options = ((useDatabase<'statsOptions'>('statsOptions') || defaultStatisticsOptions) ?? defaultStatisticsOptions) as RawStatisticsOptions
     const updateOptions = useDatabaseUpdate(DB_KEYS.STATS_OPTIONS)
     const { data: appOptions } = useOptions()
     const locale = resolveLocale(appOptions.locale)
+    const normalizedOptions = normalizeStatisticsOptions(options, locale)
 
     return {
-        data: normalizeStatisticsOptions(options),
+        data: normalizedOptions,
         actions: {
             async addException() {
                 const year = new Date().getFullYear()
                 const week = getISOWeekNumber(Date.now(), locale)
                 const update = {
-                    ...options,
+                    ...normalizedOptions,
                     exceptions: [
-                        ...options.exceptions,
+                        ...normalizedOptions.exceptions,
                         {
                             startYear: year,
                             startWeek: week,
@@ -68,78 +60,72 @@ export function useStatisticsOptions() {
             },
             async deleteException(index) {
                 const update = {
-                    ...options,
-                    exceptions: [...options.exceptions.slice(0, index), ...options.exceptions.slice(index + 1)]
+                    ...normalizedOptions,
+                    exceptions: [...normalizedOptions.exceptions.slice(0, index), ...normalizedOptions.exceptions.slice(index + 1)]
                 }
                 await updateOptions(update)
             },
             async mergeException(index, merge) {
                 const update = {
-                    ...options,
+                    ...normalizedOptions,
                     exceptions: [
-                        ...options.exceptions.slice(0, index),
-                        { ...options.exceptions[index], ...merge },
-                        ...options.exceptions.slice(index + 1)
+                        ...normalizedOptions.exceptions.slice(0, index),
+                        { ...normalizedOptions.exceptions[index], ...merge },
+                        ...normalizedOptions.exceptions.slice(index + 1)
                     ]
                 }
                 await updateOptions(update)
             },
             async addCorrection() {
-                const { year, week } = getISOWeekAndYear(Date.now(), locale)
-                const key = `${year}-${week}`
-
-                if (options.corrections?.[key] !== undefined) {
-                    return
-                }
-
                 const update = {
-                    ...options,
-                    corrections: { ...(options.corrections ?? {}), [key]: 0 }
+                    ...normalizedOptions,
+                    settlements: [...normalizedOptions.settlements, { date: dateString(Date.now()), deltaSeconds: 0 }]
                 }
                 await updateOptions(update)
             },
-            async deleteCorrection(weekKey: string) {
-                const corrections = { ...(options.corrections ?? {}) }
-                delete corrections[weekKey]
-                await updateOptions({ ...options, corrections })
+            async deleteCorrection(index: number) {
+                await updateOptions({
+                    ...normalizedOptions,
+                    settlements: normalizedOptions.settlements.filter((_settlement, settlementIndex) => settlementIndex !== index)
+                })
             },
-            async setCorrection(weekKey: string, deltaSeconds: number) {
+            async setCorrection(index: number, deltaSeconds: number) {
                 const update = {
-                    ...options,
-                    corrections: { ...(options.corrections ?? {}), [weekKey]: deltaSeconds }
+                    ...normalizedOptions,
+                    settlements: normalizedOptions.settlements.map((settlement, settlementIndex) => {
+                        return settlementIndex === index ? { ...settlement, deltaSeconds } : settlement
+                    })
                 }
                 await updateOptions(update)
             },
-            async renameCorrectionKey(oldWeekKey: string, newWeekKey: string) {
-                if (oldWeekKey === newWeekKey || options.corrections?.[newWeekKey] !== undefined) {
-                    return
-                }
-                const corrections = { ...(options.corrections ?? {}) }
-
-                corrections[newWeekKey] = options.corrections[oldWeekKey]
-                delete corrections[oldWeekKey]
-
-                await updateOptions({ ...options, corrections })
-            },
-            async setCorrections(corrections: StatisticsOptions['corrections']) {
+            async setCorrectionDate(index: number, date: string) {
+                const nextDate = normalizeSettlementDate(date) ?? normalizedOptions.settlements[index]?.date ?? dateString(Date.now())
                 const update = {
-                    ...options,
-                    corrections: normalizeCorrections(corrections)
+                    ...normalizedOptions,
+                    settlements: normalizedOptions.settlements.map((settlement, settlementIndex) => {
+                        return settlementIndex === index ? { ...settlement, date: nextDate } : settlement
+                    })
                 }
                 await updateOptions(update)
             },
             async set(newOptions) {
-                const update = normalizeStatisticsOptions({
-                    ...defaultStatisticsOptions,
-                    ...(newOptions || {})
-                } as StatisticsOptions)
+                const update = normalizeStatisticsOptions(
+                    {
+                        ...defaultStatisticsOptions,
+                        ...(newOptions || {})
+                    },
+                    locale
+                )
                 await updateOptions(update)
             },
             async merge(newOptions: Partial<StatisticsOptions>) {
-                const update = normalizeStatisticsOptions({
-                    ...options,
-                    ...newOptions
-                } as StatisticsOptions)
+                const update = normalizeStatisticsOptions(
+                    {
+                        ...normalizedOptions,
+                        ...newOptions
+                    },
+                    locale
+                )
                 await updateOptions(update)
             },
             async reset() {

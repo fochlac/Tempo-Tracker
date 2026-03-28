@@ -1,8 +1,8 @@
-/* eslint-disable max-lines */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { CACHE } from '../constants/constants'
 import { dateString, getISOWeekAndYear, getISOWeekNumber, getISOWeeks, getIsoWeekPeriod } from '../utils/datetime'
 import { createWorkMap, fetchWorkStatistics } from '../utils/api'
+import { buildWeeklyOverhourEntries, resolveOverhourBuckets, summarizeOverhourBuckets } from '../utils/settlements'
 import { usePersitentFetch } from './usePersitedFetch'
 import { useSafeState } from './useSafeState'
 import { useStatisticsOptions } from './useStatisticsOptions'
@@ -186,8 +186,9 @@ export function useStatistics() {
 }
 
 export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: StatsMap }) {
+    const locale = useLocaleContext()
     const {
-        data: { lifetimeYear, corrections }
+        data: { lifetimeYear, settlements }
     } = useStatisticsOptions()
     const { data, updateData, loading, forceFetch } = usePersitentFetch<'LIFETIME_STATS_CACHE'>(
         async () => {
@@ -241,44 +242,10 @@ export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: 
     }, [data, lifetimeYear])
 
     const overhourStats: { totalDiffSeconds: number; secondsInLastWeek: number; secondsInLastMonth: number } = useMemo(() => {
-        const sorted = [...yearWeeksLifetime].sort((a, b) => a.year - b.year || a.week - b.week)
-        const resolvedLastHalfYear = sorted.reduce((array, { year, week, workedSeconds }, index) => {
-            let currentDiff = workedSeconds - getRequiredSeconds(year, week) - (corrections[`${year}-${week}`] ?? 0)
-            for (let x = 0; x < index; x++) {
-                const oldWeek = array[x]
-                if (currentDiff === 0 || !oldWeek) {
-                    break
-                }
-                if (oldWeek.diffSeconds === 0 || currentDiff > 0 === oldWeek.diffSeconds > 0) {
-                    continue
-                }
-                if (Math.abs(currentDiff) - Math.abs(oldWeek.diffSeconds) > 0) {
-                    currentDiff += oldWeek.diffSeconds
-                    oldWeek.diffSeconds = 0
-                } else {
-                    oldWeek.diffSeconds += currentDiff
-                    currentDiff = 0
-                }
-            }
-
-            array.push({ year, week, workedSeconds, diffSeconds: currentDiff })
-            return array.slice(-25)
-        }, [])
-
-        return resolvedLastHalfYear.reduce(
-            (stats, result, index) => {
-                if (index === 0) {
-                    stats.secondsInLastWeek = result.diffSeconds
-                }
-                if (index < 4) {
-                    stats.secondsInLastMonth += result.diffSeconds
-                }
-                stats.totalDiffSeconds += result.diffSeconds
-                return stats
-            },
-            { totalDiffSeconds: 0, secondsInLastWeek: 0, secondsInLastMonth: 0 }
-        )
-    }, [yearWeeksLifetime, getRequiredSeconds, corrections])
+        const weeklyEntries = buildWeeklyOverhourEntries(data, getRequiredSeconds, locale)
+        const buckets = resolveOverhourBuckets(weeklyEntries, settlements, locale)
+        return summarizeOverhourBuckets(buckets, Date.now())
+    }, [data, getRequiredSeconds, locale, settlements])
 
     const lifeTimeTotal = useMemo(() => {
         const years = Array.from({ length: new Date().getFullYear() - lifetimeYear + 1 }, (_v, idx) => lifetimeYear + idx)
@@ -307,7 +274,7 @@ export function useLifetimeStatistics({ year, stats }: { year?: number; stats?: 
 export function useSixMonthOverhours(futureWeeksOffset: number = 0) {
     const locale = useLocaleContext()
     const {
-        data: { lifetimeYear, corrections }
+        data: { lifetimeYear, settlements }
     } = useStatisticsOptions()
     const getRequiredSeconds = useGetRequiredSecondsForPeriod(lifetimeYear)
     const { cache } = useCache(CACHE.LIFETIME_STATS_CACHE, {})
@@ -328,33 +295,9 @@ export function useSixMonthOverhours(futureWeeksOffset: number = 0) {
         const startDate = new Date(endDate)
         startDate.setMonth(startDate.getMonth() - 6)
         const start = getISOWeekAndYear(startDate.getTime(), locale)
-
-        // Sum up diffs for all weeks in window (up to current week)
-        let totalSeconds = 0
-        let year = start.year
-        let week = start.week
-        let weeksInYear = getISOWeeks(year, locale)
-
-        while (year < end.year || (year === end.year && week <= end.week)) {
-            const workedSeconds = lifetimeData[year]?.weeks?.[week]
-
-            // Skip weeks with no data if we haven't started accumulating yet (user started later)
-            if (workedSeconds !== undefined || totalSeconds !== 0) {
-                const required = getRequiredSeconds(year, week)
-                totalSeconds += (workedSeconds ?? 0) - required - (corrections[`${year}-${week}`] ?? 0)
-            }
-
-            // Stop after current week (future weeks have 0 diff)
-            if (year > current.year || (year === current.year && week >= current.week)) break
-
-            // Move to next week
-            week++
-            if (week > weeksInYear) {
-                year++
-                week = 1
-                weeksInYear = getISOWeeks(year, locale)
-            }
-        }
+        const weeklyEntries = buildWeeklyOverhourEntries(lifetimeData, getRequiredSeconds, locale, endDate.getTime())
+        const buckets = resolveOverhourBuckets(weeklyEntries, settlements, locale)
+        const summary = summarizeOverhourBuckets(buckets, endDate.getTime())
 
         // Format dates for display
         const formatDate = (d: Date) => {
@@ -366,11 +309,11 @@ export function useSixMonthOverhours(futureWeeksOffset: number = 0) {
         }
 
         return {
-            totalSeconds,
+            totalSeconds: summary.totalDiffSeconds,
             windowStart: start,
             windowEnd: end,
             startDateStr: formatDate(startDate),
             endDateStr: formatDate(endDate)
         }
-    }, [cache, futureWeeksOffset, getRequiredSeconds, locale, corrections])
+    }, [cache, futureWeeksOffset, getRequiredSeconds, locale, settlements])
 }

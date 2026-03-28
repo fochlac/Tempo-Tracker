@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect, useMemo, useState } from 'preact/hooks'
 import styled from 'styled-components'
 import { durationString, getISOWeekNumber, getIsoWeekPeriods, getISOWeeks } from '../../utils/datetime'
 import { TooltipTop } from '../atoms/Tooltip'
@@ -38,7 +38,7 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
         (options.defaultHours + 1) * 60 * 60
     )
     const weeknumber = stats && isCurrentYear ? getISOWeekNumber(Date.now(), locale) : getISOWeeks(year, locale)
-
+    const visibleWeekPeriods = useMemo(() => getIsoWeekPeriods(year, locale).slice(0, weeknumber + 1), [year, locale, weeknumber])
     useEffect(() => {
         setWeekOffset(weeknumber)
     }, [weeknumber])
@@ -76,43 +76,37 @@ export const WorkTimeDiagramm: React.FC<Props> = ({ stats, year, setYear, getReq
                     ))}
                 </TimeBar>
                 {!!stats?.weeks &&
-                    getIsoWeekPeriods(year, locale)
-                        .slice(0, weeknumber + 1)
-                        .slice(Math.max(weekOffset - columns, 0), weekOffset)
-                        .map(({ week, period }, index) => {
-                            const columnCount = Math.min(weekOffset, columns)
-                            const right = index < columnCount / 2
+                    visibleWeekPeriods.slice(Math.max(weekOffset - columns, 0), weekOffset).map(({ week, period }, index) => {
+                        const columnCount = Math.min(weekOffset, columns)
+                        const right = index < columnCount / 2
 
-                            const hours = getRequiredSeconds(week)
-                            const seconds = (stats.weeks[week] || 0) + (unsyncedStats.weeks[week] || 0) / 1000
-                            const hasData = !!stats.weeks[week]
-                            const showOver = hasData && Math.abs(seconds - hours) > 15 * 60
-                            return (
-                                <BarWrapper data-testid="bar-wrapper" key={index}>
-                                    {showOver && seconds < hours && (
-                                        <MissingHours style={{ height: `${((hours - seconds) / maxSeconds) * 100}%` }}>
-                                            <TooltipTop right={right} content={`-${formatDuration((hours - seconds) * 1000)}`} />
-                                        </MissingHours>
+                        const hours = getRequiredSeconds(week)
+                        const seconds = (stats.weeks[week] || 0) + (unsyncedStats.weeks[week] || 0) / 1000
+                        const hasData = !!stats.weeks[week]
+                        const showOver = hasData && Math.abs(seconds - hours) > 15 * 60
+                        return (
+                            <BarWrapper data-testid="bar-wrapper" key={index}>
+                                {showOver && seconds < hours && (
+                                    <MissingHours style={{ height: `${((hours - seconds) / maxSeconds) * 100}%` }}>
+                                        <TooltipTop right={right} content={`-${formatDuration((hours - seconds) * 1000)}`} />
+                                    </MissingHours>
+                                )}
+                                <Bar data-testid="bar" key={week} style={{ height: `${(seconds / maxSeconds) * 100}%` }}>
+                                    {showOver && seconds > hours && (
+                                        <OverHours style={{ height: `${((seconds - hours) / seconds) * 100}%` }}>
+                                            <TooltipTop right={right} content={formatDuration((seconds - hours) * 1000)} />
+                                        </OverHours>
                                     )}
-                                    <Bar data-testid="bar" key={week} style={{ height: `${(seconds / maxSeconds) * 100}%` }}>
-                                        {showOver && seconds > hours && (
-                                            <OverHours style={{ height: `${((seconds - hours) / seconds) * 100}%` }}>
-                                                <TooltipTop right={right} content={formatDuration((seconds - hours) * 1000)} />
-                                            </OverHours>
-                                        )}
-                                        <Duration>{`${durationString(seconds * 1000)}`}</Duration>
-                                        <BarLabel>
-                                            <BarTooltip
-                                                content={`${formatDate(period[0].getTime())} - ${formatDate(period[1].getTime())}`}
-                                                right={right}
-                                            >
-                                                {`00${week}`.slice(-2)}
-                                            </BarTooltip>
-                                        </BarLabel>
-                                    </Bar>
-                                </BarWrapper>
-                            )
-                        })}
+                                    <Duration>{`${durationString(seconds * 1000)}`}</Duration>
+                                    <BarLabel>
+                                        <BarTooltip content={`${formatDate(period[0].getTime())} - ${formatDate(period[1].getTime())}`} right={right}>
+                                            {`00${week}`.slice(-2)}
+                                        </BarTooltip>
+                                    </BarLabel>
+                                </Bar>
+                            </BarWrapper>
+                        )
+                    })}
             </Diagramm>
         </>
     )

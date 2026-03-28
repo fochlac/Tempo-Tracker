@@ -1,5 +1,8 @@
+import { useMemo } from 'preact/hooks'
 import { useLocalized } from 'src/hooks/useLocalized'
 import { useStatisticsOptions } from 'src/hooks/useStatisticsOptions'
+import { useLocaleContext } from 'src/translations/context'
+import { getWeeklySettlementSeconds } from 'src/utils/settlements'
 import { Block, Column } from '../atoms/Layout'
 import { Label, Value } from '../atoms/Typography'
 
@@ -26,17 +29,19 @@ function average(values: number[]): number {
 
 export const WorkTimeStats: React.FC<Props> = ({ total, weeks = [], days = [], getRequiredSeconds, dayStat }) => {
     const { t, formatDuration } = useLocalized()
+    const locale = useLocaleContext()
     const {
-        data: { corrections }
+        data: { settlements }
     } = useStatisticsOptions()
+    const settlementSecondsByWeek = useMemo(() => getWeeklySettlementSeconds(settlements, locale), [settlements, locale])
 
     const requiredSeconds = weeks.reduce((requiredSeconds, { week, year }) => {
         return requiredSeconds + getRequiredSeconds(year, week)
     }, 0)
-    const correctionSeconds = weeks.reduce((correctionSeconds, { week, year }) => {
-        return correctionSeconds + (corrections[`${year}-${week}`] ?? 0)
+    const settlementSeconds = weeks.reduce((correctionSeconds, { week, year }) => {
+        return correctionSeconds + (settlementSecondsByWeek[`${year}-${week}`] ?? 0)
     }, 0)
-    const overseconds = total ? total - requiredSeconds - correctionSeconds : 0
+    const overseconds = total ? total - requiredSeconds - settlementSeconds : 0
 
     const averageDay = average(days.map((d) => d?.workedSeconds).filter((s) => s && s > 0))
     const medianWeek = median(weeks.map((w) => w?.workedSeconds).filter((s) => s && s > 0))
