@@ -201,6 +201,32 @@ describe('Statistics View - Tracking Area', () => {
         cy.contains('div', locale['label.overhours']).find('p').should('contain.text', '10h 00m')
     })
 
+    it('should apply settlement hours to overhours in statistics', () => {
+        const yearlyStatsOverhours = () =>
+            cy
+                .contains('h6', /Statistics for \d{4}/)
+                .parent()
+                .contains('div', locale['label.overhours'])
+                .find('p')
+
+        cy.networkMocks()
+        cy.open()
+        cy.fakeTimers(baseDate.getTime() + dayInMs)
+        cy.setOptions(defaultOptions)
+        cy.startApp()
+        cy.mockSendMessage()
+
+        cy.contains('header', locale['header.tempoTracker']).should('be.visible').contains('a', locale['nav.statistics']).should('be.exist').click()
+
+        cy.contains('div', locale['label.hoursPerWeek']).find('input').should('have.value', '40').clear().type('35{del}', { delay: 100 })
+        yearlyStatsOverhours().should('contain.text', '5h 00m')
+
+        cy.contains('button', locale['action.addCorrection']).click()
+        cy.contains('div', locale['label.deltaHours']).find('input').should('have.value', '0').clear().type('2')
+
+        yearlyStatsOverhours().should('contain.text', '3h 00m')
+    })
+
     it('should show six month overhours for webfleet domain', () => {
         const webfleetDomain = 'https://jira.ttt-sp.com'
         cy.networkMocks(webfleetDomain)
