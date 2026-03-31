@@ -1,6 +1,6 @@
 {
     "name": "tempo-tracker",
-    "version": "3.12.0",
+    "version": "3.13.0",
     "description": "Code repo for [Tempo Tracker](https://chromewebstore.google.com/detail/tempo-tracker/gcicdbcmacjeaepmfkibdbhickbdiafj) chrome plugin.",
     "scripts": {
         "start": "node build/esbuild.js",
