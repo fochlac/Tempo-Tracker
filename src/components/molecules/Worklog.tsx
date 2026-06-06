@@ -23,9 +23,10 @@ const WorklogEntry = styled.li<{ $delete?: boolean }>`
     padding-bottom: 6px;
 `
 const WorklogBody = styled.div`
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) 105px 76px 74px;
     align-items: center;
+    gap: 8px;
     white-space: nowrap;
     position: relative;
 `
@@ -44,16 +45,23 @@ const Comment = styled.span`
     margin-left: 3px;
 `
 const IssueKey = styled.div`
-    max-width: 135px;
-    margin: 2px 8px 0;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 2px;
     cursor: default;
     overflow: hidden;
     text-overflow: ellipsis;
 `
 const IssueSpacer = styled.div`
-    width: 135px;
+    flex: 1 1 120px;
+    min-width: 0;
     display: flex;
     justify-content: flex-start;
+
+    & > * {
+        width: 100%;
+        min-width: 0;
+    }
 `
 const Datum = styled.span`
     width: 100px;
@@ -67,13 +75,17 @@ const Datum = styled.span`
 const Time = styled.span``
 
 const TimeRange = styled.span`
-    flex-basis: 100px;
     text-align: end;
-    min-width: 85px;
 `
 const Duration = styled.span`
-    flex-basis: 120px;
     text-align: end;
+`
+const WorklogActions = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-left: auto;
+    width: 74px;
 `
 export const WorklogAtoms = {
     WorklogEntry,
@@ -82,7 +94,8 @@ export const WorklogAtoms = {
     Datum,
     Time,
     TimeRange,
-    Duration
+    Duration,
+    WorklogActions
 }
 
 export function Worklog({ log, disableButtons, onDelete }) {
@@ -91,6 +104,7 @@ export function Worklog({ log, disableButtons, onDelete }) {
     const dispatch = useDispatch()
     const [startDelete, setStartDelete] = useState(false)
     const Icon = log.syncTabId ? UploadIcon : QueueIcon
+    const disableEditActions = (!options.offlineMode && options.autosync && !log.id) || disableButtons
 
     if (!log?.issue) {
         return null
@@ -122,20 +136,18 @@ export function Worklog({ log, disableButtons, onDelete }) {
                 <Duration>
                     <Time>{formatDuration(log.end - log.start, { s: true })}</Time>
                 </Duration>
-                <div style={{ marginLeft: 'auto' }}>
+                <WorklogActions>
                     <IconButton
                         title={t('action.editWorklog')}
-                        disabled={(options.autosync && !log.id) || disableButtons}
+                        disabled={disableEditActions}
                         onClick={() => dispatch('setEditIssue', { issue: log.id || log.tempId })}
-                        style={{ marginLeft: 16 }}
                     >
                         <Edit3 />
                     </IconButton>
                     <IconButton
                         title={log.comment ? `${t('action.editComment')}: ${log.comment}` : t('action.editComment')}
-                        disabled={(options.autosync && !log.id) || disableButtons}
+                        disabled={disableEditActions}
                         onClick={() => dispatch('setEditComment', { issue: log.id || log.tempId })}
-                        style={{ marginLeft: 4 }}
                     >
                         <MessageSquare />
                     </IconButton>
@@ -143,11 +155,10 @@ export function Worklog({ log, disableButtons, onDelete }) {
                         title={log.id && log.synced ? t('action.deleteWorklog') : t('action.discardChanges')}
                         disabled={disableButtons}
                         onClick={() => setStartDelete(true)}
-                        style={{ marginLeft: 4 }}
                     >
                         {log.id && log.synced ? <Trash2 /> : <X />}
                     </IconButton>
-                </div>
+                </WorklogActions>
                 <DeleteWorklogDialog
                     open={startDelete}
                     log={log}
