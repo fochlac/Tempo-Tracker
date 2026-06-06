@@ -6,6 +6,8 @@ const InputWrapper = styled.fieldset`
     display: inline-flex;
     flex-direction: row;
     width: 42px;
+    box-sizing: border-box;
+    min-inline-size: 0;
     margin-top: 2px;
     height: 20px;
     border: none;
@@ -13,12 +15,16 @@ const InputWrapper = styled.fieldset`
     color: var(--font);
     outline: none;
     align-items: center;
-    padding-left: 1px;
+    padding: 0 1px;
     text-align: center;
     font-size: 14px;
 `
 const TimeSegmentInput = styled.input`
     width: 18px;
+    box-sizing: border-box;
+    border: none;
+    padding: 0;
+    outline: none;
     background: var(--background);
     color: var(--font);
     text-align: center;

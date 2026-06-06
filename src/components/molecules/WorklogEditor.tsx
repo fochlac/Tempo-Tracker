@@ -12,17 +12,26 @@ import { WorklogAtoms } from './Worklog'
 import { IssueSelector } from './IssueSelector'
 import { useKeyBinding } from '../../hooks/useKeyBinding'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { InputEventHandler } from 'preact'
 
 const DateInput = styled(Input)`
     flex-shrink: 0;
-    width: 120px;
+    width: 100%;
 
     &::-webkit-calendar-picker-indicator {
         margin: 0;
     }
 `
 
-const { WorklogEntry, WorklogBody, TimeRange, Duration } = WorklogAtoms
+const { WorklogEntry, WorklogBody, TimeRange, Duration, WorklogActions } = WorklogAtoms
+
+const EditTimeRange = styled(TimeRange)`
+    min-width: 0;
+`
+
+const EditDuration = styled(Duration)`
+    min-width: 0;
+`
 
 const compareLog = compareValues(['start', 'end', 'issue.key'])
 
@@ -40,21 +49,23 @@ export function WorklogEditor({ log: pureLog, onSubmit }: { log: Worklog | Tempo
         },
         false
     )
-    const onChange = (key) => (e) => {
-        const { value } = e.target
-        if (value !== timeString(log[key])) {
-            setDirty(true)
-            const [h, m] = value.split(':')
-            const date = new Date(log[key])
-            date.setHours(h, m)
-            setEdit({
-                ...log,
-                [key]: date.getTime()
-            })
+    const onChange =
+        (key: 'start' | 'end'): InputEventHandler<HTMLInputElement> =>
+        (e) => {
+            const { value } = e.currentTarget
+            if (value !== timeString(log[key])) {
+                setDirty(true)
+                const [h, m] = value.split(':')
+                const date = new Date(log[key])
+                date.setHours(Number(h), Number(m))
+                setEdit({
+                    ...log,
+                    [key]: date.getTime()
+                })
+            }
         }
-    }
-    const onChangeDuration = (e) => {
-        const { value } = e.target
+    const onChangeDuration: InputEventHandler<HTMLInputElement> = (e) => {
+        const { value } = e.currentTarget
         const duration = log.end - log.start
         if (value !== durationString(duration)) {
             setDirty(true)
@@ -66,13 +77,13 @@ export function WorklogEditor({ log: pureLog, onSubmit }: { log: Worklog | Tempo
             })
         }
     }
-    const onChangeDate = (e) => {
-        const { value } = e.target
+    const onChangeDate: InputEventHandler<HTMLInputElement> = (e) => {
+        const { value } = e.currentTarget
         if (value !== dateString(log.start)) {
             setDirty(true)
             const [y, m, d] = value.split('-')
             const newDay = new Date(log.start)
-            newDay.setFullYear(y, m - 1, d)
+            newDay.setFullYear(Number(y), Number(m) - 1, Number(d))
             const diff = newDay.getTime() - log.start
 
             setEdit({
@@ -100,28 +111,36 @@ export function WorklogEditor({ log: pureLog, onSubmit }: { log: Worklog | Tempo
                     enableSearch
                     value={log.issue.key}
                     additionalIssues={[log.issue as LocalIssue]}
-                    style={{ margin: '2px 8px 0', maxWidth: 150, height: 20 }}
+                    style={{
+                        justifySelf: 'start',
+                        maxWidth: '100%',
+                        minWidth: 0,
+                        height: 20,
+                        marginTop: 2,
+                        paddingRight: 16,
+                        boxSizing: 'border-box'
+                    }}
                     onChange={(issue) => {
                         setDirty(true)
                         setEdit({ ...log, issue })
                     }}
                 />
-                <TimeRange>
+                <EditTimeRange>
                     <TimeInput onChange={onChange('start')} value={timeString(log.start)} />
                     {' - '}
                     <TimeInput onChange={onChange('end')} value={timeString(log.end)} />
-                </TimeRange>
-                <Duration>
+                </EditTimeRange>
+                <EditDuration>
                     <TimeInput onChange={onChangeDuration} duration value={durationString(log.end - log.start)} />
-                </Duration>
-                <div style={{ marginLeft: 'auto' }}>
-                    <IconButton title={t('action.save')} onClick={handleSubmit} style={{ marginLeft: 16 }}>
+                </EditDuration>
+                <WorklogActions>
+                    <IconButton title={t('action.save')} onClick={handleSubmit}>
                         <Check />
                     </IconButton>
-                    <IconButton title={t('action.cancel')} onClick={() => dispatch('resetEditIssue')} style={{ marginLeft: 4 }}>
+                    <IconButton title={t('action.cancel')} onClick={() => dispatch('resetEditIssue')}>
                         <X />
                     </IconButton>
-                </div>
+                </WorklogActions>
             </WorklogBody>
         </WorklogEntry>
     )
