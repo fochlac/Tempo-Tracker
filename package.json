@@ -1,6 +1,6 @@
 {
     "name": "tempo-tracker",
-    "version": "3.13.1",
+    "version": "3.13.2",
     "description": "Code repo for [Tempo Tracker](https://chromewebstore.google.com/detail/tempo-tracker/gcicdbcmacjeaepmfkibdbhickbdiafj) chrome plugin.",
     "scripts": {
         "start": "node build/esbuild.js",
@@ -14,9 +14,9 @@
         "test": "npm run test:types && npm run test:unit && npm run test:ui",
         "test:unit": "vitest run",
         "test:types": "tsc --noEmit && tsc --project cypress --noEmit",
-        "test:ui": "node build/esbuild.prod.js && concurrently --kill-others \"npm run test:server\" \"cypress run\"",
+        "test:ui": "node build/esbuild.prod.js && concurrently --kill-others --success command-cypress -n server,cypress \"npm run test:server\" \"cypress run\"",
         "test:component": "cypress run --component",
-        "test:open": "concurrently --kill-others \"npm run test:server\" \"cypress open\"",
+        "test:open": "concurrently --kill-others --success command-cypress -n server,cypress \"npm run test:server\" \"cypress open\"",
         "cypress:open": "cypress open",
         "test:server": "node ./test-server/index.js",
         "prepare": "husky"

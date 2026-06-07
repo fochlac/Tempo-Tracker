@@ -40,12 +40,17 @@ interface Props extends React.HTMLAttributes<HTMLFieldSetElement> {
     maxHours?: number
 }
 const handleFocus = (e) => e.target.setSelectionRange(0, e.currentTarget.value.length)
-const createEvent = (value: string): FakeEvent => ({ target: { value } as FakeTarget })
+const createEvent = (value: string): FakeEvent => {
+    const target = { value } as FakeTarget
+
+    return { currentTarget: target, target }
+}
 
 interface FakeTarget extends EventTarget {
     value: string
 }
 interface FakeEvent extends Partial<InputEvent> {
+    currentTarget: FakeTarget
     target: FakeTarget
 }
 
