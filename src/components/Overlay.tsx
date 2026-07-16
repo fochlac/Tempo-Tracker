@@ -20,7 +20,7 @@ import { useLocalized } from 'src/hooks/useLocalized'
 
 const Main = styled.aside<{ $collapsed?: boolean }>`
     position: absolute;
-    top: 64px;
+    top: 77px;
     max-height: ${({ $collapsed }) => ($collapsed ? '65px' : 'calc(100vh - 137px)')};
     min-height: 65px;
     right: 0;
@@ -32,6 +32,7 @@ const Main = styled.aside<{ $collapsed?: boolean }>`
     color: var(--font);
     border-left: solid 1px #dce0e6;
     border-bottom: solid 1px #dce0e6;
+    z-index: 100;
 
     ::-webkit-scrollbar-thumb {
         background: var(--contrast-light);

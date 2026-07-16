@@ -1,3 +1,4 @@
+import { JSXInternal } from 'node_modules/preact/src/jsx'
 import styled from 'styled-components'
 
 const Wrapper = styled.div<{ $right: boolean; $absolute?: boolean }>`
@@ -49,19 +50,18 @@ const Wrapper = styled.div<{ $right: boolean; $absolute?: boolean }>`
     }
 `
 
-interface TooltipProps {
+interface TooltipProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'style' | 'className'> {
     content: string
     className?: string
     right?: boolean
     absolute?: boolean
-    onClick?: (e: unknown) => void
-    style?: React.CSSProperties
+    style?: JSXInternal.Signalish<string | JSXInternal.CSSProperties | undefined>
 }
 
 export const Tooltip: React.FC<TooltipProps> = ({ content, children, style, className, right, onClick, absolute }) => {
     if (!content) return <>{children}</>
     return (
-        <Wrapper onClick={onClick} className={className} data-content={content} style={style} $right={right} $absolute={absolute}>
+        <Wrapper onClick={onClick} className={className} data-content={content} style={style} $right={!!right} $absolute={absolute}>
             {children}
         </Wrapper>
     )

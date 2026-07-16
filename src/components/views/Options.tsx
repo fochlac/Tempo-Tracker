@@ -20,7 +20,7 @@ import { ObfuscatedInput } from '../atoms/ObfuscatedInput'
 import { OfflineTopicsManager } from '../molecules/OfflineTopicsManager'
 import { Option } from '../atoms/Option'
 import { OptionsImportExport } from '../molecules/OptionImportExport'
-import { Workday } from 'src/utils/workday'
+import { hasWorkdayIntegration, Workday } from 'src/utils/workday'
 import { WorkingDayOption } from '../molecules/WorkingDayOptions'
 import { openTab } from '../../utils/browser'
 import { requestPermission } from 'src/utils/api'
@@ -415,7 +415,7 @@ export const OptionsView: React.FC = () => {
             </Conditional>
 
             <SectionHead>{t('options.appOptions')}</SectionHead>
-            {domain.includes('ttt-sp.com') && (
+            {hasWorkdayIntegration(domain) && (
                 <Option>
                     <Label>{t('options.workdayTimeTrackingSupport')}</Label>
                     <FlexRow $justify="flex-start">

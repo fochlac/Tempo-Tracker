@@ -3,7 +3,7 @@ import { useOptions } from '../../hooks/useOptions'
 
 import { ActionLink } from '../atoms/ActionLink'
 import { openTab } from '../../utils/browser'
-import { Workday } from 'src/utils/workday'
+import { hasWorkdayIntegration, Workday } from 'src/utils/workday'
 import { useSafeState } from 'src/hooks/useSafeState'
 import { useEffect } from 'preact/hooks'
 import { Unlock } from 'preact-feather'
@@ -29,12 +29,12 @@ export const WorkdayLink: React.FC = () => {
     const { t } = useLocalized()
 
     useEffect(() => {
-        if (options.domain.includes('ttt-sp.com')) {
+        if (hasWorkdayIntegration(options.domain)) {
             Workday.hasPermission().then(setHasPermission)
         }
     }, [options.domain, setHasPermission])
 
-    if (!options.domain.includes('ttt-sp.com')) {
+    if (!hasWorkdayIntegration(options.domain)) {
         return null
     }
 
@@ -42,7 +42,7 @@ export const WorkdayLink: React.FC = () => {
         openTab({ url: Workday.timeTrackingPage, active: true })
     }
 
-    const onGrantPermissions = async (e) => {
+    const onGrantPermissions = async (e: MouseEvent) => {
         e.stopPropagation()
         e.preventDefault()
 
@@ -54,7 +54,7 @@ export const WorkdayLink: React.FC = () => {
     }
 
     return (
-        <ErrorTooltip onClick={onGrantPermissions} content={!hasPermission ? t('workday.permissionsMissing') : undefined}>
+        <ErrorTooltip onClick={onGrantPermissions} content={!hasPermission ? t('workday.permissionsMissing') : ''}>
             <FlexRow>
                 <ActionLink error={!hasPermission} onClick={onClick}>
                     {t('workday.workday')}

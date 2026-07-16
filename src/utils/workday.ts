@@ -3,7 +3,16 @@ import { dateString } from './datetime'
 
 const timeTrackingPage = 'https://wd5.myworkday.com/bridgestone/d/task/2997$4767.htmld'
 const workdayUrl = 'https://wd5.myworkday.com/*'
+const jiraDomain = 'bridgestonefms.atlassian.net'
 const controller = (typeof chrome !== 'undefined' && chrome) || (typeof browser !== 'undefined' && browser)
+
+export function hasWorkdayIntegration(domain: string) {
+    try {
+        return new URL(domain).hostname === jiraDomain
+    } catch {
+        return domain === jiraDomain
+    }
+}
 
 function hasPermission() {
     if (isFirefox) {
