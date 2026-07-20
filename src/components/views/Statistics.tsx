@@ -18,6 +18,7 @@ import { useOptions } from 'src/hooks/useOptions'
 import { Conditional } from '../atoms/Conditional'
 import { ToggleButton } from '../atoms/Button'
 import { useLocalized } from 'src/hooks/useLocalized'
+import { hasWorkdayIntegration } from 'src/utils/workday'
 
 const Body = styled.div`
     display: flex;
@@ -44,7 +45,7 @@ export const StatisticsView: React.FC = () => {
     } = useStatistics()
     const { data: appOptions } = useOptions()
     const { domain } = appOptions
-    const isWebfleet = domain?.includes('jira.ttt-sp.com')
+    const showOverhourDecay = hasWorkdayIntegration(domain)
     const self = useSelf()
     const [sixMonthOffset, setSixMonthOffset] = useState(0)
 
@@ -107,7 +108,7 @@ export const StatisticsView: React.FC = () => {
                     <Value>{lifeTimeMedianTop ? formatDuration(lifeTimeMedianTop * 1000) : <>&mdash;</>}</Value>
                 </Column>
             </Block>
-            <Conditional enable={isWebfleet}>
+            <Conditional enable={showOverhourDecay}>
                 <H6>{t('statistics.overhourStatistics')}</H6>
                 <Block>
                     <Column>

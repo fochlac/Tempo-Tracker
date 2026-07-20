@@ -2,6 +2,7 @@ import { getPermission } from '../browser'
 import { DB } from '../data-layer'
 import { dateString, getISOWeekNumber, getYearIsoWeeksPeriod } from '../datetime'
 import { getOptions, hasValidJiraSettings } from '../options'
+import { filterDuplicateWorklogs } from '../workday'
 import { resolveLocale } from '../../translations/locale'
 import * as cloudApi from './cloud-api'
 import * as datacenterApi from './datacenter-api'
@@ -130,7 +131,7 @@ export async function fetchWorkStatistics(year: number = new Date().getFullYear(
     const locale = resolveLocale(options.locale)
     const [start, end] = getYearIsoWeeksPeriod(year, locale)
 
-    const worklogs = await fetchWorklogs(start.getTime(), end.getTime(), undefined, true)
+    const worklogs = filterDuplicateWorklogs(await fetchWorklogs(start.getTime(), end.getTime(), undefined, true), options.domain)
     const workMap = createWorkMap(year)
     const firstSunday = new Date(new Date().setFullYear(year, 0, 1))
     firstSunday.setDate(1 - firstSunday.getDay())

@@ -14,6 +14,22 @@ export function hasWorkdayIntegration(domain: string) {
     }
 }
 
+export function filterDuplicateWorklogs(worklogs: Worklog[], domain: string) {
+    if (!hasWorkdayIntegration(domain)) {
+        return worklogs
+    }
+
+    const intervals = new Set<string>()
+    return worklogs.filter(({ start, end }) => {
+        const interval = `${start}-${end}`
+        if (intervals.has(interval)) {
+            return false
+        }
+        intervals.add(interval)
+        return true
+    })
+}
+
 function hasPermission() {
     if (isFirefox) {
         return new Promise((resolve) => {
