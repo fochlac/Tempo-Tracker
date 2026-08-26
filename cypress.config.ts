@@ -3,7 +3,21 @@ import { createEsbuildDevServer } from 'cypress-devserver-esbuild'
 import alias from 'esbuild-plugin-alias'
 
 export default defineConfig({
-    e2e: {},
+    e2e: {
+        setupNodeEvents(on) {
+            on('before:browser:launch', (browser, launchOptions) => {
+                if (browser.family === 'chromium') {
+                    launchOptions.preferences.default.profile ??= {}
+                    launchOptions.preferences.default.profile.content_settings ??= {}
+                    launchOptions.preferences.default.profile.content_settings.exceptions ??= {}
+                    launchOptions.preferences.default.profile.content_settings.exceptions.cookies = {
+                        'https://jira.test.com,*': { setting: 1 }
+                    }
+                }
+                return launchOptions
+            })
+        }
+    },
     component: {
         devServer: createEsbuildDevServer({
             logLevel: 'info',
@@ -27,6 +41,6 @@ export default defineConfig({
         supportFile: './cypress/support/component.tsx',
         specPattern: './cypress/component/**/*.spec.tsx'
     },
-    'chromeWebSecurity': false,
+    chromeWebSecurity: false,
     video: false
 })
