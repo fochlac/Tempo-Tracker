@@ -7,6 +7,7 @@ export default defineConfig({
         setupNodeEvents(on) {
             on('before:browser:launch', (browser, launchOptions) => {
                 if (browser.family === 'chromium') {
+                    launchOptions.preferences.default ??= {}
                     launchOptions.preferences.default.profile ??= {}
                     launchOptions.preferences.default.profile.content_settings ??= {}
                     launchOptions.preferences.default.profile.content_settings.exceptions ??= {}
