@@ -1,4 +1,9 @@
-html, body {
+html {
+    --popup-width: 550px;
+}
+
+html,
+body {
     width: 100%;
     height: 100%;
     border: 0;
@@ -13,7 +18,11 @@ html {
     box-sizing: border-box;
 }
 
+/* The browser sizes the popup from the document: the oversized body claims the
+   maximum popup height, the width claims the popup width. The fixed root then
+   fills the popup viewport that the browser granted. */
 body {
+    width: var(--popup-width);
     height: 10000px;
     overflow: hidden;
 }
@@ -137,17 +146,17 @@ input {
 
 .root {
     min-width: min(100%, 1000px);
-    height: 100%;
-    width: 550px;
+    width: var(--popup-width);
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
-    position: relative;
+    position: fixed;
+    inset: 0;
     margin: 0 auto;
     border: 0;
     padding: 0;
     display: flex;
     justify-content: stretch;
-    max-height: 100%;
+    overflow: hidden;
 }
 
 ::-webkit-scrollbar {

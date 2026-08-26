@@ -46,8 +46,6 @@ export const App: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    document.querySelector('body').style.height = '100%'
-
     const themeObject = THEMES.CUSTOM === options.theme ? options.customTheme : Themes[options.theme]
     const theme = useMemo(() => {
         try {

@@ -164,8 +164,10 @@ export const OptionsView: React.FC = () => {
                 <Title>{t('options.authentication')}</Title>
                 <OptionsImportExport />
             </JiraHead>
-            <Conditional enable={!domain.length && !options.offlineMode}>
-                <InfoBoxAlt style={{ marginTop: 12, marginRight: 8 }}>{t('options.selectConnectionMode')}</InfoBoxAlt>
+            <Conditional enable={isFirefox && !options.offlineMode}>
+                <Option style={{ marginLeft: 0, marginBottom: 0 }}>
+                    <InfoBox text={t('options.firefoxLimitations')} />
+                </Option>
             </Conditional>
             <div
                 style={{
@@ -199,11 +201,6 @@ export const OptionsView: React.FC = () => {
                     <Conditional enable={error === 'PERMISSION'}>
                         <Option onClick={() => requestPermission(options).then(() => refetch())}>
                             <Alert style={{ cursor: 'pointer' }} text={t('options.noPermissionJira')} />
-                        </Option>
-                    </Conditional>
-                    <Conditional enable={isFirefox}>
-                        <Option>
-                            <InfoBox text={t('options.firefoxLimitations')} />
                         </Option>
                     </Conditional>
                     <DomainEditor />
@@ -369,6 +366,9 @@ export const OptionsView: React.FC = () => {
                     </Conditional>
                 </Conditional>
             </div>
+            <Conditional enable={!domain.length && !options.offlineMode}>
+                <InfoBoxAlt style={{ marginTop: 12, marginRight: 8 }}>{t('options.selectConnectionMode')}</InfoBoxAlt>
+            </Conditional>
 
             <Conditional enable={options.offlineMode}>
                 <SectionHead>{t('options.offlineTopics')}</SectionHead>
